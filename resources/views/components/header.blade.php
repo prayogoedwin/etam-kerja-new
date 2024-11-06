@@ -150,8 +150,9 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Lowongan</a>
                             <ul class="dropdown-menu">
-                                <li><a href="lowongan-kerja.html">Lowongan Kerja</a></li>
-                                <li><a href="lowongan-kerja-disabilitas.html">Lowongan Disabilitas</a></li>
+                                <li><a href="{{ url('/depan/lowongan-kerja') }}">Lowongan Kerja</a></li>
+                                <li><a href="{{ url('/depan/lowongan-kerja-disabilitas') }}">Lowongan Disabilitas</a>
+                                </li>
                             </ul>
                         </li>
 
@@ -160,14 +161,14 @@
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Informasi</a>
                             <ul class="dropdown-menu">
-                                <li><a href="infografis.html">Infografis</a></li>
-                                <li><a href="galeri.html">Galeri</a></li>
-                                <li><a href="berita.html">Berita</a></li>
+                                <li><a href="{{ url('/depan/infografis') }}">Infografis</a></li>
+                                <li><a href="{{ url('/depan/galeri') }}">Galeri</a></li>
+                                <li><a href="{{ url('/depan/berita') }}">Berita</a></li>
                                 <!-- <li><a href="project.html">Kontak</a></li> -->
                             </ul>
                         </li>
 
-                        <li><a href="login.html">Login</a></li>
+                        <li><a href="{{ url('/depan/login') }}">Login</a></li>
                     </ul>
                 </div><!-- /.navbar-collapse -->
 
@@ -182,7 +183,7 @@
                                     </div>
                                     <div class="info">
                                         <p>Belum memiliki akun?</p>
-                                        <h5><a href="register.html">Daftar Sekarang</a></h5>
+                                        <h5><a href="{{ url('/depan/register') }}">Daftar Sekarang</a></h5>
                                     </div>
                                 </div>
                             </li>

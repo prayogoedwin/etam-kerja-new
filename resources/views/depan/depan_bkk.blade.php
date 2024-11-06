@@ -41,24 +41,14 @@
                                     <th>Alamat</th>
                                     <th>Jurusan</th>
                                 </tr>
-                                <tr>
-                                    <td>1</td>
-                                    <td>BKK SMK 1 BERAU</td>
-                                    <td>Jl. Permai 11 Kabupaten Berap </td>
-                                    <td>Teknik Mesin, Teknik Otomotif, Tekniik Kendaraan Ringan</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>BKK SMK 1 SAMARINDA</td>
-                                    <td>Jl. Elok 20 Kota Samarinda </td>
-                                    <td>Teknik Komputer Jaringan, Rekayasa Perangkat Lunak</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>BKK SMK 1 BALIKPAPAN</td>
-                                    <td>Jl. Pahlawan 7 Kota Balikpapan </td>
-                                    <td>Desai Grafis</td>
-                                </tr>
+                                @foreach ($data_bkk as $bkk)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $bkk->nama_bkk }}</td>
+                                        <td>{{ $bkk->alamat }}</td>
+                                        <td>bentar</td>
+                                    </tr>
+                                @endforeach
                             </table>
                         </div>
                     </div>
