@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;  // Add this import
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;  // Add HasRoles here
+    use HasFactory, Notifiable, HasRoles, SoftDeletes;  // Add HasRoles here
 
     /**
      * The attributes that are mass assignable.
@@ -21,7 +22,7 @@ class User extends Authenticatable
         'email',
         'whatsapp',
         'password',
-        'otp'
+        'otp',
     ];
 
     /**
@@ -46,4 +47,6 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected $dates = ['deleted_at']; 
 }

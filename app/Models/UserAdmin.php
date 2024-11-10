@@ -23,6 +23,8 @@ class UserAdmin extends Model
         'is_deleted',
     ];
 
+    protected $dates = ['deleted_at']; 
+
     // Relasi ke model User
     public function user()
     {

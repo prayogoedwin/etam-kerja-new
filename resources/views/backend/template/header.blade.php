@@ -26,6 +26,9 @@
     <!-- data tables css -->
     <link rel="stylesheet" href="{{ asset('assets/etam_be/css/plugins/dataTables.bootstrap4.min.css') }}">
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+
 </head>
 
 <!-- [ Pre-loader ] start -->

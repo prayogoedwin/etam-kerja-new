@@ -81,26 +81,26 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form>
+                        <form id="registerForm">
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="floating-label" for="Name">Nama Lengkap</label>
-                                        <input type="text" class="form-control" id="Name" placeholder="">
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="">
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label class="floating-label" for="Name">Email</label>
-                                        <input type="text" class="form-control" id="Name" placeholder="">
+                                        <label class="floating-label" for="email">Email</label>
+                                        <input type="text" class="form-control" id="email"  name="email" placeholder="">
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label class="floating-label" for="Name">Whatsapp</label>
-                                        <input type="text" class="form-control" id="Name" placeholder="">
+                                        <label class="floating-label" for="whatsapp">Whatsapp</label>
+                                        <input type="text" class="form-control" id="whatsapp" name="whatsapp" placeholder="">
                                     </div>
                                 </div>
 
@@ -142,7 +142,8 @@
         $('#simpletable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route("admin.index") }}',  // Pastikan URL ini benar
+            ajax: '{{ route('admin.index') }}',
+            autoWidth: false, // Menonaktifkan auto-width
             columns: [
                 { data: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'user_name' },
@@ -153,5 +154,140 @@
         });
     });
 </script>
+
+<div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Tambah User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Notifikasi error -->
+                <div id="errorMessages" class="alert alert-danger d-none"></div>
+
+                <form id="registerForm">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label class="floating-label" for="name">Nama Lengkap</label>
+                                <input type="text" class="form-control" id="name" placeholder="" name="name">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label class="floating-label" for="email">Email</label>
+                                <input type="email" class="form-control" id="email" placeholder="" name="email">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label class="floating-label" for="whatsapp">Whatsapp</label>
+                                <input type="text" class="form-control" id="whatsapp" placeholder="" name="whatsapp">
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label for="userRole" class="form-label">Role</label>
+                                <select class="form-control" id="userRole" name="role_id" required>
+                                    <option value="">Select Role</option>
+                                    @foreach($roles as $role)
+                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="reset" class="btn btn-danger">Clear</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+   $(document).ready(function () {
+    $('#registerForm').submit(function (e) {
+        e.preventDefault(); // Prevent form from submitting normally
+
+        // Clear previous error messages
+        $('#errorMessages').html('').addClass('d-none');
+
+        var formData = {
+            name: $('#name').val(),
+            email: $('#email').val(),
+            whatsapp: $('#whatsapp').val(),
+            role_id: $('#userRole').val(),
+            _token: '{{ csrf_token() }}' // Add CSRF token for security
+        };
+
+        $.ajax({
+            type: 'POST',
+            url: '{{ route('admin.add') }}', // Ganti dengan rute yang sesuai
+            data: formData,
+            success: function (response) {
+                if (response.success) {
+                    alert('User berhasil ditambahkan');
+                    $('#modal-report').modal('hide');
+                    location.reload(); // Refresh halaman
+                } else {
+                    // If validation errors are found, display them in an alert
+                    if (response.errors) {
+                        let errorMessages = '';
+                        $.each(response.errors, function (key, value) {
+                            $.each(value, function (index, errorMessage) {
+                                errorMessages += errorMessage + '\n'; // Gabungkan pesan error
+                            });
+                        });
+                        alert('Terjadi kesalahan:\n' + errorMessages);
+                    } else {
+                        alert('Gagal menambahkan user');
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+                alert('Terjadi kesalahan: ' + error);
+            }
+        });
+    });
+});
+
+</script>
+
+<script>
+    function confirmDelete(adminId) {
+        // Konfirmasi penghapusan
+        var deleteUrl = "{{ route('admin.softdelete', ':id') }}".replace(':id', adminId);
+        if (confirm("Are you sure you want to delete this admin?")) {
+            // Kirim request ke server untuk menghapus data
+            $.ajax({
+                url: deleteUrl, 
+                type: 'DELETE',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),  // Menyertakan CSRF token
+                },
+                success: function(response) {
+                    // Jika berhasil, reload DataTable
+                    alert(response.message);  // Menampilkan pesan
+                    $('#simpletable').DataTable().ajax.reload();  // Reload data tabel
+                },
+                error: function(xhr, status, error) {
+                    // Tampilkan error jika ada masalah
+                    alert('Error: ' + xhr.responseText);
+                }
+            });
+        }
+    }
+</script>
+
+
+
 @endpush
 
