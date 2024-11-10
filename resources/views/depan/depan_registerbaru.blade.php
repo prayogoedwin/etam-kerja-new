@@ -79,54 +79,54 @@
             <div class="circle" data-step="2">2</div>
             <div class="circle" data-step="3">3</div>
         </div>
-        <form id="registrationForm">
-            <input type="hidden" name="_token" id="_token" value="{{ csrf_token() }}" />
-            <input type="hidden" name="kode_role" id="kode_role" value="{{ $dt['role'] }}">
-            <!-- Step 1 -->
-            <div class="step" id="step1">
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="whatsapp" class="form-label">WhatsApp</label>
-                    <input type="text" class="form-control" id="whatsapp" required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Kata Sandi</label>
-                    <input type="password" class="form-control" id="password" required>
-                    <input type="checkbox" id="show-password"><small>Lihat Kata Sandi</small>
-                </div>
-                <button type="button" id="btnStep1" class="btn btn-primary w-100 mt-3"
-                    onclick="nextStepBaru1()">Lanjut</button>
+        {{-- <form id="registrationForm"> --}}
+        <input type="hidden" name="_token" id="_token" value="{{ csrf_token() }}" />
+        <input type="hidden" name="kode_role" id="kode_role" value="{{ $dt['role'] }}">
+        <!-- Step 1 -->
+        <div class="step" id="step1">
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" required>
             </div>
-
-            <!-- Step 2 -->
-            <div class="step d-none" id="step2">
-                <div class="mb-3">
-                    <label for="pin" class="form-label">OTP</label>
-                    <input type="text" class="form-control" id="otpwa" name="otpwa" maxlength="6" required>
-                    <input type="hidden" id="email_registered" name="email_registered">
-                    <input type="hidden" id="_token2" name="_token2" value="{{ csrf_token() }}">
-                </div>
-                {{-- <button type="button" class="btn btn-secondary w-100 mt-3" onclick="previousStep()">Back</button> --}}
-                <button type="button" id="btnStep2" class="btn btn-primary w-100 mt-3"
-                    onclick="nextStepBaru2()">Lanjut</button>
+            <div class="mb-3">
+                <label for="whatsapp" class="form-label">WhatsApp</label>
+                <input type="text" class="form-control" id="whatsapp" required>
             </div>
-
-            <!-- Step 3 -->
-            <div id="step3-container">
-                @if ($dt['role'] == 'pencari-kerja')
-                    @include('depan.step3_pencarikerja')
-                @endif
-
-                @if ($dt['role'] == 'penyedia-kerja')
-                    @include('depan.step3_penyediakerja')
-                @endif
+            <div class="mb-3">
+                <label for="password" class="form-label">Kata Sandi</label>
+                <input type="password" class="form-control" id="password" required>
+                <input type="checkbox" id="show-password"><small>Lihat Kata Sandi</small>
             </div>
+            <button type="button" id="btnStep1" class="btn btn-primary w-100 mt-3"
+                onclick="nextStepBaru1()">Lanjut</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step d-none" id="step2">
+            <div class="mb-3">
+                <label for="pin" class="form-label">OTP</label>
+                <input type="text" class="form-control" id="otpwa" name="otpwa" maxlength="6" required>
+                <input type="hidden" id="email_registered" name="email_registered">
+                <input type="hidden" id="_token2" name="_token2" value="{{ csrf_token() }}">
+            </div>
+            {{-- <button type="button" class="btn btn-secondary w-100 mt-3" onclick="previousStep()">Back</button> --}}
+            <button type="button" id="btnStep2" class="btn btn-primary w-100 mt-3"
+                onclick="nextStepBaru2()">Lanjut</button>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="step3-container">
+            @if ($dt['role'] == 'pencari-kerja')
+                @include('depan.step3_pencarikerja')
+            @endif
+
+            @if ($dt['role'] == 'penyedia-kerja')
+                @include('depan.step3_penyediakerja')
+            @endif
+        </div>
 
 
-        </form>
+        {{-- </form> --}}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
@@ -176,10 +176,10 @@
             }
         }
 
-        document.getElementById('registrationForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            alert('Registration Successful!');
-        });
+        // document.getElementById('registrationForm').addEventListener('submit', function(event) {
+        //     event.preventDefault();
+        //     alert('Registration Successful!');
+        // });
 
         // Initialize to show only the first step
         showStep(currentStep);
@@ -372,12 +372,40 @@
                     $('#desa_id').empty();
 
                     // Tambahkan opsi default
-                    $('#desa_id').append('<option selected disabled>Pilih Kecamatan</option>');
+                    $('#desa_id').append('<option selected disabled>Pilih Desa/Kelurahan</option>');
 
                     // Loop data kecamatan dan tambahkan ke dropdown
                     $.each(response, function(index, kecamatan) {
                         $('#desa_id').append('<option value="' + kecamatan.id + '">' +
                             kecamatan.name + '</option>');
+                    });
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                }
+            });
+        });
+
+
+        $('#pendidikan_id').on('change', function() {
+            // console.log(this.value);
+            var kd = this.value
+
+            // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+            $.ajax({
+                url: "{{ route('get-jurusan-bypendidikan', ':id') }}".replace(':id', kd), // Panggil API
+                type: 'GET',
+                success: function(response) {
+                    // Kosongkan dropdown kecamatan sebelumnya
+                    $('#jurusan_id').empty();
+
+                    // Tambahkan opsi default
+                    $('#jurusan_id').append('<option selected disabled>Pilih Jurusan</option>');
+
+                    // Loop data kecamatan dan tambahkan ke dropdown
+                    $.each(response, function(index, jurusan) {
+                        $('#jurusan_id').append('<option value="' + jurusan.id + '">' +
+                            jurusan.nama + '</option>');
                     });
                 },
                 error: function(xhr) {

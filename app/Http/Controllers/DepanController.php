@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Depan; // Import model Depan
 use App\Models\User;
+use App\Models\UserPencari;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DepanController extends Controller
 {
@@ -177,6 +179,67 @@ class DepanController extends Controller
         ]);
     }
 
+    public function akhir_daftar_akun(Request $request){
+
+        $imel = session('email_registered');
+        $user = User::where('email', $imel)->first();
+
+        // dd($user->id);
+
+        DB::beginTransaction();
+        try {
+            // create affiliator
+            UserPencari::create([
+                'user_id' => $user->id,
+                'ktp' => $request->nik,
+                'name' => $request->nama_lengkap,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'gender' => $request->gender_id,
+                'id_provinsi' => '64',
+                'id_kota' => $request->kabkota_id,
+                'id_kecamatan' => $request->kecamatan_id,
+                'id_desa' => $request->desa_id,
+                'alamat' => $request->alamat,
+                'kodepos' => $request->kodepos,
+                'id_pendidikan' => $request->pendidikan_id,
+                'id_jurusan' => $request->jurusan_id,
+                'tahun_lulus' => $request->tahun_lulus,
+                'id_status_perkawinan' => $request->status_perkawinan_id,
+                'id_agama' => $request->agama_id,
+                'foto' => null,
+                'status_id' => 1,
+                'is_alumni_bkk' => 0,
+                'bkk_id' => null,
+                'toket' => null,
+                'disabilitas' => null,
+                'jenis_disabilitas' => null,
+                'keterangan_disabilitas' => null,
+                'posted_by' => $user->id,
+                'created_at' => date('Y-m-d H:i:s'),
+                // 'updated_at',
+                // 'deleted_at',
+                'is_diterima' => 0,
+                'medsos' => $request->medsos
+            ]);
+
+            DB::commit();
+
+            return redirect()->to('login')->with('success', 'Berhasil membuat akun silahkan login');
+        } catch (\Throwable $th) {
+            // DB::rollBack();
+            // return back()->with('error', $th->getMessage());
+            DB::rollBack();
+            Log::error($th);
+            // return back()->with('error', $th->getMessage());
+            return response()->json([
+                'status' => 0,
+                'message' => $th->getMessage()
+            ]);
+        }
+    }
+
+
     public function getKecamatanByKabkota($kabkota_id)
     {
         // Misal mengambil data dari tabel 'etam_kecamatan' berdasarkan kabkota_id
@@ -189,5 +252,11 @@ class DepanController extends Controller
         $desa = DB::table('etam_desa')->where('district_id', $kec_id)->get();
 
         return response()->json($desa);
+    }
+
+    public function getJurusanByPendidikan($pendidikan_id){
+        $pendidikan = DB::table('etam_jurusan')->where('id_pendidikans', $pendidikan_id)->get();
+
+        return response()->json($pendidikan);
     }
 }
