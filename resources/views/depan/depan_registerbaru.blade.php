@@ -236,8 +236,8 @@
                         });
                     } else {
                         Swal.fire({
-                            title: 'Oke',
-                            text: 'Lanjuttt',
+                            title: 'Berhasil',
+                            text: msg,
                             icon: 'success'
                         });
 
@@ -406,6 +406,35 @@
                     $.each(response, function(index, jurusan) {
                         $('#jurusan_id').append('<option value="' + jurusan.id + '">' +
                             jurusan.nama + '</option>');
+                    });
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $('#provinsi_id').on('change', function() {
+            // console.log(this.value);
+            var kd = this.value
+
+            // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+            $.ajax({
+                url: "{{ route('get-kabkota-byprov', ':id') }}".replace(':id', kd), // Panggil API
+                type: 'GET',
+                success: function(response) {
+                    // Kosongkan dropdown kecamatan sebelumnya
+                    $('#kabkota_id').empty();
+
+                    // Tambahkan opsi default
+                    $('#kabkota_id').append('<option selected disabled>Pilih Kabupaten/Kota</option>');
+
+                    // Loop data kecamatan dan tambahkan ke dropdown
+                    $.each(response, function(index, kabkota) {
+                        $('#kabkota_id').append('<option value="' + kabkota.id + '">' +
+                            kabkota.name + '</option>');
                     });
                 },
                 error: function(xhr) {

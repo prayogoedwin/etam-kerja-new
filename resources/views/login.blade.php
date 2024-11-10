@@ -77,6 +77,9 @@
             </div>
         @endif
 
+        <div class="text-center">
+            <img src="{{ asset('assets/etam_fe/images/logo/LOGO_ETAM_KERJA.png') }}" height="75" alt="">
+        </div>
         <h2 class="text-center mb-4">Login</h2>
         <form action="{{ route('login.action') }}" method="POST">
             @csrf <!-- Laravel CSRF token for security -->

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Depan; // Import model Depan
 use App\Models\User;
 use App\Models\UserPencari;
+use App\Models\UserPenyedia;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
@@ -153,7 +154,7 @@ class DepanController extends Controller
 
         return response()->json([
             'status' => 1,
-            'message' => 'lanjut daftar',
+            'message' => 'Email dan nomor Whatsapp dapat digunakan',
             'data' => $user
         ]);
     }
@@ -239,6 +240,65 @@ class DepanController extends Controller
         }
     }
 
+    public function akhir_daftar_akun_perush(Request $request){
+        $imel = session('email_registered');
+        $user = User::where('email', $imel)->first();
+
+        // dd($user->id);
+
+        DB::beginTransaction();
+        try {
+            // create affiliator
+            UserPenyedia::create([
+                'user_id' => $user->id,
+                'name' => $request->nama_perusahaan,
+                'luar_negri' => $request->luar_negri,
+                'deskripsi' => $request->deskripsi,
+                'jenis_perusahaan' => $request->jenis_perusahaan,
+                'nomor_sip3mi' => null,
+                'nib' => $request->nib,
+                'id_sektor' => $request->sektor_id,
+                'id_provinsi' => $request->provinsi_id,
+                'id_kota' => $request->kabkota_id,
+                'id_kecamatan' => $request->kecamatan_id,
+                'id_desa' => $request->desa_id,
+                'alamat' => $request->alamat,
+                'kodepos' => $request->kodepos,
+                'telpon' => $request->telpon,
+                'jabatan' => $request->jabatan,
+                'website' => $request->website,
+                'status_id' => 1,
+                'foto' => null,
+                'shared_by_id' => null,
+                'posted_by' => $user->id,
+                'created_at' => date('Y-m-d H:i:s'),
+                // 'updated_at',
+                // 'deleted_at',
+            ]);
+
+            DB::commit();
+
+            return redirect()->to('login')->with('success', 'Berhasil membuat akun perusahaan silahkan login');
+        } catch (\Throwable $th) {
+            // DB::rollBack();
+            // return back()->with('error', $th->getMessage());
+            DB::rollBack();
+            Log::error($th);
+            // return back()->with('error', $th->getMessage());
+            return response()->json([
+                'status' => 0,
+                'message' => $th->getMessage()
+            ]);
+        }
+    }
+
+
+
+    public function getKabkotaByProv($prov_id){
+        $kabkota = DB::table('etam_kabkota')->where('province_id', $prov_id)->get();
+
+        return response()->json($kabkota);
+    }
 
     public function getKecamatanByKabkota($kabkota_id)
     {
