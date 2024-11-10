@@ -74,6 +74,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::delete('/admin/delete/{id}', [AdminController::class, 'softdelete'])->name('admin.softdelete');
 
         Route::get('/pencari', [UserPencariController::class, 'index'])->name('userpencari.index');
+        Route::delete('/pencari/delete/{id}', [UserPencariController::class, 'softdelete'])->name('userpencari.softdelete');
+        Route::put('/pencari/reset/{id}', [UserPencariController::class, 'reset'])->name('userpencari.reset');
+
         Route::get('/penyedia', [AdminController::class, 'index'])->name('userperush.index');
 
 

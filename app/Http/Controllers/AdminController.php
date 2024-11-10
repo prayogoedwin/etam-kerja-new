@@ -78,7 +78,7 @@ class AdminController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'whatsapp' => $request->whatsapp,
-                'password' => bcrypt('defaultpassword'), // Set password default atau sesuai logika Anda
+                'password' => bcrypt($request->name), // Set password default atau sesuai logika Anda
             ]);
     
             // Menambahkan role ke user
@@ -147,7 +147,7 @@ class AdminController extends Controller
                 
 
                 // Cari admin berdasarkan ID
-                $admin = UserAdmin::findOrFail($id);
+                // $admin = UserAdmin::findOrFail($id);
 
                 // Perbarui data user terkait (user yang memiliki ID user_id di UserAdmin)
                 $user = $admin->user;  // Ambil user yang terkait dengan admin ini
