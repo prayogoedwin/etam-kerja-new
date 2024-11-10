@@ -5,6 +5,7 @@ use App\Http\Controllers\DepanController;
 use App\Http\Controllers\BackController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\AdminController;
 
 
 Route::get('/', function () {
@@ -42,8 +43,16 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     //route untuk admin
     Route::get('/dashboard', [BackController::class, 'index'])->name('dashboard');
     Route::get('/sample', [BackController::class, 'sample'])->name('sample');
-    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
-    Route::get('/get_roles', [RoleController::class, 'getRoles'])->name('roles.getRoles');
+
+    Route::prefix('setting')->group(function () {
+        Route::get('/roles/get', [RoleController::class, 'getRoles'])->name('roles.getRoles');
+        Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    });
+
+    Route::prefix('users')->group(function () {
+        Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    });
+
 
 
 });
