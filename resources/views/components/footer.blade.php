@@ -175,6 +175,35 @@
 </footer>
 <!-- End Footer -->
 
+<!-- Button trigger modal -->
+<div class="modal fade" id="modalPilihPeran" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">ETAM KERJA REGISTER</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ route('daftar-akun') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="">Daftar Sebagai</label>
+                        <select name="role_dipilih" id="role_dipilih" required>
+                            <option value="">Pilih</option>
+                            <option value="5">Pencari Kerja</option>
+                            <option value="6">Penyedia Kerja</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Lanjut</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- jQuery Frameworks
     ============================================= -->
 <script src="{{ asset('assets') }}/etam_fe/js/jquery-3.6.0.min.js"></script>
@@ -198,6 +227,13 @@
 <script src="{{ asset('assets') }}/etam_fe/js/jquery-ui.min.js"></script>
 <script src="{{ asset('assets') }}/etam_fe/js/validnavs.js"></script>
 <script src="{{ asset('assets') }}/etam_fe/js/main.js"></script>
+
+<script>
+    function askRoleRegister() {
+        // alert('tanya role')
+        $('#modalPilihPeran').modal('show');
+    }
+</script>
 
 </body>
 

@@ -168,7 +168,7 @@
                             </ul>
                         </li>
 
-                        <li><a href="{{ url('/depan/login') }}">Login</a></li>
+                        <li><a href="{{ url('/login') }}">Login</a></li>
                     </ul>
                 </div><!-- /.navbar-collapse -->
 
@@ -183,7 +183,8 @@
                                     </div>
                                     <div class="info">
                                         <p>Belum memiliki akun?</p>
-                                        <h5><a href="{{ url('/depan/register') }}">Daftar Sekarang</a></h5>
+                                        {{-- <h5><a href="{{ url('/depan/register') }}">Daftar Sekarang</a></h5> --}}
+                                        <h5><a href="#" onclick="askRoleRegister()">Daftar Sekarang</a></h5>
                                     </div>
                                 </div>
                             </li>

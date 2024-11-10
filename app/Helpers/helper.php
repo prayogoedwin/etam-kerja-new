@@ -1,0 +1,120 @@
+<?php
+
+use Illuminate\Support\Facades\DB;
+
+
+function getProvince()
+{
+    // return DB::table('tbl_wilayah')
+    // ->where('id_up', '=', null)
+    // ->where('id', '=', 31)       // DKI JAKARTA
+    // ->where('id', '=', 32)       // JABAR
+    // ->where('id', '=', 33)       // JATENG
+    // ->where('id', '=', 35)       // JATIM
+    // ->where('id', '=', 34)       // DIY
+    // ->where('id', '=', 14)       // RIAU
+    // ->where('id', '=', 51)       // BALI
+    // ->where('id', '=', 36)       // BANTEN
+    // ->where('id', '=', 18)       // LAMPUNG
+    // ->get();
+
+    return DB::table('tbl_wilayah')
+        ->where('id_up', '=', null)  // Kondisi id_up bernilai null
+        ->whereIn('id', [31, 32, 33, 35, 34, 14, 51, 36, 18])  // Daftar id
+        ->get();
+}
+
+function encode_url($url){
+    $random1 = substr(sha1(rand()), 0, 40);
+    $random2 = substr(md5(rand()), 0, 20);
+    $ret = base64_encode($random1.$url.$random2);
+
+    return strtr(
+        $ret,
+        array(
+            '+' => '.',
+            '=' => '-',
+            '/' => '~'
+        )
+    );
+
+}
+
+function decode_url($url){
+    $a = base64_decode($url);
+    $hitung = strlen($a);
+    $x = $hitung - 60;
+    $y = $x + 20;
+    $c = substr($a,-$y);
+    return substr($c, 0, $x);
+}
+
+function generateOtp($length = 5)
+{
+    $characters = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+    $otp = '';
+
+    for ($i = 0; $i < $length; $i++) {
+        $otp .= $characters[rand(0, strlen($characters) - 1)];
+    }
+
+    return $otp;
+}
+
+function sendWa($phone, $message)
+{
+    // $curl = curl_init();
+
+    // $pesan = [
+    //     "messageType" => "text",
+    //     "to" => "081995241103",
+    //     "body" => "Test",
+    //     "delay" => 10,
+    //     // "schedule" => 1665408510000
+    // ];
+
+    // curl_setopt_array($curl, array(
+    //     CURLOPT_URL => 'https://api.starsender.online/api/send',
+    //     CURLOPT_RETURNTRANSFER => true,
+    //     CURLOPT_ENCODING => '',
+    //     CURLOPT_MAXREDIRS => 10,
+    //     CURLOPT_TIMEOUT => 0,
+    //     CURLOPT_FOLLOWLOCATION => true,
+    //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+    //     CURLOPT_CUSTOMREQUEST => 'POST',
+    //     CURLOPT_POSTFIELDS => json_encode($pesan),
+    //     CURLOPT_HTTPHEADER => array(
+    //         'Content-Type: application/json',
+    //         'Authorization: 39a4b748-fd7a-4e5a-a8ba-186e6e9f3562'
+    //     ),
+    // ));
+
+    // $response = curl_exec($curl);
+
+    // if (curl_errno($curl)) {
+    //     $response = 'Curl error: ' . curl_error($curl);
+    // }
+
+    // curl_close($curl);
+    // return $response;
+    $token = env('WA_TOKEN');
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://nusagateway.com/api/send-message.php',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => array('token' => $token, 'phone' => $phone, 'message' => $message),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    echo $response;
+}
