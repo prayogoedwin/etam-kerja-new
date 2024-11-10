@@ -54,6 +54,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::prefix('users')->group(function () {
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
         Route::post('/admin/add', [AdminController::class, 'store'])->name('admin.add');
+
+        Route::get('/admin/get/{id}', [AdminController::class, 'getAdmin'])->name('admin.detail');
+
         Route::delete('/admin/delete/{id}', [AdminController::class, 'softdelete'])->name('admin.softdelete');
 
 

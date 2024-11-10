@@ -52,6 +52,7 @@
                                                 <th>Nama</th>
                                                 <th>Email</th>
                                                 <th>Whatsapp</th>
+                                                <th>Role</th>
                                                 <th>Options</th>
                                             </tr>
                                         </thead>
@@ -132,6 +133,45 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEditLabel">Edit Admin</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editAdminForm">
+                            <input type="hidden" id="editAdminId">
+                            <div class="mb-3">
+                                <label for="editName" class="form-label">Nama Lengkap</label>
+                                <input type="text" class="form-control" id="editName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="editEmail" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editWhatsapp" class="form-label">Whatsapp</label>
+                                <input type="text" class="form-control" id="editWhatsapp" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editRole" class="form-label">Role</label>
+                                <select class="form-control" id="editRole" name="role_id" required>
+                                    <option value="">Select Role</option>
+                                    @foreach($roles as $role)
+                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     </body>
 @endsection
 
@@ -149,68 +189,12 @@
                 { data: 'user_name' },
                 { data: 'email' },
                 { data: 'whatsapp' },
+                { data: 'roles' },
                 { data: 'options', orderable: false, searchable: false },
             ]
         });
     });
 </script>
-
-<div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Tambah User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Notifikasi error -->
-                <div id="errorMessages" class="alert alert-danger d-none"></div>
-
-                <form id="registerForm">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label class="floating-label" for="name">Nama Lengkap</label>
-                                <input type="text" class="form-control" id="name" placeholder="" name="name">
-                            </div>
-                        </div>
-
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label class="floating-label" for="email">Email</label>
-                                <input type="email" class="form-control" id="email" placeholder="" name="email">
-                            </div>
-                        </div>
-
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label class="floating-label" for="whatsapp">Whatsapp</label>
-                                <input type="text" class="form-control" id="whatsapp" placeholder="" name="whatsapp">
-                            </div>
-                        </div>
-
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label for="userRole" class="form-label">Role</label>
-                                <select class="form-control" id="userRole" name="role_id" required>
-                                    <option value="">Select Role</option>
-                                    @foreach($roles as $role)
-                                        <option value="{{ $role->id }}">{{ $role->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-12">
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                            <button type="reset" class="btn btn-danger">Clear</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
    $(document).ready(function () {
@@ -258,8 +242,41 @@
         });
     });
 });
-
 </script>
+
+<script>
+    function showEditModal(adminId) {
+        var detailUrl = "{{ route('admin.detail', ':id') }}".replace(':id', adminId);
+        $.ajax({
+            url: detailUrl,
+            type: 'GET',
+            success: function(response) {
+                let admin = response.data;
+
+                // Isi data modal dengan data yang diperoleh
+                $('#editAdminId').val(admin.id);
+                $('#editName').val(admin.user.name);
+                $('#editEmail').val(admin.user.email);
+                $('#editWhatsapp').val(admin.user.whatsapp);
+
+                // Pilih role di select box
+                if (admin.user.roles.length > 0) {
+                    let roleId = admin.user.roles[0].id; // Ambil ID peran pertama
+                    $('#editRole').val(roleId).prop('selected', true);
+                } else {
+                    $('#editRole').val(''); // Kosongkan jika tidak ada peran
+                }
+
+                // Tampilkan modal edit
+                $('#modal-edit').modal('show');
+            },
+            error: function(xhr) {
+                alert('Error: ' + xhr.responseText);
+            }
+        });
+    }
+</script>
+
 
 <script>
     function confirmDelete(adminId) {

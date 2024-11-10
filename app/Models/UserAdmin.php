@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Models\Role;
 
 class UserAdmin extends Model
 {
@@ -30,6 +31,7 @@ class UserAdmin extends Model
     {
         return $this->belongsTo(User::class);
     }
+
 
     // Tambahkan relasi atau fungsi lain jika dibutuhkan
 }

@@ -17,7 +17,10 @@ class AdminController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $admins = UserAdmin::with('user:id,name,email,whatsapp')  // Ambil data admin dengan user terkait
+            $admins = UserAdmin::with([
+                'user:id,name,email,whatsapp',
+                'user.roles:id,name'// Ambil data role terkait dengan kolom tertentu
+            ]) // Ambil data admin dengan user terkait
                         ->select('id', 'user_id', 'province_id', 'kabkota_id', 'kecamatan_id', 'created_by', 'updated_by', 'is_deleted')
                         ;
 
@@ -32,9 +35,16 @@ class AdminController extends Controller
                 ->addColumn('whatsapp', function ($admin) {
                     return $admin->user ? $admin->user->whatsapp : 'N/A';
                 })
+                ->addColumn('roles', function ($admin) {
+                    // Menampilkan nama role
+                    if ($admin->user && $admin->user->roles->isNotEmpty()) {
+                        return $admin->user->roles->pluck('name')->join(', ');
+                    }
+                    return 'N/A'; // Jika tidak ada role
+                })
                 ->addColumn('options', function ($admin) {
                     return '
-                        <button class="btn btn-primary btn-sm">Edit</button>
+                        <button class="btn btn-primary btn-sm" onclick="showEditModal(' . $admin->id . ')">Edit</button>
                         <button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $admin->id . ')">Delete</button>
                     ';
                 })
@@ -84,6 +94,62 @@ class AdminController extends Controller
  
          return response()->json(['success' => true]);
      }
+
+        public function getAdmin($id)
+        {
+            try {
+                $admin = UserAdmin::with([
+                        'user:id,name,email,whatsapp',
+                        'user.roles:id,name'// Ambil data role terkait dengan kolom tertentu
+                    ])
+                    ->select('id', 'user_id', 'province_id', 'kabkota_id', 'kecamatan_id', 'created_by', 'updated_by', 'is_deleted')
+                    ->findOrFail($id);
+
+                return response()->json(['success' => true, 'data' => $admin]);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+            }
+        }
+
+        public function update(Request $request, $id)
+        {
+            try {
+                // Validasi input
+                $validatedData = $request->validate([
+                    'name' => 'required|string|max:255',
+                    'email' => 'required|email|max:255|unique:users,email,' . $id, // Pastikan email unik kecuali untuk user ini
+                    'whatsapp' => 'required|string|unique:users|max:15', // Sesuaikan dengan format whatsapp
+                    'role_id' => 'required|exists:roles,id', // Pastikan role ada di tabel roles
+                ]);
+
+                // Cari admin berdasarkan ID
+                $admin = UserAdmin::findOrFail($id);
+
+                // Perbarui data admin
+                $admin->update([
+                    'province_id' => $request->province_id, // Opsional jika diperlukan
+                    'kabkota_id' => $request->kabkota_id,   // Opsional jika diperlukan
+                    'kecamatan_id' => $request->kecamatan_id, // Opsional jika diperlukan
+                    'updated_by' => auth()->user()->id,
+                ]);
+
+                // Perbarui data user terkait (user yang memiliki ID user_id di UserAdmin)
+                $user = $admin->user;  // Ambil user yang terkait dengan admin ini
+                $user->update([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'whatsapp' => $request->whatsapp,
+                ]);
+
+                // Perbarui role untuk user terkait
+                $user->roles()->sync([$request->role_id]);  // Sinkronkan role baru dengan user
+
+                return response()->json(['success' => true, 'message' => 'Admin and user updated successfully.']);
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+            }
+        }
+
 
         public function softdelete($id)
         {
