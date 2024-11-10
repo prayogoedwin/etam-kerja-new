@@ -21,6 +21,8 @@ Route::get('/depan/infografis', [DepanController::class, 'infografis']);
 Route::get('/depan/galeri', [DepanController::class, 'galeri']);
 Route::get('/depan/berita', [DepanController::class, 'berita']);
 Route::post('/depan/daftar-akun', [DepanController::class, 'daftar_akun'])->name('daftar-akun');
+Route::get('/depan/daftar', [DepanController::class, 'daftar']); //with role
+Route::post('/depan/cek-awal-akun', [DepanController::class, 'cek_awal_akun'])->name('cek-awal-akun');
 
 
 
