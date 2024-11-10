@@ -19,7 +19,7 @@ Route::get('/depan/lowongan-kerja-disabilitas', [DepanController::class, 'lowong
 Route::get('/depan/infografis', [DepanController::class, 'infografis']);
 Route::get('/depan/galeri', [DepanController::class, 'galeri']);
 Route::get('/depan/berita', [DepanController::class, 'berita']);
-
+Route::post('/depan/daftar-akun', [DepanController::class, 'daftar_akun'])->name('daftar-akun');
 
 
 
