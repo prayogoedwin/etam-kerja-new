@@ -8,6 +8,11 @@
  @include('backend.template.sidebar-pencari')
  @endif
 
+ @if (Auth::user()->roles[0]['name'] == 'penyedia-kerja')
+ @include('backend.template.sidebar-penyedia')
+ @endif
+
+
 <body>
     @yield('content')
     @include('backend.template.footer')

@@ -18,7 +18,7 @@ class BackController extends Controller
         }
 
         if(Auth::user()->roles[0]['name'] == 'penyedia-kerja'){
-            return view('backend.dashboard.index_perush');
+            return view('backend.dashboard.index_penyedia');
         }
 
         
