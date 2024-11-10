@@ -57,43 +57,43 @@ class AdminController extends Controller
         return view('backend.users.admin.index',  compact('roles'));
     }
 
-     // Method untuk menyimpan data user baru
-     public function store(Request $request)
-     {
-         // Validasi input
-         $validator = Validator::make($request->all(), [
-             'name' => 'required|string|max:255',
-             'email' => 'required|email|unique:users,email',
-             'whatsapp' => 'required|string|unique:users|max:15',
-             'role_id' => 'required|exists:roles,id',
-         ]);
- 
-         if ($validator->fails()) {
-             return response()->json(['success' => false, 'errors' => $validator->errors()]);
-         }
-         
- 
-         // Menyimpan data ke tabel users
-         $user = User::create([
-             'name' => $request->name,
-             'email' => $request->email,
-             'whatsapp' => $request->whatsapp,
-             'password' => bcrypt('defaultpassword'), // Set password default atau sesuai logika Anda
-         ]);
- 
-         // Menambahkan role ke user
-         $role = Role::find($request->role_id);
-         $user->assignRole($role);
- 
-         // Menyimpan ke tabel user_admin jika diperlukan
-         UserAdmin::create([
-             'user_id' => $user->id,
-             'role_id' => $role->id,
-             // Tambahkan kolom lainnya jika diperlukan
-         ]);
- 
-         return response()->json(['success' => true]);
-     }
+        // Method untuk menyimpan data user baru
+        public function store(Request $request)
+        {
+            // Validasi input
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'whatsapp' => 'required|string|unique:users|max:15',
+                'role_id' => 'required|exists:roles,id',
+            ]);
+    
+            if ($validator->fails()) {
+                return response()->json(['success' => false, 'errors' => $validator->errors()]);
+            }
+            
+    
+            // Menyimpan data ke tabel users
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'whatsapp' => $request->whatsapp,
+                'password' => bcrypt('defaultpassword'), // Set password default atau sesuai logika Anda
+            ]);
+    
+            // Menambahkan role ke user
+            $role = Role::find($request->role_id);
+            $user->assignRole($role);
+    
+            // Menyimpan ke tabel user_admin jika diperlukan
+            UserAdmin::create([
+                'user_id' => $user->id,
+                'role_id' => $role->id,
+                // Tambahkan kolom lainnya jika diperlukan
+            ]);
+    
+            return response()->json(['success' => true]);
+        }
 
         public function getAdmin($id)
         {
@@ -171,7 +171,7 @@ class AdminController extends Controller
                     $user->delete(); 
                 }
     
-                return response()->json(['success' => true, 'message' => 'Admin and associated user soft deleted successfully.']);
+                return response()->json(['success' => true, 'message' => 'Hapus data berhasil']);
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
             }

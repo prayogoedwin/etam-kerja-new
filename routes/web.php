@@ -6,6 +6,7 @@ use App\Http\Controllers\BackController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\EtamFaqController;
 
 
 Route::get('/', function () {
@@ -52,14 +53,18 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
     Route::prefix('setting')->group(function () {
         Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+
+        Route::get('/faqs', [EtamFaqController::class, 'index'])->name('faq.index');
+        Route::post('/faq/add', [EtamFaqController::class, 'store'])->name('faq.add');
+        Route::get('/faq/get/{id}', [EtamFaqController::class, 'getData'])->name('faq.detail');
+        Route::delete('/faq/delete/{id}', [EtamFaqController::class, 'softdelete'])->name('faq.softdelete');
+        Route::put('/faq/update/{id}', [EtamFaqController::class, 'update'])->name('faq.update');
     });
 
     Route::prefix('users')->group(function () {
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
         Route::post('/admin/add', [AdminController::class, 'store'])->name('admin.add');
-
         Route::get('/admin/get/{id}', [AdminController::class, 'getAdmin'])->name('admin.detail');
-
         Route::delete('/admin/delete/{id}', [AdminController::class, 'softdelete'])->name('admin.softdelete');
 
 
