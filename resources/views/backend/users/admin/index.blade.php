@@ -146,15 +146,15 @@
                             <input type="hidden" id="editAdminId">
                             <div class="mb-3">
                                 <label for="editName" class="form-label">Nama Lengkap</label>
-                                <input type="text" class="form-control" id="editName" required>
+                                <input type="text" class="form-control" id="editName" name="name" required>
                             </div>
                             <div class="mb-3">
                                 <label for="editEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="editEmail" required>
+                                <input type="email" class="form-control" id="editEmail" name="email" required>
                             </div>
                             <div class="mb-3">
                                 <label for="editWhatsapp" class="form-label">Whatsapp</label>
-                                <input type="text" class="form-control" id="editWhatsapp" required>
+                                <input type="text" class="form-control" id="editWhatsapp" name="whatsapp"  required>
                             </div>
                             <div class="mb-3">
                                 <label for="editRole" class="form-label">Role</label>
@@ -165,7 +165,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary" onclick="updateFaq()">Save Changes</button>
                         </form>
                     </div>
                 </div>
@@ -259,9 +259,9 @@
                 $('#editEmail').val(admin.user.email);
                 $('#editWhatsapp').val(admin.user.whatsapp);
 
-                // Pilih role di select box
+                //Pilih role di select box
                 if (admin.user.roles.length > 0) {
-                    let roleId = admin.user.roles[0].id; // Ambil ID peran pertama
+                    let roleId = admin.user.roles.id; // Ambil ID peran pertama
                     $('#editRole').val(roleId).prop('selected', true);
                 } else {
                     $('#editRole').val(''); // Kosongkan jika tidak ada peran
@@ -275,6 +275,51 @@
             }
         });
     }
+</script>
+
+<script>
+
+    function updateFaq() {
+        // Get data from the modal form
+        var id = $('#editAdminId').val();
+        var name = $('#editName').val();
+        var email = $('#editEmail').val();
+        var whatsapp = $('#editWhatsapp').val();
+        var role_id = $('#editRole').val();
+        
+
+        
+
+        // Send the data to the update route
+        $.ajax({
+            url: "{{ route('admin.update', ':id') }}".replace(':id', id),
+            type: 'PUT',
+            data: {
+                _token: "{{ csrf_token() }}",  // CSRF token for security
+                name: name,
+                email: email,
+                whatsapp: whatsapp,
+                role_id: role_id
+            },
+            success: function(response) {
+                if(response.success) {
+                    // Display success message
+                    alert(response.message);
+                    // Close modal
+                    $('#modal-edit').modal('hide');
+                    // Optionally, reload the table or page to reflect the update
+                    location.reload();
+                } else {
+                    // Display error message
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr) {
+                alert('Error: ' + xhr.responseText);
+            }
+        });
+    }
+
 </script>
 
 

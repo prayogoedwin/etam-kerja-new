@@ -22,13 +22,21 @@
                 <li class="nav-item pcoded-menu-caption">
                     <label>Navigation</label>
                 </li>
-                <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a></li>
+                {{-- <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a></li>
                 <li class="nav-item pcoded-hasmenu">
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i class="feather icon-sliders"></i></span><span class="pcoded-mtext">Sample Parent</span></a>
                     <ul class="pcoded-submenu">
                         <li><a href="{{ route('sample') }}">Sample Sub Menu</a></li>
                     </ul>
-                </li>
+                </li> --}}
+
+                <li class="nav-item"><a href="etam.html" class="nav-link "><span class="pcoded-micon"><i class="feather icon-home"></i></span><span class="pcoded-mtext">Dashboard</span></a></li>
+
+                    <li class="nav-item"><a href="etam.html" class="nav-link "><span class="pcoded-micon"><i class="feather icon-layers"></i></span><span class="pcoded-mtext">Lowongan Kerja</span></a></li>
+
+                    <li class="nav-item"><a href="etam.html" class="nav-link "><span class="pcoded-micon"><i class="feather icon-mail"></i></span><span class="pcoded-mtext">Lamaran Kerja</span></a></li>
+
+                    <li class="nav-item"><a href="etam.html" class="nav-link "><span class="pcoded-micon"><i class="feather icon-book"></i></span><span class="pcoded-mtext">AK1</span></a></li>
             
         </div>
     </div>

@@ -42,6 +42,8 @@
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i class="feather icon-users"></i></span><span class="pcoded-mtext">Users</span></a>
                     <ul class="pcoded-submenu">
                         <li><a href="{{ route('admin.index') }}">Admin</a></li>
+                        <li><a href="{{ route('userpencari.index') }}">Pencari Kerja</a></li>
+                        <li><a href="{{ route('userperush.index') }}">Perusahaan</a></li>
                     </ul>
                 </li>
             

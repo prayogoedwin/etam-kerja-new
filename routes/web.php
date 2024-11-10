@@ -6,6 +6,9 @@ use App\Http\Controllers\BackController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserPencariController;
+
+
 use App\Http\Controllers\EtamFaqController;
 
 
@@ -62,10 +65,15 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     });
 
     Route::prefix('users')->group(function () {
+
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
         Route::post('/admin/add', [AdminController::class, 'store'])->name('admin.add');
         Route::get('/admin/get/{id}', [AdminController::class, 'getAdmin'])->name('admin.detail');
+        Route::put('/admin/update/{id}', [AdminController::class, 'update'])->name('admin.update');
         Route::delete('/admin/delete/{id}', [AdminController::class, 'softdelete'])->name('admin.softdelete');
+
+        Route::get('/pencari', [UserPencariController::class, 'index'])->name('userpencari.index');
+        Route::get('/penyedia', [AdminController::class, 'index'])->name('userperush.index');
 
 
     });
