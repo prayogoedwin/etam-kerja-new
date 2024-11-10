@@ -63,7 +63,7 @@
 <body>
   <div class="container">
     <h2 class="text-center mb-4">Login</h2>
-    <form action="{{ route('login') }}" method="POST">
+    <form action="{{ route('login.action') }}" method="POST">
       @csrf <!-- Laravel CSRF token for security -->
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>

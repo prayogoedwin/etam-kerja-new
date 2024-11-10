@@ -11,12 +11,26 @@ class RoleSeeder extends Seeder
     public function run()
     {
         // Membuat permission jika belum ada
-        $permission = Permission::firstOrCreate(['name' => 'admin-access']);
+        $permission = Permission::firstOrCreate(['name' => 'role-access']);
         
-        // Membuat role jika belum ada
-        $role = Role::firstOrCreate(['name' => 'super-admin']);
+        // Membuat role jika belum ada dan memberi permission ke role
+        $roles = [
+            'super-admin',
+            'admin-provinsi',
+            'admin-kabkota',
+            'pencari-kerja',
+            'penyedia-kerja',
+            'admin-bkk',
+            'pimpinan',
+        ];
 
-        // Menambahkan permission ke role
-        $role->givePermissionTo($permission);
+        foreach ($roles as $roleName) {
+            // Membuat role baru jika belum ada
+            $role = Role::firstOrCreate(['name' => $roleName]);
+
+            // Menambahkan permission ke role (sesuaikan permission jika perlu)
+            $role->givePermissionTo($permission);
+        }
     }
 }
+

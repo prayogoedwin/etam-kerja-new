@@ -5,47 +5,44 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\UserAdmin;
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-use Yajra\DataTables\Facades\DataTables;  // Mengimpor DataTables
+use Yajra\DataTables\Facades\DataTables;
 
-class RoleController extends Controller
+class AdminController extends Controller
 {
-
-    public function getRoles(Request $request)
-    {
-        $roles = Role::select('id', 'name', 'guard_name')->get();
-    
-        return DataTables::of($roles)
-            ->addIndexColumn()
-            ->addColumn('options', function ($role) {
-                return '<button class="btn btn-primary btn-sm">Edit</button> <button class="btn btn-danger btn-sm">Delete</button>';
-            })
-            ->rawColumns(['options'])  // Pastikan menambahkan ini untuk kolom options
-            ->make(true);
-    }
 
     public function index(Request $request)
     {
         if ($request->ajax()) {
-           
-            $roles = Role::select('id', 'name', 'guard_name')->get();
+            $admins = UserAdmin::with('user:id,name,email,whatsapp')  // Ambil data admin dengan user terkait
+                        ->select('id', 'user_id', 'province_id', 'kabkota_id', 'kecamatan_id', 'created_by', 'updated_by', 'is_deleted');
 
-            return DataTables::of($roles)
+            return DataTables::of($admins)
                 ->addIndexColumn()
-                ->addColumn('options', function ($roles) {
+                ->addColumn('user_name', function ($admin) {
+                    return $admin->user ? $admin->user->name : 'N/A';
+                })
+                ->addColumn('email', function ($admin) {
+                    return $admin->user ? $admin->user->email : 'N/A';
+                })
+                ->addColumn('whatsapp', function ($admin) {
+                    return $admin->user ? $admin->user->whatsapp : 'N/A';
+                })
+                ->addColumn('options', function ($admin) {
                     return '
                         <button class="btn btn-primary btn-sm">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $roles->id . ')">Delete</button>
+                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $admin->id . ')">Delete</button>
                     ';
                 })
                 ->rawColumns(['options'])  // Pastikan menambahkan ini untuk kolom options
                 ->make(true);
         }
-        return view('backend.setting.role.index');
+
+         // Ambil data roles untuk dikirim ke view
+        $roles = Role::select('id', 'name')->whereIn('id', [1, 3, 4, 8])->get();
+        return view('backend.users.admin.index',  compact('roles'));
     }
-    
-    
 
     // Menampilkan form untuk membuat role
     public function create()

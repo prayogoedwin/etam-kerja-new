@@ -47,20 +47,18 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::get('/sample', [BackController::class, 'sample'])->name('sample');
 
     Route::prefix('setting')->group(function () {
-        Route::get('/roles/get', [RoleController::class, 'getRoles'])->name('roles.getRoles');
         Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
     });
 
     Route::prefix('users')->group(function () {
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     });
-
-
-
 });
 
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+
+Route::middleware('guest')->get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/act_login', [AuthController::class, 'login'])->name('login.action');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Route::name('setting')->prefix('setting')->group(function () {
 //     Route::get('/banner', [BackController::class, 'settingBanner'])->name('banner');

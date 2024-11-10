@@ -61,7 +61,7 @@
             </li>
         </ul>
         <ul class="navbar-nav ms-auto">
-            <li>
+            <li hidden>
                 <div class="dropdown">
                     <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown"><i
                             class="icon feather icon-bell"></i></a>
@@ -149,8 +149,8 @@
                             <li><a href="user-profile.html" class="dropdown-item"><i class="feather icon-user"></i>
                                     Profile</a></li>
                             <!-- <li><a href="email_inbox.html" class="dropdown-item"><i class="feather icon-mail"></i> My Messages</a></li> -->
-                            <li><a href="auth-signin.html" class="dropdown-item"><i class="feather icon-lock"></i>
-                                    Lock Screen</a></li>
+                            <li><a href="{{ route('logout') }}" class="dropdown-item"><i class="feather icon-lock"></i>
+                                    Logout</a></li>
                         </ul>
                     </div>
                 </div>
