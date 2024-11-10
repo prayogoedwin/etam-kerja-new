@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>REGISTER NAKERBISA</title>
+    <title>REGISTER ETAM KERJA</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="shortcut icon" href="{{ asset('assets') }}/etam_fe/images/logo/icon_etam.png" type="image/x-icon">
@@ -81,6 +81,7 @@
         </div>
         <form id="registrationForm">
             <input type="hidden" name="_token" id="_token" value="{{ csrf_token() }}" />
+            <input type="hidden" name="kode_role" id="kode_role" value="{{ $dt['role'] }}">
             <!-- Step 1 -->
             <div class="step" id="step1">
                 <div class="mb-3">
@@ -96,27 +97,34 @@
                     <input type="password" class="form-control" id="password" required>
                     <input type="checkbox" id="show-password"><small>Lihat Kata Sandi</small>
                 </div>
-                <button type="button" class="btn btn-primary w-100 mt-3" onclick="nextStepBaru1()">Next</button>
+                <button type="button" id="btnStep1" class="btn btn-primary w-100 mt-3"
+                    onclick="nextStepBaru1()">Lanjut</button>
             </div>
 
             <!-- Step 2 -->
             <div class="step d-none" id="step2">
                 <div class="mb-3">
-                    <label for="pin" class="form-label">PIN</label>
-                    <input type="password" class="form-control" id="pin" maxlength="6" required>
+                    <label for="pin" class="form-label">OTP</label>
+                    <input type="text" class="form-control" id="otpwa" name="otpwa" maxlength="6" required>
+                    <input type="hidden" id="email_registered" name="email_registered">
+                    <input type="hidden" id="_token2" name="_token2" value="{{ csrf_token() }}">
                 </div>
-                <button type="button" class="btn btn-secondary w-100 mt-3" onclick="previousStep()">Back</button>
-                <button type="button" class="btn btn-primary w-100 mt-3" onclick="nextStep()">Next</button>
+                {{-- <button type="button" class="btn btn-secondary w-100 mt-3" onclick="previousStep()">Back</button> --}}
+                <button type="button" id="btnStep2" class="btn btn-primary w-100 mt-3"
+                    onclick="nextStepBaru2()">Lanjut</button>
             </div>
 
             <!-- Step 3 -->
-            @if ($dt['role'] == '5')
-                @include('depan.step3_pencarikerja')
-            @endif
+            <div id="step3-container">
+                @if ($dt['role'] == 'pencari-kerja')
+                    @include('depan.step3_pencarikerja')
+                @endif
 
-            @if ($dt['role'] == '6')
-                @include('depan.step3_penyediakerja')
-            @endif
+                @if ($dt['role'] == 'penyedia-kerja')
+                    @include('depan.step3_penyediakerja')
+                @endif
+            </div>
+
 
         </form>
     </div>
@@ -181,6 +189,7 @@
             var wa = $('#whatsapp').val();
             var pass = $('#password').val()
             var _token = $('#_token').val();
+            var kd_role = $('#kode_role').val();
 
             if (!imel || !wa || !pass) {
                 // Swal.fire({
@@ -203,18 +212,22 @@
             });
 
             $.ajax({
-                url: '{{ route('cek-awal-akun') }}',
+                url: "{{ route('cek-awal-akun') }}",
                 type: "POST",
                 data: {
                     _token: _token,
                     email: imel,
-                    wa: wa
+                    wa: wa,
+                    password: pass,
+                    role: kd_role
                 },
                 // dataType: "html",
                 success: function(response) {
-                    console.log(response)
+                    console.log(`STEP 1 RES : ${response}`)
                     var sts = response.status
                     var msg = response.message
+                    var dt = response.data
+
                     if (sts == 0) {
                         Swal.fire({
                             title: 'Ooppss',
@@ -233,7 +246,7 @@
                             showStep(currentStep);
                         }
 
-                        $('#btnNext1').prop('disabled', false);
+                        $('#email_registered').val(dt.email)
                     }
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
@@ -245,9 +258,138 @@
                 }
             });
         }
+
+        function nextStepBaru2() {
+            var otpwa = $('#otpwa').val();
+            var email_registered = $('#email_registered').val();
+            var _token2 = $('#_token2').val()
+            var kd_role = $('#kode_role').val();
+
+            if (!otpwa) {
+                Swal.fire({
+                    // title: 'Pastikan semua kolom terisi',
+                    text: 'Pastikan kolom terisi',
+                    icon: 'info'
+                });
+                return;
+            }
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $.ajax({
+                url: "{{ route('cek-awal-otp') }}",
+                type: "POST",
+                data: {
+                    _token: _token2,
+                    email_registered: email_registered,
+                    otp: otpwa,
+                },
+                // dataType: "html",
+                success: function(response) {
+                    console.log(`STEP 2 RES : ${response}`)
+
+                    var sts = response.status
+                    var msg = response.message
+                    // var dt = response.data
+
+                    if (sts == 0) {
+                        Swal.fire({
+                            title: 'Ooppss',
+                            text: msg,
+                            icon: 'warning'
+                        });
+                    } else {
+                        // Swal.fire({
+                        //     title: 'Oke',
+                        //     text: 'Lanjuttt ISI BANYAK',
+                        //     icon: 'success'
+                        // });
+
+
+
+                        if (currentStep < 3) {
+                            currentStep++;
+                            showStep(currentStep);
+                        }
+                    }
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: thrownError,
+                        icon: 'error',
+                    });
+                }
+            });
+        }
+
+
+        $('#kabkota_id').on('change', function() {
+            // console.log(this.value);
+            var kd = this.value
+
+            // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+            $.ajax({
+                url: "{{ route('get-kecamatan-bykabkota', ':id') }}".replace(':id', kd), // Panggil API
+                type: 'GET',
+                success: function(response) {
+                    // Kosongkan dropdown kecamatan sebelumnya
+                    $('#kecamatan_id').empty();
+
+                    $('#desa_id').empty();
+                    $('#desa_id').append('<option selected disabled>Pilih Desa/Kelurahan</option>');
+
+                    // Tambahkan opsi default
+                    $('#kecamatan_id').append('<option selected disabled>Pilih Kecamatan</option>');
+
+                    // Loop data kecamatan dan tambahkan ke dropdown
+                    $.each(response, function(index, kecamatan) {
+                        $('#kecamatan_id').append('<option value="' + kecamatan.id + '">' +
+                            kecamatan.name + '</option>');
+                    });
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                }
+            });
+        });
+
+
+        $('#kecamatan_id').on('change', function() {
+            // console.log(this.value);
+            var kd = this.value
+
+            // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+            $.ajax({
+                url: "{{ route('get-desa-bykecamatan', ':id') }}".replace(':id', kd), // Panggil API
+                type: 'GET',
+                success: function(response) {
+                    // Kosongkan dropdown kecamatan sebelumnya
+                    $('#desa_id').empty();
+
+                    // Tambahkan opsi default
+                    $('#desa_id').append('<option selected disabled>Pilih Kecamatan</option>');
+
+                    // Loop data kecamatan dan tambahkan ke dropdown
+                    $.each(response, function(index, kecamatan) {
+                        $('#desa_id').append('<option value="' + kecamatan.id + '">' +
+                            kecamatan.name + '</option>');
+                    });
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                }
+            });
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
 </body>
 
 </html>

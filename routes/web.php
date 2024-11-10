@@ -24,6 +24,8 @@ Route::post('/depan/daftar-akun', [DepanController::class, 'daftar_akun'])->name
 Route::get('/depan/daftar', [DepanController::class, 'daftar']); //with role
 Route::post('/depan/cek-awal-akun', [DepanController::class, 'cek_awal_akun'])->name('cek-awal-akun');
 Route::post('/depan/cek-awal-otp', [DepanController::class, 'cek_awal_otp'])->name('cek-awal-otp');
+Route::get('/depan/getkecamatanbyid/{kabkota_id}', [DepanController::class, 'getKecamatanByKabkota'])->name('get-kecamatan-bykabkota');
+Route::get('/depan/getdesabyid/{kec_id}', [DepanController::class, 'getDesaByKec'])->name('get-desa-bykecamatan');
 
 
 

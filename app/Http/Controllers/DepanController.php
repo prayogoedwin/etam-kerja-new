@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Depan; // Import model Depan
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
 
 class DepanController extends Controller
 {
@@ -75,23 +77,32 @@ class DepanController extends Controller
         $rl = $request->input('rl'); // atau bisa juga menggunakan $request->query('rl')
         // echo 'Parameter rl: ' . $rl;
         $decode_rl = decode_url($rl);
-        if($decode_rl != '2' && $decode_rl != '3'){
+        if($decode_rl != 'pencari-kerja' && $decode_rl != 'penyedia-kerja'){
             return abort(404);
         }
 
         $nm_role = '';
-        if($decode_rl == '2'){
+        if($decode_rl == 'pencari-kerja'){
             $nm_role = 'Pencari Kerja';
-        } else if($decode_rl == '3'){
+        } else if($decode_rl == 'penyedia-kerja'){
             $nm_role = 'Penyedia Kerja';
         }
+
+        $depanModel = new Depan();
+        $data['agama'] = $depanModel->getAllAgama(); // Mendapatkan semua data agama
+        $data['kabkota'] = $depanModel->getKabkotaByProvince();
 
         $data['dt'] = array(
             'role' => $decode_rl,
             'role_name' => $nm_role
         );
+
+        session()->forget('email_registered');
+        // dd(session('email_registered'));
+
         // dd($data);
         return view('depan.depan_registerbaru', $data);
+        // echo json_encode($data);
     }
 
     public function cek_awal_akun(Request $request){
@@ -100,8 +111,8 @@ class DepanController extends Controller
         //     'wa' => $request->wa,
         // ]);
 
-        $user = User::where('email', $request->email)->first();
-        if($user){
+        $userEmail = User::where('email', $request->email)->first();
+        if($userEmail){
             return response()->json([
                 'status' => 0,
                 'message' => 'Email sudah pernah terdaftar'
@@ -116,26 +127,67 @@ class DepanController extends Controller
             ]);
         }
 
+        $role = Role::where('name', $request->role)->first();
+
         //create users
         $user = User::create([
-            'name' => $request->nama_merchant,
+            'name' => $request->email,
             'email' => $request->email,
-            'no_wa' => $request->no_wa,
-            'password' => 'merchant'
+            'whatsapp' => $request->wa,
+            'password' => $request->password
         ]);
         $user->syncRoles($role->name);
 
-        // $otp = generateOtp();
-        // $userWa->update([
-        //     'otp' => $otp,
-        //     // 'otp_created_at' => now()
-        // ]);
+        $otp = generateOtp();
+        $user->update([
+            'otp' => $otp,
+            // 'otp_created_at' => now()
+        ]);
         // dd($userWa);
-        // sendWa($userWa->whatsapp, 'Lanjutkan pendaftaran dengan memasukkan Kode OTP berikut : ' . $otp);
+        sendWa($user->whatsapp, 'Lanjutkan pendaftaran dengan memasukkan Kode OTP berikut : *' . $otp . '*');
+
+        session(['email_registered' => $request->email]);
+        // dd(session('email_registered'));
 
         return response()->json([
             'status' => 1,
-            'message' => 'lanjut daftar'
+            'message' => 'lanjut daftar',
+            'data' => $user
         ]);
+    }
+
+    public function cek_awal_otp(Request $request){
+
+        $cek = User::where([
+            ['email', '=', $request->email_registered],
+            ['otp', '=', $request->otp]
+        ])->first();
+
+        if(!$cek){
+            return response()->json([
+                'status' => 0,
+                'message' => 'Kode OTP salah'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 1,
+            'message' => 'Verifikasi kode OTP berhasil',
+            'session_email' => session('email_registered')
+        ]);
+    }
+
+    public function getKecamatanByKabkota($kabkota_id)
+    {
+        // Misal mengambil data dari tabel 'etam_kecamatan' berdasarkan kabkota_id
+        $kecamatan = DB::table('etam_kecamatan')->where('regency_id', $kabkota_id)->get();
+
+        return response()->json($kecamatan);
+    }
+
+    public function getDesaByKec($kec_id){
+        $desa = DB::table('etam_desa')->where('district_id', $kec_id)->get();
+
+        return response()->json($desa);
     }
 }

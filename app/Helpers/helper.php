@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\DB;
 
 
-function getProvince()
+function getKabkota()
 {
     // return DB::table('tbl_wilayah')
     // ->where('id_up', '=', null)
@@ -18,10 +18,24 @@ function getProvince()
     // ->where('id', '=', 18)       // LAMPUNG
     // ->get();
 
-    return DB::table('tbl_wilayah')
-        ->where('id_up', '=', null)  // Kondisi id_up bernilai null
-        ->whereIn('id', [31, 32, 33, 35, 34, 14, 51, 36, 18])  // Daftar id
+    return DB::table('etam_kabkota')
+        ->whereIn('province_id', [64])  // Daftar id
         ->get();
+}
+
+function getAgama(){
+    return DB::table('etam_agama')
+        ->get();
+}
+
+function getPendidikan(){
+    return DB::table('etam_pendidikan')
+    ->get();
+}
+
+function getMarital(){
+    return DB::table('etam_marital')
+    ->get();
 }
 
 function encode_url($url){
@@ -116,5 +130,5 @@ function sendWa($phone, $message)
     $response = curl_exec($curl);
 
     curl_close($curl);
-    echo $response;
+    // echo $response;
 }
