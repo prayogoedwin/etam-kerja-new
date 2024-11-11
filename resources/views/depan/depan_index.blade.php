@@ -29,7 +29,7 @@
                     </div>
                     <!-- Banner Thumb -->
                     <div class="banner-thumb">
-                        <img src="{{ asset('assets') }}/etam_fe/img/illustration/1.png" alt="illustration">
+                        <img src="{{ asset('assets') }}/etam_fe/images/pj-gub-kaltim.png" alt="illustration">
                     </div>
                     <!-- End Banner Thumb -->
                 </div>
@@ -41,7 +41,7 @@
             <!-- End Single Item -->
 
             <!-- Single Item -->
-            <div class="swiper-slide banner-style-two">
+            {{-- <div class="swiper-slide banner-style-two">
                 <div class="container">
                     <div class="row align-center">
                         <div class="col-xl-7 col-lg-9">
@@ -68,11 +68,11 @@
                 <div class="banner-shape-right"
                     style="background: url({{ asset('assets') }}/etam_fe/img/shape/3-5.png);"></div>
                 <!-- End Shape -->
-            </div>
+            </div> --}}
             <!-- End Single Item -->
 
             <!-- Single Item -->
-            <div class="swiper-slide banner-style-two">
+            {{-- <div class="swiper-slide banner-style-two">
                 <div class="container">
                     <div class="row align-center">
                         <div class="col-xl-7 col-lg-9">
@@ -99,7 +99,7 @@
                 <div class="banner-shape-right"
                     style="background: url({{ asset('assets') }}/etam_fe/img/shape/3-5.png);"></div>
                 <!-- End Shape -->
-            </div>
+            </div> --}}
             <!-- End Single Item -->
 
         </div>
