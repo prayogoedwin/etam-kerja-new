@@ -6,9 +6,9 @@
         <!-- [ Main Content ] start -->
         <div class="pcoded-main-container">
             <div class="pcoded-content">
-                
 
-                 <!-- [ breadcrumb ] start -->
+
+                <!-- [ breadcrumb ] start -->
                 <div class="page-header">
                     <div class="page-block">
                         <div class="row align-items-center">
@@ -30,9 +30,9 @@
 
                 <!-- [ Main Content ] start -->
                 <div class="row">
-               
 
-                   <!-- customar project  start -->
+
+                    <!-- customar project  start -->
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-body">
@@ -41,7 +41,9 @@
 
                                     </div>
                                     <div class="col-sm-6 text-end">
-                                        <button class="btn btn-success btn-sm btn-round has-ripple" data-bs-toggle="modal" data-bs-target="#modal-report"><i class="feather icon-plus"></i> Add Data</button>
+                                        <button class="btn btn-success btn-sm btn-round has-ripple" data-bs-toggle="modal"
+                                            data-bs-target="#modal-report"><i class="feather icon-plus"></i> Add
+                                            Data</button>
                                     </div>
                                 </div>
                                 <div class="table-responsive">
@@ -56,7 +58,7 @@
                                                 <th>Options</th>
                                             </tr>
                                         </thead>
-                                       
+
                                     </table>
                                 </div>
                             </div>
@@ -71,9 +73,10 @@
 
             </div>
         </div>
-       
 
-        <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+
+        <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -87,21 +90,24 @@
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="floating-label" for="Name">Nama Lengkap</label>
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="">
+                                        <input type="text" class="form-control" id="name" name="name"
+                                            placeholder="">
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="floating-label" for="email">Email</label>
-                                        <input type="text" class="form-control" id="email"  name="email" placeholder="">
+                                        <input type="text" class="form-control" id="email" name="email"
+                                            placeholder="">
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="floating-label" for="whatsapp">Whatsapp</label>
-                                        <input type="text" class="form-control" id="whatsapp" name="whatsapp" placeholder="">
+                                        <input type="text" class="form-control" id="whatsapp" name="whatsapp"
+                                            placeholder="">
                                     </div>
                                 </div>
 
@@ -110,15 +116,15 @@
                                         <label for="userRole" class="form-label">Role</label>
                                         <select class="form-control" id="userRole" name="role_id" required>
                                             <option value="">Select Role</option>
-                                            @foreach($roles as $role)
+                                            @foreach ($roles as $role)
                                                 <option value="{{ $role->id }}">{{ $role->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
 
-                               
-                               
+
+
                                 <div class="col-sm-12">
                                     {{-- <div class="form-group">
                                         <label class="floating-label" for="Description">Description</label>
@@ -134,7 +140,8 @@
             </div>
         </div>
 
-        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel" aria-hidden="true">
+        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -154,13 +161,13 @@
                             </div>
                             <div class="mb-3">
                                 <label for="editWhatsapp" class="form-label">Whatsapp</label>
-                                <input type="text" class="form-control" id="editWhatsapp" name="whatsapp"  required>
+                                <input type="text" class="form-control" id="editWhatsapp" name="whatsapp" required>
                             </div>
                             <div class="mb-3">
                                 <label for="editRole" class="form-label">Role</label>
                                 <select class="form-control" id="editRole" name="role_id" required>
                                     <option value="">Select Role</option>
-                                    @foreach($roles as $role)
+                                    @foreach ($roles as $role)
                                         <option value="{{ $role->id }}">{{ $role->name }}</option>
                                     @endforeach
                                 </select>
@@ -171,185 +178,195 @@
                 </div>
             </div>
         </div>
-        
+
     </body>
 @endsection
 
-        
+
 @push('js')
-<script>
-    $(document).ready(function() {
-        $('#simpletable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: '{{ route('admin.index') }}',
-            autoWidth: false, // Menonaktifkan auto-width
-            columns: [
-                { data: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'user_name' },
-                { data: 'email' },
-                { data: 'whatsapp' },
-                { data: 'roles' },
-                { data: 'options', orderable: false, searchable: false },
-            ]
+    <script>
+        $(document).ready(function() {
+            $('#simpletable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('admin.index') }}',
+                autoWidth: false, // Menonaktifkan auto-width
+                columns: [{
+                        data: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'user_name'
+                    },
+                    {
+                        data: 'email'
+                    },
+                    {
+                        data: 'whatsapp'
+                    },
+                    {
+                        data: 'roles'
+                    },
+                    {
+                        data: 'options',
+                        orderable: false,
+                        searchable: false
+                    },
+                ]
+            });
         });
-    });
-</script>
+    </script>
 
-<script>
-   $(document).ready(function () {
-    $('#registerForm').submit(function (e) {
-        e.preventDefault(); // Prevent form from submitting normally
+    <script>
+        $(document).ready(function() {
+            $('#registerForm').submit(function(e) {
+                e.preventDefault(); // Prevent form from submitting normally
 
-        // Clear previous error messages
-        $('#errorMessages').html('').addClass('d-none');
+                // Clear previous error messages
+                $('#errorMessages').html('').addClass('d-none');
 
-        var formData = {
-            name: $('#name').val(),
-            email: $('#email').val(),
-            whatsapp: $('#whatsapp').val(),
-            role_id: $('#userRole').val(),
-            _token: '{{ csrf_token() }}' // Add CSRF token for security
-        };
+                var formData = {
+                    name: $('#name').val(),
+                    email: $('#email').val(),
+                    whatsapp: $('#whatsapp').val(),
+                    role_id: $('#userRole').val(),
+                    _token: '{{ csrf_token() }}' // Add CSRF token for security
+                };
 
-        $.ajax({
-            type: 'POST',
-            url: '{{ route('admin.add') }}', // Ganti dengan rute yang sesuai
-            data: formData,
-            success: function (response) {
-                if (response.success) {
-                    alert('User berhasil ditambahkan');
-                    $('#modal-report').modal('hide');
-                    location.reload(); // Refresh halaman
-                } else {
-                    // If validation errors are found, display them in an alert
-                    if (response.errors) {
-                        let errorMessages = '';
-                        $.each(response.errors, function (key, value) {
-                            $.each(value, function (index, errorMessage) {
-                                errorMessages += errorMessage + '\n'; // Gabungkan pesan error
-                            });
-                        });
-                        alert('Terjadi kesalahan:\n' + errorMessages);
-                    } else {
-                        alert('Gagal menambahkan user');
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('admin.add') }}', // Ganti dengan rute yang sesuai
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            alert('User berhasil ditambahkan');
+                            $('#modal-report').modal('hide');
+                            location.reload(); // Refresh halaman
+                        } else {
+                            // If validation errors are found, display them in an alert
+                            if (response.errors) {
+                                let errorMessages = '';
+                                $.each(response.errors, function(key, value) {
+                                    $.each(value, function(index, errorMessage) {
+                                        errorMessages += errorMessage +
+                                            '\n'; // Gabungkan pesan error
+                                    });
+                                });
+                                alert('Terjadi kesalahan:\n' + errorMessages);
+                            } else {
+                                alert('Gagal menambahkan user');
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Terjadi kesalahan: ' + error);
                     }
-                }
-            },
-            error: function (xhr, status, error) {
-                alert('Terjadi kesalahan: ' + error);
-            }
+                });
+            });
         });
-    });
-});
-</script>
+    </script>
 
-<script>
-    function showEditModal(adminId) {
-        var detailUrl = "{{ route('admin.detail', ':id') }}".replace(':id', adminId);
-        $.ajax({
-            url: detailUrl,
-            type: 'GET',
-            success: function(response) {
-                let admin = response.data;
-
-                // Isi data modal dengan data yang diperoleh
-                $('#editAdminId').val(admin.id);
-                $('#editName').val(admin.user.name);
-                $('#editEmail').val(admin.user.email);
-                $('#editWhatsapp').val(admin.user.whatsapp);
-
-                //Pilih role di select box
-                if (admin.user.roles.length > 0) {
-                    let roleId = admin.user.roles.id; // Ambil ID peran pertama
-                    $('#editRole').val(roleId).prop('selected', true);
-                } else {
-                    $('#editRole').val(''); // Kosongkan jika tidak ada peran
-                }
-
-                // Tampilkan modal edit
-                $('#modal-edit').modal('show');
-            },
-            error: function(xhr) {
-                alert('Error: ' + xhr.responseText);
-            }
-        });
-    }
-</script>
-
-<script>
-
-    function updateFaq() {
-        // Get data from the modal form
-        var id = $('#editAdminId').val();
-        var name = $('#editName').val();
-        var email = $('#editEmail').val();
-        var whatsapp = $('#editWhatsapp').val();
-        var role_id = $('#editRole').val();
-        
-
-        
-
-        // Send the data to the update route
-        $.ajax({
-            url: "{{ route('admin.update', ':id') }}".replace(':id', id),
-            type: 'PUT',
-            data: {
-                _token: "{{ csrf_token() }}",  // CSRF token for security
-                name: name,
-                email: email,
-                whatsapp: whatsapp,
-                role_id: role_id
-            },
-            success: function(response) {
-                if(response.success) {
-                    // Display success message
-                    alert(response.message);
-                    // Close modal
-                    $('#modal-edit').modal('hide');
-                    // Optionally, reload the table or page to reflect the update
-                    location.reload();
-                } else {
-                    // Display error message
-                    alert('Error: ' + response.message);
-                }
-            },
-            error: function(xhr) {
-                alert('Error: ' + xhr.responseText);
-            }
-        });
-    }
-
-</script>
-
-
-<script>
-    function confirmDelete(adminId) {
-        // Konfirmasi penghapusan
-        var deleteUrl = "{{ route('admin.softdelete', ':id') }}".replace(':id', adminId);
-        if (confirm("Are you sure you want to delete this admin?")) {
-            // Kirim request ke server untuk menghapus data
+    <script>
+        function showEditModal(adminId) {
+            var detailUrl = "{{ route('admin.detail', ':id') }}".replace(':id', adminId);
             $.ajax({
-                url: deleteUrl, 
-                type: 'DELETE',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),  // Menyertakan CSRF token
-                },
+                url: detailUrl,
+                type: 'GET',
                 success: function(response) {
-                    // Jika berhasil, reload DataTable
-                    alert(response.message);  // Menampilkan pesan
-                    $('#simpletable').DataTable().ajax.reload();  // Reload data tabel
+                    let admin = response.data;
+
+                    // Isi data modal dengan data yang diperoleh
+                    $('#editAdminId').val(admin.id);
+                    $('#editName').val(admin.user.name);
+                    $('#editEmail').val(admin.user.email);
+                    $('#editWhatsapp').val(admin.user.whatsapp);
+
+                    //Pilih role di select box
+                    if (admin.user.roles.length > 0) {
+                        let roleId = admin.user.roles.id; // Ambil ID peran pertama
+                        $('#editRole').val(roleId).prop('selected', true);
+                    } else {
+                        $('#editRole').val(''); // Kosongkan jika tidak ada peran
+                    }
+
+                    // Tampilkan modal edit
+                    $('#modal-edit').modal('show');
                 },
-                error: function(xhr, status, error) {
-                    // Tampilkan error jika ada masalah
+                error: function(xhr) {
                     alert('Error: ' + xhr.responseText);
                 }
             });
         }
-    }
-</script>
+    </script>
+
+    <script>
+        function updateFaq() {
+            // Get data from the modal form
+            var id = $('#editAdminId').val();
+            var name = $('#editName').val();
+            var email = $('#editEmail').val();
+            var whatsapp = $('#editWhatsapp').val();
+            var role_id = $('#editRole').val();
 
 
 
+
+            // Send the data to the update route
+            $.ajax({
+                url: "{{ route('admin.update', ':id') }}".replace(':id', id),
+                type: 'PUT',
+                data: {
+                    _token: "{{ csrf_token() }}", // CSRF token for security
+                    name: name,
+                    email: email,
+                    whatsapp: whatsapp,
+                    role_id: role_id
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Display success message
+                        alert(response.message);
+                        // Close modal
+                        $('#modal-edit').modal('hide');
+                        // Optionally, reload the table or page to reflect the update
+                        location.reload();
+                    } else {
+                        // Display error message
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error: ' + xhr.responseText);
+                }
+            });
+        }
+    </script>
+
+
+    <script>
+        function confirmDelete(adminId) {
+            // Konfirmasi penghapusan
+            var deleteUrl = "{{ route('admin.softdelete', ':id') }}".replace(':id', adminId);
+            if (confirm("Are you sure you want to delete this admin?")) {
+                // Kirim request ke server untuk menghapus data
+                $.ajax({
+                    url: deleteUrl,
+                    type: 'DELETE',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'), // Menyertakan CSRF token
+                    },
+                    success: function(response) {
+                        // Jika berhasil, reload DataTable
+                        alert(response.message); // Menampilkan pesan
+                        $('#simpletable').DataTable().ajax.reload(); // Reload data tabel
+                    },
+                    error: function(xhr, status, error) {
+                        // Tampilkan error jika ada masalah
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            }
+        }
+    </script>
 @endpush
-

@@ -43,6 +43,11 @@ function getSektor(){
     ->get();
 }
 
+function getJabatan(){
+    return DB::table('etam_jabatan')
+    ->get();
+}
+
 function getProvinsi(){
     return DB::table('etam_provinsi')
     ->get();

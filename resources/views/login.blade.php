@@ -88,8 +88,9 @@
                 <input type="text" class="form-control" id="username" name="username" required>
             </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
+                <label for="password" class="form-label">Kata Sandi</label>
                 <input type="password" class="form-control" id="password" name="password" required>
+                <input type="checkbox" id="show-password"><small>Lihat Kata Sandi</small>
             </div>
             <!-- <div class="mb-3">
         <div class="captcha-image">AB12CD</div>
@@ -116,12 +117,22 @@
 
 
 
-
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function refreshCaptcha() {
             location.reload(); // Fungsi untuk menyegarkan halaman
         }
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $("#show-password").change(function() {
+                $(this).prop("checked") ? $("#password").prop("type", "text") : $("#password").prop("type",
+                    "password");
+            });
+        });
     </script>
 </body>
 

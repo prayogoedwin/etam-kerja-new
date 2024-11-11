@@ -7,9 +7,12 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserPencariController;
-
-
+use App\Http\Controllers\LowonganController;
+use App\Http\Controllers\LowonganAdminController;
+use App\Http\Controllers\LowonganPencariController;
 use App\Http\Controllers\EtamFaqController;
+use App\Http\Controllers\Ak1PencariController;
+use App\Http\Controllers\UserPenyediaController;
 
 
 Route::get('/', function () {
@@ -77,10 +80,30 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::delete('/pencari/delete/{id}', [UserPencariController::class, 'softdelete'])->name('userpencari.softdelete');
         Route::put('/pencari/reset/{id}', [UserPencariController::class, 'reset'])->name('userpencari.reset');
 
-        Route::get('/penyedia', [AdminController::class, 'index'])->name('userperush.index');
+        Route::get('/penyedia', [UserPenyediaController::class, 'index'])->name('userperush.index');
 
 
     });
+
+    Route::prefix('penyedias')->group(function () {
+        Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');
+        Route::post('/lowongan/add', [LowonganController::class, 'store'])->name('lowongan.add');
+    });
+
+    Route::prefix('admins')->group(function () {
+        Route::get('/lowongan', [LowonganAdminController::class, 'index'])->name('lowongan.admin.index');
+        Route::get('/lowongan/get/{id}', [LowonganAdminController::class, 'show'])->name('lowongan.admin.detail');
+        Route::put('/lowongan/update/{id}', [LowonganAdminController::class, 'update'])->name('lowongan.admin.update');
+    });
+
+    Route::prefix('pencaris')->group(function () {
+        Route::get('/lowongan', [LowonganPencariController::class, 'index'])->name('lowongan.pencari.index');
+        Route::get('/lowongan/get/{id}', [LowonganPencariController::class, 'show'])->name('lowongan.pencari.detail');
+        Route::put('/lowongan/lamar/{id}', [LowonganPencariController::class, 'lamar'])->name('lowongan.pencari.lamar');
+
+        Route::get('/ak1', [Ak1PencariController::class, 'index'])->name('ak1.index');
+    });
+
 });
 
 

@@ -6,9 +6,9 @@
         <!-- [ Main Content ] start -->
         <div class="pcoded-main-container">
             <div class="pcoded-content">
-                
 
-                 <!-- [ breadcrumb ] start -->
+
+                <!-- [ breadcrumb ] start -->
                 <div class="page-header">
                     <div class="page-block">
                         <div class="row align-items-center">
@@ -30,9 +30,9 @@
 
                 <!-- [ Main Content ] start -->
                 <div class="row">
-               
 
-                   <!-- customar project  start -->
+
+                    <!-- customar project  start -->
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-body">
@@ -41,7 +41,7 @@
 
                                     </div>
                                     <div class="col-sm-6 text-end">
-                                        <button class="btn btn-success btn-sm btn-round has-ripple" data-bs-toggle="modal" data-bs-target="#modal-report"><i class="feather icon-plus"></i> Add Data</button>
+                                        {{-- <button class="btn btn-success btn-sm btn-round has-ripple" data-bs-toggle="modal" data-bs-target="#modal-report"><i class="feather icon-plus"></i> Add Data</button> --}}
                                     </div>
                                 </div>
                                 <div class="table-responsive">
@@ -52,11 +52,11 @@
                                                 <th>Nama</th>
                                                 <th>Email</th>
                                                 <th>Whatsapp</th>
-                                             
+
                                                 <th>Options</th>
                                             </tr>
                                         </thead>
-                                       
+
                                     </table>
                                 </div>
                             </div>
@@ -71,9 +71,10 @@
 
             </div>
         </div>
-       
 
-        <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+
+        <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -87,27 +88,30 @@
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="floating-label" for="Name">Nama Lengkap</label>
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="">
+                                        <input type="text" class="form-control" id="name" name="name"
+                                            placeholder="">
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="floating-label" for="email">Email</label>
-                                        <input type="text" class="form-control" id="email"  name="email" placeholder="">
+                                        <input type="text" class="form-control" id="email" name="email"
+                                            placeholder="">
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="floating-label" for="whatsapp">Whatsapp</label>
-                                        <input type="text" class="form-control" id="whatsapp" name="whatsapp" placeholder="">
+                                        <input type="text" class="form-control" id="whatsapp" name="whatsapp"
+                                            placeholder="">
                                     </div>
                                 </div>
 
-                               
-                               
-                               
+
+
+
                                 <div class="col-sm-12">
                                     {{-- <div class="form-group">
                                         <label class="floating-label" for="Description">Description</label>
@@ -123,7 +127,8 @@
             </div>
         </div>
 
-        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel" aria-hidden="true">
+        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -143,141 +148,151 @@
                             </div>
                             <div class="mb-3">
                                 <label for="editWhatsapp" class="form-label">Whatsapp</label>
-                                <input type="text" class="form-control" id="editWhatsapp" name="whatsapp"  required>
+                                <input type="text" class="form-control" id="editWhatsapp" name="whatsapp" required>
                             </div>
-                          
+
                             <button type="submit" class="btn btn-primary" onclick="updateFaq()">Save Changes</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-        
+
     </body>
 @endsection
 
-        
+
 @push('js')
-<script>
-    $(document).ready(function() {
-        $('#simpletable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: '{{ route('userpencari.index') }}',
-            autoWidth: false, // Menonaktifkan auto-width
-            columns: [
-                { data: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'user_name' },
-                { data: 'email' },
-                { data: 'whatsapp' },
- 
-                { data: 'options', orderable: false, searchable: false },
-            ]
+    <script>
+        $(document).ready(function() {
+            $('#simpletable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('userpencari.index') }}',
+                autoWidth: false, // Menonaktifkan auto-width
+                columns: [{
+                        data: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'user_name'
+                    },
+                    {
+                        data: 'email'
+                    },
+                    {
+                        data: 'whatsapp'
+                    },
+
+                    {
+                        data: 'options',
+                        orderable: false,
+                        searchable: false
+                    },
+                ]
+            });
         });
-    });
-</script>
+    </script>
 
-<script>
-   $(document).ready(function () {
-    $('#registerForm').submit(function (e) {
-        e.preventDefault(); // Prevent form from submitting normally
+    <script>
+        $(document).ready(function() {
+            $('#registerForm').submit(function(e) {
+                e.preventDefault(); // Prevent form from submitting normally
 
-        // Clear previous error messages
-        $('#errorMessages').html('').addClass('d-none');
+                // Clear previous error messages
+                $('#errorMessages').html('').addClass('d-none');
 
-        var formData = {
-            name: $('#name').val(),
-            email: $('#email').val(),
-            whatsapp: $('#whatsapp').val(),
-           
-            _token: '{{ csrf_token() }}' // Add CSRF token for security
-        };
+                var formData = {
+                    name: $('#name').val(),
+                    email: $('#email').val(),
+                    whatsapp: $('#whatsapp').val(),
 
-        $.ajax({
-            type: 'POST',
-            url: '{{ route('admin.add') }}', // Ganti dengan rute yang sesuai
-            data: formData,
-            success: function (response) {
-                if (response.success) {
-                    alert('User berhasil ditambahkan');
-                    $('#modal-report').modal('hide');
-                    location.reload(); // Refresh halaman
-                } else {
-                    // If validation errors are found, display them in an alert
-                    if (response.errors) {
-                        let errorMessages = '';
-                        $.each(response.errors, function (key, value) {
-                            $.each(value, function (index, errorMessage) {
-                                errorMessages += errorMessage + '\n'; // Gabungkan pesan error
-                            });
-                        });
-                        alert('Terjadi kesalahan:\n' + errorMessages);
-                    } else {
-                        alert('Gagal menambahkan user');
+                    _token: '{{ csrf_token() }}' // Add CSRF token for security
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('admin.add') }}', // Ganti dengan rute yang sesuai
+                    data: formData,
+                    success: function(response) {
+                        if (response.success) {
+                            alert('User berhasil ditambahkan');
+                            $('#modal-report').modal('hide');
+                            location.reload(); // Refresh halaman
+                        } else {
+                            // If validation errors are found, display them in an alert
+                            if (response.errors) {
+                                let errorMessages = '';
+                                $.each(response.errors, function(key, value) {
+                                    $.each(value, function(index, errorMessage) {
+                                        errorMessages += errorMessage +
+                                            '\n'; // Gabungkan pesan error
+                                    });
+                                });
+                                alert('Terjadi kesalahan:\n' + errorMessages);
+                            } else {
+                                alert('Gagal menambahkan user');
+                            }
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Terjadi kesalahan: ' + error);
                     }
-                }
-            },
-            error: function (xhr, status, error) {
-                alert('Terjadi kesalahan: ' + error);
-            }
+                });
+            });
         });
-    });
-});
-</script>
+    </script>
 
-<script>
-    function confirmDelete(id) {
-        // Konfirmasi penghapusan
-        var deleteUrl = "{{ route('userpencari.softdelete', ':id') }}".replace(':id', id);
-        if (confirm("Yakin hapus data?")) {
-            // Kirim request ke server untuk menghapus data
-            $.ajax({
-                url: deleteUrl, 
-                type: 'DELETE',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),  // Menyertakan CSRF token
-                },
-                success: function(response) {
-                    // Jika berhasil, reload DataTable
-                    alert(response.message);  // Menampilkan pesan
-                    $('#simpletable').DataTable().ajax.reload();  // Reload data tabel
-                },
-                error: function(xhr, status, error) {
-                    // Tampilkan error jika ada masalah
-                    alert('Error: ' + xhr.responseText);
-                }
-            });
+    <script>
+        function confirmDelete(id) {
+            // Konfirmasi penghapusan
+            var deleteUrl = "{{ route('userpencari.softdelete', ':id') }}".replace(':id', id);
+            if (confirm("Yakin hapus data?")) {
+                // Kirim request ke server untuk menghapus data
+                $.ajax({
+                    url: deleteUrl,
+                    type: 'DELETE',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'), // Menyertakan CSRF token
+                    },
+                    success: function(response) {
+                        // Jika berhasil, reload DataTable
+                        alert(response.message); // Menampilkan pesan
+                        $('#simpletable').DataTable().ajax.reload(); // Reload data tabel
+                    },
+                    error: function(xhr, status, error) {
+                        // Tampilkan error jika ada masalah
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            }
         }
-    }
-</script>
+    </script>
 
-<script>
-    function confirmReset(id) {
-        // Konfirmasi penghapusan
-        var deleteUrl = "{{ route('userpencari.reset', ':id') }}".replace(':id', id);
-        if (confirm("Yakin  Reset Password (Password akan direset sesuai nama email/username)?")) {
-            // Kirim request ke server untuk menghapus data
-            $.ajax({
-                url: deleteUrl, 
-                type: 'PUT',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),  // Menyertakan CSRF token
-                },
-                success: function(response) {
-                    // Jika berhasil, reload DataTable
-                    alert(response.message);  // Menampilkan pesan
-                    $('#simpletable').DataTable().ajax.reload();  // Reload data tabel
-                },
-                error: function(xhr, status, error) {
-                    // Tampilkan error jika ada masalah
-                    alert('Error: ' + xhr.responseText);
-                }
-            });
+    <script>
+        function confirmReset(id) {
+            // Konfirmasi penghapusan
+            var deleteUrl = "{{ route('userpencari.reset', ':id') }}".replace(':id', id);
+            if (confirm("Yakin  Reset Password (Password akan direset sesuai nama email/username)?")) {
+                // Kirim request ke server untuk menghapus data
+                $.ajax({
+                    url: deleteUrl,
+                    type: 'PUT',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'), // Menyertakan CSRF token
+                    },
+                    success: function(response) {
+                        // Jika berhasil, reload DataTable
+                        alert(response.message); // Menampilkan pesan
+                        $('#simpletable').DataTable().ajax.reload(); // Reload data tabel
+                    },
+                    error: function(xhr, status, error) {
+                        // Tampilkan error jika ada masalah
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            }
         }
-    }
-</script>
-
-
-
+    </script>
 @endpush
-
