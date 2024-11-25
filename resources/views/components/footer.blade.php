@@ -65,13 +65,14 @@
                         <h4 class="widget-title">Link Terkait</h4>
                         <ul>
                             <li>
-                                <a href="about-us.html">DISNAKERTRANS KALTIM PROV</a>
+                                <a href="https://disnakertrans.kaltimprov.go.id/" target="_blank">DISNAKERTRANS PROV
+                                    KALTIM</a>
                             </li>
                             <li>
-                                <a href="faq.html">KEMNAKER RI</a>
+                                <a href="https://kemnaker.go.id/" target="_blank">KEMNAKER RI</a>
                             </li>
                             <li>
-                                <a href="about-us.html">KARIRHUB KEMNAKER</a>
+                                <a href="https://karirhub.kemnaker.go.id/">KARIRHUB KEMNAKER</a>
                             </li>
                             <!-- <li>
                                     <a href="pricing.html">Plans & Pricing</a>

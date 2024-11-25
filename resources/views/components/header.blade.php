@@ -9,7 +9,7 @@
     <meta name="description" content="Consua - Consulting Business Template">
 
     <!-- ========== Page Title ========== -->
-    <title>ETAM KERJA</title>
+    <title>ETAM KERJA - Disnakertrans Prov Kaltim</title>
 
     <!-- ========== Favicon Icon ========== -->
     <link rel="shortcut icon" href="{{ asset('assets') }}/etam_fe/images/logo/icon_etam.png" type="image/x-icon">
