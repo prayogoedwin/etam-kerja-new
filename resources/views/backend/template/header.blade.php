@@ -149,15 +149,21 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-end profile-notification">
                         <div class="pro-head">
-                            @php
-                                $xfoto = asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto);
-                            @endphp
-                            @if ($xfoto != null)
-                                <img src="{{ $xfoto }}" class="img-radius" alt="User-Profile-Image">
-                            @else
-                                <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}" class="img-radius"
-                                    alt="User-Profile-Image">
+                            @if (Auth::user()->roles[0]['name'] == 'super-admin')
+                            @elseif (Auth::user()->roles[0]['name'] == 'pencari-kerja')
+
+                            @elseif (Auth::user()->roles[0]['name'] == 'penyedia-kerja')
+                                @php
+                                    $xfoto = asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto);
+                                @endphp
+                                @if ($xfoto != null)
+                                    <img src="{{ $xfoto }}" class="img-radius" alt="User-Profile-Image">
+                                @else
+                                    <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}"
+                                        class="img-radius" alt="User-Profile-Image">
+                                @endif
                             @endif
+
 
                             <span>{{ Auth::user()->name }}</span>
                             <a href="auth-signin.html" class="dud-logout" title="Logout">
