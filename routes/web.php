@@ -13,6 +13,7 @@ use App\Http\Controllers\LowonganPencariController;
 use App\Http\Controllers\EtamFaqController;
 use App\Http\Controllers\Ak1PencariController;
 use App\Http\Controllers\UserPenyediaController;
+use App\Http\Controllers\ProfilPenyediaController;
 
 
 Route::get('/', function () {
@@ -37,6 +38,10 @@ Route::get('/depan/getjurusanbyid/{pendidikan_id}', [DepanController::class, 'ge
 Route::post('/depan/akhir_daftar-akun', [DepanController::class, 'akhir_daftar_akun'])->name('akhir-daftar-akun');
 Route::post('/depan/akhir_daftar-akun-perush', [DepanController::class, 'akhir_daftar_akun_perush'])->name('akhir-daftar-akun-perush');
 Route::get('/depan/getkabkotabyid/{prov_id}', [DepanController::class, 'getKabkotaByProv'])->name('get-kabkota-byprov');
+Route::get('/getpendidikans', function () {
+    $pendidikan = getPendidikan(); // Panggil fungsi helper
+    return response()->json($pendidikan); // Kembalikan data sebagai JSON
+})->name('get-all-pendidikan');
 
 
 
@@ -88,6 +93,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::prefix('penyedias')->group(function () {
         Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');
         Route::post('/lowongan/add', [LowonganController::class, 'store'])->name('lowongan.add');
+
+        Route::get('/profil', [ProfilPenyediaController::class, 'index'])->name('profil.penyedia.index');
     });
 
     Route::prefix('admins')->group(function () {

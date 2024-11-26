@@ -41,8 +41,9 @@
                                         <h5>Data</h5>
                                     </div>
                                     <div class="col-sm-6 text-end">
-                                        <button class="btn btn-success btn-sm btn-round has-ripple" data-bs-toggle="modal"
-                                            data-bs-target="#modal-report"><i class="feather icon-plus"></i> Add
+                                        <button id="btnAdd" class="btn btn-success btn-sm btn-round has-ripple"
+                                            data-bs-toggle="modal" data-bs-target="#modal-report"><i
+                                                class="feather icon-plus"></i> Add
                                             Data</button>
                                     </div>
                                 </div>
@@ -75,7 +76,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+        <div class="modal fade" id="modal-report" role="dialog" aria-labelledby="myExtraLargeModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -174,21 +175,19 @@
                                         <label for="pendid">Pendidikan</label>
                                         <select class="form-control" name="pendidikan_id" id="pendidikan_id" required>
                                             <option value="">Pilih Pendidikan</option>
-                                            @foreach ($pendidikans as $pend)
-                                                <option value="{{ $pend->id }}">{{ $pend->name }}</option>
-                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
                                     <div class="form-group">
-                                        <label for="jur">Jurusan</label>
-                                        <select class="form-control" name="jurusan_id" id="jurusan_id" required>
-                                            <option selected disabled>Pilih Jurusan</option>
+                                        <label for="">Jurusan</label>
+                                        <select class="form-control" name="jurusan_id" id="jurusan_id"
+                                            style="width: 100%;" required>
+                                            <option value="">Pilih Jurusan</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-12">
+                                {{-- <div class="col-sm-12">
                                     <div class="form-group">
                                         <label for="stskawin">Status Perkawinan</label>
                                         <select class="form-control" id="status_perkawinan_id"
@@ -199,7 +198,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
 
 
                                 <div class="col-sm-12">
@@ -251,6 +250,31 @@
 
 
 @push('js')
+    <script>
+        $("#btnAdd").click(function() {
+            $.ajax({
+                url: '{{ route('get-all-pendidikan') }}', // Endpoint Laravel
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    // Kosongkan dropdown
+                    let $pendidikanSelect = $('#pendidikan_id');
+                    $pendidikanSelect.empty();
+                    $pendidikanSelect.append('<option value="">-- Pilih Pendidikan --</option>');
+
+                    // Looping data dari response dan tambahkan ke select
+                    $.each(data, function(index, item) {
+                        $pendidikanSelect.append(
+                            `<option value="${item.id}">${item.name}</option>`);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+        });
+    </script>
+
     <script>
         $(document).ready(function() {
             $('#simpletable').DataTable({
@@ -460,6 +484,12 @@
                         console.error(xhr);
                     }
                 });
+            });
+
+            $("#jurusan_id").select2({
+                placeholder: "Pilih Jurusan",
+                allowClear: true,
+                dropdownParent: $("#modal-report")
             });
         });
     </script>

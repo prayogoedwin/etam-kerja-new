@@ -45,7 +45,7 @@ class LowonganController extends Controller
         $data['jabatans'] = getJabatan();
         $data['sektors'] = getSektor();
         $data['kabkotas'] = getKabkota();
-        $data['pendidikans'] = getPendidikan();
+        // $data['pendidikans'] = getPendidikan();
         $data['maritals'] = getMarital();
 
         return view('backend.lowongan.index', $data);

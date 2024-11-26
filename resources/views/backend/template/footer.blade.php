@@ -6,7 +6,8 @@
     <script src="{{ asset('assets') }}/etam_be/js/pcoded.min.js"></script>
 
     <!-- Include jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <!-- datatable Js -->
     <script src="{{ asset('assets') }}/etam_be/js/plugins/jquery.dataTables.min.js"></script>
@@ -17,6 +18,9 @@
     <script src="{{ asset('assets') }}/etam_be/js/plugins/apexcharts.min.js"></script>
     <!-- custom-chart js -->
     <script src="{{ asset('assets') }}/etam_be/js/pages/dashboard-main.js"></script>
+
+    <!-- Select2 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
             checkCookie();
@@ -61,5 +65,3 @@
             }
         }
     </script>
-
- 

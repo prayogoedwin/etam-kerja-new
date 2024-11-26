@@ -28,6 +28,8 @@
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" />
 
 </head>
 
@@ -45,7 +47,8 @@
         <a class="mobile-menu" id="mobile-collapse" href="#!"><span></span></a>
         <a href="#!" class="b-brand">
             <!-- ========   change your logo hear   ============ -->
-            <img src="{{ asset('assets') }}/etam_be/images/logo/logo_etam_white.png" alt="" class="logo" width="100px">
+            <img src="{{ asset('assets') }}/etam_be/images/logo/logo_etam_white.png" alt="" class="logo"
+                width="100px">
         </a>
         <a href="#!" class="mob-toggler">
             <i class="feather icon-more-vertical"></i>
@@ -82,7 +85,7 @@
                             </li>
                             <li class="notification">
                                 <div class="d-flex">
-                                    <img class="img-radius" src="{{ asset('assets') }}/etam_be/images/user/avatar-1.jpg" 
+                                    <img class="img-radius" src="{{ asset('assets') }}/etam_be/images/user/avatar-1.jpg"
                                         alt="Generic placeholder image">
                                     <div class="flex-grow-1">
                                         <p><strong>John Doe</strong><span class="n-time text-muted"><i
@@ -96,7 +99,7 @@
                             </li>
                             <li class="notification">
                                 <div class="d-flex">
-                                    <img class="img-radius"  src="{{ asset('assets') }}/etam_be/images/user/avatar-2.jpg" 
+                                    <img class="img-radius" src="{{ asset('assets') }}/etam_be/images/user/avatar-2.jpg"
                                         alt="Generic placeholder image">
                                     <div class="flex-grow-1">
                                         <p><strong>Joseph William</strong><span class="n-time text-muted"><i
@@ -143,16 +146,18 @@
                         <div class="pro-head">
                             <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}" class="img-radius"
                                 alt="User-Profile-Image">
-                            <span>John Doe</span>
+                            <span>{{ Auth::user()->name }}</span>
                             <a href="auth-signin.html" class="dud-logout" title="Logout">
                                 <i class="feather icon-log-out"></i>
                             </a>
                         </div>
                         <ul class="pro-body">
-                            <li><a href="user-profile.html" class="dropdown-item"><i class="feather icon-user"></i>
+                            <li><a href="{{ route('profil.penyedia.index') }}" class="dropdown-item"><i
+                                        class="feather icon-user"></i>
                                     Profile</a></li>
                             <!-- <li><a href="email_inbox.html" class="dropdown-item"><i class="feather icon-mail"></i> My Messages</a></li> -->
-                            <li><a href="{{ route('logout') }}" class="dropdown-item"><i class="feather icon-lock"></i>
+                            <li><a href="{{ route('logout') }}" class="dropdown-item"><i
+                                        class="feather icon-lock"></i>
                                     Logout</a></li>
                         </ul>
                     </div>
