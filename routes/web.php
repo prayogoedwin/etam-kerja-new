@@ -13,6 +13,7 @@ use App\Http\Controllers\LowonganPencariController;
 use App\Http\Controllers\EtamFaqController;
 use App\Http\Controllers\EtamInfografisController;
 use App\Http\Controllers\EtamGaleriController;
+use App\Http\Controllers\EtamBeritaController;
 use App\Http\Controllers\Ak1PencariController;
 use App\Http\Controllers\UserPenyediaController;
 use App\Http\Controllers\ProfilPenyediaController;
@@ -85,6 +86,12 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/galeri/{id}', [EtamGaleriController::class, 'edit'])->name('galeri.edit');
         Route::put('/galeri/update/{id}', [EtamGaleriController::class, 'update'])->name('galeri.update');
         Route::delete('/galeri/delete/{id}', [EtamGaleriController::class, 'destroy'])->name('galeri.destroy');
+
+        Route::get('/berita', [EtamBeritaController::class, 'index'])->name('berita.index');
+        Route::post('/berita/add', [EtamBeritaController::class, 'store'])->name('berita.add');
+        Route::get('/berita/{id}/edit', [EtamBeritaController::class, 'edit'])->name('berita.edit');
+        Route::put('/berita/{id}', [EtamBeritaController::class, 'update'])->name('berita.update');
+        Route::delete('/berita/delete/{id}', [EtamBeritaController::class, 'destroy'])->name('berita.destroy');
 
     });
 

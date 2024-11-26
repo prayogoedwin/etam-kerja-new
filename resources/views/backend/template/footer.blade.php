@@ -14,6 +14,9 @@
     <script src="{{ asset('assets') }}/etam_be/js/plugins/dataTables.bootstrap4.min.js"></script>
     <script src="{{ asset('assets') }}/etam_be/js/pages/data-basic-custom.js"></script>
 
+        <!-- Masukkan script Summernote -->
+        <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
     <!-- Apex Chart -->
     <script src="{{ asset('assets') }}/etam_be/js/plugins/apexcharts.min.js"></script>
     <!-- custom-chart js -->

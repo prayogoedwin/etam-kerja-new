@@ -45,6 +45,7 @@
                         <li><a href="{{ route('faq.index') }}">FAQ</a></li>
                         <li><a href="{{ route('infografis.index') }}">Infografis</a></li>
                         <li><a href="{{ route('galeri.index') }}">Galeri</a></li>
+                        <li><a href="{{ route('berita.index') }}">Berita</a></li>
                     </ul>
                 </li>
 
