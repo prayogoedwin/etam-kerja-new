@@ -4,8 +4,16 @@
 
             <div class="">
                 <div class="main-menu-header">
-                    <img class="img-radius" src="{{ asset('assets/etam_be/images/user/avatar-x.png') }}"
-                        alt="User-Profile-Image">
+                    @php
+                        $xfoto = asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto);
+                    @endphp
+                    @if ($xfoto != null)
+                        <img class="img-radius" src="{{ $xfoto }}" alt="User-Profile-Image" width="300px">
+                    @else
+                        <img class="img-radius" src="{{ asset('assets/etam_be/images/user/avatar-x.png') }}"
+                            alt="User-Profile-Image">
+                    @endif
+
                     <div class="user-details">
                         {{-- <div id="more-details"> {{ Auth::user()->name }} <i class="fa fa-caret-down"></i></div> --}}
                         <div id="more-details"> {{ Auth::user()->name }} </div>

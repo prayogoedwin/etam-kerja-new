@@ -28,6 +28,12 @@ function getAgama(){
         ->get();
 }
 
+function getRowPenyediaById($user_id){
+    return DB::table('users_penyedia')
+    ->where('user_id', $user_id) // Contoh filter jika diperlukan
+    ->first();
+}
+
 function getPendidikan(){
     return DB::table('etam_pendidikan')
     ->get();

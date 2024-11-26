@@ -125,7 +125,8 @@
                             </li>
                             <li class="notification">
                                 <div class="d-flex">
-                                    <img class="img-radius" src="{{ asset('assets/etam_be/images/user/avatar-2.jpg') }}"
+                                    <img class="img-radius"
+                                        src="{{ asset('assets/etam_be/images/user/avatar-2.jpg') }}"
                                         alt="Generic placeholder image">
                                     <div class="flex-grow-1">
                                         <p><strong>Joseph William</strong><span class="n-time text-muted"><i
@@ -148,8 +149,16 @@
                     </a>
                     <div class="dropdown-menu dropdown-menu-end profile-notification">
                         <div class="pro-head">
-                            <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}" class="img-radius"
-                                alt="User-Profile-Image">
+                            @php
+                                $xfoto = asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto);
+                            @endphp
+                            @if ($xfoto != null)
+                                <img src="{{ $xfoto }}" class="img-radius" alt="User-Profile-Image">
+                            @else
+                                <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}" class="img-radius"
+                                    alt="User-Profile-Image">
+                            @endif
+
                             <span>{{ Auth::user()->name }}</span>
                             <a href="auth-signin.html" class="dud-logout" title="Logout">
                                 <i class="feather icon-log-out"></i>
