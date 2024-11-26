@@ -12,6 +12,7 @@ use App\Http\Controllers\LowonganAdminController;
 use App\Http\Controllers\LowonganPencariController;
 use App\Http\Controllers\EtamFaqController;
 use App\Http\Controllers\EtamInfografisController;
+use App\Http\Controllers\EtamGaleriController;
 use App\Http\Controllers\Ak1PencariController;
 use App\Http\Controllers\UserPenyediaController;
 use App\Http\Controllers\ProfilPenyediaController;
@@ -78,6 +79,12 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/infografis/{id}', [EtamInfografisController::class, 'edit'])->name('infografis.edit');
         Route::put('/infografis/update/{id}', [EtamInfografisController::class, 'update'])->name('infografis.update');
         Route::delete('/infografis/delete/{id}', [EtamInfografisController::class, 'destroy'])->name('infografis.destroy');
+
+        Route::get('/galeri', [EtamGaleriController::class, 'index'])->name('galeri.index');
+        Route::post('/galeri/add', [EtamGaleriController::class, 'store'])->name('galeri.add');
+        Route::get('/galeri/{id}', [EtamGaleriController::class, 'edit'])->name('galeri.edit');
+        Route::put('/galeri/update/{id}', [EtamGaleriController::class, 'update'])->name('galeri.update');
+        Route::delete('/galeri/delete/{id}', [EtamGaleriController::class, 'destroy'])->name('galeri.destroy');
 
     });
 
