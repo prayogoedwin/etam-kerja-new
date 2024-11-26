@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProfilPenyedia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProfilPenyediaController extends Controller
 {
@@ -58,7 +59,52 @@ class ProfilPenyediaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+
+        // dd($request->all());
+
+        // Validasi data
+        $validatedData = $request->validate([
+            'name' => 'required',
+            'deskripsi' => 'required',
+            'jenis_perusahaan' => 'required',
+            // 'nomor_sip3mi' => 'required',
+            'nib' => 'required',
+            'id_sektor' => 'required',
+            // 'id_provinsi' => 'required',
+            // 'id_kota' => 'required',
+            // 'id_kecamatan' => 'required',
+            // 'id_desa' => 'required',
+            'alamat' => 'required',
+            'kodepos' => 'required',
+            'telpon' => 'required',
+            'jabatan' => 'required',
+            'website' => 'required',
+            // 'status_id' => 'required',
+            'foto' => 'required',
+            // 'shared_by_id' => 'required',
+            'posted_by' => 'required',
+        ]);
+
+        // dd($validatedData);
+
+        // Upload file
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $filePath = $file->store('logo_perusahaan', 'public'); // Menyimpan file di folder storage/app/public/logo_perusahaan
+            $validatedData['foto'] = $filePath; // Tambahkan path file ke data yang akan di-update
+        }
+
+        // Cari data berdasarkan ID
+        $post = ProfilPenyedia::findOrFail($id);
+        // Update data
+        $post->update($validatedData);
+
+        // Response sukses
+        return response()->json([
+            'status' => 1,
+            'message' => 'Berhasil update data',
+            // 'data' => $post
+        ], 200);
     }
 
     /**

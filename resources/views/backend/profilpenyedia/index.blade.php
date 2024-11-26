@@ -34,120 +34,233 @@
                         <div class="card">
                             <h5 class="card-header">Profil userid : {{ auth()->user()->id }}</h5>
                             <div class="card-body">
+                                <form id="profilForm">
+                                    <input type="hidden"id="editId" value="{{ $profil->id }}">
+                                    <input type="hidden" name="_token" id="_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="posted_by" value="{{ auth()->user()->id }}">
+                                    <div class="row">
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Status Akun</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="hidden" name="status_id" value="{{ $profil->status_id }}">
+                                                @if ($profil->status_id == 1)
+                                                    <span class="badge badge-light-success">Aktif</span>
+                                                @else
+                                                    <span class="badge badge-light-danger">Tidak Aktif</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Logo Perusahaan</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <img alt="Uploaded Image" src="{{ asset('storage/' . $profil->foto) }}"
+                                                    style="width: 180px;">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for=""></label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="file" class="validation-file" id="foto" name="foto"
+                                                    accept="image/png, image/gif, image/jpeg">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Nama</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="text" class="form-control" name="name" id="name"
+                                                    value="{{ $profil->name }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Deskripsi</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <textarea class="form-control" name="deskripsi" id="deskripsi" cols="30" rows="3">{{ $profil->deskripsi }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Jenis Perusahaan</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <select class="form-select" id="jenis_perusahaan" name="jenis_perusahaan"
+                                                    required>
+                                                    <option value="">Pilih Jenis</option>
+                                                    <option value="bumd"
+                                                        {{ $profil->jenis_perusahaan == 'bumd' ? 'selected' : '' }}>Badan
+                                                        Usaha
+                                                        Milik Daerah</option>
+                                                    <option value="bumn"
+                                                        {{ $profil->jenis_perusahaan == 'bumn' ? 'selected' : '' }}>Badan
+                                                        Usaha
+                                                        Milik Negara</option>
+                                                    <option value="cv"
+                                                        {{ $profil->jenis_perusahaan == 'cv' ? 'selected' : '' }}>
+                                                        Comanditer
+                                                        Venotschaap</option>
+                                                    <option value="firma"
+                                                        {{ $profil->jenis_perusahaan == 'firma' ? 'selected' : '' }}>Firma
+                                                    </option>
+                                                    <option value="instansi"
+                                                        {{ $profil->jenis_perusahaan == 'instansi' ? 'selected' : '' }}>
+                                                        Instansi
+                                                    </option>
+                                                    <option value="kp"
+                                                        {{ $profil->jenis_perusahaan == 'kp' ? 'selected' : '' }}>Koperasi
+                                                    </option>
+                                                    <option value="pt"
+                                                        {{ $profil->jenis_perusahaan == 'pt' ? 'selected' : '' }}>Perseroan
+                                                        Terbatas</option>
+                                                    <option value="pp"
+                                                        {{ $profil->jenis_perusahaan == 'pp' ? 'selected' : '' }}>
+                                                        Perusahaan
+                                                        Perorangan</option>
+                                                    <option value="po"
+                                                        {{ $profil->jenis_perusahaan == 'po' ? 'selected' : '' }}>PO*
+                                                    </option>
+                                                    <option value="yayasan"
+                                                        {{ $profil->jenis_perusahaan == 'yayasan' ? 'selected' : '' }}>
+                                                        Yayasan
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">NIB</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="text" class="form-control" name="nib" id="nib"
+                                                    value="{{ $profil->nib }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Sektor</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <select class="form-select" id="id_sektor" name="id_sektor" required>
+                                                    <option value="">Pilih Sektor</option>
+                                                    @foreach ($sektors as $sekt)
+                                                        <option value="{{ $sekt->id }}"
+                                                            {{ $profil->id_sektor == $sekt->id ? 'selected' : '' }}>
+                                                            {{ $sekt->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Provinsi</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="hidden" id="temp_provinsi_id"
+                                                    value="{{ $profil->id_provinsi }}">
+                                                <select class="form-select" id="provinsi_id" name="provinsi_id" disabled>
+                                                    <option value="">Pilih Provinsi</option>
+                                                    @foreach ($provinsis as $prov)
+                                                        <option value="{{ $prov->id }}">
+                                                            {{ $prov->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Kabupaten / Kota</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="hidden" id="temp_kabkota_id"
+                                                    value="{{ $profil->id_kota }}">
+                                                <select class="form-select" id="kabkota_id" name="kabkota_id" disabled>
+                                                    <option value="">Pilih Kabkota</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Kecamatan</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="hidden" id="temp_kecamatan_id"
+                                                    value="{{ $profil->id_kecamatan }}">
+                                                <select class="form-select" id="kecamatan_id" name="kecamatan_id"
+                                                    disabled>
+                                                    <option value="">Pilih Kecamatan</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Kelurahan</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="hidden" id="temp_desa_id" value="{{ $profil->id_desa }}">
+                                                <select class="form-select" id="desa_id" name="desa_id" disabled>
+                                                    <option value="">Pilih Kelurahan</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Alamat</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <textarea class="form-control" name="alamat" id="alamat" cols="30" rows="3">{{ $profil->alamat }}</textarea>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Kodepos</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="text" class=" form-control" name="kodepos"
+                                                    id="kodepos" value="{{ $profil->kodepos }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Telpon</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="text" class=" form-control" name="telpon"
+                                                    id="telpon" value="{{ $profil->telpon }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Jabatan</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="text" class=" form-control" name="jabatan"
+                                                    id="jabatan" value="{{ $profil->jabatan }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Website</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="text" class=" form-control" name="website"
+                                                    id="website" value="{{ $profil->website }}">
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <div class="row">
-                                    <div class="form-group row">
-                                        <div class="col-2">
-                                            <label for="">Nama</label>
-                                        </div>
-                                        <div class="col-10">
-                                            <input type="text" class="form-control" name="nama" id="nama"
-                                                value="{{ $profil->name }}">
-                                        </div>
+                                    <div class="text-end">
+                                        <button class="btn btn-primary" onclick="updateData()"
+                                            type="button">Update</button>
                                     </div>
-                                    <div class="form-group row">
-                                        <div class="col-2">
-                                            <label for="">Deskripsi</label>
-                                        </div>
-                                        <div class="col-10">
-                                            <textarea class="form-control" name="deskripsi" id="deskripsi" cols="30" rows="3">{{ $profil->deskripsi }}</textarea>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-2">
-                                            <label for="">Jenis Perusahaan</label>
-                                        </div>
-                                        <div class="col-10">
-                                            <select class="form-select" id="jenis_perusahaan" name="jenis_perusahaan"
-                                                required>
-                                                <option value="">Pilih Jenis</option>
-                                                <option value="bumd"
-                                                    {{ $profil->jenis_perusahaan == 'bumd' ? 'selected' : '' }}>Badan Usaha
-                                                    Milik Daerah</option>
-                                                <option value="bumn"
-                                                    {{ $profil->jenis_perusahaan == 'bumn' ? 'selected' : '' }}>Badan Usaha
-                                                    Milik Negara</option>
-                                                <option value="cv"
-                                                    {{ $profil->jenis_perusahaan == 'cv' ? 'selected' : '' }}>Comanditer
-                                                    Venotschaap</option>
-                                                <option value="firma"
-                                                    {{ $profil->jenis_perusahaan == 'firma' ? 'selected' : '' }}>Firma
-                                                </option>
-                                                <option value="instansi"
-                                                    {{ $profil->jenis_perusahaan == 'instansi' ? 'selected' : '' }}>Instansi
-                                                </option>
-                                                <option value="kp"
-                                                    {{ $profil->jenis_perusahaan == 'kp' ? 'selected' : '' }}>Koperasi
-                                                </option>
-                                                <option value="pt"
-                                                    {{ $profil->jenis_perusahaan == 'pt' ? 'selected' : '' }}>Perseroan
-                                                    Terbatas</option>
-                                                <option value="pp"
-                                                    {{ $profil->jenis_perusahaan == 'pp' ? 'selected' : '' }}>Perusahaan
-                                                    Perorangan</option>
-                                                <option value="po"
-                                                    {{ $profil->jenis_perusahaan == 'po' ? 'selected' : '' }}>PO*</option>
-                                                <option value="yayasan"
-                                                    {{ $profil->jenis_perusahaan == 'yayasan' ? 'selected' : '' }}>Yayasan
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-2">
-                                            <label for="">NIB</label>
-                                        </div>
-                                        <div class="col-10">
-                                            <input type="text" class="form-control" name="nama" id="nama"
-                                                value="{{ $profil->nib }}">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-2">
-                                            <label for="">Sektor</label>
-                                        </div>
-                                        <div class="col-10">
-                                            <select class="form-select" id="sektor_id" name="sektor_id" required>
-                                                <option value="">Pilih Sektor</option>
-                                                @foreach ($sektors as $sekt)
-                                                    <option value="{{ $sekt->id }}"
-                                                        {{ $profil->id_sektor == $sekt->id ? 'selected' : '' }}>
-                                                        {{ $sekt->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-2">
-                                            <label for="">Provinsi</label>
-                                        </div>
-                                        <div class="col-10">
-                                            <input type="hidden" id="temp_provinsi_id" value="{{ $profil->id_provinsi }}">
-                                            <select class="form-select" id="provinsi_id" name="provinsi_id" required>
-                                                <option value="">Pilih Provinsi</option>
-                                                @foreach ($provinsis as $prov)
-                                                    <option value="{{ $prov->id }}">
-                                                        {{ $prov->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <div class="col-2">
-                                            <label for="">Kabupaten / Kota</label>
-                                        </div>
-                                        <div class="col-10">
-                                            <select class="form-select" id="kabkota_id" name="kabkota_id" required>
-                                                <option value="">Pilih Kabkota</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="text-end">
-                                    <a href="#!" class="btn  btn-primary">Go somewhere</a>
-                                </div>
-
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -194,7 +307,7 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            $("#sektor_id").select2({
+            $("#id_sektor").select2({
                 placeholder: "Pilih Sektor"
             });
 
@@ -206,7 +319,7 @@
                 // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
                 $.ajax({
                     url: "{{ route('get-kabkota-byprov', ':id') }}".replace(':id',
-                    kd), // Panggil API
+                        kd), // Panggil API
                     type: 'GET',
                     success: function(response) {
                         // Kosongkan dropdown kecamatan sebelumnya
@@ -222,6 +335,8 @@
                                 '">' +
                                 kabkota.name + '</option>');
                         });
+
+                        genKabkota();
                     },
                     error: function(xhr) {
                         console.error(xhr);
@@ -232,6 +347,150 @@
             // Kemudian, set nilai dan trigger event
             var kdprov = $('#temp_provinsi_id').val();
             $('#provinsi_id').val(kdprov).trigger('change'); // Memicu event change
+
         });
+
+        function genKabkota() {
+            $('#kabkota_id').on('change', function() {
+                // alert(this.value); // Menampilkan nilai yang dipilih
+                var kabkd = this.value
+
+                // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+                $.ajax({
+                    url: "{{ route('get-kecamatan-bykabkota', ':id') }}".replace(':id',
+                        kabkd), // Panggil API
+                    type: 'GET',
+                    success: function(response) {
+                        // Kosongkan dropdown kecamatan sebelumnya
+                        $('#kecamatan_id').empty();
+
+                        // Tambahkan opsi default
+                        $('#kecamatan_id').append(
+                            '<option selected disabled>Pilih Kecamatan</option>');
+
+                        // Loop data kecamatan dan tambahkan ke dropdown
+                        $.each(response, function(index, kabkota) {
+                            $('#kecamatan_id').append('<option value="' + kabkota.id +
+                                '">' +
+                                kabkota.name + '</option>');
+                        });
+
+                        genKec();
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                    }
+                });
+            });
+
+            var kdkab = $('#temp_kabkota_id').val();
+            $('#kabkota_id').val(kdkab).trigger('change');
+        }
+
+        function genKec() {
+            $('#kecamatan_id').on('change', function() {
+                // alert(this.value); // Menampilkan nilai yang dipilih
+                var kec = this.value
+
+                // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+                $.ajax({
+                    url: "{{ route('get-desa-bykecamatan', ':id') }}".replace(':id',
+                        kec), // Panggil API
+                    type: 'GET',
+                    success: function(response) {
+                        // Kosongkan dropdown kecamatan sebelumnya
+                        $('#desa_id').empty();
+
+                        // Tambahkan opsi default
+                        $('#desa_id').append(
+                            '<option selected disabled>Pilih Kelurahan</option>');
+
+                        // Loop data kecamatan dan tambahkan ke dropdown
+                        $.each(response, function(index, kabkota) {
+                            $('#desa_id').append('<option value="' + kabkota.id +
+                                '">' +
+                                kabkota.name + '</option>');
+                        });
+
+                        genDesa();
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                    }
+                });
+            });
+
+            var kdkec = $('#temp_kecamatan_id').val();
+            $('#kecamatan_id').val(kdkec).trigger('change');
+        }
+
+        function genDesa() {
+            // $('#desa_id').on('change', function() {
+            //     // alert(this.value); // Menampilkan nilai yang dipilih
+            //     var kel = this.value
+
+            //     // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+            //     $.ajax({
+            //         url: "{{ route('get-desa-bykecamatan', ':id') }}".replace(':id',
+            //             kel), // Panggil API
+            //         type: 'GET',
+            //         success: function(response) {
+            //             // Kosongkan dropdown kecamatan sebelumnya
+            //             $('#desa_id').empty();
+
+            //             // Tambahkan opsi default
+            //             $('#desa_id').append(
+            //                 '<option selected disabled>Pilih Kelurahan</option>');
+
+            //             // Loop data kecamatan dan tambahkan ke dropdown
+            //             $.each(response, function(index, kabkota) {
+            //                 $('#desa_id').append('<option value="' + kabkota.id +
+            //                     '">' +
+            //                     kabkota.name + '</option>');
+            //             });
+            //         },
+            //         error: function(xhr) {
+            //             console.error(xhr);
+            //         }
+            //     });
+            // });
+
+            var kddes = $('#temp_desa_id').val();
+            $('#desa_id').val(kddes).trigger('change');
+        }
+    </script>
+    <script>
+        function updateData() {
+            var id = $('#editId').val();
+            var tkn = $('#_token').val();
+            let dataf = new FormData(document.getElementById("profilForm"));
+
+            // Tambahkan CSRF token dan metode PUT
+            dataf.append('_token', tkn);
+            dataf.append('_method', 'PUT');
+
+            // Send the data to the update route
+            $.ajax({
+                url: "{{ route('profil.penyedia.update', ':id') }}".replace(':id', id),
+                type: 'POST',
+                data: dataf,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // console.log(response);
+                    if (response.status == 1) {
+                        // Optionally, reload the table or page to reflect the update
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        // Display error message
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error: ' + xhr.responseText);
+                }
+            });
+        }
     </script>
 @endpush
