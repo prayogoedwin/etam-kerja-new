@@ -11,6 +11,7 @@ use App\Http\Controllers\LowonganController;
 use App\Http\Controllers\LowonganAdminController;
 use App\Http\Controllers\LowonganPencariController;
 use App\Http\Controllers\EtamFaqController;
+use App\Http\Controllers\EtamInfografisController;
 use App\Http\Controllers\Ak1PencariController;
 use App\Http\Controllers\UserPenyediaController;
 use App\Http\Controllers\ProfilPenyediaController;
@@ -71,6 +72,13 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/faq/get/{id}', [EtamFaqController::class, 'getData'])->name('faq.detail');
         Route::delete('/faq/delete/{id}', [EtamFaqController::class, 'softdelete'])->name('faq.softdelete');
         Route::put('/faq/update/{id}', [EtamFaqController::class, 'update'])->name('faq.update');
+
+        Route::get('/infografis', [EtamInfografisController::class, 'index'])->name('infografis.index');
+        Route::post('/infografis/add', [EtamInfografisController::class, 'store'])->name('infografis.add');
+        Route::get('/infografis/{id}', [EtamInfografisController::class, 'edit'])->name('infografis.edit');
+        Route::put('/infografis/update/{id}', [EtamInfografisController::class, 'update'])->name('infografis.update');
+        Route::delete('/infografis/delete/{id}', [EtamInfografisController::class, 'destroy'])->name('infografis.destroy');
+
     });
 
     Route::prefix('users')->group(function () {

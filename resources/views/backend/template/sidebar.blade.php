@@ -43,6 +43,7 @@
                     <ul class="pcoded-submenu">
                         <li><a href="{{ route('roles.index') }}">Role</a></li>
                         <li><a href="{{ route('faq.index') }}">FAQ</a></li>
+                        <li><a href="{{ route('infografis.index') }}">Infografis</a></li>
                     </ul>
                 </li>
 
