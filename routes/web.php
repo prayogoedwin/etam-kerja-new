@@ -107,7 +107,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::delete('/pencari/delete/{id}', [UserPencariController::class, 'softdelete'])->name('userpencari.softdelete');
         Route::put('/pencari/reset/{id}', [UserPencariController::class, 'reset'])->name('userpencari.reset');
 
-        Route::get('/penyedia', [UserPenyediaController::class, 'index'])->name('userperush.index');
+        Route::get('/penyedia', [UserPenyediaController::class, 'index'])->name('userpenyedia.index');
+        Route::delete('/penyedia/delete/{id}', [UserPenyediaController::class, 'softdelete'])->name('userpenyedia.softdelete');
+        Route::put('/penyedia/reset/{id}', [UserPenyediaController::class, 'reset'])->name('userpenyedia.reset');
 
 
     });
