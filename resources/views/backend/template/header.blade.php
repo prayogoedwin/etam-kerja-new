@@ -150,8 +150,11 @@
                     <div class="dropdown-menu dropdown-menu-end profile-notification">
                         <div class="pro-head">
                             @if (Auth::user()->roles[0]['name'] == 'super-admin')
+                                <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}" class="img-radius"
+                                    alt="User-Profile-Image">
                             @elseif (Auth::user()->roles[0]['name'] == 'pencari-kerja')
-
+                                <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}" class="img-radius"
+                                    alt="User-Profile-Image">
                             @elseif (Auth::user()->roles[0]['name'] == 'penyedia-kerja')
                                 @php
                                     $xfoto = asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto);
