@@ -174,9 +174,19 @@
                             </a>
                         </div>
                         <ul class="pro-body">
-                            <li><a href="{{ route('profil.penyedia.index') }}" class="dropdown-item"><i
-                                        class="feather icon-user"></i>
-                                    Profile</a></li>
+                            <li>
+                                @if (Auth::user()->roles[0]['name'] == 'super-admin')
+                                    <a href="#" class="dropdown-item"><i class="feather icon-user"></i>
+                                        Profile</a>
+                                @elseif (Auth::user()->roles[0]['name'] == 'pencari-kerja')
+                                    <a href="#" class="dropdown-item"><i class="feather icon-user"></i>
+                                        Profile</a>
+                                @elseif (Auth::user()->roles[0]['name'] == 'penyedia-kerja')
+                                    <a href="{{ route('profil.penyedia.index') }}" class="dropdown-item"><i
+                                            class="feather icon-user"></i>
+                                        Profile</a>
+                                @endif
+                            </li>
                             <!-- <li><a href="email_inbox.html" class="dropdown-item"><i class="feather icon-mail"></i> My Messages</a></li> -->
                             <li><a href="{{ route('logout') }}" class="dropdown-item"><i
                                         class="feather icon-lock"></i>
