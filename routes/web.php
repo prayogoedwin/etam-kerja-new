@@ -103,7 +103,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::post('/lowongan/add', [LowonganController::class, 'store'])->name('lowongan.add');
 
         Route::get('/profil', [ProfilPenyediaController::class, 'index'])->name('profil.penyedia.index');
-        Route::post('/profil/update/{id}', [ProfilPenyediaController::class, 'update'])->name('profil.penyedia.update');
+        Route::put('/profil/update/{id}', [ProfilPenyediaController::class, 'update'])->name('profil.penyedia.update');
     });
 
     Route::prefix('admins')->group(function () {
