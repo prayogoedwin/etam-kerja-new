@@ -190,7 +190,7 @@
                                     <label for="stskawin">Status Perkawinan</label>
                                     <select class="form-control" id="status_perkawinan_id" name="status_perkawinan_id"
                                         disabled>
-                                        <option selected disabled>Pilih Status</option>
+                                        <option value="">Pilih Status</option>
                                         @foreach ($maritals as $marit)
                                             <option value="{{ $marit->id }}">{{ $marit->name }}</option>
                                         @endforeach
@@ -201,7 +201,7 @@
                                 <div class="form-group">
                                     <label for="jur">Status Acc</label>
                                     <select class="form-control" name="status_id" id="status_id" required>
-                                        <option selected disabled>Pilih Status Acc</option>
+                                        <option value="">Pilih Status Acc</option>
                                         <option value="0">Menunggu</option>
                                         <option value="1">Lowongan Acc</option>
                                         <option value="2">Lowongan Ditolak</option>
