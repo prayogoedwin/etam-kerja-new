@@ -32,7 +32,7 @@ class UserPenyediaController extends Controller
                 ->addColumn('email', function ($penyedia) {
                     return $penyedia->user ? $penyedia->user->email : 'N/A';
                 })
-                ->addColumn('whatsapp', function ($pencari) {
+                ->addColumn('whatsapp', function ($penyedia) {
                     return $penyedia->user ? $penyedia->user->whatsapp : 'N/A';
                 })
                 // ->addColumn('roles', function ($pencari) {
@@ -61,51 +61,44 @@ class UserPenyediaController extends Controller
     }
 
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function softdelete($id)
     {
-        //
+        try {
+            // Cari admin berdasarkan ID
+            $admin = UserPenyedia::findOrFail($id);
+            $admin->delete();
+
+            // Soft delete juga user yang terkait dengan admin ini (misalnya, jika memiliki relasi)
+            $user = User::where('id', $admin->user_id)->first();  // Sesuaikan relasi dengan tabel User jika ada
+            if ($user) {
+                // Set is_deleted = 1 untuk soft delete user
+                $user->is_deleted = 1;
+                $user->save();  // Simpan perubahan
+                $user->delete(); 
+            }
+
+            return response()->json(['success' => true, 'message' => 'Hapus data berhasil']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+
+    public function reset($id)
     {
-        //
+        try {
+            $admin = UserPenyedia::findOrFail($id);
+            $user = User::findOrFail($admin->user_id);
+
+            $user = $admin->user;  // Ambil user yang terkait dengan admin ini
+            $user->update([
+                'password' => bcrypt($user->email),
+            ]);
+
+            return response()->json(['success' => true, 'message' => 'Reset data berhasil']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }
