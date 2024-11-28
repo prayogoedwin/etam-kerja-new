@@ -118,6 +118,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::prefix('penyedias')->group(function () {
         Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');
         Route::post('/lowongan/add', [LowonganController::class, 'store'])->name('lowongan.add');
+        Route::get('/lowongan/pelamar/{id}', [LowonganController::class, 'pelamar'])->name('lowongan.pelamar');
+        Route::get('/lowongan/detail_pelamar/{id}', [LowonganController::class, 'detailpelamar'])->name('lowongan.detailpelamar');
+        // Route::delete('/lowongan/delete/{id}', [LowonganController::class, 'softdelete'])->name('lowongan.softdelete');
 
         Route::get('/profil', [ProfilPenyediaController::class, 'index'])->name('profil.penyedia.index');
         Route::put('/profil/update/{id}', [ProfilPenyediaController::class, 'update'])->name('profil.penyedia.update');

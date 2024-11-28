@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Lowongan;
+use App\Models\Lamaran;
+use App\Models\ProfilPencari;
 use Yajra\DataTables\Facades\DataTables;  // Mengimpor DataTables
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -35,6 +37,7 @@ class LowonganController extends Controller
                 ->addColumn('options', function ($loker) {
                     // <button class="btn btn-primary btn-sm" onclick="showEditModal(' . $data->id . ')">Edit</button>
                     return '
+                        <a href="' . route('lowongan.pelamar', encode_url($loker->id)) . '" class="btn btn-info btn-sm">Lihat Pelamar</a>
                         <button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $loker->id . ')">Delete</button>
                     ';
                 })
@@ -147,6 +150,72 @@ class LowonganController extends Controller
     public function update(Request $request, string $id)
     {
         //
+    }
+
+    public function pelamar(Request $request, string $id)
+    {
+        if ($request->ajax()) {
+            $pelamars = Lamaran::select(
+                    'etam_lamaran.id',
+                    'users.id as user_id',
+                    'users.email',
+                    'users.whatsapp',
+                    'users_pencari.name', // Select name from users_pencari
+                    'etam_lamaran.keterangan',
+                    'etam_lamaran.created_at'
+                )
+                ->join('users', 'etam_lamaran.pencari_id', '=', 'users.id') // Join with users table
+                ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id') // Join with users_pencari table
+                ->where('etam_lamaran.lowongan_id', $id)
+                ->whereNull('etam_lamaran.deleted_at'); // Ensure data is not deleted
+
+            return DataTables::of($pelamars)
+                ->addIndexColumn()
+                ->editColumn('created_at', function ($pelamar) {
+                    return $pelamar->created_at->format('Y M d H:i:s');
+                })
+                ->addColumn('options', function ($pelamar) {
+                    $fpel = "'" . short_encode_url($pelamar->user_id) . "'";
+                    return '
+                        <button class="btn btn-primary btn-sm" onclick="showDetailModal(' . $fpel . ')">Detail</button>
+                    ';
+                })
+                ->rawColumns(['options'])
+                ->make(true);
+        }
+
+        $real_id = decode_url($id);
+        $data['lowongan'] = Lowongan::find($real_id);
+        $data['lowongan_id'] = $real_id;
+
+        // return view('backend.lowongan.pelamar', ['lowongan_id' => $id]);
+        return view('backend.lowongan.pelamar', $data);
+        // echo json_encode($data);
+    }
+
+    public function detailpelamar(string $id){
+        $userid = short_decode_url($id);
+        // dd($userid);
+        // $data['pelamar'] = DB::table('users_pencari')
+        //     ->join('users', 'users_pencari.user_id', '=', 'users.id')
+        //     ->where('users.id', $real_id)
+        //     ->first();
+
+        // return view('backend.lowongan.detailpelamar', $data);
+        // $pelamar = ProfilPencari::with('user')->find($id);
+        $pelamar = ProfilPencari::with('user')->where('user_id', $userid)->first();
+
+        if(!$pelamar){
+            return response()->json([
+                'status' => 0,
+                'message' => 'Data not found'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 1,
+            'data' => $pelamar
+        ]);
     }
 
     /**

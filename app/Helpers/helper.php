@@ -90,6 +90,36 @@ function decode_url($url){
     return substr($c, 0, $x);
 }
 
+function short_encode_url($id){
+    $strength = 2;
+    // $permitted_chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    // $input = 'ABC2';
+    $input = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    // $input2 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $input_length = strlen($input);
+    // $input_length2 = strlen($input2);
+    $random_string = '';
+    $random_string2 = '';
+
+    for($i = 0; $i < $strength; $i++) {
+        $random_character = $input[mt_rand(0, $input_length - 1)];
+        $random_string .= $random_character;
+    }
+
+    for($i = 0; $i < $strength; $i++) {
+        $random_character = $input[mt_rand(0, $input_length - 1)];
+        $random_string2 .= $random_character;
+    }
+
+    return  $random_string.$id.$random_string2;
+}
+
+function short_decode_url($id){
+    $res = substr($id, 2, -2);
+
+    return $res;
+}
+
 function generateOtp($length = 5)
 {
     $characters = '123456789ABCDEFGHJKLMNPQRSTUVWXYZ';
