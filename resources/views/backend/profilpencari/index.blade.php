@@ -32,7 +32,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <h5 class="card-header">Profil userid : {{ auth()->user()->id }}</h5>
+                            <h5 class="card-header">Profil Data</h5>
                             <div class="card-body">
                                 <form id="profilForm">
                                     <input type="hidden"id="editId" value="{{ $profil->id }}">

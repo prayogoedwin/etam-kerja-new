@@ -32,7 +32,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <h5 class="card-header">Profil userid : {{ auth()->user()->id }}</h5>
+                            <h5 class="card-header">Profil Data</h5>
                             <div class="card-body">
                                 <form id="profilForm">
                                     <input type="hidden"id="editId" value="{{ $profil->id }}">
@@ -57,8 +57,16 @@
                                                 <label for="">Logo Perusahaan</label>
                                             </div>
                                             <div class="col-10">
-                                                <img alt="Uploaded Image" src="{{ asset('storage/' . $profil->foto) }}"
-                                                    style="width: 180px;">
+                                                @php
+                                                    $xfoto = $profil->foto;
+                                                @endphp
+
+                                                @if ($xfoto != null)
+                                                    <img alt="Uploaded Image" src="{{ asset('storage/' . $profil->foto) }}"
+                                                        style="width: 180px;">
+                                                @else
+                                                    <small>Belum ada foto, silahkan unggah</small>
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="form-group row">
