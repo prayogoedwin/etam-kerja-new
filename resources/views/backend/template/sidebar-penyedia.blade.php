@@ -5,9 +5,10 @@
             <div class="">
                 <div class="main-menu-header">
                     @php
+                        $cekfoto = getRowPenyediaById(Auth::user()->id)->foto;
                         $xfoto = asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto);
                     @endphp
-                    @if ($xfoto != null)
+                    @if ($cekfoto != null)
                         <img class="img-radius" src="{{ $xfoto }}" alt="User-Profile-Image" width="300px">
                     @else
                         <img class="img-radius" src="{{ asset('assets/etam_be/images/user/avatar-x.png') }}"

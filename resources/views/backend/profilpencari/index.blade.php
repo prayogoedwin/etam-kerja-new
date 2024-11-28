@@ -14,7 +14,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">Profil Penyedia Kerja</h5>
+                                    <h5 class="m-b-10">Profil Pencari Kerja</h5>
                                 </div>
                                 {{-- <ul class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
@@ -54,11 +54,19 @@
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
-                                                <label for="">Logo Perusahaan</label>
+                                                <label for="">Foto</label>
                                             </div>
                                             <div class="col-10">
-                                                <img alt="Uploaded Image" src="{{ asset('storage/' . $profil->foto) }}"
-                                                    style="width: 180px;">
+                                                @php
+                                                    $xfoto = $profil->foto;
+                                                @endphp
+
+                                                @if ($xfoto != null)
+                                                    <img alt="Uploaded Image" src="{{ asset('storage/' . $profil->foto) }}"
+                                                        style="width: 180px;">
+                                                @else
+                                                    <small>Belum ada foto, silahkan unggah</small>
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -72,6 +80,15 @@
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
+                                                <label for="">KTP</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="text" class="form-control" name="ktp" id="ktp"
+                                                    value="{{ $profil->ktp }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
                                                 <label for="">Nama</label>
                                             </div>
                                             <div class="col-10">
@@ -81,79 +98,33 @@
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
-                                                <label for="">Deskripsi</label>
+                                                <label for="">Tempat Lahir</label>
                                             </div>
                                             <div class="col-10">
-                                                <textarea class="form-control" name="deskripsi" id="deskripsi" cols="30" rows="3">{{ $profil->deskripsi }}</textarea>
+                                                <input type="text" class="form-control" name="tempat_lahir"
+                                                    id="tempat_lahir" value="{{ $profil->tempat_lahir }}">
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
-                                                <label for="">Jenis Perusahaan</label>
+                                                <label for="">Tanggal Lahir</label>
                                             </div>
-                                            <div class="col-10">
-                                                <select class="form-select" id="jenis_perusahaan" name="jenis_perusahaan"
-                                                    required>
-                                                    <option value="">Pilih Jenis</option>
-                                                    <option value="bumd"
-                                                        {{ $profil->jenis_perusahaan == 'bumd' ? 'selected' : '' }}>Badan
-                                                        Usaha
-                                                        Milik Daerah</option>
-                                                    <option value="bumn"
-                                                        {{ $profil->jenis_perusahaan == 'bumn' ? 'selected' : '' }}>Badan
-                                                        Usaha
-                                                        Milik Negara</option>
-                                                    <option value="cv"
-                                                        {{ $profil->jenis_perusahaan == 'cv' ? 'selected' : '' }}>
-                                                        Comanditer
-                                                        Venotschaap</option>
-                                                    <option value="firma"
-                                                        {{ $profil->jenis_perusahaan == 'firma' ? 'selected' : '' }}>Firma
-                                                    </option>
-                                                    <option value="instansi"
-                                                        {{ $profil->jenis_perusahaan == 'instansi' ? 'selected' : '' }}>
-                                                        Instansi
-                                                    </option>
-                                                    <option value="kp"
-                                                        {{ $profil->jenis_perusahaan == 'kp' ? 'selected' : '' }}>Koperasi
-                                                    </option>
-                                                    <option value="pt"
-                                                        {{ $profil->jenis_perusahaan == 'pt' ? 'selected' : '' }}>Perseroan
-                                                        Terbatas</option>
-                                                    <option value="pp"
-                                                        {{ $profil->jenis_perusahaan == 'pp' ? 'selected' : '' }}>
-                                                        Perusahaan
-                                                        Perorangan</option>
-                                                    <option value="po"
-                                                        {{ $profil->jenis_perusahaan == 'po' ? 'selected' : '' }}>PO*
-                                                    </option>
-                                                    <option value="yayasan"
-                                                        {{ $profil->jenis_perusahaan == 'yayasan' ? 'selected' : '' }}>
-                                                        Yayasan
-                                                    </option>
-                                                </select>
+                                            <div class="col-2">
+                                                <input type="date" class="form-control" name="tanggal_lahir"
+                                                    id="tanggal_lahir" value="{{ $profil->tanggal_lahir }}">
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
-                                                <label for="">NIB</label>
+                                                <label for="">Agama</label>
                                             </div>
                                             <div class="col-10">
-                                                <input type="text" class="form-control" name="nib" id="nib"
-                                                    value="{{ $profil->nib }}">
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <div class="col-2">
-                                                <label for="">Sektor</label>
-                                            </div>
-                                            <div class="col-10">
-                                                <select class="form-select" id="id_sektor" name="id_sektor" required>
-                                                    <option value="">Pilih Sektor</option>
-                                                    @foreach ($sektors as $sekt)
-                                                        <option value="{{ $sekt->id }}"
-                                                            {{ $profil->id_sektor == $sekt->id ? 'selected' : '' }}>
-                                                            {{ $sekt->name }}</option>
+                                                <select class="form-select" id="id_agama" name="id_agama" required>
+                                                    <option value="">Pilih Agama</option>
+                                                    @foreach ($agamas as $ag)
+                                                        <option value="{{ $ag->id }}"
+                                                            {{ $profil->id_agama == $ag->id ? 'selected' : '' }}>
+                                                            {{ $ag->name }}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -229,29 +200,48 @@
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
+                                                <label for="">Pendidikan</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="hidden" id="temp_pendidikan_id"
+                                                    value="{{ $profil->id_pendidikan }}">
+                                                <select class="form-select" id="id_pendidikan" name="id_pendidikan"
+                                                    required>
+                                                    <option value="">Pilih Pendidikan</option>
+                                                    @foreach ($pendidikans as $ag)
+                                                        <option value="{{ $ag->id }}">{{ $ag->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Jurusan</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="hidden" id="temp_jurusan_id"
+                                                    value="{{ $profil->id_jurusan }}">
+                                                <select class="form-select" id="id_jurusan" name="id_jurusan" required>
+                                                    <option value="">Pilih Jurusan</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
                                                 <label for="">Telpon</label>
                                             </div>
                                             <div class="col-10">
-                                                <input type="text" class=" form-control" name="telpon"
-                                                    id="telpon" value="{{ $profil->telpon }}">
+                                                <input type="number" class=" form-control" name="whatsapp"
+                                                    id="whatsapp" value="{{ $profil->user->whatsapp }}">
                                             </div>
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
-                                                <label for="">Jabatan</label>
+                                                <label for="">Sosial Media</label>
                                             </div>
                                             <div class="col-10">
-                                                <input type="text" class=" form-control" name="jabatan"
-                                                    id="jabatan" value="{{ $profil->jabatan }}">
-                                            </div>
-                                        </div>
-                                        <div class="form-group row">
-                                            <div class="col-2">
-                                                <label for="">Website</label>
-                                            </div>
-                                            <div class="col-10">
-                                                <input type="text" class=" form-control" name="website"
-                                                    id="website" value="{{ $profil->website }}">
+                                                <input type="text" class=" form-control" name="medsos"
+                                                    id="medsos" value="{{ $profil->medsos }}">
                                             </div>
                                         </div>
                                     </div>
@@ -307,8 +297,8 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            $("#id_sektor").select2({
-                placeholder: "Pilih Sektor"
+            $("#id_jurusan").select2({
+                placeholder: "Pilih Jurusan"
             });
 
             // Pertama pasang event handler change
@@ -347,6 +337,43 @@
             // Kemudian, set nilai dan trigger event
             var kdprov = $('#temp_provinsi_id').val();
             $('#provinsi_id').val(kdprov).trigger('change'); // Memicu event change
+
+            //onchange pendidikan
+            $('#id_pendidikan').on('change', function() {
+                // alert(this.value); // Menampilkan nilai yang dipilih
+                var kd = this.value
+
+                // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+                $.ajax({
+                    url: "{{ route('get-jurusan-bypendidikan', ':id') }}".replace(':id',
+                        kd), // Panggil API
+                    type: 'GET',
+                    success: function(response) {
+                        // Kosongkan dropdown kecamatan sebelumnya
+                        $('#id_jurusan').empty();
+
+                        // Tambahkan opsi default
+                        $('#id_jurusan').append(
+                            '<option selected disabled>Pilih Jurusan</option>');
+
+                        // Loop data kecamatan dan tambahkan ke dropdown
+                        $.each(response, function(index, jur) {
+                            $('#id_jurusan').append('<option value="' + jur.id +
+                                '">' +
+                                jur.nama + '</option>');
+                        });
+
+                        var kdjur = $('#temp_jurusan_id').val();
+                        $('#id_jurusan').val(kdjur).trigger('change'); // Memicu event change
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                    }
+                });
+            });
+
+            var kdpendidikan = $('#temp_pendidikan_id').val();
+            $('#id_pendidikan').val(kdpendidikan).trigger('change'); // Memicu event change
 
         });
 
@@ -471,7 +498,7 @@
 
             // Send the data to the update route
             $.ajax({
-                url: "{{ route('profil.penyedia.update', ':id') }}".replace(':id', id),
+                url: "{{ route('profil.pencari.update', ':id') }}".replace(':id', id),
                 type: 'POST',
                 data: dataf,
                 processData: false,
@@ -484,7 +511,7 @@
                         location.reload();
                     } else {
                         // Display error message
-                        alert('Error: ' + response.message);
+                        alert('Error: ' + JSON.stringify(response.errors));
                     }
                 },
                 error: function(xhr) {

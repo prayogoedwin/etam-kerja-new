@@ -17,6 +17,7 @@ use App\Http\Controllers\EtamBeritaController;
 use App\Http\Controllers\Ak1PencariController;
 use App\Http\Controllers\UserPenyediaController;
 use App\Http\Controllers\ProfilPenyediaController;
+use App\Http\Controllers\ProfilPencariController;
 
 
 Route::get('/', function () {
@@ -132,6 +133,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/lowongan', [LowonganPencariController::class, 'index'])->name('lowongan.pencari.index');
         Route::get('/lowongan/get/{id}', [LowonganPencariController::class, 'show'])->name('lowongan.pencari.detail');
         Route::put('/lowongan/lamar/{id}', [LowonganPencariController::class, 'lamar'])->name('lowongan.pencari.lamar');
+
+        Route::get('/profil', [ProfilPencariController::class, 'index'])->name('profil.pencari.index');
+        Route::put('/profil/update/{id}', [ProfilPencariController::class, 'update'])->name('profil.pencari.update');
 
         Route::get('/ak1', [Ak1PencariController::class, 'index'])->name('ak1.index');
     });

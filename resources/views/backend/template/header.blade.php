@@ -179,7 +179,8 @@
                                     <a href="#" class="dropdown-item"><i class="feather icon-user"></i>
                                         Profile</a>
                                 @elseif (Auth::user()->roles[0]['name'] == 'pencari-kerja')
-                                    <a href="#" class="dropdown-item"><i class="feather icon-user"></i>
+                                    <a href="{{ route('profil.pencari.index') }}" class="dropdown-item"><i
+                                            class="feather icon-user"></i>
                                         Profile</a>
                                 @elseif (Auth::user()->roles[0]['name'] == 'penyedia-kerja')
                                     <a href="{{ route('profil.penyedia.index') }}" class="dropdown-item"><i
