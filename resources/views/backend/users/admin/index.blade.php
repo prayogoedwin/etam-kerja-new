@@ -55,6 +55,7 @@
                                                 <th>Email</th>
                                                 <th>Whatsapp</th>
                                                 <th>Role</th>
+                                                <th>Kabkota</th>
                                                 <th>Options</th>
                                             </tr>
                                         </thead>
@@ -128,8 +129,8 @@
                                         <label for="kabkota_id" class="form-label">Kabupaten/Kota</label>
                                         <select id="kabkota_id" name="kabkota_id" class="form-control" required>
                                             <option value="">-- Pilih Lokasi --</option>
-                                            @foreach (getKabkota() as $id => $lokasi)
-                                                <option value="{{ $id }}">{{ $lokasi->name }}</option>
+                                            @foreach (getKabkota() as $lokasi)
+                                                <option value="{{ $lokasi->id }}">{{ $lokasi->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -182,6 +183,19 @@
                                     @endforeach
                                 </select>
                             </div>
+
+                            <div class="col-sm-12" id="kabkotaDivE" style="display: none;">
+                                <div class="form-group">
+                                    <label for="editkabkota_id" class="form-label">Kabupaten/Kota</label>
+                                    <select id="editkabkota_id" name="kabkota_id" class="form-control" required>
+                                        <option value="">-- Pilih Lokasi --</option>
+                                        @foreach (getKabkota() as $lokasi)
+                                            <option value="{{ $lokasi->id }}">{{ $lokasi->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
                             <button type="submit" class="btn btn-primary" onclick="updateFaq()">Save Changes</button>
                         </form>
                     </div>
@@ -219,6 +233,11 @@
                         data: 'roles'
                     },
                     {
+                        data: 'kabkota'
+                    },
+
+                    
+                    {
                         data: 'options',
                         orderable: false,
                         searchable: false
@@ -253,6 +272,8 @@
             }
         });
     </script>
+
+
 
     <script>
         $(document).ready(function() {
@@ -305,46 +326,67 @@
     </script>
 
     <script>
+        // Define the toggleKabkotaFieldE function globally
+        function toggleKabkotaFieldE(selectedRole) {
+            if (selectedRole == '4') {
+                // Show the kabkota field and make it required
+                $('#kabkotaDivE').show();
+                $('#editkabkota_id').prop('required', true);
+            } else {
+                // Hide the kabkota field and remove the required attribute
+                $('#kabkotaDivE').hide();
+                $('#editkabkota_id').prop('required', false);
+            }
+        }
+
+        $(document).ready(function () {
+            // Event listener for role change inside the modal
+            $('#editRole').change(function () {
+                toggleKabkotaFieldE($(this).val());
+            });
+        });
+
         function showEditModal(adminId) {
             var detailUrl = "{{ route('admin.detail', ':id') }}".replace(':id', adminId);
             $.ajax({
                 url: detailUrl,
                 type: 'GET',
-                success: function(response) {
+                success: function (response) {
                     let admin = response.data;
 
-                    // Isi data modal dengan data yang diperoleh
+                    // Populate modal fields with retrieved data
                     $('#editAdminId').val(admin.id);
                     $('#editName').val(admin.user.name);
                     $('#editEmail').val(admin.user.email);
                     $('#editWhatsapp').val(admin.user.whatsapp);
+                    $('#editRole').val(admin.user.roles[0].id).prop('selected', true);
+                    $('#editkabkota_id').val(admin.kabkota_id || '').prop('selected', true);
 
-                    //Pilih role di select box
-                    if (admin.user.roles.length > 0) {
-                        let roleId = admin.user.roles.id; // Ambil ID peran pertama
-                        $('#editRole').val(roleId).prop('selected', true);
-                    } else {
-                        $('#editRole').val(''); // Kosongkan jika tidak ada peran
-                    }
+                    // Show or hide the kabkota field based on the role
+                    toggleKabkotaFieldE(admin.user.roles[0].id);
 
-                    // Tampilkan modal edit
+                    // Show the edit modal
                     $('#modal-edit').modal('show');
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     alert('Error: ' + xhr.responseText);
                 }
             });
         }
     </script>
 
+
     <script>
-        function updateFaq() {
+        $('#editAdminForm').submit(function(e) {
+        e.preventDefault(); // Prevent form from submitting normally
             // Get data from the modal form
             var id = $('#editAdminId').val();
             var name = $('#editName').val();
             var email = $('#editEmail').val();
             var whatsapp = $('#editWhatsapp').val();
             var role_id = $('#editRole').val();
+            var kabkota_id = $('#editkabkota_id').val();
+            
 
 
 
@@ -358,7 +400,8 @@
                     name: name,
                     email: email,
                     whatsapp: whatsapp,
-                    role_id: role_id
+                    role_id: role_id,
+                    kabkota_id: kabkota_id
                 },
                 success: function(response) {
                     if (response.success) {
@@ -377,7 +420,7 @@
                     alert('Error: ' + xhr.responseText);
                 }
             });
-        }
+        });
     </script>
 
 

@@ -24,6 +24,15 @@ class UserPenyediaController extends Controller
             ]) // Ambil data admin dengan user terkait
                 ->select('id', 'user_id');
 
+            if (!empty($request->search['value'])) {
+            $searchValue = $request->search['value'];
+            $penyedias->whereHas('user', function ($query) use ($searchValue) {
+                $query->where('name', 'like', "%$searchValue%")
+                      ->orWhere('email', 'like', "%$searchValue%")
+                      ->orWhere('whatsapp', 'like', "%$searchValue%");
+            });
+        }
+
             return DataTables::of($penyedias)
                 ->addIndexColumn()
                 ->addColumn('user_name', function ($penyedia) {

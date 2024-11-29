@@ -21,8 +21,20 @@ class AdminController extends Controller
                 'user:id,name,email,whatsapp',
                 'user.roles:id,name'// Ambil data role terkait dengan kolom tertentu
             ]) // Ambil data admin dengan user terkait
-                        ->select('id', 'user_id', 'province_id', 'kabkota_id', 'kecamatan_id', 'created_by', 'updated_by', 'is_deleted')
-                        ;
+            ->select('id', 'user_id', 'province_id', 'kabkota_id', 'kecamatan_id', 'created_by', 'updated_by', 'is_deleted');
+
+            // Tambahkan filter manual jika ada pencarian
+            if (!empty($request->search['value'])) {
+                $searchValue = $request->search['value'];
+                $admins->whereHas('user', function ($query) use ($searchValue) {
+                    $query->where('name', 'like', "%$searchValue%")
+                        ->orWhere('email', 'like', "%$searchValue%")
+                        ->orWhere('whatsapp', 'like', "%$searchValue%");
+                });
+                $admins->orWhereHas('user.roles', function ($query) use ($searchValue) {
+                    $query->where('name', 'like', "%$searchValue%");
+                });
+            }
 
             return DataTables::of($admins)
                 ->addIndexColumn()
@@ -41,6 +53,10 @@ class AdminController extends Controller
                         return $admin->user->roles->pluck('name')->join(', ');
                     }
                     return 'N/A'; // Jika tidak ada role
+                })
+                ->addColumn('kabkota', function ($admin) {
+                    // Menampilkan nama kabkota
+                    return $admin->kabkota ? $admin->kabkota->name : 'N/A';
                 })
                 ->addColumn('options', function ($admin) {
                     return '
@@ -79,8 +95,7 @@ class AdminController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'whatsapp' => $request->whatsapp,
-                'password' => bcrypt($request->name), // Set password default atau sesuai logika Anda
-                'kabkota_id' => $request->kabkota_id, // Set password default atau sesuai logika Anda
+                'password' => bcrypt($request->name) // Set password default atau sesuai logika Anda
             ]);
     
             // Menambahkan role ke user
@@ -120,8 +135,7 @@ class AdminController extends Controller
         public function update(Request $request, $id)
         {
             try {
-
-                //Validasi untuk 'name'
+                // Validasi untuk 'name'
                 $request->validate([
                     'name' => 'required|string|max:255',
                 ]);
@@ -129,34 +143,33 @@ class AdminController extends Controller
                 $admin = UserAdmin::findOrFail($id);
                 $user = User::findOrFail($admin->user_id);
 
-                if($user->email != $request->email){
-                     // Validasi untuk 'email'
+                // Validasi email jika berubah
+                if ($user->email != $request->email) {
                     $request->validate([
-                        'email' => 'required|email|max:255|unique:users,email,' . $id, // Pastikan email unik kecuali untuk user ini
+                        'email' => 'required|email|max:255|unique:users,email,' . $user->id,
                     ]);
-
                 }
 
-
-                if($user->whatsapp != $request->whatsapp ){
-                    // Validasi untuk 'wa'
+                // Validasi WhatsApp jika berubah
+                if ($user->whatsapp != $request->whatsapp) {
                     $request->validate([
-                        'whatsapp' => 'required|string|unique:users|max:15', // Sesuaikan dengan format whatsapp
+                        'whatsapp' => 'required|string|unique:users,whatsapp|max:15',
                     ]);
-
-               }
+                }
 
                 // Validasi untuk 'role_id'
                 $request->validate([
-                    'role_id' => 'required|exists:roles,id', // Pastikan role ada di tabel roles
+                    'role_id' => 'required|exists:roles,id',
                 ]);
-                
 
-                // Cari admin berdasarkan ID
-                // $admin = UserAdmin::findOrFail($id);
+                // Validasi 'kabkota_id' hanya jika role_id == 4
+                if ($request->role_id == 4) {
+                    // $request->validate([
+                    //     'kabkota_id' => 'required|exists:kabkota,id',
+                    // ]);
+                }
 
-                // Perbarui data user terkait (user yang memiliki ID user_id di UserAdmin)
-                $user = $admin->user;  // Ambil user yang terkait dengan admin ini
+                // Update data pada tabel users
                 $user->update([
                     'name' => $request->name,
                     'email' => $request->email,
@@ -164,13 +177,23 @@ class AdminController extends Controller
                 ]);
 
                 // Perbarui role untuk user terkait
-                $user->roles()->sync([$request->role_id]);  // Sinkronkan role baru dengan user
+                $user->roles()->sync([$request->role_id]);
 
-                return response()->json(['success' => true, 'message' => 'update data berhasil.']);
+                // Update data kabkota_id pada tabel user_admins jika role_id == 4
+                if ($request->role_id == 4) {
+                    $admin->kabkota_id = $request->kabkota_id;
+                } else {
+                    $admin->kabkota_id = null; // Hapus kabkota jika role bukan 4
+                }
+
+                $admin->save();
+
+                return response()->json(['success' => true, 'message' => 'Update data berhasil.']);
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
             }
         }
+
 
         public function softdelete($id)
         {

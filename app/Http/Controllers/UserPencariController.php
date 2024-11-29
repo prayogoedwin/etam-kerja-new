@@ -21,6 +21,17 @@ class UserPencariController extends Controller
             ]) // Ambil data admin dengan user terkait
                 ->select('id', 'user_id');
 
+                    // Tambahkan filter pencarian
+        if (!empty($request->search['value'])) {
+            $searchValue = $request->search['value'];
+            $pencaris->whereHas('user', function ($query) use ($searchValue) {
+                $query->where('name', 'like', "%$searchValue%")
+                      ->orWhere('email', 'like', "%$searchValue%")
+                      ->orWhere('whatsapp', 'like', "%$searchValue%");
+            });
+        }
+
+
             return DataTables::of($pencaris)
                 ->addIndexColumn()
                 ->addColumn('user_name', function ($pencari) {

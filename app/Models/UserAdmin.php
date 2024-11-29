@@ -21,7 +21,6 @@ class UserAdmin extends Model
         'created_by',
         'updated_by',
         'deleted_by',
-        'is_deleted',
     ];
 
     protected $dates = ['deleted_at']; 
@@ -31,6 +30,12 @@ class UserAdmin extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function kabkota()
+    {
+        return $this->belongsTo(Kabkota::class, 'kabkota_id', 'id');
+    }
+    
 
 
     // Tambahkan relasi atau fungsi lain jika dibutuhkan
