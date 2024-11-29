@@ -79,6 +79,7 @@ class DepanController extends Controller
         // Query pencarian berdasarkan parameter
         $lowonganDisetujui = Lowongan::where('status_id', 1) // Lowongan yang disetujui
             ->where('is_lowongan_disabilitas', 0)
+            ->where('deleted_ts', null)
             ->when($judulLowongan, function ($query, $judulLowongan) {
                 return $query->where('judul_lowongan', 'like', '%' . $judulLowongan . '%');
             })
@@ -106,6 +107,7 @@ class DepanController extends Controller
         // Query pencarian berdasarkan parameter
         $lowonganDisetujui = Lowongan::where('status_id', 1) // Lowongan yang disetujui
             ->where('is_lowongan_disabilitas',1)
+            ->where('deleted_ts', null)
             ->when($judulLowongan, function ($query, $judulLowongan) {
                 return $query->where('judul_lowongan', 'like', '%' . $judulLowongan . '%');
             })
