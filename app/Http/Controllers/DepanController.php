@@ -48,7 +48,7 @@ class DepanController extends Controller
 
     public function bkk(){
        // Mengambil data yang kolom deleted_at nya NULL (belum di-soft delete)
-        $data_bkk = Depan::whereNull('deleted_at')->get();
+        $data_bkk = UserBkk::whereNull('deleted_at')->get();
 
         // Melempar data ke view
         return view('depan.depan_bkk', ['data_bkk' => $data_bkk]);
