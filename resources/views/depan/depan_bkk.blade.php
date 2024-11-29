@@ -44,7 +44,7 @@
                                 @foreach ($data_bkk as $bkk)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $bkk->nama_bkk }}</td>
+                                        <td>{{ $bkk->name }}</td>
                                         <td>{{ $bkk->alamat }}</td>
                                         <td>bentar</td>
                                     </tr>
