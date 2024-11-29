@@ -194,6 +194,7 @@
                             <option value="">Pilih</option>
                             <option value="pencari-kerja">Pencari Kerja</option>
                             <option value="penyedia-kerja">Penyedia Kerja</option>
+                            <option value="admin-bkk">BKK</option>
                         </select>
                     </div>
                 </div>

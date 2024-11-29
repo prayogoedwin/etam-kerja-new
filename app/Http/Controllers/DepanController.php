@@ -6,6 +6,7 @@ use App\Models\Depan; // Import model Depan
 use App\Models\User;
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
+use App\Models\UserBkk;
 use App\Models\EtamInfografis;
 use App\Models\EtamBerita;
 use App\Models\EtamFaq;
@@ -29,7 +30,7 @@ class DepanController extends Controller
             ->orderBy('id', 'desc')
             ->limit(4)
             ->get();
-        
+
         // Query pencarian berdasarkan parameter
         $lowonganDisetujui15 = Lowongan::where('status_id', 1) // Lowongan yang disetujui
         ->with('postedBy:id,name')
@@ -43,7 +44,7 @@ class DepanController extends Controller
         return view('depan.depan_index', compact('faq', 'beritaTerbaru', 'lowonganDisetujui15'));
     }
 
-   
+
 
     public function bkk(){
        // Mengambil data yang kolom deleted_at nya NULL (belum di-soft delete)
@@ -123,7 +124,7 @@ class DepanController extends Controller
         // Kirim data hasil pencarian dan filter ke view
         return view('depan.depan_lowongan_kerja_disabilitas', compact('lowonganDisetujui'));
     }
-    
+
     public function infografis(){
         $infografis = EtamInfografis::whereNull('deleted_at')
         ->where('status', 1)
@@ -169,7 +170,7 @@ class DepanController extends Controller
         $rl = $request->input('rl'); // atau bisa juga menggunakan $request->query('rl')
         // echo 'Parameter rl: ' . $rl;
         $decode_rl = decode_url($rl);
-        if($decode_rl != 'pencari-kerja' && $decode_rl != 'penyedia-kerja'){
+        if($decode_rl != 'pencari-kerja' && $decode_rl != 'penyedia-kerja' && $decode_rl != 'admin-bkk'){
             return abort(404);
         }
 
@@ -178,6 +179,8 @@ class DepanController extends Controller
             $nm_role = 'Pencari Kerja';
         } else if($decode_rl == 'penyedia-kerja'){
             $nm_role = 'Penyedia Kerja';
+        } else if($decode_rl == 'admin-bkk'){
+            $nm_role = 'Bursa Kerja Khusus';
         }
 
         $depanModel = new Depan();
@@ -381,7 +384,56 @@ class DepanController extends Controller
         }
     }
 
+    public function akhir_daftar_akun_bkk(Request $request){
+        $imel = session('email_registered');
+        $user = User::where('email', $imel)->first();
 
+        // dd($user->id);
+
+        DB::beginTransaction();
+        try {
+            // create affiliator
+            UserBkk::create([
+                'user_id' => $user->id,
+                'no_sekolah' => $request->no_sekolah,
+                'id_sekolah' => $request->id_sekolah,
+                'name' => $request->name,
+                'website' => $request->website,
+                'id_provinsi' => $request->provinsi_id,
+                'id_kota' => $request->kabkota_id,
+                'id_kecamatan' => $request->kecamatan_id,
+                'alamat' => $request->alamat,
+                'kodepos' => $request->kodepos,
+                // 'no_bkk' => $request->no_bkk,
+                'tanggal_aktif_bkk' => date('Y-m-d H:i:s'),
+                'tanggal_non_aktif_bkk' => null,
+                'telpon' => $request->telpon,
+                'hp' => $request->hp,
+                'contact_person' => $request->contact_person,
+                'jabatan' => $request->jabatan,
+                'foto' => null,
+                'status_id' => 1,
+                'tanggal_register' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H:i:s'),
+                // 'updated_at',
+                // 'deleted_at',
+            ]);
+
+            DB::commit();
+
+            return redirect()->to('login')->with('success', 'Berhasil membuat akun BKK silahkan login');
+        } catch (\Throwable $th) {
+            // DB::rollBack();
+            // return back()->with('error', $th->getMessage());
+            DB::rollBack();
+            Log::error($th);
+            // return back()->with('error', $th->getMessage());
+            return response()->json([
+                'status' => 0,
+                'message' => $th->getMessage()
+            ]);
+        }
+    }
 
     public function getKabkotaByProv($prov_id){
         $kabkota = DB::table('etam_kabkota')->where('province_id', $prov_id)->get();

@@ -28,10 +28,27 @@ function getAgama(){
         ->get();
 }
 
+function getKategoriBkk(){
+    return DB::table('etam_bkk_kategori')
+        ->get();
+}
+
 function getRowPenyediaById($user_id){
     return DB::table('users_penyedia')
     ->where('user_id', $user_id) // Contoh filter jika diperlukan
     ->first();
+}
+
+function getRowBkkById($user_id){
+    return DB::table('users_bkk')
+    ->where('user_id', $user_id) // Contoh filter jika diperlukan
+    ->first();
+}
+
+function getProvinsiKaltim(){
+    return DB::table('etam_provinsi')
+    ->where('id', 64) // KALTIM
+    ->get();
 }
 
 function getProgresLamaran(){
