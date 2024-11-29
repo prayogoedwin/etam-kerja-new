@@ -95,6 +95,7 @@
                                                 <th>Email</th>
                                                 <th>No Telepon</th>
                                                 <th>Tanggal Lamar</th>
+                                                <th>Status</th>
                                                 <th>Options</th>
                                             </tr>
                                         </thead>
@@ -123,16 +124,105 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-12">
-                                <div class="form-group">
-                                    <label for="pertanyaan"><strong>Nama</strong></label>
-                                    <input type="text" id="nama" disabled>
-                                </div>
+                                <table align="center" width="100%">
+                                    <thead>
+                                        <tr align="center">
+                                            <th colspan="3" id="fotonya"></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <hr>
+                                <h4>Informasi</h4>
+                                <hr>
+                                <table align="center" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Nama</th>
+                                            <th>:</th>
+                                            <th id="nama"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Tempat Lahir</th>
+                                            <th>:</th>
+                                            <th id="tempat_lahir"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Tanggal Lahir</th>
+                                            <th>:</th>
+                                            <th id="tanggal_lahir"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Alamat</th>
+                                            <th>:</th>
+                                            <th id="alamat"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Provinsi</th>
+                                            <th>:</th>
+                                            <th id="provinsi"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Kabupaten/Kota</th>
+                                            <th>:</th>
+                                            <th id="kabkota"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Kecamatan</th>
+                                            <th>:</th>
+                                            <th id="kecamatan"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Kelurahan/Desa</th>
+                                            <th>:</th>
+                                            <th id="kelurahan"></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <hr>
+                                <h4>Pendidikan</h4>
+                                <hr>
+                                <table align="center" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Tahun Lulus</th>
+                                            <th>:</th>
+                                            <th id="tahun_lulus"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Pendidikan</th>
+                                            <th>:</th>
+                                            <th id="pendidikan"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Jurusan</th>
+                                            <th>:</th>
+                                            <th id="jurusan"></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                                <hr>
+                                <h4>Lainnya</h4>
+                                <hr>
+                                <table align="center" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Email</th>
+                                            <th>:</th>
+                                            <th id="email"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Whatsapp</th>
+                                            <th>:</th>
+                                            <th id="whatsapp"></th>
+                                        </tr>
+                                    </thead>
+                                </table>
                             </div>
                         </div>
 
 
                         <div class="float-end">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                         </div>
 
                     </div>
@@ -175,6 +265,10 @@
                         name: 'created_at'
                     },
                     {
+                        data: 'statuslamaran',
+                        name: 'statuslamaran'
+                    },
+                    {
                         data: 'options',
                         orderable: false,
                         searchable: false
@@ -199,7 +293,30 @@
                         $('#modal-edit').modal('show');
 
                         // Set the data
-                        $('#nama').val(response.data.name);
+                        $('#nama').html(response.data.name);
+                        // $('#ftpencari').html(response.data.foto);
+                        // $('#temp_foto').html(response.data.foto);
+                        if (response.data.foto == null) {
+                            $('#fotonya').html('Tidak ada foto');
+                        } else {
+                            $('#fotonya').html('<img src="{{ asset('storage') }}/' +
+                                response.data.foto + '" alt="" width="130px">');
+                        }
+                        $('#tempat_lahir').html(response.data.tempat_lahir);
+                        $('#tanggal_lahir').html(response.data.tanggal_lahir);
+                        $('#tahun_lulus').html(response.data.tahun_lulus);
+                        $('#alamat').html(response.data.alamat);
+
+                        $('#email').html(response.data.user.email);
+                        $('#whatsapp').html(response.data.user.whatsapp);
+
+                        $('#provinsi').html(response.data.provinsi.name);
+                        $('#kabkota').html(response.data.kabupaten.name);
+                        $('#kecamatan').html(response.data.kecamatan.name);
+                        $('#kelurahan').html(response.data.desa.name);
+
+                        $('#pendidikan').html(response.data.pendidikan.name);
+                        $('#jurusan').html(response.data.jurusan.nama);
                     } else {
                         // Display error message
                         alert('Error: ' + response.message);

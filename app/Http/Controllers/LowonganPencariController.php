@@ -121,7 +121,7 @@ class LowonganPencariController extends Controller
                 'pencari_id' => $userId,
                 'lowongan_id' => $dataLow['id'],
                 'kabkota_penempatan_id' => $dataLow['kabkota_id'],
-                'progres_id' => 0,
+                'progres_id' => 4,
                 'keterangan' => null
             );
 

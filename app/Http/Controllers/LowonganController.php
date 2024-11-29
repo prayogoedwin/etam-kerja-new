@@ -156,23 +156,39 @@ class LowonganController extends Controller
     {
         if ($request->ajax()) {
             $pelamars = Lamaran::select(
-                    'etam_lamaran.id',
-                    'users.id as user_id',
-                    'users.email',
-                    'users.whatsapp',
-                    'users_pencari.name', // Select name from users_pencari
-                    'etam_lamaran.keterangan',
-                    'etam_lamaran.created_at'
-                )
-                ->join('users', 'etam_lamaran.pencari_id', '=', 'users.id') // Join with users table
-                ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id') // Join with users_pencari table
-                ->where('etam_lamaran.lowongan_id', $id)
-                ->whereNull('etam_lamaran.deleted_at'); // Ensure data is not deleted
+                'etam_lamaran.id',
+                'users.id as user_id',
+                'users.email',
+                'users.whatsapp',
+                'users_pencari.name',
+                'etam_lamaran.keterangan',
+                'etam_lamaran.created_at',
+                'etam_progres.kode as kodelamaran',
+                'etam_progres.name as statuslamaran' // Kolom statuslamaran dari tabel etam_progres
+            )
+            ->join('users', 'etam_lamaran.pencari_id', '=', 'users.id') // Join dengan tabel users
+            ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id') // Join dengan tabel users_pencari
+            ->join('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode') // Join dengan tabel etam_progres
+            ->where('etam_lamaran.lowongan_id', $id) // Filter berdasarkan lowongan_id
+            ->where('etam_progres.modul', 'lamaran') // Filter berdasarkan modul pada etam_progres
+            ->whereNull('etam_lamaran.deleted_at') // Pastikan data tidak terhapus
+            ->get();
 
             return DataTables::of($pelamars)
                 ->addIndexColumn()
                 ->editColumn('created_at', function ($pelamar) {
                     return $pelamar->created_at->format('Y M d H:i:s');
+                })
+                ->editColumn('statuslamaran', function ($pelamar) {
+                    $sts_lamar = '-';
+                    if($pelamar->kodelamaran == '1' || $pelamar->kodelamaran == '2' || $pelamar->kodelamaran == '4'){
+                        $sts_lamar = '<span class="badge rounded-pill bg-warning">'.$pelamar->statuslamaran.'</span>';
+                    } else if($pelamar->kodelamaran == '5'){
+                        $sts_lamar = '<span class="badge rounded-pill bg-danger">'.$pelamar->statuslamaran.'</span>';
+                    } else if($pelamar->kodelamaran == '3'){
+                        $sts_lamar = '<span class="badge rounded-pill bg-success">'.$pelamar->statuslamaran.'</span>';
+                    }
+                    return $sts_lamar;
                 })
                 ->addColumn('options', function ($pelamar) {
                     $fpel = "'" . short_encode_url($pelamar->user_id) . "'";
@@ -180,7 +196,7 @@ class LowonganController extends Controller
                         <button class="btn btn-primary btn-sm" onclick="showDetailModal(' . $fpel . ')">Detail</button>
                     ';
                 })
-                ->rawColumns(['options'])
+                ->rawColumns(['statuslamaran','options'])
                 ->make(true);
         }
 
@@ -204,6 +220,12 @@ class LowonganController extends Controller
         // return view('backend.lowongan.detailpelamar', $data);
         // $pelamar = ProfilPencari::with('user')->find($id);
         $pelamar = ProfilPencari::with('user')->where('user_id', $userid)->first();
+        $pelamar->provinsi = $pelamar->provinsi();
+        $pelamar->kabupaten = $pelamar->kabupaten();
+        $pelamar->kecamatan = $pelamar->kecamatan();
+        $pelamar->desa = $pelamar->desa();
+        $pelamar->pendidikan = $pelamar->pendidikan();
+        $pelamar->jurusan = $pelamar->jurusan();
 
         if(!$pelamar){
             return response()->json([
