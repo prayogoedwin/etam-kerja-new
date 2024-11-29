@@ -59,6 +59,9 @@ class LowonganPencari extends Model
 
     public function statuslamaran($userid){
         // return $this->hasMany(StatusLamaran::class, 'lowongan_id', 'id');
-        return DB::table('etam_lamaran')->where('lowongan_id', $this->id)->first();
+        return DB::table('etam_lamaran')
+        ->where('lowongan_id', $this->id)
+        ->where('pencari_id', $userid)
+        ->first();
     }
 }

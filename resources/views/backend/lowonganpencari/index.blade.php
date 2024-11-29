@@ -198,6 +198,22 @@
                                 </div>
                             </div>
 
+                            <hr>
+                            <h5>Data Lamaran</h5>
+                            <hr>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="">Status Lamaran</label>
+                                    <span id="kontenstatuslamaran"></span>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="">Keterangan</label>
+                                    <input type="text" id="keterangan" disabled>
+                                </div>
+                            </div>
+
                             <div class="col-sm-12">
                                 <button class="float-end btn btn-warning" onclick="lamarAction()"
                                     type="button">Lamar</button>
@@ -278,6 +294,20 @@
 
                     // $('#editPertanyaan').val(dt.name);
                     // $('#editJawaban').val(dt.description);
+                    var stslmr = '';
+                    if (dt.statuslamaran.progres_id == 1) {
+                        stslmr = '<span class="badge rounded-pill bg-warning">Diperiksa</span>';
+                    } else if (dt.statuslamaran.progres_id == 2) {
+                        stslmr = '<span class="badge rounded-pill bg-warning">Panggilan</span>';
+                    } else if (dt.statuslamaran.progres_id == 3) {
+                        stslmr = '<span class="badge rounded-pill bg-success">Diterima</span>';
+                    } else if (dt.statuslamaran.progres_id == 4) {
+                        stslmr = '<span class="badge rounded-pill bg-warning">Belum Ditanggapi</span>';
+                    } else if (dt.statuslamaran.progres_id == 5) {
+                        stslmr = '<span class="badge rounded-pill bg-warning">Tidak Sesuai Kriteria</span>';
+                    }
+                    $('#kontenstatuslamaran').html(stslmr);
+                    $('#keterangan').val(dt.statuslamaran.keterangan);
 
                     // Tampilkan modal edit
                     $('#modal-edit').modal('show');
