@@ -70,6 +70,18 @@
                     </div>
                 </div>
 
+                <div class="d-flex mb-3">
+                    <select id="bulk-action" class="form-select me-2" style="width: auto;">
+                        <option value="">Pilih Aksi</option>
+                        @foreach ($progreses as $prog)
+                            <option value="{{ $prog->kode }}">{{ $prog->name }}</option>
+                        @endforeach
+                    </select>
+                    <input type="text" id="bulk-keterangan" class="form-control me-2" placeholder="Masukkan keterangan"
+                        style="width: auto;">
+                    <button id="bulk-update-btn" class="btn btn-warning">Proses</button>
+                </div>
+
                 <div class="row">
                     <!-- customar project  start -->
                     <div class="col-xl-12">
@@ -96,7 +108,8 @@
                                                 <th>No Telepon</th>
                                                 <th>Tanggal Lamar</th>
                                                 <th>Status</th>
-                                                <th>Options</th>
+                                                <th>Options<input type="checkbox" id="select-all" style="margin-left: 4px">
+                                                </th>
                                             </tr>
                                         </thead>
 
@@ -237,7 +250,7 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            $('#simpletable').DataTable({
+            let table = $('#simpletable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('lowongan.pelamar', $lowongan_id) }}',
@@ -274,6 +287,50 @@
                         searchable: false
                     }
                 ]
+            });
+
+            // Handle select all checkboxes
+            $('#select-all').on('change', function() {
+                $('.pelamar-checkbox').prop('checked', $(this).prop('checked'));
+            });
+
+            // Bulk update
+            $('#bulk-update-btn').on('click', function() {
+                let action = $('#bulk-action').val();
+                let keterangan = $('#bulk-keterangan').val();
+
+                if (!action) {
+                    alert('Pilih aksi terlebih dahulu!');
+                    return;
+                }
+
+                let selectedIds = $('.pelamar-checkbox:checked').map(function() {
+                    return $(this).val();
+                }).get();
+
+                if (selectedIds.length === 0) {
+                    alert('Pilih minimal satu pelamar!');
+                    return;
+                }
+
+                $.ajax({
+                    url: '{{ route('bulk.update.pelamar') }}',
+                    method: 'POST',
+                    data: {
+                        ids: selectedIds,
+                        action: action,
+                        keterangan: keterangan,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                        table.ajax.reload();
+                        // location.reload();
+                    },
+                    error: function(xhr) {
+                        alert('Terjadi kesalahan saat memproses data.');
+                    }
+                });
             });
         });
     </script>

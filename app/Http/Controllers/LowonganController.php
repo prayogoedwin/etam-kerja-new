@@ -194,6 +194,7 @@ class LowonganController extends Controller
                     $fpel = "'" . short_encode_url($pelamar->user_id) . "'";
                     return '
                         <button class="btn btn-primary btn-sm" onclick="showDetailModal(' . $fpel . ')">Detail</button>
+                        <input type="checkbox" class="pelamar-checkbox" value="' . $pelamar->id . '">
                     ';
                 })
                 ->rawColumns(['statuslamaran','options'])
@@ -203,6 +204,7 @@ class LowonganController extends Controller
         $real_id = decode_url($id);
         $data['lowongan'] = Lowongan::find($real_id);
         $data['lowongan_id'] = $real_id;
+        $data['progreses'] = getProgresLamaran();
 
         // return view('backend.lowongan.pelamar', ['lowongan_id' => $id]);
         return view('backend.lowongan.pelamar', $data);
@@ -238,6 +240,24 @@ class LowonganController extends Controller
             'status' => 1,
             'data' => $pelamar
         ]);
+    }
+
+    public function bulkupdatepelamar(Request $request){
+        $ids = $request->input('ids');
+        $action = $request->input('action');
+        $keterangan = $request->input('keterangan');
+
+        if (!$ids || !$action) {
+            return response()->json(['message' => 'Data tidak valid'], 400);
+        }
+
+        // Update status dan keterangan
+        Lamaran::whereIn('id', $ids)->update([
+            'progres_id' => $action,
+            'keterangan' => $keterangan
+        ]);
+
+        return response()->json(['message' => 'Status berhasil diperbarui']);
     }
 
     /**

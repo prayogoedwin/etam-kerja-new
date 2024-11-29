@@ -34,6 +34,12 @@ function getRowPenyediaById($user_id){
     ->first();
 }
 
+function getProgresLamaran(){
+    return DB::table('etam_progres')
+    ->where('modul', 'lamaran') // Contoh filter jika diperlukan
+    ->get();
+}
+
 function getRowPencariById($user_id){
     return DB::table('users_pencari')
     ->where('user_id', $user_id) // Contoh filter jika diperlukan
