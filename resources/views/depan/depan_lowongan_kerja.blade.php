@@ -24,263 +24,94 @@
 <div class="blog-area blog-grid default-padding">
     <div class="container">
         <div class="esitmate-form2 mt-40">
-            <form action="#">
-
-
+            <form action="#" method="GET">
                 <div class="row">
+                    <!-- Input Judul Lowongan -->
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label for="name">Judul Lowongan</label>
-                            <input class="form-control" id="name" name="name"
+                            <label for="judul_lowongan">Judul Lowongan</label>
+                            <input class="form-control" id="judul_lowongan" name="judul_lowongan" 
                                 placeholder="Cari Judul Lowongan Kerja" type="text">
                         </div>
                     </div>
-
+            
+                    <!-- Dropdown Pendidikan -->
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label for="subject">Pendidikan</label>
-                            <select id="subject">
-                                <option value="1">SD</option>
-                                <option value="2">SMP</option>
-                                <option value="4">SMA / SMK</option>
-                                <option value="5">D1</option>
-                                <option value="6">D2</option>
-                                <option value="6">D3</option>
-                                <option value="6">D4</option>
-                                <option value="6">S1</option>
-                                <option value="6">S2</option>
-                                <option value="6">S3</option>
+                            <label for="pendidikan_id">Pendidikan</label>
+                            <select id="pendidikan_id" name="pendidikan_id" class="form-control">
+                                <option value="">-- Pilih Pendidikan --</option>
+                                @foreach (getPendidikan() as $id => $pendidikan)
+                                    <option value="{{ $pendidikan->kode }}">{{ $pendidikan->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
-
+            
+                    <!-- Dropdown Lokasi Perusahaan -->
                     <div class="col-lg-3">
                         <div class="form-group">
-                            <label for="subject">Lokasi Perusahaan</label>
-                            <select id="subject">
-                                <option value="1">Kabupaten Berau</option>
-                                <option value="2">Kabupaten Kutai Barat</option>
-                                <option value="4">Kabupaten Kutai Kartanegara</option>
-                                <option value="5">Kabupaten Kutai Timur</option>
-                                <option value="6">Kabupaten Mahakam Ulu</option>
-                                <option value="6">Kabupaten Paser</option>
-                                <option value="6">Kabupaten Penajam Paser Utara</option>
-                                <option value="6">Kota Balikpapan</option>
-                                <option value="6">Kota Bontang</option>
-                                <option value="6">Kota Samarinda</option>
+                            <label for="kabkota_id">Lokasi Perusahaan</label>
+                            <select id="kabkota_id" name="kabkota_id" class="form-control">
+                                <option value="">-- Pilih Lokasi --</option>
+                                @foreach (getKabkota() as $id => $lokasi)
+                                    <option value="{{ $id }}">{{ $lokasi->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
-
+            
+                    <!-- Button Cari -->
                     <div class="col-lg-3">
-                        <button type="submit" name="submit" id="submit" class="btn btn-success">
+                        <button type="submit" name="submit" id="submit" class="btn btn-success mt-4">
                             Cari Lowongan Kerja
                         </button>
                     </div>
-
-
                 </div>
-
             </form>
+            
         </div>
 
         <div class="blog-item-box">
             <div class="row">
-                <!-- Single Item -->
-                <div class="col-xl-4 col-md-6 single-item">
-                    <div class="blog-style-one">
-                        <div class="thumb">
-                            <a href="#"><img src="{{ asset('assets') }}/etam_fe/img/800x600.png"
-                                    alt="Thumb"></a>
-                        </div>
-                        <div class="info">
-                            <div class="blog-meta">
-                                <ul>
-                                    <li class="sub-title">
-                                        PT. Berlian Mas
-                                    </li>
+                @forelse ($lowonganDisetujui as $lowongan)
+                    <div class="col-xl-4 col-md-6 single-item">
+                        <div class="blog-style-one">
+                            <div class="thumb">
+                                <a href="#">
+                                    <img src="{{ asset('assets/nakerbisa_fe/img/800x600.png') }}" alt="Thumb">
 
-                                </ul>
-                                <ul>
-
-                                    <li>
-                                        Expire in: 12 August, 2023
-                                    </li>
-                                </ul>
+                                </a>
                             </div>
-                            <h3>
-                                <a href="blog-single-with-sidebar.html">Admin Toko.</a>
-                            </h3>
-                            <a href="#" class="btn-simple"><i class="fas fa-angle-right"></i> Read more</a>
+                            <div class="info">
+                                <div class="blog-meta">
+                                    <ul>
+                                        <li class="sub-title">Perusahaan</li>
+                                    </ul>
+                                    <ul>
+                                        <li>Expire in:
+                                            {{ \Carbon\Carbon::parse($lowongan->tanggal_end)->format('d F, Y') }}</li>
+                                    </ul>
+                                </div>
+                                <h3>
+                                    <a href="#">{{ $lowongan->judul_lowongan }}</a>
+                                </h3>
+                                <a href="#" class="btn-simple"><i class="fas fa-angle-right"></i> Read more</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!-- Single Item -->
-                <!-- Single Item -->
-                <div class="col-xl-4 col-md-6 single-item">
-                    <div class="blog-style-one">
-                        <div class="thumb">
-                            <a href="#"><img src="{{ asset('assets') }}/etam_fe/img/800x600.png"
-                                    alt="Thumb"></a>
-                        </div>
-                        <div class="info">
-                            <div class="blog-meta">
-                                <ul>
-                                    <li class="sub-title">
-                                        PT. Air Minum Gunung
-                                    </li>
-
-                                </ul>
-                                <ul>
-
-                                    <li>
-                                        Expire in: 12 August, 2023
-                                    </li>
-                                </ul>
-                            </div>
-                            <h3>
-                                <a href="blog-single-with-sidebar.html">Quality Control.</a>
-                            </h3>
-                            <a href="#" class="btn-simple"><i class="fas fa-angle-right"></i> Read more</a>
-                        </div>
+                @empty
+                    <div class="col-12">
+                        <p class="text-center">Tidak ada lowongan yang sesuai dengan pencarian.</p>
                     </div>
-                </div>
-                <!-- Single Item -->
-                <!-- Single Item -->
-                <div class="col-xl-4 col-md-6 single-item">
-                    <div class="blog-style-one">
-                        <div class="thumb">
-                            <a href="#"><img src="{{ asset('assets') }}/etam_fe/img/800x600.png"
-                                    alt="Thumb"></a>
-                        </div>
-                        <div class="info">
-                            <div class="blog-meta">
-                                <ul>
-                                    <li class="sub-title">
-                                        PT. Elektronika Perkakas
-                                    </li>
-
-                                </ul>
-                                <ul>
-
-                                    <li>
-                                        Expire in: 12 August, 2023
-                                    </li>
-                                </ul>
-                            </div>
-                            <h3>
-                                <a href="blog-single-with-sidebar.html">Operator Mesin.</a>
-                            </h3>
-                            <a href="#" class="btn-simple"><i class="fas fa-angle-right"></i> Read more</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Single Item -->
-                <!-- Single Item -->
-                <div class="col-xl-4 col-md-6 single-item">
-                    <div class="blog-style-one">
-                        <div class="thumb">
-                            <a href="#"><img src="{{ asset('assets') }}/etam_fe/img/800x600.png"
-                                    alt="Thumb"></a>
-                        </div>
-                        <div class="info">
-                            <div class="blog-meta">
-                                <ul>
-                                    <li class="sub-title">
-                                        PT. Batu Alam Permai
-                                    </li>
-
-                                </ul>
-                                <ul>
-
-                                    <li>
-                                        Expire in: 12 August, 2023
-                                    </li>
-                                </ul>
-                            </div>
-                            <h3>
-                                <a href="blog-single-with-sidebar.html">Carpenter.</a>
-                            </h3>
-                            <a href="#" class="btn-simple"><i class="fas fa-angle-right"></i> Read more</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Single Item -->
-                <!-- Single Item -->
-                <div class="col-xl-4 col-md-6 single-item">
-                    <div class="blog-style-one">
-                        <div class="thumb">
-                            <a href="#"><img src="{{ asset('assets') }}/etam_fe/img/800x600.png"
-                                    alt="Thumb"></a>
-                        </div>
-                        <div class="info">
-                            <div class="blog-meta">
-                                <ul>
-                                    <li class="sub-title">
-                                        PT. Stone Bara
-                                    </li>
-
-                                </ul>
-                                <ul>
-
-                                    <li>
-                                        Expire in: 12 August, 2023
-                                    </li>
-                                </ul>
-                            </div>
-                            <h3>
-                                <a href="blog-single-with-sidebar.html">Operator Dump Truck.</a>
-                            </h3>
-                            <a href="#" class="btn-simple"><i class="fas fa-angle-right"></i> Read more</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Single Item -->
-                <!-- Single Item -->
-                <div class="col-xl-4 col-md-6 single-item">
-                    <div class="blog-style-one">
-                        <div class="thumb">
-                            <a href="#"><img src="{{ asset('assets') }}/etam_fe/img/800x600.png"
-                                    alt="Thumb"></a>
-                        </div>
-                        <div class="info">
-                            <div class="blog-meta">
-                                <ul>
-                                    <li class="sub-title">
-                                        PT. Sawit Hasil Bumi
-                                    </li>
-
-                                </ul>
-                                <ul>
-
-                                    <li>
-                                        Expire in: 12 August, 2023
-                                    </li>
-                                </ul>
-                            </div>
-                            <h3>
-                                <a href="blog-single-with-sidebar.html">Supervisor Lapangan.</a>
-                            </h3>
-                            <a href="#" class="btn-simple"><i class="fas fa-angle-right"></i> Read more</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Single Item -->
+                @endforelse
             </div>
         </div>
         <!-- Pagination -->
         <div class="row">
             <div class="col-md-12 pagi-area text-center">
                 <nav aria-label="navigation">
-                    <ul class="pagination">
-                        <li class="page-item"><a class="page-link" href="#"><i
-                                    class="fas fa-angle-double-left"></i></a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#"><i
-                                    class="fas fa-angle-double-right"></i></a></li>
-                    </ul>
+                    {{ $lowonganDisetujui->links() }}
                 </nav>
             </div>
         </div>

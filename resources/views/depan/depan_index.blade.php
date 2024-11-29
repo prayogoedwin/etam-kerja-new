@@ -201,15 +201,15 @@
                     <h4 class="sub-heading secondary">Job Matching</h4>
                     <h2 class="title">Cari Lowongan Kerja <br> Paling Sesuai</h2>
                     <div class="esitmate-form mt-40">
-                        <form action="#">
+                        <form action="{{ url('/depan/lowongan-kerja') }}" method="GET">
                             <div class="row">
 
 
                                 <div class="col-lg-12">
                                     <div class="form-group">
                                         <label for="name">Judul Lowongan</label>
-                                        <input class="form-control" id="name" name="name"
-                                            placeholder="Jonathom Doe" type="text">
+                                        <input class="form-control" id="judul_lowongan" name="judul_lowongan" 
+                                        placeholder="Cari Judul Lowongan Kerja" type="text">
                                     </div>
                                 </div>
 
@@ -219,17 +219,11 @@
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label for="subject">Pendidikan</label>
-                                        <select id="subject">
-                                            <option value="1">SD</option>
-                                            <option value="2">SMP</option>
-                                            <option value="4">SMA / SMK</option>
-                                            <option value="5">D1</option>
-                                            <option value="6">D2</option>
-                                            <option value="6">D3</option>
-                                            <option value="6">D4</option>
-                                            <option value="6">S1</option>
-                                            <option value="6">S2</option>
-                                            <option value="6">S3</option>
+                                        <select id="pendidikan_id" name="pendidikan_id" class="form-control">
+                                            <option value="">-- Pilih Pendidikan --</option>
+                                            @foreach (getPendidikan() as $id => $pendidikan)
+                                                <option value="{{ $pendidikan->kode }}">{{ $pendidikan->name }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -237,17 +231,11 @@
                                 <div class="col-lg-6">
                                     <div class="form-group">
                                         <label for="subject">Lokasi Perusahaan</label>
-                                        <select id="subject">
-                                            <option value="1">Kabupaten Berau</option>
-                                            <option value="2">Kabupaten Kutai Barat</option>
-                                            <option value="4">Kabupaten Kutai Kartanegara</option>
-                                            <option value="5">Kabupaten Kutai Timur</option>
-                                            <option value="6">Kabupaten Mahakam Ulu</option>
-                                            <option value="6">Kabupaten Paser</option>
-                                            <option value="6">Kabupaten Penajam Paser Utara</option>
-                                            <option value="6">Kota Balikpapan</option>
-                                            <option value="6">Kota Bontang</option>
-                                            <option value="6">Kota Samarinda</option>
+                                        <select id="kabkota_id" name="kabkota_id" class="form-control">
+                                            <option value="">-- Pilih Lokasi --</option>
+                                            @foreach (getKabkota() as $id => $lokasi)
+                                                <option value="{{ $id }}">{{ $lokasi->name }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>

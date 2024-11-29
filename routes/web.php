@@ -31,7 +31,7 @@ Route::get('/', [DepanController::class, 'index']);
 Route::get('/depan/bkk', [DepanController::class, 'bkk']);
 Route::get('/depan/login', [DepanController::class, 'login']);
 Route::get('/depan/register', [DepanController::class, 'register']);
-Route::get('/depan/lowongan-kerja', [DepanController::class, 'lowongan_kerja']);
+Route::get('depan/lowongan-kerja', [DepanController::class, 'lowongan_kerja'])->name('depan.lowongan-kerja');
 Route::get('/depan/lowongan-kerja-disabilitas', [DepanController::class, 'lowongan_kerja_disabilitas']);
 Route::get('/depan/infografis', [DepanController::class, 'infografis']);
 Route::get('/depan/galeri', [DepanController::class, 'galeri']);
@@ -125,6 +125,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::post('/lowongan/add', [LowonganController::class, 'store'])->name('lowongan.add');
         Route::get('/lowongan/pelamar/{id}', [LowonganController::class, 'pelamar'])->name('lowongan.pelamar');
         Route::get('/lowongan/detail_pelamar/{id}', [LowonganController::class, 'detailpelamar'])->name('lowongan.detailpelamar');
+        Route::post('/lowongan/bulk_updatepelamar', [LowonganController::class, 'bulkupdatepelamar'])->name('bulk.update.pelamar');
         // Route::delete('/lowongan/delete/{id}', [LowonganController::class, 'softdelete'])->name('lowongan.softdelete');
 
         Route::get('/profil', [ProfilPenyediaController::class, 'index'])->name('profil.penyedia.index');
