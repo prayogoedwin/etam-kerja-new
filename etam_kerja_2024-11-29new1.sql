@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.5.5-10.4.27-MariaDB)
 # Database: etam_kerja
-# Generation Time: 2024-11-29 10:25:32 +0000
+# Generation Time: 2024-11-29 14:07:26 +0000
 # ************************************************************
 
 
@@ -32,17 +32,6 @@ CREATE TABLE `cache` (
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-LOCK TABLES `cache` WRITE;
-/*!40000 ALTER TABLE `cache` DISABLE KEYS */;
-
-INSERT INTO `cache` (`key`, `value`, `expiration`)
-VALUES
-	('captcha_5196e5fa6cf2e67d85b9af586c5eba69','a:4:{i:0;s:1:\"p\";i:1;s:1:\"q\";i:2;s:1:\"e\";i:3;s:1:\"n\";}',1732791698),
-	('captcha_5812b990d4d109a88f5c9ad5e5c1f108','a:4:{i:0;s:1:\"8\";i:1;s:1:\"9\";i:2;s:1:\"2\";i:3;s:1:\"u\";}',1732871643),
-	('captcha_c491addfa54c022cd7649fa0d625a1c0','a:4:{i:0;s:1:\"x\";i:1;s:1:\"f\";i:2;s:1:\"q\";i:3;s:1:\"j\";}',1732875019);
-
-/*!40000 ALTER TABLE `cache` ENABLE KEYS */;
-UNLOCK TABLES;
 
 
 # Dump of table cache_locks
@@ -114,58 +103,32 @@ CREATE TABLE `etam_berita` (
 
 
 
-# Dump of table etam_bkk
+# Dump of table etam_bkk_kategori
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `etam_bkk`;
+DROP TABLE IF EXISTS `etam_bkk_kategori`;
 
-CREATE TABLE `etam_bkk` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `no_sekolah` varchar(100) NOT NULL,
-  `id_sekolah` smallint(5) unsigned NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `website` varchar(50) DEFAULT NULL,
-  `email` varchar(50) DEFAULT NULL,
-  `alamat` varchar(100) NOT NULL,
-  `id_provinsi` mediumint(8) unsigned NOT NULL,
-  `id_kota` mediumint(8) unsigned NOT NULL,
-  `id_kecamatan` bigint(20) unsigned NOT NULL,
-  `id_desa` bigint(20) unsigned NOT NULL,
-  `kodepos` varchar(5) NOT NULL,
-  `nama_bkk` varchar(100) NOT NULL,
-  `no_bkk` varchar(100) NOT NULL,
-  `tanggal_aktif_bkk` date NOT NULL,
-  `tanggal_non_aktif_bkk` date DEFAULT NULL,
-  `telpon` varchar(13) DEFAULT NULL,
-  `hp` varchar(13) DEFAULT NULL,
-  `contact_person` varchar(50) DEFAULT NULL,
-  `jabatan` varchar(50) DEFAULT NULL,
-  `foto` text DEFAULT NULL,
-  `tanggal_register` timestamp NULL DEFAULT NULL,
-  `role_id` tinyint(3) unsigned NOT NULL,
-  `username_` varchar(255) NOT NULL,
-  `password_` varchar(255) NOT NULL,
-  `status_id` tinyint(3) unsigned NOT NULL,
-  `last_login` timestamp NULL DEFAULT NULL,
-  `foto_logo` text DEFAULT NULL,
+CREATE TABLE `etam_bkk_kategori` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `kode_verifikasi` varchar(6) DEFAULT NULL,
-  `kode_verifikasi_waktu` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
-LOCK TABLES `etam_bkk` WRITE;
-/*!40000 ALTER TABLE `etam_bkk` DISABLE KEYS */;
+LOCK TABLES `etam_bkk_kategori` WRITE;
+/*!40000 ALTER TABLE `etam_bkk_kategori` DISABLE KEYS */;
 
-INSERT INTO `etam_bkk` (`id`, `no_sekolah`, `id_sekolah`, `name`, `website`, `email`, `alamat`, `id_provinsi`, `id_kota`, `id_kecamatan`, `id_desa`, `kodepos`, `nama_bkk`, `no_bkk`, `tanggal_aktif_bkk`, `tanggal_non_aktif_bkk`, `telpon`, `hp`, `contact_person`, `jabatan`, `foto`, `tanggal_register`, `role_id`, `username_`, `password_`, `status_id`, `last_login`, `foto_logo`, `created_at`, `updated_at`, `kode_verifikasi`, `kode_verifikasi_waktu`, `deleted_at`)
+INSERT INTO `etam_bkk_kategori` (`id`, `name`, `created_at`, `updated_at`, `deleted_at`)
 VALUES
-	(1,'4444',12,'SMK Institut Indonesia I',NULL,'ipkjateng@yahoo.com','Jl. Permai 11 Kabupaten Berap',3300,3374,3374,3374,'5000','BKK SMK 1 BERAU','123333','2024-11-05',NULL,'02476441019','087887084013','Ronji',NULL,NULL,'2020-07-22 09:38:57',9,'ipkjateng@yahoo.com','$2y$11$/y0rder.S0knGsmiH9ZhseXX971LH1.C/d5ath8VDBdvK6uhC2npO',1,'2024-10-31 12:35:58',NULL,'2020-07-22 09:38:57','2024-10-31 12:35:58','YA35E',NULL,NULL),
-	(2,'5555',12,'SMK Institut Indonesia II',NULL,'ipkjateng@yahoo.com','Jl. Elok 20 Kota Samarinda',3300,3374,3374,3374,'5000','BKK SMK 1 SAMARINDA','123333','2024-11-05',NULL,'02476441019','087887084013','Ronji',NULL,NULL,'2020-07-22 09:38:57',9,'ipkjateng@yahoo.com','$2y$11$/y0rder.S0knGsmiH9ZhseXX971LH1.C/d5ath8VDBdvK6uhC2npO',1,'2024-10-31 12:35:58',NULL,'2020-07-22 09:38:57','2024-10-31 12:35:58','YA35E',NULL,NULL),
-	(3,'5555',12,'SMK Institut Indonesia III',NULL,'ipkjateng@yahoo.com','Jl. Pahlawan 7 Kota Balikpapan',3300,3374,3374,3374,'5000','BKK SMK 1 BALIKPAPAN','123333','2024-11-05',NULL,'02476441019','087887084013','Ronji',NULL,NULL,'2020-07-22 09:38:57',9,'ipkjateng@yahoo.com','$2y$11$/y0rder.S0knGsmiH9ZhseXX971LH1.C/d5ath8VDBdvK6uhC2npO',1,'2024-10-31 12:35:58',NULL,'2020-07-22 09:38:57','2024-10-31 12:35:58','YA35E',NULL,NULL);
+	(3,'Lembaga Pelatihan Kerja',NULL,NULL,NULL),
+	(11,'Sekolah Pendidikan Menengah Umum (SMU)',NULL,NULL,NULL),
+	(12,'Sekolah Pendidikan Menengah Kejuruan (SMK)',NULL,NULL,NULL),
+	(21,'Sekolah Pendidikan Tinggi (FAK. EKSAK)',NULL,NULL,NULL),
+	(22,'Sekolah Pendidikan Tinggi (FAK. NON EKSAK)',NULL,NULL,NULL);
 
-/*!40000 ALTER TABLE `etam_bkk` ENABLE KEYS */;
+/*!40000 ALTER TABLE `etam_bkk_kategori` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
@@ -91332,8 +91295,8 @@ LOCK TABLES `etam_lamaran` WRITE;
 
 INSERT INTO `etam_lamaran` (`id`, `pencari_id`, `lowongan_id`, `kabkota_penempatan_id`, `progres_id`, `keterangan`, `created_at`, `updated_at`, `deleted_at`)
 VALUES
-	(1,17,4,6472,2,'tak panggil kabeh 17','2024-11-29 09:28:31','2024-11-29 10:25:07',NULL),
-	(2,11,4,6472,2,'tak panggil kabeh 11','2024-11-29 09:34:36','2024-11-29 10:25:07',NULL);
+	(1,17,4,6472,3,'selamat bekerja','2024-11-29 09:28:31','2024-11-29 10:45:41',NULL),
+	(2,11,4,6472,3,'selamat bekerja','2024-11-29 09:34:36','2024-11-29 10:45:41',NULL);
 
 /*!40000 ALTER TABLE `etam_lamaran` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91829,7 +91792,10 @@ VALUES
 	(44,'2024_11_26_072959_create_etam_galeri',35),
 	(45,'2024_11_26_075400_create_etam_berita',35),
 	(46,'2024_11_26_090109_add_foto_to_user_admins_table',35),
-	(47,'2024_11_28_035439_create_etam_pencari_pendidikan_table',36);
+	(47,'2024_11_28_035439_create_etam_pencari_pendidikan_table',36),
+	(48,'2024_11_29_130342_create_user_bkk_table',37),
+	(49,'2024_11_29_130627_create_users_bkk_table',38),
+	(50,'2024_11_29_131924_create_etam_bkk_kategori_table',39);
 
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91882,7 +91848,12 @@ VALUES
 	(6,'App\\Models\\User',3),
 	(6,'App\\Models\\User',7),
 	(6,'App\\Models\\User',9),
-	(6,'App\\Models\\User',12);
+	(6,'App\\Models\\User',12),
+	(7,'App\\Models\\User',18),
+	(7,'App\\Models\\User',19),
+	(7,'App\\Models\\User',20),
+	(7,'App\\Models\\User',21),
+	(7,'App\\Models\\User',22);
 
 /*!40000 ALTER TABLE `model_has_roles` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91998,9 +91969,8 @@ LOCK TABLES `sessions` WRITE;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`)
 VALUES
-	('dEfEVLwYMPDrFJnj90Rp6YQM08rGZbE8KkwNatuj',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/111.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYzB4dnhOaGhCcDdTeXlVQmJKU3FSdWQ3YmpmNml3VkV3V083QU5sbiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jYXB0Y2hhL2RlZmF1bHQ/VDVOQmo5ZWo9Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo3OiJjYXB0Y2hhIjthOjM6e3M6OToic2Vuc2l0aXZlIjtiOjA7czozOiJrZXkiO3M6NjA6IiQyeSQxMiRuMkNXeE16aEFieXJMdWpLbmx0cGZlZ0UwMUw0M0wxbW1jUUZDSTNvazIvRlNhdHVubjRuNiI7czo3OiJlbmNyeXB0IjtiOjA7fX0=',1732874959),
-	('MnpxqChEE29IzI4XVmf2jY6vGNJQnE7OTBosje5K',12,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYlVKNWZFdnZCeG9ESWlkbzdEWDE2c3pPWGlHY2k0YTdScDRPMDNXRSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MTM5OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFwdXIvcGVueWVkaWFzL2xvd29uZ2FuL3BlbGFtYXIvTkRNeE16RmtOVEk0TWpCak1EazFOMkUwTkdabE5USTVZVGd6TXpZMVpUZ3lZVGN3TURreE5UUmhPREpoWW1Ka05XWXlaamxoWVdRM05qUmhNUS0tIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTI7fQ==',1732875909),
-	('Sr5jt4YijWDErrhorRXpZd3hZxZxFJTzd9VGfBRm',11,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUjQ3NmFOYkFVczVsYjVXVU9ibkw5SHU5ZjhDWEJzQUdkTlBSQWNsbyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXB1ci9wZW5jYXJpcy9sb3dvbmdhbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjExO30=',1732875853);
+	('c0dwYwaXGjC2coc1CPlShiN4sRlKTN5AOmlwghKl',22,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoidFRLaHZOanllY0doODBRMWVEdDYwcmFqS3NyRVFxb3J1ejhyQ2FpbCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kZXBhbi9ia2siO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToyMjt9',1732889205),
+	('Sr5jt4YijWDErrhorRXpZd3hZxZxFJTzd9VGfBRm',11,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUjQ3NmFOYkFVczVsYjVXVU9ibkw5SHU5ZjhDWEJzQUdkTlBSQWNsbyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXB1ci9wZW5jYXJpcy9sb3dvbmdhbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjExO30=',1732877494);
 
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -92072,9 +92042,57 @@ VALUES
 	(5,'admin_prov','adminprov@gmail.com','087887084019',NULL,NULL,'$2y$12$pGHzcgQI6hD90J1ieXealOeRqDm7jSLU7Ta8GTXujx06ZiNqSq0ti',NULL,'2024-11-11 16:05:33','2024-11-11 16:06:03',NULL,0),
 	(11,'enisulandari@gmail.com','enisulandari@gmail.com','087887084019','TVDUH',NULL,'$2y$12$JXz/jDl5zorysyKaRIi9W.EUXgN9E2w7UVUBITVFWryOMZ7Xc6OS2',NULL,'2024-11-12 01:47:59','2024-11-28 08:56:28',NULL,0),
 	(12,'ucitech13@gmail.com','ucitech13@gmail.com','087887084018','MZDCK',NULL,'$2y$12$JUzJp8zJglC49MfX49iV1OqtrQZcWqXHNY2oeXPXpIo/JCG1GEtaG',NULL,'2024-11-12 01:52:38','2024-11-12 01:52:38',NULL,0),
-	(17,'ucit@gmail.com','ucit@gmail.com','087887084013','7BKAP',NULL,'$2y$12$cdYpsaqlg6NYIym/qO8Gp.bKxhC.qICVmI/p54Ck4tlAO..uJf9ha',NULL,'2024-11-29 09:14:34','2024-11-29 09:14:34',NULL,0);
+	(17,'ucit@gmail.com','ucit@gmail.com','087887084011','7BKAP',NULL,'$2y$12$cdYpsaqlg6NYIym/qO8Gp.bKxhC.qICVmI/p54Ck4tlAO..uJf9ha',NULL,'2024-11-29 09:14:34','2024-11-29 09:14:34',NULL,0),
+	(22,'cobabkk@gmail.com','cobabkk@gmail.com','087887084013','8RQ7S',NULL,'$2y$12$TCZTcUM1DoHqNtIFi3PlXO/Xtvas5HxV.n8Mdob1GrKTUHrY8Nydi',NULL,'2024-11-29 13:34:22','2024-11-29 13:34:22',NULL,0);
 
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table users_bkk
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `users_bkk`;
+
+CREATE TABLE `users_bkk` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `no_sekolah` varchar(100) DEFAULT NULL,
+  `id_sekolah` tinyint(3) unsigned NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `website` varchar(50) DEFAULT NULL,
+  `alamat` varchar(255) NOT NULL,
+  `id_provinsi` mediumint(8) unsigned NOT NULL,
+  `id_kota` mediumint(8) unsigned NOT NULL,
+  `id_kecamatan` mediumint(8) unsigned NOT NULL,
+  `kodepos` varchar(20) DEFAULT NULL,
+  `nama_bkk` varchar(100) DEFAULT NULL,
+  `no_bkk` varchar(100) DEFAULT NULL,
+  `tanggal_aktif_bkk` date DEFAULT NULL,
+  `tanggal_non_aktif_bkk` date DEFAULT NULL,
+  `telpon` varchar(20) DEFAULT NULL,
+  `hp` varchar(20) DEFAULT NULL,
+  `contact_person` varchar(100) DEFAULT NULL,
+  `jabatan` varchar(100) DEFAULT NULL,
+  `foto` text DEFAULT NULL,
+  `tanggal_register` timestamp NULL DEFAULT NULL,
+  `status_id` tinyint(3) unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `users_bkk_user_id_foreign` (`user_id`),
+  CONSTRAINT `users_bkk_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+LOCK TABLES `users_bkk` WRITE;
+/*!40000 ALTER TABLE `users_bkk` DISABLE KEYS */;
+
+INSERT INTO `users_bkk` (`id`, `user_id`, `no_sekolah`, `id_sekolah`, `name`, `website`, `alamat`, `id_provinsi`, `id_kota`, `id_kecamatan`, `kodepos`, `nama_bkk`, `no_bkk`, `tanggal_aktif_bkk`, `tanggal_non_aktif_bkk`, `telpon`, `hp`, `contact_person`, `jabatan`, `foto`, `tanggal_register`, `status_id`, `created_at`, `updated_at`, `deleted_at`)
+VALUES
+	(1,22,'1123',12,'BKK UJI COBA','testing.com','alamataja',64,6411,6411030,'77373',NULL,NULL,'2024-11-29',NULL,'0811','0822','Zaenal','Pimpinan',NULL,'2024-11-29 13:35:49',1,'2024-11-29 13:35:49','2024-11-29 13:35:49',NULL);
+
+/*!40000 ALTER TABLE `users_bkk` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
