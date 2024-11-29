@@ -149,7 +149,7 @@
                                         width="100px">
         
                                     <h3><a href="#">{{ $lokerTerbaru->judul_lowongan }}</a></h3>
-                                    <span class="sub-heading">>{{ $lokerTerbaru->postedBy->name }} </span>
+                                    <span class="sub-heading">{{ $lokerTerbaru->postedBy->name }} </span>
                                     <p>
                                       
                                         <p>
