@@ -18,6 +18,7 @@ use App\Http\Controllers\Ak1PencariController;
 use App\Http\Controllers\UserPenyediaController;
 use App\Http\Controllers\ProfilPenyediaController;
 use App\Http\Controllers\ProfilPencariController;
+use App\Http\Controllers\ProfilBkkController;
 
 
 // Route::get('/', function () {
@@ -148,6 +149,11 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::put('/profil/update/{id}', [ProfilPencariController::class, 'update'])->name('profil.pencari.update');
 
         Route::get('/ak1', [Ak1PencariController::class, 'index'])->name('ak1.index');
+    });
+
+    Route::prefix('bkks')->group(function () {
+        Route::get('/profil', [ProfilBkkController::class, 'index'])->name('profil.bkk.index');
+        Route::put('/profil/update/{id}', [ProfilBkkController::class, 'update'])->name('profil.bkk.update');
     });
 
 });

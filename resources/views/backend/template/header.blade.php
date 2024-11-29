@@ -165,6 +165,17 @@
                                     <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}"
                                         class="img-radius" alt="User-Profile-Image">
                                 @endif
+                            @elseif (Auth::user()->roles[0]['name'] == 'admin-bkk')
+                                @php
+                                    $cekft = getRowBkkById(Auth::user()->id)->foto;
+                                    $xfoto = asset('storage/' . getRowBkkById(Auth::user()->id)->foto);
+                                @endphp
+                                @if ($cekft != null)
+                                    <img src="{{ $xfoto }}" class="img-radius" alt="User-Profile-Image">
+                                @else
+                                    <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}"
+                                        class="img-radius" alt="User-Profile-Image">
+                                @endif
                             @endif
 
 
@@ -184,6 +195,10 @@
                                         Profil</a>
                                 @elseif (Auth::user()->roles[0]['name'] == 'penyedia-kerja')
                                     <a href="{{ route('profil.penyedia.index') }}" class="dropdown-item"><i
+                                            class="feather icon-user"></i>
+                                        Profil</a>
+                                @elseif (Auth::user()->roles[0]['name'] == 'admin-bkk')
+                                    <a href="{{ route('profil.bkk.index') }}" class="dropdown-item"><i
                                             class="feather icon-user"></i>
                                         Profil</a>
                                 @endif

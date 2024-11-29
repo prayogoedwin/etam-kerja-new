@@ -39,14 +39,14 @@
                                     <th>No</th>
                                     <th>Nama BKK</th>
                                     <th>Alamat</th>
-                                    <th>Jurusan</th>
+                                    <th>Website</th>
                                 </tr>
                                 @foreach ($data_bkk as $bkk)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $bkk->name }}</td>
                                         <td>{{ $bkk->alamat }}</td>
-                                        <td>bentar</td>
+                                        <td>{{ $bkk->website }}</td>
                                     </tr>
                                 @endforeach
                             </table>
