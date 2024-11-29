@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.5.5-10.4.27-MariaDB)
 # Database: etam_kerja
-# Generation Time: 2024-11-28 03:36:32 +0000
+# Generation Time: 2024-11-29 10:25:32 +0000
 # ************************************************************
 
 
@@ -37,30 +37,9 @@ LOCK TABLES `cache` WRITE;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`)
 VALUES
-	('captcha_06520ca82d39213c370415b317877a21','a:4:{i:0;s:1:\"u\";i:1;s:1:\"b\";i:2;s:1:\"t\";i:3;s:1:\"m\";}',1731377727),
-	('captcha_27f9ce6dd9d1a4ce814c76cfef3866f2','a:4:{i:0;s:1:\"4\";i:1;s:1:\"b\";i:2;s:1:\"j\";i:3;s:1:\"e\";}',1731345431),
-	('captcha_31877fd88df2dda5f98000ed64f19e97','a:4:{i:0;s:1:\"8\";i:1;s:1:\"b\";i:2;s:1:\"9\";i:3;s:1:\"m\";}',1732547093),
-	('captcha_46e8b8e5e07d69328e8b15e28dea31b9','a:4:{i:0;s:1:\"a\";i:1;s:1:\"g\";i:2;s:1:\"e\";i:3;s:1:\"r\";}',1731377736),
-	('captcha_509becfeb90223fbb2fd6ee3b9770d6a','a:4:{i:0;s:1:\"x\";i:1;s:1:\"j\";i:2;s:1:\"j\";i:3;s:1:\"r\";}',1731345154),
-	('captcha_56e1c60aaed58d4f7eb9d1ff9c4d1ed3','a:4:{i:0;s:1:\"u\";i:1;s:1:\"y\";i:2;s:1:\"j\";i:3;s:1:\"u\";}',1731386929),
-	('captcha_6080ffc403137a959138176b43b18e4c','a:4:{i:0;s:1:\"t\";i:1;s:1:\"m\";i:2;s:1:\"8\";i:3;s:1:\"t\";}',1731375952),
-	('captcha_634d31cc884d4c08f191f11149c4ccfa','a:4:{i:0;s:1:\"p\";i:1;s:1:\"x\";i:2;s:1:\"e\";i:3;s:1:\"g\";}',1732626256),
-	('captcha_642d1f66075165bb6e5cc9bf56bc250f','a:4:{i:0;s:1:\"g\";i:1;s:1:\"m\";i:2;s:1:\"j\";i:3;s:1:\"u\";}',1731345132),
-	('captcha_7d73899b31380e386cb7fab99c522692','a:4:{i:0;s:1:\"7\";i:1;s:1:\"6\";i:2;s:1:\"8\";i:3;s:1:\"y\";}',1731377339),
-	('captcha_870e228f4b206d153dc90926b4ba9869','a:4:{i:0;s:1:\"u\";i:1;s:1:\"h\";i:2;s:1:\"f\";i:3;s:1:\"x\";}',1731377721),
-	('captcha_89f90d600af0fd7e4e9484980b606977','a:4:{i:0;s:1:\"m\";i:1;s:1:\"8\";i:2;s:1:\"x\";i:3;s:1:\"q\";}',1731345582),
-	('captcha_8a0df681a50f5bf86ed9a39065075e35','a:4:{i:0;s:1:\"z\";i:1;s:1:\"u\";i:2;s:1:\"a\";i:3;s:1:\"f\";}',1731379946),
-	('captcha_910a4b0af4aa5aeea04ead1038f35be7','a:4:{i:0;s:1:\"m\";i:1;s:1:\"t\";i:2;s:1:\"a\";i:3;s:1:\"z\";}',1731344949),
-	('captcha_9a72628bcd977e4adefd25e2364600bf','a:4:{i:0;s:1:\"q\";i:1;s:1:\"e\";i:2;s:1:\"3\";i:3;s:1:\"u\";}',1731345530),
-	('captcha_9c560988b7964b4b6f707ac6060e8848','a:4:{i:0;s:1:\"j\";i:1;s:1:\"a\";i:2;s:1:\"b\";i:3;s:1:\"z\";}',1731344941),
-	('captcha_a0665dc7e0b534a17024f96d83fa9617','a:4:{i:0;s:1:\"n\";i:1;s:1:\"p\";i:2;s:1:\"b\";i:3;s:1:\"9\";}',1731346933),
-	('captcha_a31ec5b8de08f59880c026eebd77e9d3','a:4:{i:0;s:1:\"h\";i:1;s:1:\"m\";i:2;s:1:\"4\";i:3;s:1:\"g\";}',1731375965),
-	('captcha_b59e068256d05ddbe80ecb292dea8955','a:4:{i:0;s:1:\"6\";i:1;s:1:\"z\";i:2;s:1:\"p\";i:3;s:1:\"4\";}',1731346944),
-	('captcha_ee27a4fddd3936313f56e82c1e67f9e9','a:4:{i:0;s:1:\"r\";i:1;s:1:\"4\";i:2;s:1:\"z\";i:3;s:1:\"g\";}',1731377590),
-	('captcha_f1ac4f439c158ca23fb93a76f70f02cd','a:4:{i:0;s:1:\"d\";i:1;s:1:\"p\";i:2;s:1:\"t\";i:3;s:1:\"4\";}',1732547093),
-	('captcha_f612fc4495f53ab381a2dbaaf88dec77','a:4:{i:0;s:1:\"f\";i:1;s:1:\"c\";i:2;s:1:\"j\";i:3;s:1:\"h\";}',1731377272),
-	('captcha_f8ea1ecd9b843e14a7e99d52e967e431','a:4:{i:0;s:1:\"8\";i:1;s:1:\"e\";i:2;s:1:\"e\";i:3;s:1:\"p\";}',1731346925),
-	('captcha_fb85187259b439927e21a8bdc31db7d8','a:4:{i:0;s:1:\"x\";i:1;s:1:\"4\";i:2;s:1:\"t\";i:3;s:1:\"p\";}',1731345499);
+	('captcha_5196e5fa6cf2e67d85b9af586c5eba69','a:4:{i:0;s:1:\"p\";i:1;s:1:\"q\";i:2;s:1:\"e\";i:3;s:1:\"n\";}',1732791698),
+	('captcha_5812b990d4d109a88f5c9ad5e5c1f108','a:4:{i:0;s:1:\"8\";i:1;s:1:\"9\";i:2;s:1:\"2\";i:3;s:1:\"u\";}',1732871643),
+	('captcha_c491addfa54c022cd7649fa0d625a1c0','a:4:{i:0;s:1:\"x\";i:1;s:1:\"f\";i:2;s:1:\"q\";i:3;s:1:\"j\";}',1732875019);
 
 /*!40000 ALTER TABLE `cache` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91353,11 +91332,8 @@ LOCK TABLES `etam_lamaran` WRITE;
 
 INSERT INTO `etam_lamaran` (`id`, `pencari_id`, `lowongan_id`, `kabkota_penempatan_id`, `progres_id`, `keterangan`, `created_at`, `updated_at`, `deleted_at`)
 VALUES
-	(1,4,1,6472,0,NULL,'2024-11-11 15:43:50','2024-11-11 15:43:50',NULL),
-	(2,6,2,6472,0,NULL,'2024-11-11 16:27:28','2024-11-11 16:27:28',NULL),
-	(3,10,3,6472,0,NULL,'2024-11-12 01:14:05','2024-11-12 01:14:05',NULL),
-	(4,11,4,6472,0,NULL,'2024-11-12 02:03:19','2024-11-12 02:03:19',NULL),
-	(5,13,4,6472,0,NULL,'2024-11-26 10:17:41','2024-11-26 10:17:41',NULL);
+	(1,17,4,6472,2,'tak panggil kabeh 17','2024-11-29 09:28:31','2024-11-29 10:25:07',NULL),
+	(2,11,4,6472,2,'tak panggil kabeh 11','2024-11-29 09:34:36','2024-11-29 10:25:07',NULL);
 
 /*!40000 ALTER TABLE `etam_lamaran` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91409,7 +91385,7 @@ VALUES
 	(1,NULL,1211,3,'2024-11-01','2024-11-30','dibutuhkan',6472,'samarinda',2,1,'keahlian abc',1,3,3101,'B',1,'super-admin','2024-11-11 14:38:08',0,0,0,NULL,NULL,NULL,3,'2024-11-11 13:16:20','2024-11-11 14:38:08','2024-11-12 00:15:51'),
 	(2,NULL,1212,3,'2024-11-01','2024-11-30','Dibutuhkan pegawai',6472,'samarinda',2,1,'Memiliki kemampuan abcdef',1,8,8001,'B',1,'super-admin','2024-11-11 16:40:36',0,0,0,NULL,NULL,NULL,7,'2024-11-11 16:24:58','2024-11-11 16:40:36','2024-11-12 08:57:47'),
 	(3,NULL,1212,9,'2024-11-01','2024-11-30','dibutuhkan pegawai',6472,'samarinda',2,1,'memiliki keahlian abc',1,3,3101,'B',1,'super-admin','2024-11-12 01:13:54',0,0,0,NULL,NULL,NULL,9,'2024-11-12 01:10:45','2024-11-12 01:13:54','2024-11-12 09:51:36'),
-	(4,NULL,2113,19,'2024-11-12','2024-11-30','di butuhkan admin',6472,'samarinda',2,1,'memiliki keahlian akunting',1,3,3114,'B',12,'penyedia-kerja','2024-11-26 07:41:55',0,0,0,NULL,NULL,NULL,12,'2024-11-12 01:57:18','2024-11-26 07:41:55',NULL);
+	(4,NULL,2113,19,'2024-11-12','2024-11-30','di butuhkan admin 22',6472,'samarinda',2,1,'memiliki keahlian akunting',1,3,3114,'B',12,'penyedia-kerja','2024-11-26 07:41:55',0,0,0,NULL,NULL,NULL,12,'2024-11-12 01:57:18','2024-11-26 07:41:55',NULL);
 
 /*!40000 ALTER TABLE `etam_lowongan` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91441,6 +91417,27 @@ VALUES
 
 /*!40000 ALTER TABLE `etam_marital` ENABLE KEYS */;
 UNLOCK TABLES;
+
+
+# Dump of table etam_pencari_pendidikan
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `etam_pencari_pendidikan`;
+
+CREATE TABLE `etam_pencari_pendidikan` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `pendidikan_id` bigint(20) unsigned NOT NULL,
+  `jurusan_id` bigint(20) unsigned NOT NULL,
+  `instansi` varchar(255) NOT NULL,
+  `tahun` smallint(6) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `etam_pencari_pendidikan_user_id_foreign` (`user_id`),
+  CONSTRAINT `etam_pencari_pendidikan_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 
 # Dump of table etam_pendidikan
@@ -91831,7 +91828,8 @@ VALUES
 	(43,'2024_11_26_064742_created_infografis',35),
 	(44,'2024_11_26_072959_create_etam_galeri',35),
 	(45,'2024_11_26_075400_create_etam_berita',35),
-	(46,'2024_11_26_090109_add_foto_to_user_admins_table',35);
+	(46,'2024_11_26_090109_add_foto_to_user_admins_table',35),
+	(47,'2024_11_28_035439_create_etam_pencari_pendidikan_table',36);
 
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91880,6 +91878,7 @@ VALUES
 	(5,'App\\Models\\User',10),
 	(5,'App\\Models\\User',11),
 	(5,'App\\Models\\User',13),
+	(5,'App\\Models\\User',17),
 	(6,'App\\Models\\User',3),
 	(6,'App\\Models\\User',7),
 	(6,'App\\Models\\User',9),
@@ -91999,7 +91998,9 @@ LOCK TABLES `sessions` WRITE;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`)
 VALUES
-	('KqSFIpc27JTdGZYSym3VtCfAFcSa8AOZOtqPsnW9',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiSm1PeGtOTm90M1RvbjZnSzJ2T1dYOXVqNnMxdGVQU0hHOVM3UWRIMCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jYXB0Y2hhL2RlZmF1bHQ/UklVZHdFakg9Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo3OiJjYXB0Y2hhIjthOjM6e3M6OToic2Vuc2l0aXZlIjtiOjA7czozOiJrZXkiO3M6NjA6IiQyeSQxMiROMXFUU2hjMWo4U0k4RllGQUNYRkZPR0FEaFZLalVaOHhVd2lDM0lha2x2YXZHMmEvRlJULiI7czo3OiJlbmNyeXB0IjtiOjA7fX0=',1732626196);
+	('dEfEVLwYMPDrFJnj90Rp6YQM08rGZbE8KkwNatuj',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/111.0','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYzB4dnhOaGhCcDdTeXlVQmJKU3FSdWQ3YmpmNml3VkV3V083QU5sbiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jYXB0Y2hhL2RlZmF1bHQ/VDVOQmo5ZWo9Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo3OiJjYXB0Y2hhIjthOjM6e3M6OToic2Vuc2l0aXZlIjtiOjA7czozOiJrZXkiO3M6NjA6IiQyeSQxMiRuMkNXeE16aEFieXJMdWpLbmx0cGZlZ0UwMUw0M0wxbW1jUUZDSTNvazIvRlNhdHVubjRuNiI7czo3OiJlbmNyeXB0IjtiOjA7fX0=',1732874959),
+	('MnpxqChEE29IzI4XVmf2jY6vGNJQnE7OTBosje5K',12,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYlVKNWZFdnZCeG9ESWlkbzdEWDE2c3pPWGlHY2k0YTdScDRPMDNXRSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MTM5OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFwdXIvcGVueWVkaWFzL2xvd29uZ2FuL3BlbGFtYXIvTkRNeE16RmtOVEk0TWpCak1EazFOMkUwTkdabE5USTVZVGd6TXpZMVpUZ3lZVGN3TURreE5UUmhPREpoWW1Ka05XWXlaamxoWVdRM05qUmhNUS0tIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTI7fQ==',1732875909),
+	('Sr5jt4YijWDErrhorRXpZd3hZxZxFJTzd9VGfBRm',11,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUjQ3NmFOYkFVczVsYjVXVU9ibkw5SHU5ZjhDWEJzQUdkTlBSQWNsbyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXB1ci9wZW5jYXJpcy9sb3dvbmdhbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjExO30=',1732875853);
 
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -92069,8 +92070,9 @@ INSERT INTO `users` (`id`, `name`, `email`, `whatsapp`, `otp`, `email_verified_a
 VALUES
 	(1,'Super Admin','superadmin@example.com',NULL,NULL,NULL,'$2y$12$JUzJp8zJglC49MfX49iV1OqtrQZcWqXHNY2oeXPXpIo/JCG1GEtaG',NULL,'2024-11-10 15:19:44','2024-11-10 15:19:44',NULL,0),
 	(5,'admin_prov','adminprov@gmail.com','087887084019',NULL,NULL,'$2y$12$pGHzcgQI6hD90J1ieXealOeRqDm7jSLU7Ta8GTXujx06ZiNqSq0ti',NULL,'2024-11-11 16:05:33','2024-11-11 16:06:03',NULL,0),
-	(11,'enisulandari@gmail.com','enisulandari@gmail.com','087887084015','TVDUH',NULL,'$2y$12$JXz/jDl5zorysyKaRIi9W.EUXgN9E2w7UVUBITVFWryOMZ7Xc6OS2',NULL,'2024-11-12 01:47:59','2024-11-12 01:47:59',NULL,0),
-	(12,'ucitech13@gmail.com','ucitech13@gmail.com','087887084018','MZDCK',NULL,'$2y$12$JUzJp8zJglC49MfX49iV1OqtrQZcWqXHNY2oeXPXpIo/JCG1GEtaG',NULL,'2024-11-12 01:52:38','2024-11-12 01:52:38',NULL,0);
+	(11,'enisulandari@gmail.com','enisulandari@gmail.com','087887084019','TVDUH',NULL,'$2y$12$JXz/jDl5zorysyKaRIi9W.EUXgN9E2w7UVUBITVFWryOMZ7Xc6OS2',NULL,'2024-11-12 01:47:59','2024-11-28 08:56:28',NULL,0),
+	(12,'ucitech13@gmail.com','ucitech13@gmail.com','087887084018','MZDCK',NULL,'$2y$12$JUzJp8zJglC49MfX49iV1OqtrQZcWqXHNY2oeXPXpIo/JCG1GEtaG',NULL,'2024-11-12 01:52:38','2024-11-12 01:52:38',NULL,0),
+	(17,'ucit@gmail.com','ucit@gmail.com','087887084013','7BKAP',NULL,'$2y$12$cdYpsaqlg6NYIym/qO8Gp.bKxhC.qICVmI/p54Ck4tlAO..uJf9ha',NULL,'2024-11-29 09:14:34','2024-11-29 09:14:34',NULL,0);
 
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -92125,7 +92127,8 @@ LOCK TABLES `users_pencari` WRITE;
 
 INSERT INTO `users_pencari` (`id`, `user_id`, `ktp`, `toket`, `name`, `tempat_lahir`, `tanggal_lahir`, `gender`, `id_provinsi`, `id_kota`, `id_kecamatan`, `id_desa`, `alamat`, `kodepos`, `id_pendidikan`, `id_jurusan`, `tahun_lulus`, `id_status_perkawinan`, `id_agama`, `foto`, `status_id`, `last_login`, `is_alumni_bkk`, `bkk_id`, `disabilitas`, `jenis_disabilitas`, `keterangan_disabilitas`, `posted_by`, `created_at`, `updated_at`, `deleted_at`, `is_diterima`, `medsos`)
 VALUES
-	(5,11,'3374053006920003',NULL,'Eni Sulandari','Demak','2000-02-02','P',64,6472,6472021,'6472021001','Jl. Pemuda No 99','77373',3,3101,2023,'B',1,NULL,1,NULL,0,NULL,NULL,NULL,NULL,11,'2024-11-12 01:50:17','2024-11-12 01:50:17',NULL,0,'@okeoce');
+	(5,11,'3374053006920003',NULL,'Eni Sulandari','Demak','2000-02-02','P',64,6472,6472021,'6472021001','Jl. Pemuda No 99','77373',3,3101,2023,'B',1,'foto_pencarikerja/MrBMXbmEE3jBGCF7ix0SGPFgkt1FICwlkNiEk5d9.jpg',1,NULL,0,NULL,NULL,NULL,NULL,11,'2024-11-12 01:50:17','2024-11-29 09:12:10',NULL,0,'@okeoce2'),
+	(6,17,'3374090909090909',NULL,'Udin Zaelani','Denpasar','2000-12-12','L',64,6405,6405070,'6405070006','Jl. gg Manggarai No 88 RT2 RW33','78978',8,8016,2023,'B',1,'foto_pencarikerja/YTsObyNCZYYuJrzjhyLrmeZ1GeUa85WUVCgz6Z5r.jpg',1,NULL,0,NULL,NULL,NULL,NULL,17,'2024-11-29 09:16:08','2024-11-29 09:16:53',NULL,0,'testing.id');
 
 /*!40000 ALTER TABLE `users_pencari` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -92172,7 +92175,7 @@ LOCK TABLES `users_penyedia` WRITE;
 
 INSERT INTO `users_penyedia` (`id`, `user_id`, `name`, `luar_negri`, `deskripsi`, `jenis_perusahaan`, `nomor_sip3mi`, `nib`, `id_sektor`, `id_provinsi`, `id_kota`, `id_kecamatan`, `id_desa`, `alamat`, `kodepos`, `telpon`, `jabatan`, `website`, `status_id`, `foto`, `shared_by_id`, `posted_by`, `created_at`, `updated_at`, `deleted_at`)
 VALUES
-	(4,12,'PT Manyaran Maju',0,'bergerang di bidang','pt',NULL,'123abc',19,64,6472,6472021,'6472021001','Jl. Gajahmada No 99','77373','022374756','HRD','testing.com',1,'logo_perusahaan/LZwfNiQ0rKBGpKFqWexS5UZ1n8hnDPNSbj10cryI.png',NULL,12,'2024-11-12 01:54:34','2024-11-26 08:56:14',NULL);
+	(4,12,'PT Manyaran Maju',0,'bergerang di bidang','pt',NULL,'123abc',19,64,6472,6472021,'6472021001','Jl. Gajahmada No 99','77373','022374756','HRD','testing.com',1,'logo_perusahaan/K5f6R5Oab7F4Xz8xFBUrjLMFIDTNpBOv4d7oGFW9.png',NULL,12,'2024-11-12 01:54:34','2024-11-28 09:09:29',NULL);
 
 /*!40000 ALTER TABLE `users_penyedia` ENABLE KEYS */;
 UNLOCK TABLES;
