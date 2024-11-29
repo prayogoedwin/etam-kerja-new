@@ -123,7 +123,17 @@
                                     </div>
                                 </div>
 
-
+                                <div class="col-sm-12" id="kabkotaDiv" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="kabkota_id" class="form-label">Kabupaten/Kota</label>
+                                        <select id="kabkota_id" name="kabkota_id" class="form-control" required>
+                                            <option value="">-- Pilih Lokasi --</option>
+                                            @foreach (getKabkota() as $id => $lokasi)
+                                                <option value="{{ $id }}">{{ $lokasi->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
 
                                 <div class="col-sm-12">
                                     {{-- <div class="form-group">
@@ -219,6 +229,32 @@
     </script>
 
     <script>
+        // jQuery to handle the role change event
+        $(document).ready(function() {
+            // Trigger the role change handler initially to show/hide based on the selected role
+            toggleKabkotaField();
+
+            // Event listener for role change
+            $('#userRole').change(function() {
+                toggleKabkotaField();
+            });
+
+            function toggleKabkotaField() {
+                var selectedRole = $('#userRole').val();
+                if (selectedRole == '4') {
+                    // Show the kabkota field and make it required
+                    $('#kabkotaDiv').show();
+                    $('#kabkota_id').prop('required', true);
+                } else {
+                    // Hide the kabkota field and remove the required attribute
+                    $('#kabkotaDiv').hide();
+                    $('#kabkota_id').prop('required', false);
+                }
+            }
+        });
+    </script>
+
+    <script>
         $(document).ready(function() {
             $('#registerForm').submit(function(e) {
                 e.preventDefault(); // Prevent form from submitting normally
@@ -231,6 +267,7 @@
                     email: $('#email').val(),
                     whatsapp: $('#whatsapp').val(),
                     role_id: $('#userRole').val(),
+                    kabkota_id: $('#kabkota_id').val(),
                     _token: '{{ csrf_token() }}' // Add CSRF token for security
                 };
 

@@ -53,13 +53,14 @@ class AdminController extends Controller
         }
 
          // Ambil data roles untuk dikirim ke view
-        $roles = Role::select('id', 'name')->whereIn('name', ['super-admin', 'admin-provinsi', 'pimpinan'])->get();
+        $roles = Role::select('id', 'name')->whereIn('name', ['super-admin', 'admin-provinsi', 'pimpinan', 'admin-kabkota'])->get();
         return view('backend.users.admin.index',  compact('roles'));
     }
 
         // Method untuk menyimpan data user baru
         public function store(Request $request)
         {
+            $userId = auth()->user()->id;
             // Validasi input
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
@@ -79,6 +80,7 @@ class AdminController extends Controller
                 'email' => $request->email,
                 'whatsapp' => $request->whatsapp,
                 'password' => bcrypt($request->name), // Set password default atau sesuai logika Anda
+                'kabkota_id' => $request->kabkota_id, // Set password default atau sesuai logika Anda
             ]);
     
             // Menambahkan role ke user
@@ -88,7 +90,11 @@ class AdminController extends Controller
             // Menyimpan ke tabel user_admin jika diperlukan
             UserAdmin::create([
                 'user_id' => $user->id,
-                'role_id' => $role->id,
+                // 'role_id' => $role->id,
+                'province_id' => 64,
+                'kabkota_id' => $request->kabkota_id,
+                'created_by' => $userId,
+                'updated_by' => $userId
                 // Tambahkan kolom lainnya jika diperlukan
             ]);
     
