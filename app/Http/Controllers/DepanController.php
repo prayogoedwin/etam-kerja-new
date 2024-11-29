@@ -37,6 +37,8 @@ class DepanController extends Controller
         ->limit(15)
         ->get();
 
+        // dd($lowonganDisetujui15->toArray());
+
         // Mengirim faq ke view depan_index
         return view('depan.depan_index', compact('faq', 'beritaTerbaru', 'lowonganDisetujui15'));
     }
@@ -76,6 +78,7 @@ class DepanController extends Controller
 
         // Query pencarian berdasarkan parameter
         $lowonganDisetujui = Lowongan::where('status_id', 1) // Lowongan yang disetujui
+            ->where('is_lowongan_disabilitas', 0)
             ->when($judulLowongan, function ($query, $judulLowongan) {
                 return $query->where('judul_lowongan', 'like', '%' . $judulLowongan . '%');
             })
@@ -86,17 +89,39 @@ class DepanController extends Controller
                 return $query->where('kabkota_id', $lokasiId);
             })
             ->orderBy('tanggal_start', 'desc')
-            ->paginate(10); // Pagination with 10 items per page
+            ->paginate(9); // Pagination with 10 items per page
 
         // Kirim data hasil pencarian dan filter ke view
         return view('depan.depan_lowongan_kerja', compact('lowonganDisetujui'));
     }
-    
 
-    public function lowongan_kerja_disabilitas(){
-        return view('depan.depan_lowongan_kerja_disabilitas');
+
+    public function lowongan_kerja_disabilitas(Request $request)
+    {
+        // Ambil parameter pencarian
+        $judulLowongan = $request->input('judul_lowongan');
+        $pendidikanId = $request->input('pendidikan_id');
+        $lokasiId = $request->input('kabkota_id');
+
+        // Query pencarian berdasarkan parameter
+        $lowonganDisetujui = Lowongan::where('status_id', 1) // Lowongan yang disetujui
+            ->where('is_lowongan_disabilitas',1)
+            ->when($judulLowongan, function ($query, $judulLowongan) {
+                return $query->where('judul_lowongan', 'like', '%' . $judulLowongan . '%');
+            })
+            ->when($pendidikanId, function ($query, $pendidikanId) {
+                return $query->where('pendidikan_id', $pendidikanId);
+            })
+            ->when($lokasiId, function ($query, $lokasiId) {
+                return $query->where('kabkota_id', $lokasiId);
+            })
+            ->orderBy('tanggal_start', 'desc')
+            ->paginate(9); // Pagination with 10 items per page
+
+        // Kirim data hasil pencarian dan filter ke view
+        return view('depan.depan_lowongan_kerja_disabilitas', compact('lowonganDisetujui'));
     }
-
+    
     public function infografis(){
         $infografis = EtamInfografis::whereNull('deleted_at')
         ->where('status', 1)

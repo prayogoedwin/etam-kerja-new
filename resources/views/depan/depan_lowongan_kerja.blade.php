@@ -23,7 +23,7 @@
     ============================================= -->
 <div class="blog-area blog-grid default-padding">
     <div class="container">
-        <div class="esitmate-form2 mt-40">
+        <div class="esitmate-form2">
             <form action="#" method="GET">
                 <div class="row">
                     <!-- Input Judul Lowongan -->
@@ -72,14 +72,17 @@
             
         </div>
 
-        <div class="blog-item-box">
-            <div class="row">
+        <div class="blog-item-box" >
+            <div class="row" style="padding-top:50px">
+                
                 @forelse ($lowonganDisetujui as $lowongan)
                     <div class="col-xl-4 col-md-6 single-item">
                         <div class="blog-style-one">
                             <div class="thumb">
                                 <a href="#">
-                                    <img src="{{ asset('assets/nakerbisa_fe/img/800x600.png') }}" alt="Thumb">
+                                    {{-- <img src="{{ asset('assets/nakerbisa_fe/img/800x600.png') }}" alt="Thumb"> --}}
+                                    <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
+                                    width="100px">
 
                                 </a>
                             </div>
@@ -107,15 +110,46 @@
                 @endforelse
             </div>
         </div>
+        
         <!-- Pagination -->
         <div class="row">
             <div class="col-md-12 pagi-area text-center">
                 <nav aria-label="navigation">
-                    {{ $lowonganDisetujui->links() }}
+                    <ul class="pagination">
+                        <!-- Previous Page Link -->
+                        @if ($lowonganDisetujui->onFirstPage())
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fas fa-angle-double-left"></i></a>
+                            </li>
+                        @else
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $lowonganDisetujui->previousPageUrl() }}" rel="prev"><i class="fas fa-angle-double-left"></i></a>
+                            </li>
+                        @endif
+
+                        <!-- Pagination Links -->
+                        @foreach ($lowonganDisetujui->getUrlRange(1, $lowonganDisetujui->lastPage()) as $page => $url)
+                            <li class="page-item {{ $page == $lowonganDisetujui->currentPage() ? 'active' : '' }}">
+                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                            </li>
+                        @endforeach
+
+                        <!-- Next Page Link -->
+                        @if ($lowonganDisetujui->hasMorePages())
+                            <li class="page-item">
+                                <a class="page-link" href="{{ $lowonganDisetujui->nextPageUrl() }}" rel="next"><i class="fas fa-angle-double-right"></i></a>
+                            </li>
+                        @else
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fas fa-angle-double-right"></i></a>
+                            </li>
+                        @endif
+                    </ul>
                 </nav>
             </div>
         </div>
         <!-- End Pagination -->
+
     </div>
 </div>
 <!-- End Blog -->
