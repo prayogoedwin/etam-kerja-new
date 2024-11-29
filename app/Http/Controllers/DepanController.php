@@ -6,6 +6,11 @@ use App\Models\Depan; // Import model Depan
 use App\Models\User;
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
+use App\Models\EtamInfografis;
+use App\Models\EtamBerita;
+use App\Models\EtamFaq;
+use App\Models\EtamGaleri;
+use App\Models\Lowongan;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
@@ -16,8 +21,27 @@ class DepanController extends Controller
     //index
     public function index()
     {
-        return view('depan.depan_index');
+        // return view('depan.depan_index');
+        $faq = EtamFaq::all();
+        $beritaTerbaru = EtamBerita::select('id', 'name', 'cover', 'status')
+            ->where('status', 1)
+            ->whereNull('deleted_at')
+            ->orderBy('id', 'desc')
+            ->limit(4)
+            ->get();
+        
+        // Query pencarian berdasarkan parameter
+        $lowonganDisetujui15 = Lowongan::where('status_id', 1) // Lowongan yang disetujui
+        ->with('postedBy:id,name')
+        ->orderBy('tanggal_start', 'desc')
+        ->limit(15)
+        ->get();
+
+        // Mengirim faq ke view depan_index
+        return view('depan.depan_index', compact('faq', 'beritaTerbaru', 'lowonganDisetujui15'));
     }
+
+   
 
     public function bkk(){
        // Mengambil data yang kolom deleted_at nya NULL (belum di-soft delete)
@@ -52,16 +76,32 @@ class DepanController extends Controller
     }
 
     public function infografis(){
-        return view('depan.depan_infografis');
+        $infografis = EtamInfografis::whereNull('deleted_at')
+        ->where('status', 1)
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+        return view('depan.depan_infografis', compact('infografis'));
     }
 
     public function galeri(){
-        return view('depan.depan_galeri');
+        $galeris = EtamGaleri::whereNull('deleted_at')
+        ->where('status', 1)
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);
+        return view('depan.depan_galeri', compact('galeris'));
     }
 
     public function berita(){
         return view('depan.depan_berita');
     }
+
+    public function show($id)
+    {
+        $berita = EtamBerita::findOrFail($id);
+
+        return view('depan.depan_berita_detail', compact('berita'));
+    }
+
 
     public function daftar_akun(Request $request){
         // dd($request->all());

@@ -47,4 +47,10 @@ class Lowongan extends Model
     // {
     //     return $this->belongsTo(User::class);
     // }
+
+    // Lowongan.php
+    public function postedBy()
+    {
+        return $this->belongsTo(User::class, 'posted_by', 'id');
+    }
 }

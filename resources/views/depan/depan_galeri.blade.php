@@ -30,64 +30,32 @@
                 <div class="col-md-12 gallery-content">
                     <div class="magnific-mix-gallery gallery-masonary">
                         <div id="gallery-masonary" class="gallery-items colums-3">
+                           
+                            @foreach ($galeris as $item)
                             <!-- Single Item -->
                             <div class="gallery-item">
                                 <div class="gallery-style-three">
                                     <div class="thumb">
-                                        <img src="{{ asset('assets') }}/etam_fe/img/800x600.png" alt="Thumb">
-                                        <a href="{{ asset('assets') }}/etam_fe/img/800x600.png"
+                                        <!-- Menampilkan gambar dari path_file -->
+                                        <img src="{{ asset('storage/' . $item->path_file) }}"
+                                            alt="{{ $item->name }}">
+                                        <a href="{{ asset('storage/' . $item->path_file) }}"
                                             class="item popup-gallery">
                                             <i class="fas fa-plus"></i>
                                         </a>
                                     </div>
                                     <div class="overlay">
                                         <div class="content">
-                                            <span>Job Fair</span>
-                                            <h4><a href="#">Pembukaan Acara Job Fair Kaltim</a></h4>
+                                            <!-- Menampilkan nama dan deskripsi -->
+                                            <span>{{ $item->category ?? 'Info' }}</span>
+                                            <h4><a href="#">{{ $item->name }}</a></h4>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <!-- End Single Item -->
-                            <!-- Single Item -->
-                            <div class="gallery-item">
-                                <div class="gallery-style-three">
-                                    <div class="thumb">
-                                        <img src="{{ asset('assets') }}/etam_fe/img/800x600.png" alt="Thumb">
-                                        <a href="{{ asset('assets') }}/etam_fe/img/800x600.png"
-                                            class="item popup-gallery">
-                                            <i class="fas fa-plus"></i>
-                                        </a>
-                                    </div>
-                                    <div class="overlay">
-                                        <div class="content">
-                                            <span>Public Speaking</span>
-                                            <h4><a href="#">Pelatihan Inteview</a></h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Item -->
-                            <!-- Single Item -->
-                            <div class="gallery-item">
-                                <div class="gallery-style-three">
-                                    <div class="thumb">
-                                        <img src="{{ asset('assets') }}/etam_fe/img/800x600.png" alt="Thumb">
-                                        <a href="{{ asset('assets') }}/etam_fe/img/800x600.png"
-                                            class="item popup-gallery">
-                                            <i class="fas fa-plus"></i>
-                                        </a>
-                                    </div>
-                                    <div class="overlay">
-                                        <div class="content">
-                                            <span>Engagement</span>
-                                            <h4><a href="#">Mengunjungi Perusahaan Rekomendasi</a></h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Item -->
-                        </div>
+                        @endforeach
+                          
                     </div>
 
                     <div class="row">

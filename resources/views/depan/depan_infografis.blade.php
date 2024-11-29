@@ -30,66 +30,32 @@
                 <div class="col-md-12 gallery-content">
                     <div class="magnific-mix-gallery gallery-masonary">
                         <div id="gallery-masonary" class="gallery-items colums-3">
-                            <!-- Single Item -->
-                            <div class="gallery-item">
-                                <div class="gallery-style-three">
-                                    <div class="thumb">
-                                        <img src="{{ asset('assets') }}/etam_fe/img/800x600.png" alt="Thumb">
-                                        <a href="{{ asset('assets') }}/etam_fe/img/800x600.png"
-                                            class="item popup-gallery">
-                                            <i class="fas fa-plus"></i>
-                                        </a>
-                                    </div>
-                                    <div class="overlay">
-                                        <div class="content">
-                                            <span>Job Fair</span>
-                                            <h4><a href="#">Pembukaan Acara Job Fair Kaltim</a></h4>
+                            @foreach ($infografis as $item)
+                                <!-- Single Item -->
+                                <div class="gallery-item">
+                                    <div class="gallery-style-three">
+                                        <div class="thumb">
+                                            <!-- Menampilkan gambar dari path_file -->
+                                            <img src="{{ asset('storage/' . $item->path_file) }}"
+                                                alt="{{ $item->name }}">
+                                            <a href="{{ asset('storage/' . $item->path_file) }}"
+                                                class="item popup-gallery">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                        </div>
+                                        <div class="overlay">
+                                            <div class="content">
+                                                <!-- Menampilkan nama dan deskripsi -->
+                                                <span>{{ $item->category ?? 'Info' }}</span>
+                                                <h4><a href="#">{{ $item->name }}</a></h4>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- End Single Item -->
-                            <!-- Single Item -->
-                            <div class="gallery-item">
-                                <div class="gallery-style-three">
-                                    <div class="thumb">
-                                        <img src="{{ asset('assets') }}/etam_fe/img/800x600.png" alt="Thumb">
-                                        <a href="{{ asset('assets') }}/etam_fe/img/800x600.png"
-                                            class="item popup-gallery">
-                                            <i class="fas fa-plus"></i>
-                                        </a>
-                                    </div>
-                                    <div class="overlay">
-                                        <div class="content">
-                                            <span>Public Speaking</span>
-                                            <h4><a href="#">Pelatihan Inteview</a></h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Item -->
-                            <!-- Single Item -->
-                            <div class="gallery-item">
-                                <div class="gallery-style-three">
-                                    <div class="thumb">
-                                        <img src="{{ asset('assets') }}/etam_fe/img/800x600.png" alt="Thumb">
-                                        <a href="{{ asset('assets') }}/etam_fe/img/800x600.png"
-                                            class="item popup-gallery">
-                                            <i class="fas fa-plus"></i>
-                                        </a>
-                                    </div>
-                                    <div class="overlay">
-                                        <div class="content">
-                                            <span>Engagement</span>
-                                            <h4><a href="#">Mengunjungi Perusahaan Rekomendasi</a></h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- End Single Item -->
+                                <!-- End Single Item -->
+                            @endforeach
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-lg-12 text-center">
                             <div class="load-more-info secondary text-center mt-60">
@@ -99,8 +65,11 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
+            </div>
+            <!-- Menampilkan pagination -->
+            <div class="pagination justify-content-center">
+                {{ $infografis->links('pagination::bootstrap-4') }}
             </div>
         </div>
     </div>

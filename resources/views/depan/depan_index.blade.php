@@ -139,87 +139,35 @@
                 <div class="services-carousel swiper">
                     <!-- Additional required wrapper -->
                     <div class="swiper-wrapper">
+                        @if ($lowonganDisetujui15->count())
+                        @foreach ($lowonganDisetujui15 as $lindex => $lokerTerbaru)
                         <!-- Single Item -->
                         <div class="swiper-slide">
                             <div class="services-style-three">
                                 <div class="info">
                                     <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
                                         width="100px">
-                                    <h3><a href="#">Programmer Mobile</a></h3>
-                                    <span class="sub-heading">PT Ezra Pratama</span>
+        
+                                    <h3><a href="#">{{ $lokerTerbaru->judul_lowongan }}</a></h3>
+                                    <span class="sub-heading">>{{ $lokerTerbaru->postedBy->name }} </span>
                                     <p>
-                                        Dibutuhkan 2 Programmer Mobile (Flutter / React Native) Penempatan Kalimantan
-                                        Timur (Samarinda). Wajib memiliki portofolio. Wajib memiliki pengalaman.
+                                      
+                                        <p>
+                                            {{ \Illuminate\Support\Str::limit($lokerTerbaru->deskripsi, 100, '...') }}
+                                        </p>
+                                        
+                                        
                                     </p>
 
                                 </div>
                             </div>
                         </div>
                         <!-- End Single Item -->
-                        <!-- Single Item -->
-                        <div class="swiper-slide">
-                            <div class="services-style-three">
-                                <div class="info">
-                                    <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
-                                        width="100px">
-                                    <h3><a href="#">Supervisor</a></h3>
-                                    <span class="sub-heading">PT Sawit Rindang</span>
-                                    <p>
-                                        Dicari 3 Supervisor untuk perusahaan sawit, single, umur maksimal 35 tahun,
-                                        berpengalaman minimal 1 tahun di perusahaan serupa.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End Single Item -->
-                        <!-- Single Item -->
-                        <div class="swiper-slide">
-                            <div class="services-style-three">
-                                <div class="info">
-                                    <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
-                                        width="100px">
-                                    <h3><a href="#">Marketing Senior</a></h3>
-                                    <span class="sub-heading">PT Asuransi Sehat</span>
-                                    <p>
-                                        Dicari marketing berpengalaman. benefit gaji pokok, tunjangan kesehatan,
-                                        tunjangan transport, bonus target.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End Single Item -->
-                        <!-- Single Item -->
-                        <div class="swiper-slide">
-                            <div class="services-style-three">
-                                <div class="info">
-                                    <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
-                                        width="100px">
-                                    <h3><a href="#">ABK KM</a></h3>
-                                    <span class="sub-heading">PT Kapal Luffi</span>
-                                    <p>
-                                        Dicari ABK untuk kapal muat barang, jurusan kalimatan timut - jawa tengah PP.
-                                        Menerima lulusan baru, siap bekerja dibawah tekanan.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End Single Item -->
-                        <!-- Single Item -->
-                        <div class="swiper-slide">
-                            <div class="services-style-three">
-                                <div class="info">
-                                    <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
-                                        width="100px">
-                                    <h3><a href="#">Operator Excavator</a></h3>
-                                    <span class="sub-heading">PT Stone Barra</span>
-                                    <p>
-                                        Dicari Operator Ecvavator berlisensi, Memiliki pengalaman sebagai operator
-                                        excavator minimal 3 tahun, Memiliki SKCK dan Surat Keterangan Bebas Narkoba.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- End Single Item -->
+                        @endforeach
+                        @else
+                            <p>Belum ada lowongan yang tersedia.</p>
+                        @endif
+                       
                     </div>
 
                     <!-- Navigation -->
@@ -396,63 +344,33 @@
                 <div class="faq-style-one default-padding">
                     <h4 class="sub-heading">FAQ</h4>
                     <h2 class="title mb-30">Jenis Pertanyaan Umum <br></h2>
-                    <div class="accordion" id="faqAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingOne">
-                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                    Apakah Lowongan Yang Tersedia Valid dan Sudah Melalui Proses Verifikasi Oleh
-                                    Pemerintah ?
-                                </button>
-                            </h2>
-                            <div id="collapseOne" class="accordion-collapse collapse show"
-                                aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    <p>
-                                        Ya, semua lowongan yang tampil sudah di kurasi oleh admin masing-masing
-                                        kabupaten kota pengampu berdasarkan jenis lowongan, konten lowongan dan
-                                        perusahaan yang memberikan sudah di verifikasi oleh admin. Proses verifikasi
-                                        oleh pemerintah lowongan inilah yang membedakan ETAM KERJA dengan platform
-                                        lowongan kerja swasta.
-                                    </p>
+                       <div class="accordion" id="faqAccordion">
+                        @if ($faq->count())
+                            @foreach ($faq as $index => $faq)
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading-{{ $index }}">
+                                        <button class="accordion-button {{ $index == 0 ? '' : 'collapsed' }}"
+                                            type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapse-{{ $index }}"
+                                            aria-expanded="{{ $index == 0 ? 'true' : 'false' }}"
+                                            aria-controls="collapse-{{ $index }}">
+                                            {{ $faq->name }}
+                                        </button>
+                                    </h2>
+                                    <div id="collapse-{{ $index }}"
+                                        class="accordion-collapse collapse {{ $index == 0 ? 'show' : '' }}"
+                                        aria-labelledby="heading-{{ $index }}" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            <p>
+                                                {!! $faq->description !!}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingTwo">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                    Apakah perusahaan dapat memasukkan lowongan secara gratis ?
-                                </button>
-                            </h2>
-                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
-                                data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    <p>
-                                        Ya, perusahaan diperbolehkan memposting lowongan secara gratis tanpa di pungut
-                                        biaya sepeserpun, tanpa batasan jumlah lowongan yang dapat di posting. Itulah
-                                        yang membedakan ETAM KERJA dengan platform lowongan kerja swasta</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingThree">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#collapseThree" aria-expanded="false"
-                                    aria-controls="collapseThree">
-                                    Apakah pengguna di pungut biaya untuk menggunakan fitur ETAM KERJA ?
-                                </button>
-                            </h2>
-                            <div id="collapseThree" class="accordion-collapse collapse"
-                                aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    <p>
-                                        Tidak semua fitur ETAM KERJA adalah bentuk pelayanan publik dalam hal penempatan
-                                        kerja dari pemerintah KALIMATAN TIMUR untuk pencari kerja, penyedia kerja.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                            @endforeach
+                        @else
+                            <p>Belum ada pertanyaan yang tersedia.</p>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -544,98 +462,38 @@
     </div>
     <div class="container">
         <div class="row">
-            <!-- Single Item -->
+           
+            @if ($beritaTerbaru->count())
+            @foreach ($beritaTerbaru as $bindex => $beritaTerbaru)
             <div class="col-lg-6 mt-md-30 mt-xs-30">
-                <div class="blog-style-one solid mb-30">
-                    <div class="thumb">
-                        <img src="{{ asset('assets') }}/etam_fe/img/1500x800.png" alt="Image Not Found">
-                        <div class="tags"><a href="#">Berita</a></div>
-                        <div class="info">
-                            <div class="blog-meta">
-                                <ul>
-                                    <li>
-                                        <a href="#"><i class="fas fa-user"></i> ADMIN ETAM KERKA</a>
-                                    </li>
-                                    <li>
-                                        20 Oktober, 2024
-                                    </li>
-                                </ul>
-                            </div>
-                            <h4>
-                                <a href="blog-single-with-sidebar.html">Pelatikan Presiden Prabowo Subianto.</a>
-                            </h4>
-                        </div>
-                    </div>
-                </div>
                 <div class="blog-style-one solid">
                     <div class="thumb">
-                        <img src="{{ asset('assets') }}/etam_fe/img/1500x800.png" alt="Image Not Found">
-                        <div class="tags"><a href="#">Pengumuman</a></div>
+                        <img src="{{ asset('storage/' . $beritaTerbaru->cover) }}" alt="Image Not Found">
+                        <a href="{{ route('berita.show', ['id' => $beritaTerbaru->id]) }}">Berita</a>
                         <div class="info">
                             <div class="blog-meta">
                                 <ul>
                                     <li>
-                                        <a href="#"><i class="fas fa-user"></i> ADMIN ETAM KERKA</a>
+                                        <a href="{{ route('berita.show', ['id' => $beritaTerbaru->id]) }}"><i class="fas fa-user"></i> ADMIN NAKERBISA</a>
                                     </li>
                                     <li>
-                                        01 Oktober, 2024
+                                        {{ date('d F, Y', strtotime($beritaTerbaru->created_at)) }}
                                     </li>
                                 </ul>
                             </div>
                             <h4>
-                                <a href="blog-single-with-sidebar.html">Per Hari Ini Tersedia Lowongan 40 Baru.</a>
+                                <a href="{{ route('berita.show', ['id' => $beritaTerbaru->id]) }}">{{ $beritaTerbaru->name }}</a>
                             </h4>
                         </div>
                     </div>
                 </div>
             </div>
             <!-- End Single Item -->
-            <!-- Single Item -->
-            <div class="col-lg-6 mt-md-30 mt-xs-30">
-                <div class="blog-style-one solid mb-30">
-                    <div class="thumb">
-                        <img src="{{ asset('assets') }}/etam_fe/img/1500x800.png" alt="Image Not Found">
-                        <div class="tags"><a href="#">Kegiatan</a></div>
-                        <div class="info">
-                            <div class="blog-meta">
-                                <ul>
-                                    <li>
-                                        <a href="#"><i class="fas fa-user"></i> ADMIN ETAM KERKA</a>
-                                    </li>
-                                    <li>
-                                        27 Oktober, 2024
-                                    </li>
-                                </ul>
-                            </div>
-                            <h4>
-                                <a href="blog-single-with-sidebar.html">Rapat Rencan Launching ETAM KERJA.</a>
-                            </h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="blog-style-one solid">
-                    <div class="thumb">
-                        <img src="{{ asset('assets') }}/etam_fe/img/1500x800.png" alt="Image Not Found">
-                        <div class="tags"><a href="#">Infografis</a></div>
-                        <div class="info">
-                            <div class="blog-meta">
-                                <ul>
-                                    <li>
-                                        <a href="#"><i class="fas fa-user"></i> ADMIN ETAM KERKA</a>
-                                    </li>
-                                    <li>
-                                        29 Oktober, 2024
-                                    </li>
-                                </ul>
-                            </div>
-                            <h4>
-                                <a href="blog-single-with-sidebar.html">Statistik Penempatan Kerja Terbaru.</a>
-                            </h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- End Single Item -->
+            @endforeach
+            @else
+                <p>Belum ada pertanyaan yang tersedia.</p>
+            @endif
+
         </div>
     </div>
 </div>

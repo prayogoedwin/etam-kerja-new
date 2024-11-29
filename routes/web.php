@@ -20,9 +20,13 @@ use App\Http\Controllers\ProfilPenyediaController;
 use App\Http\Controllers\ProfilPencariController;
 
 
-Route::get('/', function () {
-    return view('depan.depan_index');
-});
+// Route::get('/', function () {
+//     return view('depan.depan_index');
+// });
+
+
+Route::get('/', [DepanController::class, 'index']);
+
 
 Route::get('/depan/bkk', [DepanController::class, 'bkk']);
 Route::get('/depan/login', [DepanController::class, 'login']);
@@ -32,6 +36,7 @@ Route::get('/depan/lowongan-kerja-disabilitas', [DepanController::class, 'lowong
 Route::get('/depan/infografis', [DepanController::class, 'infografis']);
 Route::get('/depan/galeri', [DepanController::class, 'galeri']);
 Route::get('/depan/berita', [DepanController::class, 'berita']);
+Route::get('/depan/berita/{id}', [DepanController::class, 'show'])->name('berita.show');
 Route::post('/depan/daftar-akun', [DepanController::class, 'daftar_akun'])->name('daftar-akun');
 Route::get('/depan/daftar', [DepanController::class, 'daftar']); //with role
 Route::post('/depan/cek-awal-akun', [DepanController::class, 'cek_awal_akun'])->name('cek-awal-akun');
