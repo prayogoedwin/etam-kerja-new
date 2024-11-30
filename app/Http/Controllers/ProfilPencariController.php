@@ -7,6 +7,7 @@ use App\Models\ProfilPencari;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\EtamPencariPendidikan;
+use App\Models\EtamPencariKeahlian;
 
 class ProfilPencariController extends Controller
 {
@@ -193,6 +194,57 @@ class ProfilPencariController extends Controller
         }
 
         $pendidikan->delete();
+
+        return response()->json(['status' => 1, 'message' => 'Data berhasil dihapus'], 200);
+    }
+
+    public function keahlian(Request $request){
+        $userid = auth()->user()->id;
+
+        if ($request->ajax()) {
+            $keahlians = EtamPencariKeahlian::select(
+                'etam_pencari_keahlian.id',
+                'etam_pencari_keahlian.keahlian'
+            )
+            ->where('etam_pencari_keahlian.user_id', $userid)
+            ->get();
+
+            return DataTables::of($keahlians)
+                ->addIndexColumn()
+                ->addColumn('options', function ($keahlian) {
+                    return '
+                        <button class="btn btn-danger btn-sm" onclick="confirmDeleteKeahlian(' . $keahlian->id . ')"><i class="fa fa-trash"></i></button>
+                    ';
+                })
+                ->rawColumns(['options'])  // Pastikan menambahkan ini untuk kolom options
+                ->make(true);
+        }
+    }
+
+    public function store_keahlian(Request $request)
+    {
+        $userid = auth()->user()->id;
+
+        $validatedData = $request->validate([
+            'keahlian' => 'required|string',
+        ]);
+
+        $keahlian = new EtamPencariKeahlian();
+        $keahlian->user_id = $userid;
+        $keahlian->keahlian = $request->keahlian;
+        $keahlian->save();
+
+        return response()->json(['status' => 1, 'message' => 'Data berhasil disimpan'], 200);
+    }
+
+    public function delete_keahlian(Request $request)
+    {
+        $keahlian = EtamPencariKeahlian::find($request->id);
+        if (!$keahlian) {
+            return response()->json(['status' => 0, 'message' => 'Data tidak ditemukan'], 404);
+        }
+
+        $keahlian->delete();
 
         return response()->json(['status' => 1, 'message' => 'Data berhasil dihapus'], 200);
     }

@@ -294,14 +294,23 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="row" style="padding: 8px">
-                                <h5 class="card-header col-6">Ketrampilan</h5>
-                                <h5 class="card-header col-6 text-end"><a href="#!"
-                                        class="btn btn-sm btn-info">Tambah</a>
+                                <h5 class="card-header col-6">Ketrampilan/Keahlian</h5>
+                                <h5 class="card-header col-6 text-end"><a href="#!" class="btn btn-sm btn-info"
+                                        onclick="addKeahlian()">Tambah</a>
                                 </h5>
                             </div>
 
                             <div class="card-body">
-                                table here
+                                <table id="keahlianTable" class="table table-bordered table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Keahlian</th>
+                                            <th>Options</th>
+                                        </tr>
+                                    </thead>
+
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -358,6 +367,32 @@
                                             }
                                         @endphp
                                     </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <button class="float-end btn btn-primary">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modal-addkeahlian" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Tambah</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="tambahFormKeahlian">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="">Keahlian</label>
+                                    <input type="text" class="form-control" name="keahlian" id="keahlian">
                                 </div>
                             </div>
                             <div class="col-sm-12">
@@ -729,6 +764,81 @@
                         if (response.status == 1) {
                             alert(response.message);
                             tablePendidikan.ajax.reload();
+                        } else {
+                            alert('Error: ' + JSON.stringify(response.errors));
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            }
+        }
+
+        let tableKeahlian = $('#keahlianTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route('profilkeahlian.pencari.index') }}',
+            auto: false,
+            columns: [{
+                    data: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'keahlian',
+                    name: 'keahlian'
+                },
+                {
+                    data: 'options',
+                    orderable: false,
+                    searchable: false
+                }
+            ]
+        });
+
+        function addKeahlian() {
+            $('#modal-addkeahlian').modal('show');
+        }
+
+        $('#tambahFormKeahlian').submit(function(e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: "{{ route('profilkeahlian.pencari.store') }}",
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "keahlian": $('#keahlian').val()
+                },
+                success: function(response) {
+                    if (response.status == 1) {
+                        alert(response.message);
+                        $('#modal-addkeahlian').modal('hide');
+                        tableKeahlian.ajax.reload();
+                    } else {
+                        alert('Error: ' + JSON.stringify(response.errors));
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error: ' + xhr.responseText);
+                }
+            });
+        });
+
+        function confirmDeleteKeahlian(id) {
+            if (confirm('Apakah Anda yakin akan menghapus data ini?')) {
+                $.ajax({
+                    url: "{{ route('profilkeahlian.pencari.destroy', ':id') }}".replace(':id',
+                        id),
+                    type: 'DELETE',
+                    data: {
+                        "_token": "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        if (response.status == 1) {
+                            alert(response.message);
+                            tableKeahlian.ajax.reload();
                         } else {
                             alert('Error: ' + JSON.stringify(response.errors));
                         }

@@ -174,6 +174,10 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::post('/profil/add_pendidikanformal', [ProfilPencariController::class, 'store_pendidikanformal'])->name('profilpendidikanformal.pencari.store');
         Route::delete('/profil/delete_pendidikanformal/{id}', [ProfilPencariController::class, 'delete_pendidikanformal'])->name('profilpendidikanformal.pencari.destroy');
 
+        Route::get('/profil/keahlian', [ProfilPencariController::class, 'keahlian'])->name('profilkeahlian.pencari.index');
+        Route::post('/profil/add_keahlian', [ProfilPencariController::class, 'store_keahlian'])->name('profilkeahlian.pencari.store');
+        Route::delete('/profil/delete_keahlian/{id}', [ProfilPencariController::class, 'delete_keahlian'])->name('profilkeahlian.pencari.destroy');
+
         Route::get('/ak1', [Ak1PencariController::class, 'index'])->name('ak1.index');
 
         Route::get('/history_lamaran', [HistoryLamaranPencariController::class, 'index'])->name('historylamaran.pencari.index');
