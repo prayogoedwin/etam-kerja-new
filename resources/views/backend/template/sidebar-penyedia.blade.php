@@ -52,6 +52,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('pencari_diterima.index') }}" class="nav-link ">
+                        <span class="pcoded-micon"><i class="feather icon-users"></i></span>
+                        <span class="pcoded-mtext">Pencari Diterima</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('bkk.penyedia.index') }}" class="nav-link ">
                         <span class="pcoded-micon"><i class="fa fa-building"></i></span>
                         <span class="pcoded-mtext">BKK</span>

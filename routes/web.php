@@ -22,9 +22,7 @@ use App\Http\Controllers\ProfilBkkController;
 use App\Http\Controllers\BkkPenyediaController;
 use App\Http\Controllers\HistoryLamaranPencariController;
 use App\Http\Controllers\Ak1Controller;
-
-
-
+use App\Http\Controllers\DiterimaPencariController;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -144,6 +142,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::put('/profil/update/{id}', [ProfilPenyediaController::class, 'update'])->name('profil.penyedia.update');
 
         Route::get('/bkk', [BkkPenyediaController::class, 'index'])->name('bkk.penyedia.index');
+
+        Route::get('/pencari_diterima', [DiterimaPencariController::class, 'index'])->name('pencari_diterima.index');
     });
 
     Route::prefix('ak1')->group(function () {
