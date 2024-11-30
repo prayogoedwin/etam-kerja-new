@@ -110,6 +110,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/admin/get/{id}', [AdminController::class, 'getAdmin'])->name('admin.detail');
         Route::put('/admin/update/{id}', [AdminController::class, 'update'])->name('admin.update');
         Route::delete('/admin/delete/{id}', [AdminController::class, 'softdelete'])->name('admin.softdelete');
+        Route::put('/admin/reset/{id}', [AdminController::class, 'reset'])->name('admin.reset');
 
         Route::get('/pencari', [UserPencariController::class, 'index'])->name('userpencari.index');
         Route::delete('/pencari/delete/{id}', [UserPencariController::class, 'softdelete'])->name('userpencari.softdelete');
@@ -132,6 +133,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
         Route::get('/profil', [ProfilPenyediaController::class, 'index'])->name('profil.penyedia.index');
         Route::put('/profil/update/{id}', [ProfilPenyediaController::class, 'update'])->name('profil.penyedia.update');
+
+        Route::get('/bkk', [BkkPenyediaController::class, 'index'])->name('bkk.penyedia.index');
     });
 
     Route::prefix('admins')->group(function () {
