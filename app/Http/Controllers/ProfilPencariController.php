@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ProfilPencari;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
+use App\Models\EtamPencariPendidikan;
 
 class ProfilPencariController extends Controller
 {
@@ -129,5 +131,69 @@ class ProfilPencariController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function pendidikanformal(Request $request)
+    {
+        $userid = auth()->user()->id;
+
+        if ($request->ajax()) {
+            $pendidikansf = EtamPencariPendidikan::select(
+                'etam_pencari_pendidikan.id',
+                'etam_pendidikan.name as pendidikanteks',
+                'etam_jurusan.nama as jurusanteks',
+                'etam_pencari_pendidikan.instansi',
+                'etam_pencari_pendidikan.tahun'
+            )
+            ->join('etam_pendidikan', 'etam_pencari_pendidikan.pendidikan_id', '=', 'etam_pendidikan.id')
+            ->join('etam_jurusan', 'etam_pencari_pendidikan.jurusan_id', '=', 'etam_jurusan.id')
+            ->where('etam_pencari_pendidikan.user_id', $userid)
+            ->get();
+
+            return DataTables::of($pendidikansf)
+                ->addIndexColumn()
+                ->addColumn('options', function ($pend) {
+                    return '
+                        <button class="btn btn-danger btn-sm" onclick="confirmDeletePendidikan(' . $pend->id . ')"><i class="fa fa-trash"></i></button>
+                    ';
+                })
+                ->rawColumns(['options'])  // Pastikan menambahkan ini untuk kolom options
+                ->make(true);
+        }
+    }
+
+    public function store_pendidikanformal(Request $request)
+    {
+        // dd($request->all());
+        $userid = auth()->user()->id;
+
+        $validatedData = $request->validate([
+            'pendidikan_id' => 'required|numeric',
+            'jurusan_id' => 'required|numeric',
+            'instansi' => 'required|string',
+            'tahun' => 'required|numeric',
+        ]);
+
+        $pendidikan = new EtamPencariPendidikan();
+        $pendidikan->user_id = $userid;
+        $pendidikan->pendidikan_id = $request->pendidikan_id;
+        $pendidikan->jurusan_id = $request->jurusan_id;
+        $pendidikan->instansi = $request->instansi;
+        $pendidikan->tahun = $request->tahun;
+        $pendidikan->save();
+
+        return response()->json(['status' => 1, 'message' => 'Data berhasil disimpan'], 200);
+    }
+
+    public function delete_pendidikanformal(Request $request)
+    {
+        $pendidikan = EtamPencariPendidikan::find($request->id);
+        if (!$pendidikan) {
+            return response()->json(['status' => 0, 'message' => 'Data tidak ditemukan'], 404);
+        }
+
+        $pendidikan->delete();
+
+        return response()->json(['status' => 1, 'message' => 'Data berhasil dihapus'], 200);
     }
 }

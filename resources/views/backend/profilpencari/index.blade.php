@@ -170,7 +170,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="form-group row">
+                                        <div class="form-group row" hidden>
                                             <div class="col-2">
                                                 <label for="">Kelurahan</label>
                                             </div>
@@ -258,11 +258,60 @@
                 </div>
                 <!-- [ Main Content ] end -->
 
+                {{-- START PENDIDIKAN FORMAL --}}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="row" style="padding: 8px">
+                                <h5 class="card-header col-6">Pendidikan Formal</h5>
+                                <h5 class="card-header col-6 text-end"><a href="#!" class="btn btn-sm btn-info"
+                                        onclick="addPendidikan()">Tambah</a>
+                                </h5>
+                            </div>
+
+                            <div class="card-body">
+                                <table id="pendidikanTable" class="table table-bordered table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Tingkat Pendidikan</th>
+                                            <th>Jurusan</th>
+                                            <th>Sekolah/Perguruan Tinggi</th>
+                                            <th>Tahun</th>
+                                            <th>Options</th>
+                                        </tr>
+                                    </thead>
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- END PENDIDIKAN FORMAL --}}
+
+                {{-- START KETRAMPILAN --}}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="row" style="padding: 8px">
+                                <h5 class="card-header col-6">Ketrampilan</h5>
+                                <h5 class="card-header col-6 text-end"><a href="#!"
+                                        class="btn btn-sm btn-info">Tambah</a>
+                                </h5>
+                            </div>
+
+                            <div class="card-body">
+                                table here
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- END KETRAMPILAN --}}
 
             </div>
         </div>
 
-        <div class="modal fade" id="modal-report" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+        <div class="modal fade" id="modal-addpendidikan" role="dialog" aria-labelledby="myExtraLargeModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -272,20 +321,50 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="tambahForm">
-                            <div class="col-sm-12">
+                        <form id="tambahFormPendidikan">
+                            <div class="col-12">
                                 <div class="form-group">
-                                    {{-- <label class="floating-label" for="jdllow">Judul Lowongan</label> --}}
-                                    <textarea class="form-control" id="judul_lowongan" name="judul_lowongan" rows="3"
-                                        placeholder="Judul Lowongan"></textarea>
+                                    <label for="">Pendidikan</label>
+                                    <select class="form-select" name="pendidikan_id_modal" id="pendidikan_id_modal">
+                                        <option value="">Pilih Pendidikan</option>
+                                        @foreach ($pendidikans as $pendidikan)
+                                            <option value="{{ $pendidikan->id }}">{{ $pendidikan->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="">Jurusan</label>
+                                    <select class="form-select" name="jurusan_id_modal" id="jurusan_id_modal"
+                                        style="width: 100%">
+                                        <option value="">Pilih Jurusan</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="">Sekolah</label>
+                                    <input type="text" class="form-control" name="instansi" id="instansi">
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="">Tahun Lulus</label>
+                                    <select name="tahun" id="tahun" class="form-select">
+                                        @php
+                                            for ($i = date('Y'); $i >= date('Y') - 70; $i -= 1) {
+                                                echo "<option value='$i'> $i </option>";
+                                            }
+                                        @endphp
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-sm-12">
-
                                 <button class="float-end btn btn-primary">Simpan</button>
                             </div>
+                        </form>
                     </div>
-                    </form>
                 </div>
             </div>
         </div>
@@ -518,6 +597,147 @@
                     alert('Error: ' + xhr.responseText);
                 }
             });
+        }
+    </script>
+    <script>
+        $("#jurusan_id_modal").select2({
+            placeholder: "Pilih Jurusan",
+            allowClear: true,
+            dropdownParent: $("#modal-addpendidikan")
+        });
+
+        let tablePendidikan = $('#pendidikanTable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route('profilpendidikanformal.pencari.index') }}',
+            autoWidth: false, // Menonaktifkan auto-width
+            columns: [{
+                    data: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'pendidikanteks',
+                    name: 'pendidikanteks'
+                },
+                {
+                    data: 'jurusanteks',
+                    name: 'jurusanteks'
+                },
+                {
+                    data: 'instansi',
+                    name: 'instansi'
+                },
+                {
+                    data: 'tahun',
+                    name: 'tahun'
+                },
+                {
+                    data: 'options',
+                    orderable: false,
+                    searchable: false
+                }
+            ]
+        });
+
+        function addPendidikan() {
+            $('#modal-addpendidikan').modal('show');
+        }
+
+        $('#pendidikan_id_modal').on('change', function() {
+            // alert(this.value); // Menampilkan nilai yang dipilih
+            var kd = this.value
+
+            // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+            $.ajax({
+                url: "{{ route('get-jurusan-bypendidikan', ':id') }}".replace(':id',
+                    kd), // Panggil API
+                type: 'GET',
+                success: function(response) {
+                    // Kosongkan dropdown kecamatan sebelumnya
+                    $('#jurusan_id_modal').empty();
+
+                    // Tambahkan opsi default
+                    $('#jurusan_id_modal').append(
+                        '<option selected disabled>Pilih Jurusan</option>');
+
+                    // Loop data kecamatan dan tambahkan ke dropdown
+                    $.each(response, function(index, jur) {
+                        $('#jurusan_id_modal').append('<option value="' + jur.id +
+                            '">' +
+                            jur.nama + '</option>');
+                    });
+
+
+                },
+                error: function(xhr) {
+                    console.error(xhr);
+                }
+            });
+        });
+
+        $('#tambahFormPendidikan').submit(function(e) {
+            e.preventDefault();
+
+            // var tkn = $('#_token').val();
+            // let dataf = new FormData(document.getElementById("tambahFormPendidikan"));
+
+            // Tambahkan CSRF token dan metode PUT
+            // dataf.append('_token', '{{ csrf_token() }}');
+
+            // Send the data to the update route
+            $.ajax({
+                url: "{{ route('profilpendidikanformal.pencari.store') }}",
+                type: 'POST',
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "pendidikan_id": $('#pendidikan_id_modal').val(),
+                    "jurusan_id": $('#jurusan_id_modal').val(),
+                    "instansi": $('#instansi').val(),
+                    "tahun": $('#tahun').val()
+                },
+                // processData: false,
+                // contentType: false,
+                success: function(response) {
+                    // console.log(response);
+                    if (response.status == 1) {
+                        // Optionally, reload the table or page to reflect the update
+                        alert(response.message);
+                        $('#modal-addpendidikan').modal('hide');
+                        tablePendidikan.ajax.reload();
+                    } else {
+                        // Display error message
+                        alert('Error: ' + JSON.stringify(response.errors));
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error: ' + xhr.responseText);
+                }
+            });
+        });
+
+        function confirmDeletePendidikan(id) {
+            if (confirm('Apakah Anda yakin akan menghapus data ini?')) {
+                $.ajax({
+                    url: "{{ route('profilpendidikanformal.pencari.destroy', ':id') }}".replace(':id',
+                        id),
+                    type: 'DELETE',
+                    data: {
+                        "_token": "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        if (response.status == 1) {
+                            alert(response.message);
+                            tablePendidikan.ajax.reload();
+                        } else {
+                            alert('Error: ' + JSON.stringify(response.errors));
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            }
         }
     </script>
 @endpush
