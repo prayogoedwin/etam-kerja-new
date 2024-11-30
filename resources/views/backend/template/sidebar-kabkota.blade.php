@@ -7,10 +7,12 @@
                     <img class="img-radius" src="{{ asset('assets/etam_be/images/user/avatar-x.png') }}"
                         alt="User-Profile-Image">
                     <div class="user-details">
-                        <div id="more-details"> {{ Auth::user()->name }} <i class="fa fa-caret-down"></i></div>
+                        <div id="more-details"> {{ Auth::user()->name }} 
+                            {{-- <i class="fa fa-caret-down"></i> --}}
+                        </div>
                     </div>
                 </div>
-                <div class="collapse" id="nav-user-link">
+                {{-- <div class="collapse" id="nav-user-link">
                     <ul class="list-inline">
                         <li class="list-inline-item"><a href="user-profile.html" data-toggle="tooltip"
                                 title="View Profile"><i class="feather icon-user"></i></a></li>
@@ -20,7 +22,7 @@
                         <li class="list-inline-item"><a href="auth-signin.html" data-toggle="tooltip" title="Logout"
                                 class="text-danger"><i class="feather icon-power"></i></a></li>
                     </ul>
-                </div>
+                </div> --}}
             </div>
 
             <ul class="nav pcoded-inner-navbar ">

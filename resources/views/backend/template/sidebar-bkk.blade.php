@@ -20,7 +20,7 @@
                         <div id="more-details"> {{ Auth::user()->name }} </div>
                     </div>
                 </div>
-                <div class="collapse" id="nav-user-link" hidden>
+                {{-- <div class="collapse" id="nav-user-link" hidden>
                     <ul class="list-inline">
                         <li class="list-inline-item"><a href="user-profile.html" data-toggle="tooltip"
                                 title="View Profile"><i class="feather icon-user"></i></a></li>
@@ -30,7 +30,7 @@
                         <li class="list-inline-item"><a href="auth-signin.html" data-toggle="tooltip" title="Logout"
                                 class="text-danger"><i class="feather icon-power"></i></a></li>
                     </ul>
-                </div>
+                </div> --}}
             </div>
 
             <ul class="nav pcoded-inner-navbar ">
