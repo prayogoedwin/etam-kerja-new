@@ -78,7 +78,10 @@
         @endif
 
         <div class="text-center">
-            <img src="{{ asset('assets/etam_fe/images/logo/LOGO_ETAM_KERJA.png') }}" height="75" alt="">
+            <a href="{{ url('/') }}">
+                <img src="{{ asset('assets/etam_fe/images/logo/LOGO_ETAM_KERJA.png') }}" height="75" alt="">
+            </a>
+
         </div>
         <h2 class="text-center mb-4">Login</h2>
         <form action="{{ route('login.action') }}" method="POST">

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Depan; // Import model Depan
 use App\Models\User;
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
@@ -183,9 +182,9 @@ class DepanController extends Controller
             $nm_role = 'Bursa Kerja Khusus';
         }
 
-        $depanModel = new Depan();
-        $data['agama'] = $depanModel->getAllAgama(); // Mendapatkan semua data agama
-        $data['kabkota'] = $depanModel->getKabkotaByProvince();
+        $data['agama'] = getAgama(); // Mendapatkan semua data agama
+        $data['kabkota'] = getKabkota();
+        $data['jabatans'] = getJabatan();
 
         $data['dt'] = array(
             'role' => $decode_rl,
@@ -292,7 +291,7 @@ class DepanController extends Controller
                 'id_provinsi' => '64',
                 'id_kota' => $request->kabkota_id,
                 'id_kecamatan' => $request->kecamatan_id,
-                'id_desa' => $request->desa_id,
+                // 'id_desa' => $request->desa_id,
                 'alamat' => $request->alamat,
                 'kodepos' => $request->kodepos,
                 'id_pendidikan' => $request->pendidikan_id,
@@ -300,6 +299,7 @@ class DepanController extends Controller
                 'tahun_lulus' => $request->tahun_lulus,
                 'id_status_perkawinan' => $request->status_perkawinan_id,
                 'id_agama' => $request->agama_id,
+                'id_jabatan_harapan' => $request->jabatan_harapan_id,
                 'foto' => null,
                 'status_id' => 1,
                 'is_alumni_bkk' => 0,

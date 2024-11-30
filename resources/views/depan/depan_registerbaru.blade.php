@@ -8,6 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="shortcut icon" href="{{ asset('assets') }}/etam_fe/images/logo/icon_etam.png" type="image/x-icon">
+
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" />
     <style>
         body {
             background-image: url('{{ asset('assets/etam_fe/images/bg_unsplash.png') }}');
@@ -138,6 +141,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Select2 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
     <script>
         $(document).ready(function() {
             $("#show-password").change(function() {
@@ -179,6 +185,16 @@
                 showStep(currentStep);
             }
         }
+
+        $("#jabatan_harapan_id").select2({
+            placeholder: "Pilih Jabatan Harapan",
+            allowClear: true
+        });
+
+        $("#jurusan_id").select2({
+            placeholder: "Pilih Jurusan",
+            allowClear: true
+        });
 
         // document.getElementById('registrationForm').addEventListener('submit', function(event) {
         //     event.preventDefault();
