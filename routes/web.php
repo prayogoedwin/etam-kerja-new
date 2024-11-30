@@ -1,5 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\CheckUserRole;
+
 use App\Captcha\SimpleCaptcha; // Replace with your actual namespace
 use App\Http\Controllers\DepanController;
 use App\Http\Controllers\BackController;
@@ -23,6 +25,7 @@ use App\Http\Controllers\BkkPenyediaController;
 use App\Http\Controllers\HistoryLamaranPencariController;
 use App\Http\Controllers\Ak1Controller;
 use App\Http\Controllers\DiterimaPencariController;
+
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -81,7 +84,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::get('/depan/getdesabyid/{kec_id}', [DepanController::class, 'getDesaByKec'])->name('get-desa-bykecamatan');
     Route::get('/depan/getjurusanbyid/{pendidikan_id}', [DepanController::class, 'getJurusanByPendidikan'])->name('get-jurusan-bypendidikan');
 
-    Route::prefix('setting')->group(function () {
+    Route::prefix('setting')->middleware(CheckUserRole::class . ':super-admin, admin-provinsi')->group(function () {
         Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
 
         Route::get('/faqs', [EtamFaqController::class, 'index'])->name('faq.index');
@@ -110,7 +113,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
     });
 
-    Route::prefix('users')->group(function () {
+    // Route::prefix('users')->group(function () {
+    Route::prefix('users')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
 
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
         Route::post('/admin/add', [AdminController::class, 'store'])->name('admin.add');
@@ -130,19 +134,18 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
     });
 
-    Route::prefix('penyedias')->group(function () {
+    Route::prefix('penyedias')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer,penyedia-kerja')->group(function () {
         Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');
         Route::post('/lowongan/add', [LowonganController::class, 'store'])->name('lowongan.add');
         Route::get('/lowongan/pelamar/{id}', [LowonganController::class, 'pelamar'])->name('lowongan.pelamar');
         Route::get('/lowongan/detail_pelamar/{id}', [LowonganController::class, 'detailpelamar'])->name('lowongan.detailpelamar');
-        Route::post('/lowongan/bulk_updatepelamar', [LowonganController::class, 'bulkupdatepelamar'])->name('bulk.update.pelamar');
+
+        Route::post('/lowongan/bulk_updatepelamar', [LowonganController::class, 'bulkupdatepelamar'])->middleware('check.role:penyedia-kerja')->name('bulk.update.pelamar');
         // Route::delete('/lowongan/delete/{id}', [LowonganController::class, 'softdelete'])->name('lowongan.softdelete');
 
         Route::get('/profil', [ProfilPenyediaController::class, 'index'])->name('profil.penyedia.index');
         Route::put('/profil/update/{id}', [ProfilPenyediaController::class, 'update'])->name('profil.penyedia.update');
-
         Route::get('/bkk', [BkkPenyediaController::class, 'index'])->name('bkk.penyedia.index');
-
         Route::get('/pencari_diterima', [DiterimaPencariController::class, 'index'])->name('pencari_diterima.index');
     });
 
@@ -157,7 +160,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         // Route::get('/data-ak1-tk', [Ak1Controller::class, 'dataAk1Tk'])->name('ak1.dataTk');
     });
 
-    Route::prefix('admins')->group(function () {
+    Route::prefix('admins')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
         Route::get('/lowongan', [LowonganAdminController::class, 'index'])->name('lowongan.admin.index');
         Route::get('/lowongan/get/{id}', [LowonganAdminController::class, 'show'])->name('lowongan.admin.detail');
         Route::put('/lowongan/update/{id}', [LowonganAdminController::class, 'update'])->name('lowongan.admin.update');
