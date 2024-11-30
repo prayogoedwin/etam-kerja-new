@@ -91,7 +91,8 @@
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label for="jab">Jabatan</label>
-                                        <select class="form-control" name="jabatan_id" id="jabatan_id" required>
+                                        <select class="form-control" name="jabatan_id" id="jabatan_id" required
+                                            style="width: 100%;">
                                             <option value="">Pilih Jabatan</option>
                                             @foreach ($jabatans as $jab)
                                                 <option value="{{ $jab->id }}">{{ $jab->nama }}</option>
@@ -151,6 +152,14 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <input class="form-control" type="number" id="kisaran_gaji"
+                                                name="kisaran_gaji" placeholder="Kisaran Gaji">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
                                     <div class="row">
                                         <div class="col-6">
                                             <label class="floating-label" for="jumpri">Jumlah Pria</label>
@@ -187,18 +196,18 @@
                                         </select>
                                     </div>
                                 </div>
-                                {{-- <div class="col-sm-12">
+                                <div class="col-sm-12">
                                     <div class="form-group">
                                         <label for="stskawin">Status Perkawinan</label>
                                         <select class="form-control" id="status_perkawinan_id"
                                             name="status_perkawinan_id" required>
-                                            <option selected disabled>Pilih Status</option>
+                                            <option selected>Pilih Status</option>
                                             @foreach ($maritals as $marit)
                                                 <option value="{{ $marit->id }}">{{ $marit->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
-                                </div> --}}
+                                </div>
 
 
                                 <div class="col-sm-12">
@@ -331,6 +340,7 @@
                         judul_lowongan: $('#judul_lowongan').val(),
                         kabkota_id: $('#kabkota_id').val(),
                         lokasi_penempatan_text: $('#lokasi_penempatan_text').val(),
+                        kisaran_gaji: $('#kisaran_gaji').val(),
                         jumlah_pria: $('#jumlah_pria').val(),
                         jumlah_wanita: $('#jumlah_wanita').val(),
                         deskripsi: $('#deskripsi').val(),
@@ -343,6 +353,9 @@
                         if (response.success) {
                             alert('Berhasil menambahkan data');
                             $('#modal-report').modal('hide');
+
+                            $('#tambahForm').trigger("reset");
+
                             location.reload(); // Refresh halaman
                         } else {
                             // If validation errors are found, display them in an alert
@@ -488,6 +501,12 @@
 
             $("#jurusan_id").select2({
                 placeholder: "Pilih Jurusan",
+                allowClear: true,
+                dropdownParent: $("#modal-report")
+            });
+
+            $("#jabatan_id").select2({
+                placeholder: "Pilih Jabatan",
                 allowClear: true,
                 dropdownParent: $("#modal-report")
             });

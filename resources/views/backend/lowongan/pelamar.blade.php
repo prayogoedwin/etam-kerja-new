@@ -43,11 +43,11 @@
                                             <td>:</td>
                                             <td>{{ $lowongan->judul_lowongan }}</td>
                                         </tr>
-                                        <tr>
+                                        {{-- <tr>
                                             <td>Deskripsi Pekerjaan</td>
                                             <td>:</td>
                                             <td>{{ $lowongan->deskripsi }}</td>
-                                        </tr>
+                                        </tr> --}}
                                         <tr>
                                             <td>Jumlah Pria</td>
                                             <td>:</td>
@@ -61,7 +61,7 @@
                                         <tr>
                                             <td>Gaji</td>
                                             <td>:</td>
-                                            <td> migrate db dlu gan</td>
+                                            <td>Rp. {{ number_format($lowongan->kisaran_gaji, 0, ',', '.') }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
