@@ -8,6 +8,8 @@ use App\Models\Back; // Import model Depan
 use App\Models\EtamAk1;
 use App\Models\UserPencari;
 use App\Models\UserAdmin;
+use App\Models\EtamPencariPendidikan;
+use App\Models\EtamPencariKeahlian;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
@@ -280,7 +282,7 @@ class Ak1Controller extends Controller
         $pencari->gender = $request->gender;
         $pencari->id_kota = $request->kabkota_id;
         $pencari->id_kecamatan = $request->kecamatan_id;
-        $pencari->id_desa = $request->desa_id;
+        // $pencari->id_desa = $request->desa_id;
         $pencari->alamat = $request->alamat;
         $pencari->kodepos = $request->kodepos;
         $pencari->id_pendidikan = $request->pendidikan_id;
@@ -304,6 +306,7 @@ class Ak1Controller extends Controller
     public function printAk1($id)
     {
 
+        $id = decode_url($id);
         $id_user = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
         $admins = UserAdmin::with([
             'user:id,name,email,whatsapp',
@@ -348,11 +351,27 @@ class Ak1Controller extends Controller
             $nakerAk1->save();
         }
 
-        $pendidikan = array();
-        $keterampilan = array();
+        $pendidikans = EtamPencariPendidikan::select(
+            'etam_pencari_pendidikan.id',
+            'etam_pendidikan.name as pendidikanteks',
+            'etam_jurusan.nama as jurusanteks',
+            'etam_pencari_pendidikan.instansi',
+            'etam_pencari_pendidikan.tahun'
+        )
+        ->join('etam_pendidikan', 'etam_pencari_pendidikan.pendidikan_id', '=', 'etam_pendidikan.id')
+        ->join('etam_jurusan', 'etam_pencari_pendidikan.jurusan_id', '=', 'etam_jurusan.id')
+        ->where('etam_pencari_pendidikan.user_id', $pencari->user_id)
+        ->get();
+
+        $keterampilans = EtamPencariKeahlian::select(
+            'etam_pencari_keahlian.id',
+            'etam_pencari_keahlian.keahlian'
+        )
+        ->where('etam_pencari_keahlian.user_id', $pencari->user_id)
+        ->get();
     
         // Mengembalikan tampilan untuk cetak AK1
-        return view('backend.ak1.print', compact('pencari', 'nakerAk1', 'pendidikan', 'keterampilan', 'admins'));
+        return view('backend.ak1.print', compact('pencari', 'nakerAk1', 'pendidikans', 'keterampilans', 'admins'));
     }
     
 

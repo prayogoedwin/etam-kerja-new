@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kartu Tanda Bukti Pendaftaran Pencari Kerja</title>
+    <!-- Favicon icon -->
+    <link rel="icon" href="{{ asset('assets/etam_be/images/logo/icon_etam.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="./assets/css/style.css" />
     <style>
         html {
@@ -309,8 +311,8 @@
                 <ul>
 
                     <ul>
-                        @forelse ($pendidikan as $edu)
-                            <li>{{ $edu->pendidikan_name ?? '-' }} - {{ $edu->jurusan_name ?? '-' }}</li>
+                        @forelse ($pendidikans as $edu)
+                            <li>{{ $edu->pendidikanteks ?? '-' }} - {{ $edu->jurusanteks ?? '-' }}</li>
                         @empty
                             <li>-</li>
                         @endforelse
@@ -324,14 +326,9 @@
                     <div class="__left">
                         <h6>KETERAMPILAN</h6>
                         <ul>
-                            @forelse ($keterampilan as $skill)
+                            @forelse ($keterampilans as $skill)
                                 <li>
-                                    <strong>Lembaga Penyelenggara:</strong>
-                                    {{ $skill->lembaga_penyelenggara ?? '-' }}<br>
-                                    <strong>Alamat Penyelenggara:</strong> {{ $skill->alamat_penyelenggara ?? '-' }}<br>
-                                    <strong>Lulus Tahun:</strong> {{ $skill->lulus_tahun ?? '-' }}<br>
-                                    <strong>No. Sertifikat:</strong> {{ $skill->no_sertifikat ?? '-' }}<br>
-                                    <strong>Lembaga Penguji:</strong> {{ $skill->lembaga_penguji ?? '-' }}
+                                    {{ $skill->keahlian ?? '-' }}<br> 
                                 </li>
                             @empty
                                 <li>-</li>
@@ -341,8 +338,9 @@
                     <div class="__right">
                         <h6 class="text-center">PETUGAS ANTAR KERJA</h6>
                         <p><br /><br /><br /></p>
-                        <p class="text-center" style="margin-bottom: 0px;"><span class="text-underline">SHEYLLA APRISCA
-                                WINDIYANI, SH</span> <br />NIP. 199304082020122017</p>
+                        <p class="text-center" style="margin-bottom: 0px;"><span class="text-underline">
+                               {{ $admins->user->name }}</span> 
+                               {{-- <br />NIP. ___________________</p> --}}
                     </div>
                 </div>
             </div>
@@ -411,7 +409,7 @@
                                     <p>TTD Pencari Kerja</p>
                                 </div>
                                 <div class="info-detail">
-                                    <p style="margin-bottom: 0px;"><span>Nama Lengkap</span> {{ $user->name ?? '-' }}
+                                    <p style="margin-bottom: 0px;"><span>Nama Lengkap</span> {{ $pencari->name ?? '-' }}
                                     </p>
                                     <p style="margin-bottom: 0px;"><span>Tempat / Tgl Lahir</span>
                                         {{ $pencari->tempat_lahir ?? '-' }} ,

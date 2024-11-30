@@ -145,7 +145,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-6">
+                                                    {{-- <div class="col-6">
                                                         <div class="form-group">
                                                             <label for="kelurahan" class="form-label">Desa /
                                                                 Kelurahan</label>
@@ -154,7 +154,7 @@
                                                                 <option disabled>Pilih Desa/Kelurahan</option>
                                                             </select>
                                                         </div>
-                                                    </div>
+                                                    </div> --}}
                                                     <div class="col-6">
                                                         <div class="form-group">
                                                             <label for="alamat" class="form-label">Alamat</label>
@@ -259,7 +259,7 @@
                                             <!-- Add other fields as required -->
 
                                             <button type="submit" class="btn btn-success mt-3">Update</button>
-                                            <a href="{{ route('ak1.print', $user->id) }}"
+                                            <a href="{{ route('ak1.print', encode_url($user->id)) }}"
                                                 class="btn btn-primary mt-3">Cetak AK1</a>
                                         </form>
                                     </div>

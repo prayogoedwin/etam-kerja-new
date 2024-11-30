@@ -70,6 +70,7 @@
                     </div>
                 </div>
 
+                @if (Auth::user()->roles[0]['name'] == 'penyedia-kerja')
                 <div class="d-flex mb-3">
                     <select id="bulk-action" class="form-select me-2" style="width: auto;">
                         <option value="">Pilih Aksi</option>
@@ -81,6 +82,7 @@
                         style="width: auto;">
                     <button id="bulk-update-btn" class="btn btn-warning">Proses</button>
                 </div>
+                @endif
 
                 <div class="row">
                     <!-- customar project  start -->

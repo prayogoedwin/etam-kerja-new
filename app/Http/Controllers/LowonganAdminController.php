@@ -25,6 +25,7 @@ class LowonganAdminController extends Controller
                 ->addColumn('options', function ($loker) {
 
                     return '
+                        <a href="' . route('lowongan.pelamar', encode_url($loker->id)) . '" class="btn btn-info btn-sm">Lihat Pelamar</a>
                         <button class="btn btn-warning btn-sm" onclick="showEditModal(' . $loker->id . ')">Lihat</button>
                     ';
                 })
