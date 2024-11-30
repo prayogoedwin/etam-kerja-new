@@ -19,6 +19,7 @@ use App\Http\Controllers\UserPenyediaController;
 use App\Http\Controllers\ProfilPenyediaController;
 use App\Http\Controllers\ProfilPencariController;
 use App\Http\Controllers\ProfilBkkController;
+use App\Http\Controllers\BkkPenyediaController;
 
 
 // Route::get('/', function () {

@@ -51,7 +51,12 @@
                         <span class="pcoded-mtext">Lowongan Kerja</span>
                     </a>
                 </li>
-
+                <li class="nav-item">
+                    <a href="{{ route('bkk.penyedia.index') }}" class="nav-link ">
+                        <span class="pcoded-micon"><i class="fa fa-building"></i></span>
+                        <span class="pcoded-mtext">BKK</span>
+                    </a>
+                </li>
 
                 <!-- Layouts -->
                 {{-- <li class="menu-item open">
