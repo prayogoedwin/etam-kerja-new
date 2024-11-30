@@ -148,8 +148,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
     Route::prefix('ak1')->group(function () {
         Route::get('/existing', [Ak1Controller::class, 'cetakExisting'])->name('ak1.existing');
-        Route::get('ak1/print/{id}', [Ak1Controller::class, 'printAk1'])->name('ak1.print');
-        Route::put('ak1/update/{id}', [Ak1Controller::class, 'updateUser'])->name('ak1.update');
+        Route::get('/print/{id}', [Ak1Controller::class, 'printAk1'])->name('ak1.print');
+        Route::put('/update/{id}', [Ak1Controller::class, 'updateUser'])->name('ak1.update');
         // Route::get('ak1/print/{id}', [Ak1Controller::class, 'printAk1'])->name('ak1.print');
         // Route::get('ak1/printTenagaKerja/{id}', [Ak1Controller::class, 'printAk1TenagaKerja'])->name('ak1.printTk');
 
