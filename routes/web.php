@@ -21,6 +21,8 @@ use App\Http\Controllers\ProfilPencariController;
 use App\Http\Controllers\ProfilBkkController;
 use App\Http\Controllers\BkkPenyediaController;
 use App\Http\Controllers\HistoryLamaranPencariController;
+use App\Http\Controllers\Ak1Controller;
+
 
 
 
@@ -76,6 +78,10 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     //route untuk admin
     Route::get('/dashboard', [BackController::class, 'index'])->name('dashboard');
     Route::get('/sample', [BackController::class, 'sample'])->name('sample');
+
+    Route::get('/depan/getkecamatanbyid/{kabkota_id}', [DepanController::class, 'getKecamatanByKabkota'])->name('get-kecamatan-bykabkota');
+    Route::get('/depan/getdesabyid/{kec_id}', [DepanController::class, 'getDesaByKec'])->name('get-desa-bykecamatan');
+    Route::get('/depan/getjurusanbyid/{pendidikan_id}', [DepanController::class, 'getJurusanByPendidikan'])->name('get-jurusan-bypendidikan');
 
     Route::prefix('setting')->group(function () {
         Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
@@ -140,6 +146,17 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/bkk', [BkkPenyediaController::class, 'index'])->name('bkk.penyedia.index');
     });
 
+    Route::prefix('ak1')->group(function () {
+        Route::get('/existing', [Ak1Controller::class, 'cetakExisting'])->name('ak1.existing');
+        Route::get('ak1/print/{id}', [Ak1Controller::class, 'printAk1'])->name('ak1.print');
+        Route::put('ak1/update/{id}', [Ak1Controller::class, 'updateUser'])->name('ak1.update');
+        // Route::get('ak1/print/{id}', [Ak1Controller::class, 'printAk1'])->name('ak1.print');
+        // Route::get('ak1/printTenagaKerja/{id}', [Ak1Controller::class, 'printAk1TenagaKerja'])->name('ak1.printTk');
+
+        // Route::get('/data', [Ak1Controller::class, 'dataAk1'])->name('ak1.data');
+        // Route::get('/data-ak1-tk', [Ak1Controller::class, 'dataAk1Tk'])->name('ak1.dataTk');
+    });
+
     Route::prefix('admins')->group(function () {
         Route::get('/lowongan', [LowonganAdminController::class, 'index'])->name('lowongan.admin.index');
         Route::get('/lowongan/get/{id}', [LowonganAdminController::class, 'show'])->name('lowongan.admin.detail');
@@ -177,4 +194,6 @@ Route::get('/get-kecamatan', [BackController::class, 'getKecamatan']);
 // Route::name('setting')->prefix('setting')->group(function () {
 //     Route::get('/banner', [BackController::class, 'settingBanner'])->name('banner');
 //   });
+
+Route::get('ak1/cek/{unik_kode}', [Ak1Controller::class, 'viewAk1'])->name('ak1.view');
 

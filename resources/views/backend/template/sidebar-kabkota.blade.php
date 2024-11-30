@@ -63,7 +63,7 @@
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-users"></i></span><span class="pcoded-mtext">AK1</span></a>
                     <ul class="pcoded-submenu">
-                        <li><a href="{{ route('admin.index') }}">Cetak</a></li>
+                        <li><a href="javascript:void(0);" class="menu-link" data-bs-toggle="modal" data-bs-target="#ak1Modal">Cetak</a></li>
                         <li><a href="{{ route('admin.index') }}">Data</a></li>
                     </ul>
                 </li>

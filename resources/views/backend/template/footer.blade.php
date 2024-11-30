@@ -50,6 +50,30 @@
     </div>
     {{-- END MODAL UBAH PASSWORD --}}
 
+        <!-- Modal ak1 -->
+        <div class="modal fade" id="ak1Modal" tabindex="-1" aria-labelledby="ak1ModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ak1ModalLabel">Pilih Opsi Cetak AK1</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <p>Silakan pilih apakah pengguna sudah memiliki akun atau belum.</p>
+                        <div class="d-grid gap-2">
+                            <form action="#" method="POST">
+                                @csrf
+                                <button type="submit" name="role_dipilih" value="tenaga-kerja"
+                                    class="btn btn-primary">Belum Punya Akun</button>
+                            </form>
+                            <button class="btn btn-secondary" onclick="cetakExisting()">Sudah Punya Akun</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+          <!-- emd Modal ak1 -->
+
     <!-- Required Js -->
 
     <script src="{{ asset('assets') }}/etam_be/js/vendor-all.min.js"></script>
@@ -167,5 +191,12 @@
                 icon.classList.remove('icon-eye-off');
                 icon.classList.add('icon-eye');
             }
+        }
+    </script>
+
+    <!-- Trigger pop-up -->
+    <script>
+        function cetakExisting() {
+            window.location.href = '{{ route('ak1.existing') }}';
         }
     </script>

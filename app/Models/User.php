@@ -54,4 +54,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Lowongan::class, 'posted_by');
     }
+
+    public function pencari()
+    {
+        return $this->hasOne(UserPencari::class, 'user_id', 'id'); 
+        // 'user_id' adalah foreign key di tabel 'pencaris' yang merujuk ke 'id' pada tabel 'users'
+    }
 }

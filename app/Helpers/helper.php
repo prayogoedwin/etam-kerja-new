@@ -88,6 +88,12 @@ function getProvinsi(){
     ->get();
 }
 
+function getStatusKerja(){
+    return '';
+}
+
+
+
 function encode_url($url){
     $random1 = substr(sha1(rand()), 0, 40);
     $random2 = substr(md5(rand()), 0, 20);
