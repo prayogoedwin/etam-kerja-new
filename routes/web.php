@@ -156,6 +156,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::put('/profil/update/{id}', [ProfilBkkController::class, 'update'])->name('profil.bkk.update');
     });
 
+    //ubah password
+    Route::post('/ubah-password', [BackController::class, 'ubahPassword'])->name('ubah-password');
 });
 
 

@@ -203,6 +203,11 @@
                                         Profil</a>
                                 @endif
                             </li>
+                            <li>
+                                <a href="#" onclick="showUbahPassword()" class="dropdown-item"><i
+                                        class="feather icon-unlock"></i>
+                                    Ubah Password</a>
+                            </li>
                             <!-- <li><a href="email_inbox.html" class="dropdown-item"><i class="feather icon-mail"></i> My Messages</a></li> -->
                             <li><a href="{{ route('logout') }}" class="dropdown-item"><i
                                         class="feather icon-lock"></i>
