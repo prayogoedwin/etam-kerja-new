@@ -348,13 +348,15 @@
             </div>
             <div class="__right">
                 <header>
-                    <img src="https://bursakerja.jatengprov.go.id/assets/images/kontingen/Kabupaten_Semarang.png"
-                        width="60" height="60" alt="KABUPATEN SEMARANG" />
-                    <p>PEMERINTAHAN KABUPATEN SEMARANG<br />
-                        DINAS TENAGA KERJA <br />
-                        <small>JL. PEMUDA NO. 7 UNGARAN 50511<br />
-                            Telp:(024) 6921160 | Email:penta.kab.semarang@gmail.com<br />
-                            https://disnaker.semarangkab.go.id </small>
+                    {{-- <img src="https://bursakerja.jatengprov.go.id/assets/images/kontingen/Kabupaten_Semarang.png"
+                        width="60" height="60" alt="KABUPATEN SEMARANG" /> --}}
+                        <img src="{{ url($admins->kabkota->icon) }}" width="60" height="60" alt="{{ $admins->kabkota->kantor }}" />
+                        {{-- <img src="{{ url($admins->kabkota->icon) }}" width="60" height="60" alt="{{ $admins->kabkota->kantor }}" /> --}}
+                        
+                    <p>{{ $admins->kabkota->kantor}}
+                        <small>{{ $admins->kabkota->alamat}}<br />
+                            Telp:{{ $admins->kabkota->telp}}| Email:{{ $admins->kabkota->email}}<br />
+                            {{ $admins->kabkota->web}} </small>
                     </p>
                 </header>
                 <div class="job-seeker">
@@ -368,7 +370,15 @@
 
                             <em class="empty"></em>
 
-                            <em>1</em><em>9</em><em>7</em><em>0</em><em>0</em><em>1</em><em>0</em><em>1</em>
+                            @if (!empty($nakerAk1->id))
+                                @foreach (str_split($nakerAk1->id) as $digit_id)
+                                    <em>{{ $digit_id }}</em>
+                                @endforeach
+                            @else
+                                <em>-</em>
+                            @endif
+
+                            {{-- <em>1</em><em>9</em><em>7</em><em>0</em><em>0</em><em>1</em><em>0</em><em>1</em> --}}
                         </span></p>
 
 

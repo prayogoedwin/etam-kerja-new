@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Back; // Import model Depan
 use App\Models\EtamAk1;
 use App\Models\UserPencari;
+use App\Models\UserAdmin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
@@ -15,6 +16,7 @@ use Spatie\Permission\Models\Role;
 use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Yajra\DataTables\Facades\DataTables;  // Mengimpor DataTables
+use Illuminate\Support\Facades\Auth;
 
 
 class Ak1Controller extends Controller
@@ -218,9 +220,12 @@ class Ak1Controller extends Controller
 
     public function updateUser(Request $request, $id)
     {
-        // dd($request);
+        // dd($request->all());
         // die();
-        $user = User::findOrFail($id);
+        $user = UserPencari::findOrFail($id);
+
+        // dd($user);
+        // die();
 
         $request->validate([
             'name' => 'required|string|max:100',
@@ -239,22 +244,23 @@ class Ak1Controller extends Controller
             'status_perkawinan_id' => 'required',
             'agama_id' => 'required|integer',
             'medsos' => 'required|string|max:200',
-            'status_kerja_id' => 'required|integer',
-            'sektor_pekerjaan_saat_ini' => 'nullable|integer',
-            'jam_kerja' => 'nullable|integer',
-            'gaji' => 'nullable|numeric',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // dd($request);
+        //  dd($request->name);
         // die();
+
+       
 
         // Update data user
         $user->name = $request->name;
         $user->save();
 
         // Update data pencari kerja
-        $pencari = $user->pencari;
+        $pencari = $user;
+
+        // dd($pencari);
+        // die();
 
         if ($request->hasFile('foto')) {
             // Hapus foto lama jika ada
@@ -283,20 +289,12 @@ class Ak1Controller extends Controller
         $pencari->id_status_perkawinan = $request->status_perkawinan_id;
         $pencari->id_agama = $request->agama_id;
         $pencari->medsos = $request->medsos;
-        $pencari->status_saat_ini = $request->status_kerja_id;
 
-        // Kondisional untuk pekerjaan jika status kerja aktif
-        if ($request->status_kerja_id == 1) {
-            $pencari->sektor_pekerjaan_saat_ini = $request->sektor_pekerjaan_saat_ini;
-            $pencari->jam_kerja = $request->jam_kerja;
-            $pencari->gaji = $request->gaji;
-        } else {
-            $pencari->sektor_pekerjaan_saat_ini = null;
-            $pencari->jam_kerja = null;
-            $pencari->gaji = null;
-        }
 
         $pencari->save();
+
+        // dd($pencari);
+        // die();
 
         return redirect()->back()->with('success', 'Profil berhasil diperbarui');
     }
@@ -305,12 +303,17 @@ class Ak1Controller extends Controller
 
     public function printAk1($id)
     {
-        $id = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
-        // $userAdmin = UserAdmin::where('user_id', $id)->first(); // Mencari data UserAdmin berdasarkan user_id
+
+        $id_user = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
+        $admins = UserAdmin::with([
+            'user:id,name,email,whatsapp',
+            'kabkota:id,name,kantor,icon,alamat,telp,email,web'
+        ])
+        ->where('user_id', $id_user)->first();
 
         // Ambil data user dan relasinya
         $pencari = UserPencari::findOrFail($id);
-    
+
         // Periksa apakah ada data AK1 yang masih berlaku
         $nakerAk1 = EtamAk1::where('id_user', $pencari->user_id)
             ->where('berlaku_hingga', '>', Carbon::now()) // Jika berlaku_hingga lebih besar dari sekarang
@@ -349,7 +352,7 @@ class Ak1Controller extends Controller
         $keterampilan = array();
     
         // Mengembalikan tampilan untuk cetak AK1
-        return view('backend.ak1.print', compact('pencari', 'nakerAk1', 'pendidikan', 'keterampilan'));
+        return view('backend.ak1.print', compact('pencari', 'nakerAk1', 'pendidikan', 'keterampilan', 'admins'));
     }
     
 

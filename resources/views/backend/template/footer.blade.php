@@ -61,11 +61,12 @@
                     <div class="modal-body text-center">
                         <p>Silakan pilih apakah pengguna sudah memiliki akun atau belum.</p>
                         <div class="d-grid gap-2">
-                            <form action="#" method="POST">
+                            {{-- <form action="" method="POST">
                                 @csrf
                                 <button type="submit" name="role_dipilih" value="tenaga-kerja"
                                     class="btn btn-primary">Belum Punya Akun</button>
-                            </form>
+                            </form> --}}
+                            <button class="btn btn-secondary" onclick="cetakBelumExisting()">Belum Punya Akun</button>
                             <button class="btn btn-secondary" onclick="cetakExisting()">Sudah Punya Akun</button>
                         </div>
                     </div>
@@ -199,4 +200,5 @@
         function cetakExisting() {
             window.location.href = '{{ route('ak1.existing') }}';
         }
+
     </script>
