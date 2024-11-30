@@ -20,6 +20,8 @@ use App\Http\Controllers\ProfilPenyediaController;
 use App\Http\Controllers\ProfilPencariController;
 use App\Http\Controllers\ProfilBkkController;
 use App\Http\Controllers\BkkPenyediaController;
+use App\Http\Controllers\HistoryLamaranPencariController;
+
 
 
 // Route::get('/', function () {
@@ -153,6 +155,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::put('/profil/update/{id}', [ProfilPencariController::class, 'update'])->name('profil.pencari.update');
 
         Route::get('/ak1', [Ak1PencariController::class, 'index'])->name('ak1.index');
+
+        Route::get('/history_lamaran', [HistoryLamaranPencariController::class, 'index'])->name('historylamaran.pencari.index');
     });
 
     Route::prefix('bkks')->group(function () {
@@ -168,6 +172,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 Route::middleware('guest')->get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/act_login', [AuthController::class, 'login'])->name('login.action');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/get-kecamatan', [BackController::class, 'getKecamatan']);
 
 // Route::name('setting')->prefix('setting')->group(function () {
 //     Route::get('/banner', [BackController::class, 'settingBanner'])->name('banner');

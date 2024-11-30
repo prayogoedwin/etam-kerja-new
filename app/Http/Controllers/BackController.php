@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Kecamatan;
 
 class BackController extends Controller
 {
@@ -21,6 +22,10 @@ class BackController extends Controller
 
         if(Auth::user()->roles[0]['name'] == 'penyedia-kerja'){
             return view('backend.dashboard.index_penyedia');
+        }
+
+        if(Auth::user()->roles[0]['name'] == 'admin-kabkota'){
+            return view('backend.dashboard.index_kabkota');
         }
 
         if(Auth::user()->roles[0]['name'] == 'admin-bkk'){
@@ -59,4 +64,25 @@ class BackController extends Controller
 
         return response()->json(['status' => 1, 'message' => 'Password berhasil diubah.']);
     }
+
+    public function getKecamatan(Request $request)
+    {
+        $kabkotaId = $request->query('kabkota_id');
+
+        if (!$kabkotaId) {
+            return response()->json(['message' => 'kabkota_id is required'], 400);
+        }
+
+        try {
+            // Ambil kecamatan berdasarkan kabkota_id
+            $kecamatanList = Kecamatan::where('regency_id', $kabkotaId)
+                ->select('id', 'name') // Hanya ambil field yang diperlukan
+                ->get();
+
+            return response()->json(['data' => $kecamatanList], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Internal Server Error'], 500);
+        }
+    }
+    
 }

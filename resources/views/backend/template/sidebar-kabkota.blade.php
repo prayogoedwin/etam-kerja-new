@@ -37,7 +37,7 @@
                     </ul>
                 </li> --}}
 
-                <li class="nav-item pcoded-hasmenu">
+                {{-- <li class="nav-item pcoded-hasmenu">
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-sliders"></i></span><span class="pcoded-mtext">Setting</span></a>
                     <ul class="pcoded-submenu">
@@ -47,26 +47,30 @@
                         <li><a href="{{ route('galeri.index') }}">Galeri</a></li>
                         <li><a href="{{ route('berita.index') }}">Berita</a></li>
                     </ul>
-                </li>
+                </li> --}}
 
+                @if (Auth::user()->roles[0]['name'] == 'admin-kabkota')
                 <li class="nav-item pcoded-hasmenu">
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-users"></i></span><span class="pcoded-mtext">Users</span></a>
                     <ul class="pcoded-submenu">
-                        <li><a href="{{ route('admin.index') }}">Admin</a></li>
-                        <li><a href="{{ route('userpencari.index') }}">Pencari Kerja</a></li>
-                        <li><a href="{{ route('userpenyedia.index') }}">Perusahaan</a></li>
+                        <li><a href="{{ route('admin.index') }}">Officer</a></li>
                     </ul>
                 </li>
+                @endif
 
-               
+                <li class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-users"></i></span><span class="pcoded-mtext">AK1</span></a>
+                    <ul class="pcoded-submenu">
+                        <li><a href="{{ route('admin.index') }}">Cetak</a></li>
+                        <li><a href="{{ route('admin.index') }}">Data</a></li>
+                    </ul>
+                </li>
 
                 <li class="nav-item"><a href="{{ route('lowongan.admin.index') }}" class="nav-link "><span
                             class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
                             class="pcoded-mtext">Lowongan</span></a></li>
-
-
-
 
         </div>
     </div>

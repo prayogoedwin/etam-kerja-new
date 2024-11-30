@@ -35,6 +35,11 @@ class UserAdmin extends Model
     {
         return $this->belongsTo(Kabkota::class, 'kabkota_id', 'id');
     }
+
+    public function kecamatan()
+    {
+        return $this->belongsTo(kecamatan::class, 'kecamatan_id', 'id');
+    }
     
 
 

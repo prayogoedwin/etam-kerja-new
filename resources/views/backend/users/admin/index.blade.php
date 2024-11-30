@@ -56,6 +56,7 @@
                                                 <th>Whatsapp</th>
                                                 <th>Role</th>
                                                 <th>Kabkota</th>
+                                                <th>Kecamatan</th>
                                                 <th>Options</th>
                                             </tr>
                                         </thead>
@@ -132,6 +133,15 @@
                                             @foreach (getKabkota() as $lokasi)
                                                 <option value="{{ $lokasi->id }}">{{ $lokasi->name }}</option>
                                             @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12" id="kecamatanDiv" style="display: none;">
+                                    <div class="form-group">
+                                        <label for="kecamatan_id" class="form-label">Kecamatan</label>
+                                        <select id="kecamatan_id" name="kecamatan_id" class="form-control" required>
+                                            <option value="">-- Pilih Kecamatan --</option>
                                         </select>
                                     </div>
                                 </div>
@@ -235,6 +245,9 @@
                     {
                         data: 'kabkota'
                     },
+                    {
+                        data: 'kecamatan'
+                    },
 
                     
                     {
@@ -259,17 +272,70 @@
             });
 
             function toggleKabkotaField() {
-                var selectedRole = $('#userRole').val();
-                if (selectedRole == '4') {
+                var selectedRole =  $('#userRole option:selected').text();
+                // var selectedRoleText = $('#userRole option:selected').text();
+                if (selectedRole == 'admin-kabkota' || selectedRole == 'admin-kabkota-officer') {
                     // Show the kabkota field and make it required
                     $('#kabkotaDiv').show();
                     $('#kabkota_id').prop('required', true);
+
+                    // Additional logic for admin-kabkota-officer
+                    if (selectedRole === 'admin-kabkota-officer') {
+                        $('#kecamatanDiv').show(); // Show kecamatan field
+                        $('#kecamatan_id').prop('required', true); // Make kecamatan required
+                    } else {
+                        $('#kecamatanDiv').hide(); // Hide kecamatan field
+                        $('#kecamatan_id').prop('required', false); // Remove required attribute
+                    }
+
                 } else {
                     // Hide the kabkota field and remove the required attribute
                     $('#kabkotaDiv').hide();
                     $('#kabkota_id').prop('required', false);
                 }
             }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            // Event listener for kabkota_id change
+            $('#kabkota_id').change(function () {
+                var kabkotaId = $(this).val(); // Get the selected kabkota_id
+
+                if (kabkotaId) {
+                    // Make an AJAX GET request to fetch kecamatan
+                    $.ajax({
+                        url: '/get-kecamatan', // Endpoint for the server-side function
+                        type: 'GET',
+                        data: { kabkota_id: kabkotaId },
+                        success: function (response) {
+                            // Clear the kecamatan dropdown
+                            $('#kecamatan_id').empty();
+
+                            // Populate the kecamatan dropdown with options
+                            if (response.data && response.data.length > 0) {
+                                $('#kecamatan_id').append('<option value="">Pilih Kecamatan</option>'); // Default option
+                                response.data.forEach(function (kecamatan) {
+                                    $('#kecamatan_id').append(
+                                        `<option value="${kecamatan.id}">${kecamatan.name}</option>`
+                                    );
+                                });
+                            } else {
+                                $('#kecamatan_id').append('<option value="">Tidak ada data kecamatan</option>');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching kecamatan:', error);
+                            $('#kecamatan_id').append('<option value="">Error memuat kecamatan</option>');
+                        }
+                    });
+                } else {
+                    // Reset the kecamatan dropdown if no kabkota is selected
+                    $('#kecamatan_id').empty();
+                    $('#kecamatan_id').append('<option value="">Pilih Kecamatan</option>');
+                }
+            });
         });
     </script>
 
@@ -289,6 +355,8 @@
                     whatsapp: $('#whatsapp').val(),
                     role_id: $('#userRole').val(),
                     kabkota_id: $('#kabkota_id').val(),
+                    kecamatan_id: $('#kecamatan_id').val(),
+                    
                     _token: '{{ csrf_token() }}' // Add CSRF token for security
                 };
 
@@ -328,7 +396,7 @@
     <script>
         // Define the toggleKabkotaFieldE function globally
         function toggleKabkotaFieldE(selectedRole) {
-            if (selectedRole == '4') {
+            if (selectedRole == 'admin-kabkota' || selectedRole == 'admin-kabkota-officer') {
                 // Show the kabkota field and make it required
                 $('#kabkotaDivE').show();
                 $('#editkabkota_id').prop('required', true);
@@ -342,7 +410,8 @@
         $(document).ready(function () {
             // Event listener for role change inside the modal
             $('#editRole').change(function () {
-                toggleKabkotaFieldE($(this).val());
+                var selectedRoleText = $('#editRole option:selected').text();
+                toggleKabkotaFieldE(selectedRoleText);
             });
         });
 
@@ -433,6 +502,33 @@
                 $.ajax({
                     url: deleteUrl,
                     type: 'DELETE',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'), // Menyertakan CSRF token
+                    },
+                    success: function(response) {
+                        // Jika berhasil, reload DataTable
+                        alert(response.message); // Menampilkan pesan
+                        $('#simpletable').DataTable().ajax.reload(); // Reload data tabel
+                    },
+                    error: function(xhr, status, error) {
+                        // Tampilkan error jika ada masalah
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            }
+        }
+    </script>
+
+
+    <script>
+        function confirmReset(id) {
+            // Konfirmasi penghapusan
+            var deleteUrl = "{{ route('admin.reset', ':id') }}".replace(':id', id);
+            if (confirm("Yakin  Reset Password (Password akan direset sesuai nama email/username)?")) {
+                // Kirim request ke server untuk menghapus data
+                $.ajax({
+                    url: deleteUrl,
+                    type: 'PUT',
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'), // Menyertakan CSRF token
                     },
