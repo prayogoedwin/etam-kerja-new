@@ -28,8 +28,9 @@ class LowonganController extends Controller
                 'etam_progres.name as progres_name' // Menambahkan kolom 'name' dari tabel etam_progres
             )
             ->join('etam_progres', 'etam_lowongan.status_id', '=', 'etam_progres.kode') // Join tabel
-            ->where('etam_progres.modul', 'lowongan') // Kondisi where
             ->whereNull('etam_lowongan.deleted_at') // Memastikan data tidak terhapus
+            ->where('etam_progres.modul', 'lowongan') // Kondisi where
+            ->where('etam_lowongan.posted_by', auth()->user()->id) // Kondisi where
             ->get();
 
             return DataTables::of($lokers)
@@ -258,6 +259,14 @@ class LowonganController extends Controller
             'progres_id' => $action,
             'keterangan' => $keterangan
         ]);
+
+        //if $action == 3, update field is_diterima at table users_pencari
+        if($action == 3){
+            $user_ids = Lamaran::whereIn('id', $ids)->pluck('pencari_id');
+            ProfilPencari::whereIn('user_id', $user_ids)->update([
+                'is_diterima' => 1
+            ]);
+        }
 
         return response()->json(['message' => 'Status berhasil diperbarui']);
     }

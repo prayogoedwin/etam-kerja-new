@@ -71,17 +71,17 @@
                 </div>
 
                 @if (Auth::user()->roles[0]['name'] == 'penyedia-kerja')
-                <div class="d-flex mb-3">
-                    <select id="bulk-action" class="form-select me-2" style="width: auto;">
-                        <option value="">Pilih Aksi</option>
-                        @foreach ($progreses as $prog)
-                            <option value="{{ $prog->kode }}">{{ $prog->name }}</option>
-                        @endforeach
-                    </select>
-                    <input type="text" id="bulk-keterangan" class="form-control me-2" placeholder="Masukkan keterangan"
-                        style="width: auto;">
-                    <button id="bulk-update-btn" class="btn btn-warning">Proses</button>
-                </div>
+                    <div class="d-flex mb-3">
+                        <select id="bulk-action" class="form-select me-2" style="width: auto;">
+                            <option value="">Pilih Aksi</option>
+                            @foreach ($progreses as $prog)
+                                <option value="{{ $prog->kode }}">{{ $prog->name }}</option>
+                            @endforeach
+                        </select>
+                        <input type="text" id="bulk-keterangan" class="form-control me-2"
+                            placeholder="Masukkan keterangan" style="width: auto;">
+                        <button id="bulk-update-btn" class="btn btn-warning">Proses</button>
+                    </div>
                 @endif
 
                 <div class="row">
@@ -186,11 +186,11 @@
                                             <th>:</th>
                                             <th id="kecamatan"></th>
                                         </tr>
-                                        <tr>
+                                        {{-- <tr>
                                             <th>Kelurahan/Desa</th>
                                             <th>:</th>
                                             <th id="kelurahan"></th>
-                                        </tr>
+                                        </tr> --}}
                                     </thead>
                                 </table>
                                 <hr>
@@ -372,7 +372,7 @@
                         $('#provinsi').html(response.data.provinsi.name);
                         $('#kabkota').html(response.data.kabupaten.name);
                         $('#kecamatan').html(response.data.kecamatan.name);
-                        $('#kelurahan').html(response.data.desa.name);
+                        // $('#kelurahan').html(response.data.desa.name);
 
                         $('#pendidikan').html(response.data.pendidikan.name);
                         $('#jurusan').html(response.data.jurusan.nama);

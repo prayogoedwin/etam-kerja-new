@@ -48,21 +48,18 @@
                                     </div> --}}
                                 </div>
                                 <div class="table-responsive">
-                                    data here
-                                    {{-- <table id="simpletable" class="table table-bordered table-striped mb-0">
+                                    <table id="simpletable" class="table table-bordered table-striped mb-0">
                                         <thead>
                                             <tr>
                                                 <th>No</th>
                                                 <th>Judul Lowongan</th>
-                                                <th>Tgl Mulai</th>
-                                                <th>Tgl Selesai</th>
-                                                <th>Deskripsi</th>
+                                                <th>Nama Pencari Kerja</th>
+                                                <th>Waktu Lamar</th>
                                                 <th>Status</th>
-                                                <th>Aksi</th>
                                             </tr>
                                         </thead>
 
-                                    </table> --}}
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -83,39 +80,36 @@
 
 @push('js')
     <script>
-        // $(document).ready(function() {
-        //     $('#simpletable').DataTable({
-        //         processing: true,
-        //         serverSide: true,
-        //         ajax: '{{ route('lowongan.index') }}',
-        //         autoWidth: false, // Menonaktifkan auto-width
-        //         columns: [{
-        //                 data: 'DT_RowIndex',
-        //                 orderable: false,
-        //                 searchable: false
-        //             },
-        //             {
-        //                 data: 'judul_lowongan'
-        //             },
-        //             {
-        //                 data: 'tanggal_start'
-        //             },
-        //             {
-        //                 data: 'tanggal_end'
-        //             },
-        //             {
-        //                 data: 'deskripsi'
-        //             },
-        //             {
-        //                 data: 'progres_name'
-        //             },
-        //             {
-        //                 data: 'options',
-        //                 orderable: false,
-        //                 searchable: false
-        //             },
-        //         ]
-        //     });
-        // });
+        $(document).ready(function() {
+            $('#simpletable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('pencari_diterima.index') }}',
+                autoWidth: false, // Menonaktifkan auto-width
+                columns: [{
+                        data: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'judul_lowongan'
+                    },
+                    {
+                        data: 'name'
+                    },
+                    {
+                        data: 'waktu_lamar'
+                    },
+                    {
+                        data: 'status'
+                    },
+                    // {
+                    //     data: 'options',
+                    //     orderable: false,
+                    //     searchable: false
+                    // },
+                ]
+            });
+        });
     </script>
 @endpush
