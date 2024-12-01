@@ -82,12 +82,15 @@ class Ak1PencariController extends Controller
             'users_pencari.user_id',
             'users_pencari.ktp',
             'users_pencari.name',
+            'users_pencari.alamat',
             'users_pencari.tempat_lahir',
             'users_pencari.tanggal_lahir',
             'users_pencari.id_kota',
             'users_pencari.foto',)
             ->where('users_pencari.user_id', $id)
             ->first();
+
+        $pencari->whatsaap = $pencari->user->whatsapp;
         // dd($pencari);
         // echo json_encode($pencari);
         // die();

@@ -422,7 +422,7 @@
                                     <p style="margin-bottom: 0px;"><span>Alamat</span>{{ $pencari->alamat }},
                                         {{ $pencari->kodepos }}</p>
                                     <p style="margin-bottom: 0px;"><span>No.
-                                            Telp</span>{{ $user->whatsapp ?? 'Tidak tersedia' }}</p>
+                                            Telp</span>{{ $pencari->user->whatsapp ?? 'Tidak tersedia' }}</p>
                                     <p style="margin-bottom: 0px;"><span>Berlaku s.d.</span>
                                         {{ \Carbon\Carbon::parse($nakerAk1->tanggal_cetak)->locale('id')->translatedFormat('d F Y') }}
                                         s.d
