@@ -243,12 +243,18 @@
                 },
                 // dataType: "html",
                 success: function(response) {
-                    console.log(`STEP 1 RES : ${response}`)
+                    // console.log(`STEP 1 RES : ${response}`)
                     var sts = response.status
                     var msg = response.message
                     var dt = response.data
 
                     if (sts == 0) {
+                        Swal.fire({
+                            title: 'Ooppss',
+                            text: msg,
+                            icon: 'warning'
+                        });
+                    } else if (sts == 5) {
                         Swal.fire({
                             title: 'Ooppss',
                             text: msg,

@@ -208,12 +208,15 @@ class DepanController extends Controller
         $userEmail = User::where('email', $request->email)->first();
         if($userEmail){
             return response()->json([
-                'status' => 0,
+                'status' => 5,
                 'message' => 'Email sudah pernah terdaftar'
             ]);
         }
 
-        $userWa = User::where('whatsapp', $request->wa)->first();
+        $userWa = User::where('whatsapp', $request->wa)
+        ->whereNull('deleted_at')
+        ->first();
+
         if($userWa){
             return response()->json([
                 'status' => 0,
