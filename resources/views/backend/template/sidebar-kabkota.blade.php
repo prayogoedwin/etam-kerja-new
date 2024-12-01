@@ -69,7 +69,7 @@
                     <ul class="pcoded-submenu">
                         <li><a href="javascript:void(0);" class="menu-link" data-bs-toggle="modal" data-bs-target="#ak1Modal">Cetak</a></li>
                         {{-- <li><a href="{{route('ak1.existing')}}" class="menu-link" >Cetak</a></li> --}}
-                        <li><a href="{{ route('admin.index') }}">Data</a></li>
+                        <li><a href="{{ route('ak1.data') }}">Data</a></li>
                     </ul>
                 </li>
 

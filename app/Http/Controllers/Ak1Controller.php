@@ -457,7 +457,7 @@ class Ak1Controller extends Controller
     {
         if ($request->ajax()) {
             // Ambil data AK1 beserta relasi user
-            $datas = NakerAk1::with('user:id,name')
+            $datas = EtamAk1::with('user:id,name')
                 ->select(
                     'id',
                     'id_user',

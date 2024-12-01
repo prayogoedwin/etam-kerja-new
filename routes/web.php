@@ -152,6 +152,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::post('/cek-awal-otp', [Ak1Controller::class, 'cek_awal_otp'])->name('cek-awal-otp-ak1');
         Route::post('/akhir_daftar-akun', [Ak1Controller::class, 'akhir_daftar_akun'])->name('akhir-daftar-akun-ak1');
 
+        Route::get('/data', [Ak1Controller::class, 'dataAk1'])->name('ak1.data');
+
         Route::get('/existing', [Ak1Controller::class, 'cetakExisting'])->name('ak1.existing');
         Route::get('/print/{id}', [Ak1Controller::class, 'printAk1'])->name('ak1.print');
         Route::put('/update/{id}', [Ak1Controller::class, 'updateUser'])->name('ak1.update');
