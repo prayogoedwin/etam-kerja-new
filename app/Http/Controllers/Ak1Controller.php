@@ -33,21 +33,24 @@ class Ak1Controller extends Controller
 
         $url_role = encode_url($request->role_dipilih);
 
-        return redirect()->to('back/daftar?rl=' . $url_role);
+        return redirect()->to('dapur/ak1/daftar-by-admin?rl=' . $url_role);
     }
 
-    public function daftar(Request $request)
+    public function daftar_by_admin(Request $request)
     {
+       
         $rl = $request->input('rl'); // atau bisa juga menggunakan $request->query('rl')
         $decode_rl = decode_url($rl);
 
-        if (!in_array($decode_rl, ['tenaga-kerja', 'penyedia-kerja', 'admin-bkk', 'admin-blk'])) {
+        // dd($decode_rl);
+        // die();
+        if (!in_array($decode_rl, ['pencari-kerja', 'penyedia-kerja', 'admin-bkk', 'admin-blk'])) {
             return abort(404);
         }
 
         $nm_role = '';
-        if ($decode_rl == 'tenaga-kerja') {
-            $nm_role = 'Tenaga Kerja';
+        if ($decode_rl == 'pencari-kerja') {
+            $nm_role = 'Pencari Kerja';
         } else if ($decode_rl == 'penyedia-kerja') {
             $nm_role = 'Penyedia Kerja';
         } else if ($decode_rl == 'admin-bkk') {
@@ -57,9 +60,8 @@ class Ak1Controller extends Controller
         }
 
 
-        $depanModel = new Back();
-        $data['agama'] = $depanModel->getAllAgama(); // Mendapatkan semua data agama
-        $data['kabkota'] = $depanModel->getKabkotaByProvince();
+        $data['agama'] = getAgama(); // Mendapatkan semua data agama
+        $data['kabkota'] = getKabkota();
 
         $data['dt'] = array(
             'role' => $decode_rl,
@@ -86,11 +88,15 @@ class Ak1Controller extends Controller
         if ($userEmail) {
             return response()->json([
                 'status' => 0,
-                'message' => 'Email sudah pernah terdaftar'
+                'message' => 'Email sudah pernah terdaftar / sudah tidak bisa digunakan. Silahkan ganti dengan email lain'
             ]);
         }
 
-        $userWa = User::where('whatsapp', $request->wa)->first();
+        // $userWa = User::where('whatsapp', $request->wa)->first();
+        $userWa = User::whereNull('deleted_at')
+        ->where('is_deleted', '!=', 1)
+        ->where('whatsapp', $request->wa)
+        ->first();
         if ($userWa) {
             return response()->json([
                 'status' => 0,
@@ -167,7 +173,7 @@ class Ak1Controller extends Controller
                 'id_provinsi' => '64',
                 'id_kota' => $request->kabkota_id,
                 'id_kecamatan' => $request->kecamatan_id,
-                'id_desa' => $request->desa_id,
+                // 'id_desa' => $request->desa_id,
                 'alamat' => $request->alamat,
                 'kodepos' => $request->kodepos,
                 'id_pendidikan' => $request->pendidikan_id,
@@ -187,16 +193,18 @@ class Ak1Controller extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
                 'is_diterima' => 0,
                 'medsos' => $request->medsos,
-                'status_saat_ini' => $request->status_saat_ini,
-                'sektor_pekerjaan_saat_ini' => $request->status_saat_ini === '1' ? $request->sektor_pekerjaan_saat_ini : null,
-                'jam_kerja' => $request->status_saat_ini === '1' ? $request->jam_kerja : null,
-                'gaji' => $request->status_saat_ini === '1' ? $request->gaji : null,
             ]);
 
             DB::commit();
 
+            $userUp = User::where('id', $user->id)->where('email', $imel)->first();
+            $userUp->is_finished = 1;
+            $userUp->save();
+
             // Redirect ke halaman ak1.new atau ak1.existing
-            return redirect()->route('ak1.existing')->with('success', 'Berhasil membuat akun');
+            // return redirect()->route('ak1.existing')->with('success', 'Berhasil membuat akun');
+            return redirect()->route('ak1.existing', ['ktp' => $request->nik])->with('success', 'Berhasil membuat akun');
+
             // Atau bisa juga mengarahkan ke halaman ak1.existing jika itu yang Anda inginkan
             // return redirect()->route('ak1.existing')->with('success', 'Berhasil membuat akun, silakan login');
 
@@ -237,7 +245,7 @@ class Ak1Controller extends Controller
             'id_provinsi' => '64',
             'kabkota_id' => 'required|integer',
             'kecamatan_id' => 'required|integer',
-            'desa_id' => 'required|string|max:10',
+            // 'desa_id' => 'required|string|max:10',
             'alamat' => 'required|string|max:200',
             'kodepos' => 'required|string|max:5',
             'pendidikan_id' => 'required|integer',

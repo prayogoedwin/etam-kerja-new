@@ -23,6 +23,7 @@ class User extends Authenticatable
         'whatsapp',
         'password',
         'otp',
+        'is_finished'
     ];
 
     /**

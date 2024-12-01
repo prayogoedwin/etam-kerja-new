@@ -61,12 +61,12 @@
                     <div class="modal-body text-center">
                         <p>Silakan pilih apakah pengguna sudah memiliki akun atau belum.</p>
                         <div class="d-grid gap-2">
-                            {{-- <form action="" method="POST">
+                            <form action="{{ route('daftar-akun-ak1') }}" method="POST">
                                 @csrf
-                                <button type="submit" name="role_dipilih" value="tenaga-kerja"
+                                <button type="submit" name="role_dipilih" value="pencari-kerja"
                                     class="btn btn-primary">Belum Punya Akun</button>
-                            </form> --}}
-                            <button class="btn btn-secondary" onclick="cetakBelumExisting()">Belum Punya Akun</button>
+                            </form>
+                            {{-- <button class="btn btn-secondary" onclick="cetakBelumExisting()">Belum Punya Akun</button> --}}
                             <button class="btn btn-secondary" onclick="cetakExisting()">Sudah Punya Akun</button>
                         </div>
                     </div>
@@ -98,6 +98,8 @@
     <script src="{{ asset('assets') }}/etam_be/js/plugins/apexcharts.min.js"></script>
     <!-- custom-chart js -->
     <script src="{{ asset('assets') }}/etam_be/js/pages/dashboard-main.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Select2 JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
