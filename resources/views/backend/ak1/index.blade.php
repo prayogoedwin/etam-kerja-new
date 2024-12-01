@@ -241,4 +241,224 @@
 
 
 @push('js')
+    @if ($user)
+        <script>
+            $(document).ready(function() {
+                var kabkotaId = "{{ $user->id_kota }}";
+                var kecamatanId = "{{ $user->id_kecamatan }}";
+                var desaId = "{{ $user->id_desa }}";
+
+                // Muat data kecamatan jika ada kabkota terpilih
+                if (kabkotaId) {
+                    loadKecamatan(kabkotaId, kecamatanId);
+                }
+
+                // Muat data desa jika ada kecamatan terpilih
+                if (kecamatanId) {
+                    loadDesa(kecamatanId, desaId);
+                }
+
+                $('#kabkota_id').on('change', function() {
+                    var kabkotaId = $(this).val();
+                    $('#kecamatan_id').empty().append('<option disabled>Pilih Kecamatan</option>');
+                    $('#desa_id').empty().append('<option disabled>Pilih Desa/Kelurahan</option>');
+
+                    if (kabkotaId) {
+                        loadKecamatan(kabkotaId);
+                    }
+                });
+
+                $('#kecamatan_id').on('change', function() {
+                    var kecamatanId = $(this).val();
+                    $('#desa_id').empty().append('<option disabled>Pilih Desa/Kelurahan</option>');
+
+                    if (kecamatanId) {
+                        loadDesa(kecamatanId);
+                    }
+                });
+
+                function loadKecamatan(kabkotaId, selectedId = null) {
+                    $.ajax({
+                        url: "{{ route('get-kecamatan-bykabkota', ':id') }}".replace(':id', kabkotaId),
+                        type: 'GET',
+                        success: function(response) {
+                            $.each(response, function(index, kecamatan) {
+                                $('#kecamatan_id').append('<option value="' + kecamatan.id + '"' +
+                                    (kecamatan.id == selectedId ? ' selected' : '') + '>' +
+                                    kecamatan.name + '</option>');
+                            });
+                        }
+                    });
+                }
+
+                function loadDesa(kecamatanId, selectedId = null) {
+                    $.ajax({
+                        url: "{{ route('get-desa-bykecamatan', ':id') }}".replace(':id', kecamatanId),
+                        type: 'GET',
+                        success: function(response) {
+                            $.each(response, function(index, desa) {
+                                $('#desa_id').append('<option value="' + desa.id + '"' +
+                                    (desa.id == selectedId ? ' selected' : '') + '>' +
+                                    desa.name + '</option>');
+                            });
+                        }
+                    });
+                }
+            });
+        </script>
+
+        <script>
+            $('#kabkota_id').on('change', function() {
+                // console.log(this.value);
+                var kd = this.value
+
+                // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+                $.ajax({
+                    url: "{{ route('get-kecamatan-bykabkota', ':id') }}".replace(':id', kd), // Panggil API
+                    type: 'GET',
+                    success: function(response) {
+                        // Kosongkan dropdown kecamatan sebelumnya
+                        $('#kecamatan_id').empty();
+
+                        $('#desa_id').empty();
+                        $('#desa_id').append('<option selected disabled>Pilih Desa/Kelurahan</option>');
+
+                        // Tambahkan opsi default
+                        $('#kecamatan_id').append('<option selected disabled>Pilih Kecamatan</option>');
+
+                        // Loop data kecamatan dan tambahkan ke dropdown
+                        $.each(response, function(index, kecamatan) {
+                            $('#kecamatan_id').append('<option value="' + kecamatan.id + '">' +
+                                kecamatan.name + '</option>');
+                        });
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                    }
+                });
+            });
+
+
+            $('#kecamatan_id').on('change', function() {
+                // console.log(this.value);
+                var kd = this.value
+
+                // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+                $.ajax({
+                    url: "{{ route('get-desa-bykecamatan', ':id') }}".replace(':id', kd), // Panggil API
+                    type: 'GET',
+                    success: function(response) {
+                        // Kosongkan dropdown kecamatan sebelumnya
+                        $('#desa_id').empty();
+
+                        // Tambahkan opsi default
+                        $('#desa_id').append('<option selected disabled>Pilih Desa/Kelurahan</option>');
+
+                        // Loop data kecamatan dan tambahkan ke dropdown
+                        $.each(response, function(index, kecamatan) {
+                            $('#desa_id').append('<option value="' + kecamatan.id + '">' +
+                                kecamatan.name + '</option>');
+                        });
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                    }
+                });
+            });
+
+            $('#pendidikan_id').on('change', function() {
+                // console.log(this.value);
+                var kd = this.value
+
+                // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+                $.ajax({
+                    url: "{{ route('get-jurusan-bypendidikan', ':id') }}".replace(':id', kd), // Panggil API
+                    type: 'GET',
+                    success: function(response) {
+                        // Kosongkan dropdown kecamatan sebelumnya
+                        $('#jurusan_id').empty();
+
+                        // Tambahkan opsi default
+                        $('#jurusan_id').append('<option selected disabled>Pilih Jurusan</option>');
+
+                        // Loop data kecamatan dan tambahkan ke dropdown
+                        $.each(response, function(index, jurusan) {
+                            $('#jurusan_id').append('<option value="' + jurusan.id + '">' +
+                                jurusan.nama + '</option>');
+                        });
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                    }
+                });
+            });
+        </script>
+
+        <script>
+            $('#provinsi_id').on('change', function() {
+                // console.log(this.value);
+                var kd = this.value
+
+                // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+                $.ajax({
+                    url: "{{ route('get-kabkota-byprov', ':id') }}".replace(':id', kd), // Panggil API
+                    type: 'GET',
+                    success: function(response) {
+                        // Kosongkan dropdown kecamatan sebelumnya
+                        $('#kabkota_id').empty();
+
+                        // Tambahkan opsi default
+                        $('#kabkota_id').append('<option selected disabled>Pilih Kabupaten/Kota</option>');
+
+                        // Loop data kecamatan dan tambahkan ke dropdown
+                        $.each(response, function(index, kabkota) {
+                            $('#kabkota_id').append('<option value="' + kabkota.id + '">' +
+                                kabkota.name + '</option>');
+                        });
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                    }
+                });
+            });
+        </script>
+
+        <script>
+            $(document).ready(function() {
+                var pendidikanId = "{{ $user->id_pendidikan }}";
+                var jurusanId = "{{ $user->id_jurusan }}";
+
+                // Jika ada pendidikan terpilih, muat jurusan terkait
+                if (pendidikanId) {
+                    loadJurusan(pendidikanId, jurusanId);
+                }
+
+                $('#pendidikan_id').on('change', function() {
+                    var pendidikanId = $(this).val();
+                    $('#jurusan_id').empty().append('<option selected disabled>Pilih Jurusan</option>');
+
+                    if (pendidikanId) {
+                        loadJurusan(pendidikanId);
+                    }
+                });
+
+                function loadJurusan(pendidikanId, selectedId = null) {
+                    $.ajax({
+                        url: "{{ route('get-jurusan-bypendidikan', ':id') }}".replace(':id', pendidikanId),
+                        type: 'GET',
+                        success: function(response) {
+                            $.each(response, function(index, jurusan) {
+                                $('#jurusan_id').append('<option value="' + jurusan.id + '"' +
+                                    (jurusan.id == selectedId ? ' selected' : '') + '>' +
+                                    jurusan.nama + '</option>');
+                            });
+                        },
+                        error: function(xhr) {
+                            console.error(xhr);
+                        }
+                    });
+                }
+            });
+        </script>
+    @endif
 @endpush
