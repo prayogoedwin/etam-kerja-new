@@ -144,7 +144,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/pencari_diterima', [DiterimaPencariController::class, 'index'])->name('pencari_diterima.index');
     });
 
-  
+
     Route::prefix('ak1')->group(function () {
         Route::post('/daftar-akun', [Ak1Controller::class, 'daftar_akun'])->name('daftar-akun-ak1');
         Route::get('/daftar-by-admin', [Ak1Controller::class, 'daftar_by_admin']); //with role
@@ -180,6 +180,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::delete('/profil/delete_keahlian/{id}', [ProfilPencariController::class, 'delete_keahlian'])->name('profilkeahlian.pencari.destroy');
 
         Route::get('/ak1', [Ak1PencariController::class, 'index'])->name('ak1.index');
+        Route::get('/ak1/print', [Ak1PencariController::class, 'printAk1'])->name('ak1.pencari.print');
 
         Route::get('/history_lamaran', [HistoryLamaranPencariController::class, 'index'])->name('historylamaran.pencari.index');
     });
