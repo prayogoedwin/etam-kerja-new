@@ -27,6 +27,9 @@ class PenempatanController extends Controller
                 ->editColumn('status', function ($pelamar) {
                     return '<span class="badge rounded-pill bg-success">Diterima</span>';
                 })
+                ->editColumn('created_at', function ($pelamar) {
+                    return $pelamar->created_at->format('d-m-Y');
+                })
                 ->addIndexColumn()
                 // ->addColumn('options', function ($penem) {
                 //     // <button class="btn btn-primary btn-sm" onclick="showEditModal(' . $data->id . ')">Edit</button>
