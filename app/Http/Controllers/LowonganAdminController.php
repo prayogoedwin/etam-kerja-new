@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\LowonganAdmin;
+use App\Models\UserAdmin;
 use Yajra\DataTables\Facades\DataTables;  // Mengimpor DataTables
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+
 
 class LowonganAdminController extends Controller
 {
@@ -18,7 +20,25 @@ class LowonganAdminController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $lokers = LowonganAdmin::select('id', 'judul_lowongan', 'tanggal_start', 'tanggal_end', 'deskripsi');
+
+            $id = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
+            $userAdmin = UserAdmin::where('user_id', $id)->first(); // Mencari data UserAdmin berdasarkan user_id
+
+            // $lokers = LowonganAdmin::select('id', 'judul_lowongan', 'tanggal_start', 'tanggal_end', 'deskripsi');
+
+            $lokers = LowonganAdmin::with([
+                'user:id,name,email,whatsapp',
+                'user.penyedia:id,name,id_kota'
+            ]);
+            
+            
+            // Filter untuk admin-kabkota dan admin-kabkota-officer
+            $roles = Auth::user()->roles;
+            if (!empty($roles) && in_array($roles[0]['name'], ['admin-kabkota', 'admin-kabkota-officer'])) {
+                $lokers->whereHas('user.penyedia', function ($query) use ($userAdmin) {
+                    $query->where('id_kota', $userAdmin->kabkota_id);
+                });
+            }
 
             return DataTables::of($lokers)
                 ->addIndexColumn()
