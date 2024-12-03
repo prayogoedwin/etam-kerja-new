@@ -26,11 +26,11 @@
                 <!-- [ Main Content ] start -->
                 <div class="row">
 
-                    <div class="row align-items-center m-l-0">
+                    <div class="row align-items-center m-l-0" hidden>
                         <div class="col-sm-6">
                             <!-- Tombol untuk mengunduh CSV -->
                             {{-- <a href="{{ route('datapencari.exportCsv') }}" class="btn btn-success">Unduh CSV</a> --}}
-                            <a href="javascript:void(0);" id="downloadCsv" class="btn btn-info">Unduh CSV</a>
+                            {{-- <a href="javascript:void(0);" id="downloadCsv" class="btn btn-info">Unduh CSV</a> --}}
 
                         </div>
                         <div class="col-sm-6 text-end">
@@ -47,6 +47,7 @@
 
                                     </div>
                                     <div class="col-sm-6 text-end">
+                                         <a href="javascript:void(0);" id="downloadCsv" class="btn btn-success">Unduh CSV</a>
                                     </div>
                                 </div>
                                 <div class="table-responsive">

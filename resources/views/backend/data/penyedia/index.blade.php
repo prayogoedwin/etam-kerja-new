@@ -31,10 +31,10 @@
                 <!-- [ Main Content ] start -->
                 <div class="row">
 
-                    <div class="col-sm-6">
+                    <div class="col-sm-6" hidden>
                         <!-- Tombol untuk mengunduh CSV -->
                         {{-- <a href="{{ route('datapencari.exportCsv') }}" class="btn btn-success">Unduh CSV</a> --}}
-                        <a href="javascript:void(0);" id="downloadCsv" class="btn btn-info">Unduh CSV</a>
+                        {{-- <a href="javascript:void(0);" id="downloadCsv" class="btn btn-info">Unduh CSV</a> --}}
 
                     </div>
                     <div class="col-sm-6 text-end">
@@ -51,6 +51,7 @@
 
                                     </div>
                                     <div class="col-sm-6 text-end">
+                                        <a href="javascript:void(0);" id="downloadCsv" class="btn btn-success">Unduh CSV</a>
                                         {{-- <button class="btn btn-success btn-sm btn-round has-ripple" data-bs-toggle="modal" data-bs-target="#modal-report"><i class="feather icon-plus"></i> Add Data</button> --}}
                                     </div>
                                 </div>
