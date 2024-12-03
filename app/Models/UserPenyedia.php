@@ -25,7 +25,7 @@ class UserPenyedia extends Model
         'id_provinsi',
         'id_kota',
         'id_kecamatan',
-        'id_desa',
+        // 'id_desa',
         'alamat',
         'kodepos',
         'telpon',

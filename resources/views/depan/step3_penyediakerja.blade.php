@@ -71,12 +71,12 @@
                 <option selected disabled>Pilih Kecamatan</option>
             </select>
         </div>
-        <div class="mb-3">
+        {{-- <div class="mb-3">
             <label for="kelurahan" class="form-label">Desa / Kelurahan</label>
             <select class="form-select" id="desa_id" name="desa_id" required>
                 <option selected disabled>Pilih Desa/Kelurahan</option>
             </select>
-        </div>
+        </div> --}}
         <div class="mb-3">
             <label for="alamat" class="form-label">Alamat Lengkap</label>
             <textarea class="form-control" id="alamat" name="alamat" rows="3" required></textarea>

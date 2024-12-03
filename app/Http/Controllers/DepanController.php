@@ -356,7 +356,7 @@ class DepanController extends Controller
                 'id_provinsi' => $request->provinsi_id,
                 'id_kota' => $request->kabkota_id,
                 'id_kecamatan' => $request->kecamatan_id,
-                'id_desa' => $request->desa_id,
+                // 'id_desa' => $request->desa_id,
                 'alamat' => $request->alamat,
                 'kodepos' => $request->kodepos,
                 'telpon' => $request->telpon,
