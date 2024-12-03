@@ -246,7 +246,7 @@
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
-                                                <label for="">Jabatan</label>
+                                                <label for="">PJ Akun (Jabatan)</label>
                                             </div>
                                             <div class="col-10">
                                                 <input type="text" class=" form-control" name="jabatan"

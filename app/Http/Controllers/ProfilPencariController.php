@@ -81,6 +81,7 @@ class ProfilPencariController extends Controller
         // ]);
 
         $validatedData = $request->validate([
+            'is_diterima' => 'required|numeric',
             'ktp' => 'required|string',
             'name' => 'required|string',
             'tempat_lahir' => 'required|string',

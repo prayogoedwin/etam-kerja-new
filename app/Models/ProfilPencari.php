@@ -35,6 +35,7 @@ class ProfilPencari extends Model
         'foto',
         'status_id',
         'is_alumni_bkk',
+        'is_diterima',
         'medsos',
         'posted_by'
     ];

@@ -54,6 +54,26 @@
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
+                                                <label for="">Status Kerja</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="hidden" name="temp_is_diterima"
+                                                    value="{{ $profil->is_diterima }}">
+                                                <select name="is_diterima" id="is_diterima" class=" form-select">
+                                                    <option value="0"
+                                                        {{ $profil->is_diterima == 0 ? 'selected' : '' }}>Belum Bekerja
+                                                    </option>
+                                                    <option value="1"
+                                                        {{ $profil->is_diterima == 1 ? 'selected' : '' }}>Sudah Bekerja
+                                                        (Sistem)</option>
+                                                    <option value="2"
+                                                        {{ $profil->is_diterima == 2 ? 'selected' : '' }}>Sudah Bekerja
+                                                        (Mandiri)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
                                                 <label for="">Foto</label>
                                             </div>
                                             <div class="col-10">

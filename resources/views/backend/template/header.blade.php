@@ -153,13 +153,22 @@
                                 <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}" class="img-radius"
                                     alt="User-Profile-Image">
                             @elseif (Auth::user()->roles[0]['name'] == 'pencari-kerja')
-                                <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}" class="img-radius"
-                                    alt="User-Profile-Image">
+                                @php
+                                    $cekft = getRowPencariById(Auth::user()->id)->foto;
+                                    $xfoto = asset('storage/' . getRowPencariById(Auth::user()->id)->foto);
+                                @endphp
+                                @if ($cekft != null)
+                                    <img src="{{ $xfoto }}" class="img-radius" alt="User-Profile-Image">
+                                @else
+                                    <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}"
+                                        class="img-radius" alt="User-Profile-Image">
+                                @endif
                             @elseif (Auth::user()->roles[0]['name'] == 'penyedia-kerja')
                                 @php
+                                    $cekft = getRowPenyediaById(Auth::user()->id)->foto;
                                     $xfoto = asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto);
                                 @endphp
-                                @if ($xfoto != null)
+                                @if ($cekft != null)
                                     <img src="{{ $xfoto }}" class="img-radius" alt="User-Profile-Image">
                                 @else
                                     <img src="{{ asset('assets/etam_be/images/user/avatar-1.jpg') }}"

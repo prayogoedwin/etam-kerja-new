@@ -90,7 +90,7 @@
             <input type="number" class="form-control" id="telpon" name="telpon" required>
         </div>
         <div class="mb-3">
-            <label for="jabatan" class="form-label">Jabatan</label>
+            <label for="jabatan" class="form-label">PJ Akun (Jabatan)</label>
             <input type="text" class="form-control" id="jabatan" name="jabatan" required>
         </div>
         <div class="mb-3">
