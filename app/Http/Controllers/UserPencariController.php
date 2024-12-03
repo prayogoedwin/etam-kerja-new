@@ -68,6 +68,62 @@ class UserPencariController extends Controller
         return view('backend.users.pencari.index');
     }
 
+    public function data(Request $request)
+    {
+        if ($request->ajax()) {
+            $pencaris = UserPencari::with([
+                'user:id,name,email,whatsapp',
+                'user.roles:id,name'// Ambil data role terkait dengan kolom tertentu
+            ]) // Ambil data admin dengan user terkait
+                ->select('id', 'user_id');
+
+                    // Tambahkan filter pencarian
+        if (!empty($request->search['value'])) {
+            $searchValue = $request->search['value'];
+            $pencaris->whereHas('user', function ($query) use ($searchValue) {
+                $query->where('name', 'like', "%$searchValue%")
+                      ->orWhere('email', 'like', "%$searchValue%")
+                      ->orWhere('whatsapp', 'like', "%$searchValue%");
+            });
+        }
+
+
+            return DataTables::of($pencaris)
+                ->addIndexColumn()
+                ->addColumn('user_name', function ($pencari) {
+                    return $pencari->user ? $pencari->user->name : 'N/A';
+                })
+                ->addColumn('email', function ($pencari) {
+                    return $pencari->user ? $pencari->user->email : 'N/A';
+                })
+                ->addColumn('whatsapp', function ($pencari) {
+                    return $pencari->user ? $pencari->user->whatsapp : 'N/A';
+                })
+                // ->addColumn('roles', function ($pencari) {
+                //     // Menampilkan nama role
+                //     if ($pencari->user && $pencari->user->roles->isNotEmpty()) {
+                //         return $pencari->user->roles->pluck('name')->join(', ');
+                //     }
+                //     return 'N/A'; // Jika tidak ada role
+                // })
+                ->addColumn('options', function ($pencari) {
+                    // return '
+                    //     <button class="btn btn-warning btn-sm" onclick="resetPassword(' . $pencari->id . ')">Reset Password</button>
+                    //     <button class="btn btn-primary btn-sm" onclick="showEditModal(' . $pencari->id . ')">Edit</button>
+                    //     <button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $pencari->id . ')">Delete</button>
+                    // ';
+                    return '
+                    <button class="btn btn-warning btn-sm" onclick="confirmReset(' . $pencari->id . ')">Reset Password</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $pencari->id . ')">Delete</button>
+                ';
+                })
+                ->rawColumns(['options'])  // Pastikan menambahkan ini untuk kolom options
+                ->make(true);
+        }
+
+        return view('backend.users.pencari.index');
+    }
+
 
     public function softdelete($id)
         {
