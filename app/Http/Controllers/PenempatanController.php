@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Lamaran;
 use Yajra\DataTables\Facades\DataTables;
+use App\Models\UserAdmin;
+use Illuminate\Support\Facades\Auth;
 
 class PenempatanController extends Controller
 {
@@ -14,14 +16,31 @@ class PenempatanController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $penempatans = Lamaran::with([
+            $id = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
+            $userAdmin = UserAdmin::where('user_id', $id)->first(); // Mencari data UserAdmin berdasarkan user_id
+
+            $penempatansQuery = Lamaran::with([
                 'user:id,name,email,whatsapp',
                 'profilPencari:id,user_id,alamat,ktp,name,gender',
                 'lowongan:id,judul_lowongan,deskripsi',
-                'penyedia'
+                'penyedia',
             ])
-            ->where('progres_id', 3)
-            ->get();
+            ->where('progres_id', 3);
+
+            // Filter untuk admin-kabkota dan admin-kabkota-officer
+            $roles = Auth::user()->roles;
+            // Tambahkan kondisi untuk admin-kabkota dan admin-kabkota-officer
+            if (!empty($roles) && in_array($roles[0]['name'], ['admin-kabkota', 'admin-kabkota-officer'])) {
+                $kabkotaId = $userAdmin->kabkota_id ?? null; // Asumsi bahwa UserAdmin memiliki kabkota_id
+
+                if ($kabkotaId) {
+                    // Tambahkan filter kabupaten/kota ke query
+                    $penempatansQuery->where('kabkota_penempatan_id', $kabkotaId);
+                }
+            }
+
+            // Eksekusi query
+            $penempatans = $penempatansQuery->get();
 
             return DataTables::of($penempatans)
                 ->editColumn('status', function ($pelamar) {
