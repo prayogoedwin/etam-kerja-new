@@ -295,19 +295,23 @@
                     // $('#editPertanyaan').val(dt.name);
                     // $('#editJawaban').val(dt.description);
                     var stslmr = '';
-                    if (dt.statuslamaran.progres_id == 1) {
-                        stslmr = '<span class="badge rounded-pill bg-warning">Diperiksa</span>';
-                    } else if (dt.statuslamaran.progres_id == 2) {
-                        stslmr = '<span class="badge rounded-pill bg-warning">Panggilan</span>';
-                    } else if (dt.statuslamaran.progres_id == 3) {
-                        stslmr = '<span class="badge rounded-pill bg-success">Diterima</span>';
-                    } else if (dt.statuslamaran.progres_id == 4) {
-                        stslmr = '<span class="badge rounded-pill bg-warning">Belum Ditanggapi</span>';
-                    } else if (dt.statuslamaran.progres_id == 5) {
-                        stslmr = '<span class="badge rounded-pill bg-warning">Tidak Sesuai Kriteria</span>';
+                    var cekstslmr = dt.statuslamaran;
+                    if (cekstslmr) {
+                        if (dt.statuslamaran.progres_id == 1) {
+                            stslmr = '<span class="badge rounded-pill bg-warning">Diperiksa</span>';
+                        } else if (dt.statuslamaran.progres_id == 2) {
+                            stslmr = '<span class="badge rounded-pill bg-warning">Panggilan</span>';
+                        } else if (dt.statuslamaran.progres_id == 3) {
+                            stslmr = '<span class="badge rounded-pill bg-success">Diterima</span>';
+                        } else if (dt.statuslamaran.progres_id == 4) {
+                            stslmr = '<span class="badge rounded-pill bg-warning">Belum Ditanggapi</span>';
+                        } else if (dt.statuslamaran.progres_id == 5) {
+                            stslmr = '<span class="badge rounded-pill bg-warning">Tidak Sesuai Kriteria</span>';
+                        }
+
+                        $('#kontenstatuslamaran').html(stslmr);
+                        $('#keterangan').val(dt.statuslamaran.keterangan);
                     }
-                    $('#kontenstatuslamaran').html(stslmr);
-                    $('#keterangan').val(dt.statuslamaran.keterangan);
 
                     // Tampilkan modal edit
                     $('#modal-edit').modal('show');
