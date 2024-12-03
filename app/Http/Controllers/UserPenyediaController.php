@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserPenyedia;
+use App\Models\UserAdmin;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class UserPenyediaController extends Controller
 {
@@ -71,6 +73,8 @@ class UserPenyediaController extends Controller
 
     public function data(Request $request)
     {
+        $id = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
+        $userAdmin = UserAdmin::where('user_id', $id)->first(); // Mencari data UserAdmin berdasarkan user_id
         if ($request->ajax()) {
 
 
@@ -81,12 +85,13 @@ class UserPenyediaController extends Controller
                 'kabkota:id,name',
                 'kecamatan:id,name',
                 'sektor:id,name',
-            ]) ->get()
-            ->map(function ($pencari) {
-                // Apply the helper to get the full company type
-                $pencari->jenis_perusahaan = getFullCompanyType($pencari->jenis_perusahaan);
-                return $pencari;
-            });
+            ]);
+           
+
+            // Filter for admin-kabkota or admin-kabkota-officer roles
+            if (in_array(Auth::user()->roles[0]['name'], ['admin-kabkota', 'admin-kabkota-officer'])) {
+                $penyedias->where('id_kota', $userAdmin->kabkota_id);
+            }
 
             // Tambahkan filter pencarian
             if (!empty($request->search['value'])) {
@@ -115,6 +120,12 @@ class UserPenyediaController extends Controller
                 });
             }
 
+            // Transform data using a helper function
+            $penyedias = $penyedias->get()->map(function ($penyedia) {
+                $penyedia->jenis_perusahaan = getFullCompanyType($penyedia->jenis_perusahaan);
+                return $penyedia;
+            });
+
             return DataTables::of($penyedias)
             ->addIndexColumn()
             ->rawColumns(['options']) // Pastikan menambahkan ini untuk kolom options
@@ -123,6 +134,108 @@ class UserPenyediaController extends Controller
 
         return view('backend.data.penyedia.index');
     }
+
+    public function exportCsv(Request $request)
+    {
+        try {
+
+            $id = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
+            $userAdmin = UserAdmin::where('user_id', $id)->first(); // Mencari data UserAdmin berdasarkan user_id
+
+            // Get the search parameter if available
+            $search = $request->get('search', '');
+    
+            // Query the database based on the search parameter
+            // $pencaris = UserPencari::with(['user', 'agama', 'provinsi', 'kabkota', 'kecamatan', 'pendidikan', 'jurusan'])
+            $penyedias = UserPenyedia::with([
+                'user:id,name,email,whatsapp',
+                'user.roles:id,name',
+                'provinsi:id,name',
+                'kabkota:id,name',
+                'kecamatan:id,name',
+                'sektor:id,name',
+            ])
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->whereHas('user', function ($query) use ($search) {
+                        $query->where('name', 'like', "%$search%")
+                              ->orWhere('email', 'like', "%$search%")
+                              ->orWhere('whatsapp', 'like', "%$search%");
+                    })
+                    ->orWhereHas('provinsi', function ($query) use ($search) {
+                        $query->where('name', 'like', "%$search%");
+                    })
+                    ->orWhereHas('kabkota', function ($query) use ($search) {
+                        $query->where('name', 'like', "%$search%");
+                    })
+                    ->orWhereHas('kecamatan', function ($query) use ($search) {
+                        $query->where('name', 'like', "%$search%");
+                    });
+                });
+            })
+            ->when(in_array(Auth::user()->roles[0]['name'], ['admin-kabkota', 'admin-kabkota-officer']), function ($query) use ($userAdmin) {
+                $query->where('id_kota', $userAdmin->kabkota_id);
+            })
+            ->get();
+    
+            // Prepare data to export
+            $csvData = [];
+            foreach ($penyedias as $penyedia) {
+                $csvData[] = [
+                    $penyedia->user->name ?? '',
+                    $penyedia->user->email ?? '',
+                    '"' . ($penyedia->user->whatsapp ?? '') . '"',  // Add quotes around the whatsapp
+                    '"' . ($penyedia->nib ?? '') . '"',  // Add quotes around the ktp
+                    $penyedia->sektor->name ?? '',
+                    $penyedia->provinsi->name ?? '',
+                    $penyedia->provinsi->name ?? '',
+                    $penyedia->kabkota->name ?? '',
+                    $penyedia->kecamatan->name ?? '',
+                    $penyedia->alamat ?? '',
+                    $penyedia->kodepos ?? '',
+                    $penyedia->website ?? '',
+                    $penyedia->telpon ?? '',
+                    $penyedia->jenis_perusahaan ?? '',
+                    $penyedia->jabatan ?? '',
+                    $penyedia->created_at ?? ''
+                ];
+            }
+    
+            // Get the current date and time in the desired format
+            $dateTime = now()->format('Y-m-d_H-i-s');
+
+            // Prepare headers for the CSV response with a dynamic filename
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="data_penyedia_' . $dateTime . '.csv"',
+            ];
+    
+            // CSV callback to write the data to the output
+            $callback = function () use ($csvData) {
+                $handle = fopen('php://output', 'w');
+                
+                // Add CSV headers
+                fputcsv($handle, [
+                    'Nama', 'Email', 'Whatsapp', 'NIB', 'Sektor', 'Provinsi', 'Kabkota', 'Kecamatan',
+                    'Alamat', 'Kodepos', 'Website', 'Telepon', 'Jenis Perusahaan',
+                    'PJ Akun (Jabatan)','Tanggal Daftar',
+                ]);
+    
+                // Add data rows
+                foreach ($csvData as $row) {
+                    fputcsv($handle, $row);
+                }
+    
+                fclose($handle);
+            };
+    
+            // Return the response with the stream
+            return response()->stream($callback, 200, $headers);
+        } catch (\Exception $e) {
+            Log::error("Export CSV failed: " . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while generating the CSV file.'], 500);
+        }
+    }    
 
 
     public function softdelete($id)

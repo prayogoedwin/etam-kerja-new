@@ -73,6 +73,7 @@
                                                 <th>Tahun Lulus</th>
                                                 <th>Medsos</th>
                                                 <th>Status Kerja</th>
+                                                <th>Tanggal Daftar</th>
                                                 <th>Options</th>
                                             </tr>
                                         </thead>
@@ -168,6 +169,9 @@
                     },
                     {
                         data: 'is_diterima'
+                    },
+                    {
+                        data: 'created_at'
                     },
                     {
                         data: 'options',

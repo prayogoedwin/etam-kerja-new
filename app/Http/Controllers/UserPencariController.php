@@ -5,17 +5,21 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserPencari;
+use App\Models\UserAdmin;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class UserPencariController extends Controller
 {
 
     public function index(Request $request)
     {
+
+
         if ($request->ajax()) {
             $pencaris = UserPencari::with([
                 'user:id,name,email,whatsapp',
@@ -23,6 +27,7 @@ class UserPencariController extends Controller
             ]) // Ambil data admin dengan user terkait
                 ->select('id', 'user_id');
 
+    
                     // Tambahkan filter pencarian
         if (!empty($request->search['value'])) {
             $searchValue = $request->search['value'];
@@ -72,6 +77,10 @@ class UserPencariController extends Controller
 
     public function data(Request $request)
     {
+
+        $id = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
+        $userAdmin = UserAdmin::where('user_id', $id)->first(); // Mencari data UserAdmin berdasarkan user_id
+
         if ($request->ajax()) {
             $pencaris = UserPencari::with([
                 'user:id,name,email,whatsapp',
@@ -84,6 +93,12 @@ class UserPencariController extends Controller
                 'agama:id,name'
             ]);
     
+
+            //Filter for admin-kabkota role
+            if (Auth::user()->roles[0]['name'] === 'admin-kabkota' || Auth::user()->roles[0]['name'] === 'admin-kabkota-officer') {
+                $pencaris->where('id_kota', $userAdmin->kabkota_id);
+            }
+                
             // Tambahkan filter pencarian
             if (!empty($request->search['value'])) {
                 $searchValue = $request->search['value'];
@@ -110,6 +125,7 @@ class UserPencariController extends Controller
                     });
                 });
             }
+            
 
            
     
@@ -135,6 +151,10 @@ class UserPencariController extends Controller
     public function exportCsv(Request $request)
     {
         try {
+
+            $id = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
+            $userAdmin = UserAdmin::where('user_id', $id)->first(); // Mencari data UserAdmin berdasarkan user_id
+
             // Get the search parameter if available
             $search = $request->get('search', '');
     
@@ -169,8 +189,15 @@ class UserPencariController extends Controller
                 ->orWhereHas('kecamatan', function ($query) use ($search) {
                     $query->where('name', 'like', "%$search%");
                 });
-            })
-            ->get();
+            });
+
+             // Filter for admin-kabkota or admin-kabkota-officer roles
+             if (in_array(Auth::user()->roles[0]['name'], ['admin-kabkota', 'admin-kabkota-officer'])) {
+                $pencaris->where('id_kota', $userAdmin->kabkota_id);
+            }
+
+            $pencaris = $pencaris->get(); // Eksekusi query
+    
     
             // Prepare data to export
             $csvData = [];
@@ -195,6 +222,7 @@ class UserPencariController extends Controller
                     $pencari->tahun_lulus ?? '',
                     $pencari->medsos ?? '',
                     $pencari->is_diterima ?? '',
+                    $pencari->created_at ?? '',
                 ];
             }
     
@@ -216,7 +244,7 @@ class UserPencariController extends Controller
                     'Nama', 'Email', 'Whatsapp', 'NIK', 'Tempat Lahir', 'Tanggal Lahir',
                     'Gender', 'Status Perkawinan', 'Agama', 'Provinsi', 'Kabkota', 'Kecamatan',
                     'Alamat', 'Kodepos', 'Pendidikan Terakhir', 'Jurusan', 'Tahun Lulus',
-                    'Medsos', 'Status Kerja'
+                    'Medsos', 'Status Kerja', 'Tanggal Daftar'
                 ]);
     
                 // Add data rows

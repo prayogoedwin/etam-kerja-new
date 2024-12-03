@@ -43,7 +43,7 @@
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-sliders"></i></span><span class="pcoded-mtext">Setting</span></a>
                     <ul class="pcoded-submenu">
-                        <li><a href="{{ route('roles.index') }}">Role</a></li>
+                        {{-- <li><a href="{{ route('roles.index') }}">Role</a></li> --}}
                         <li><a href="{{ route('faq.index') }}">FAQ</a></li>
                         <li><a href="{{ route('infografis.index') }}">Infografis</a></li>
                         <li><a href="{{ route('galeri.index') }}">Galeri</a></li>

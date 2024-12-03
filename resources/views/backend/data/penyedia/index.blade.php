@@ -31,6 +31,16 @@
                 <!-- [ Main Content ] start -->
                 <div class="row">
 
+                    <div class="col-sm-6">
+                        <!-- Tombol untuk mengunduh CSV -->
+                        {{-- <a href="{{ route('datapencari.exportCsv') }}" class="btn btn-success">Unduh CSV</a> --}}
+                        <a href="javascript:void(0);" id="downloadCsv" class="btn btn-info">Unduh CSV</a>
+
+                    </div>
+                    <div class="col-sm-6 text-end">
+                    </div>
+                    </div>
+
 
                     <!-- customar project  start -->
                     <div class="col-xl-12">
@@ -63,6 +73,7 @@
                                                 <th>Telepon</th>
                                                 <th>Jenis Perusahaan</th>
                                                 <th>PJ Akun (jabatan)</th>
+                                                <th>Tanggal Daftar</th>
                                             </tr>
                                         </thead>
 
@@ -81,92 +92,6 @@
             </div>
         </div>
 
-
-        <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Tambah</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="registerForm">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label class="floating-label" for="Name">Nama Lengkap</label>
-                                        <input type="text" class="form-control" id="name" name="name"
-                                            placeholder="">
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label class="floating-label" for="email">Email</label>
-                                        <input type="text" class="form-control" id="email" name="email"
-                                            placeholder="">
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label class="floating-label" for="whatsapp">Whatsapp</label>
-                                        <input type="text" class="form-control" id="whatsapp" name="whatsapp"
-                                            placeholder="">
-                                    </div>
-                                </div>
-
-
-
-
-                                <div class="col-sm-12">
-                                    {{-- <div class="form-group">
-                                        <label class="floating-label" for="Description">Description</label>
-                                        <textarea class="form-control" id="Description" rows="3"></textarea>
-                                    </div> --}}
-                                    <button class="btn btn-primary">Submit</button>
-                                    <button class="btn btn-danger">Clear</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalEditLabel">Edit Admin</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="editAdminForm">
-                            <input type="hidden" id="editAdminId">
-                            <div class="mb-3">
-                                <label for="editName" class="form-label">Nama Lengkap</label>
-                                <input type="text" class="form-control" id="editName" name="name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editEmail" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="editEmail" name="email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editWhatsapp" class="form-label">Whatsapp</label>
-                                <input type="text" class="form-control" id="editWhatsapp" name="whatsapp" required>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary" onclick="updateFaq()">Save Changes</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </body>
 @endsection
 
@@ -174,7 +99,7 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            $('#simpletable').DataTable({
+            var table = $('#simpletable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('datapenyedia.index') }}',
@@ -225,8 +150,23 @@
                     },
                     {
                         data: 'jabatan'
+                    },
+                    {
+                        data: 'created_at'
                     }
                 ]
+            });
+
+            // Tombol untuk mengunduh CSV
+            $('#downloadCsv').on('click', function() {
+                // Pastikan table sudah terinisialisasi sebelum digunakan
+                var searchTerm = table.search(); // Ambil term pencarian dari DataTable
+
+                // Buat URL dengan parameter pencarian
+                var url = '{{ route('datapenyedia.exportCsv') }}?search=' + searchTerm;
+
+                // Redirect ke URL ekspor CSV
+                window.location.href = url;
             });
         });
     </script>

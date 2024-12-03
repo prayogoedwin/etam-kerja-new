@@ -447,7 +447,7 @@ class Ak1Controller extends Controller
     public function viewAk1($unik_kode)
     {
         // Mencari data AK1 berdasarkan kode unik
-        $ak1 = NakerAk1::where('unik_kode', $unik_kode)->firstOrFail();
+        $ak1 = EtamAk1::where('unik_kode', $unik_kode)->firstOrFail();
 
         // Menampilkan halaman dengan detail AK1
         return view('backend.ak1.view', compact('ak1'));
