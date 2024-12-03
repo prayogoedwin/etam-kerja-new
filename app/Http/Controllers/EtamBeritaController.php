@@ -49,7 +49,7 @@ class EtamBeritaController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string',
             'description' => 'required|string',
-            'cover' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'cover' => 'required|file|mimes:jpg,jpeg,png|max:2048',
             'status' => 'required|boolean',
         ]);
 

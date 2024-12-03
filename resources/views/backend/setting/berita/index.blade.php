@@ -77,7 +77,7 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Tambah A</h5>
+                    <h5 class="modal-title">Tambah</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -123,50 +123,53 @@
 
 
 @push('js')
-    <script>
-        // ADD
-        $(document).ready(function() {
-            $('#description').summernote({
-                height: 300, // Tinggi editor
-                callbacks: {
-                    onImageUpload: function(files) {
-                        let reader = new FileReader();
-                        reader.onload = function(e) {
-                            $('#description').summernote('insertImage', e.target.result);
-                        };
-                        reader.readAsDataURL(files[0]);
+<script>
+    $(document).ready(function() {
+        $('#description').summernote({
+            height: 300, // Tinggi editor
+            callbacks: {
+                onImageUpload: function(files) {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#description').summernote('insertImage', e.target.result);
+                    };
+                    reader.readAsDataURL(files[0]);
+                }
+            }
+        });
+
+        $('#registerForm').submit(function(e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('berita.add') }}', // Sesuaikan dengan rute
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function(response) {
+                    if (response.success) {
+                        alert('Berhasil menambahkan data');
+                        // Clear the form and reset Summernote content
+                        $('#registerForm')[0].reset();
+                        $('#description').summernote('reset');
+                        $('#modal-report').modal('hide');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + JSON.stringify(response.errors));
                     }
+                },
+                error: function(xhr) {
+                    alert('Error: ' + xhr.responseText);
                 }
             });
-
-            $('#registerForm').submit(function(e) {
-                e.preventDefault();
-
-                var formData = new FormData(this);
-                formData.append('_token', '{{ csrf_token() }}');
-
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('berita.add') }}', // Sesuaikan dengan rute
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        if (response.success) {
-                            alert('Berhasil menambahkan data');
-                            $('#modal-report').modal('hide');
-                            location.reload();
-                        } else {
-                            alert('Error: ' + JSON.stringify(response.errors));
-                        }
-                    },
-                    error: function(xhr) {
-                        alert('Error: ' + xhr.responseText);
-                    }
-                });
-            });
         });
-    </script>
+    });
+</script>
+
 
     <script>
         $(document).ready(function() {
