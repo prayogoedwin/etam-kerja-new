@@ -49,7 +49,7 @@ class User extends Authenticatable
         ];
     }
 
-    protected $dates = ['deleted_at']; 
+    protected $dates = ['deleted_at'];
 
     public function lowongan()
     {
@@ -58,7 +58,13 @@ class User extends Authenticatable
 
     public function pencari()
     {
-        return $this->hasOne(UserPencari::class, 'user_id', 'id'); 
+        return $this->hasOne(UserPencari::class, 'user_id', 'id');
         // 'user_id' adalah foreign key di tabel 'pencaris' yang merujuk ke 'id' pada tabel 'users'
+    }
+
+    public function penyedia()
+    {
+        return $this->hasOne(UserPenyedia::class, 'user_id', 'id');
+        // 'user_id' adalah foreign key di tabel 'penyedias' yang merujuk ke 'id' pada tabel 'users'
     }
 }

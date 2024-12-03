@@ -23,4 +23,35 @@ class Lamaran extends Model
     ];
 
     protected $dates = ['deleted_at'];
+
+    // Relasi ke model User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'pencari_id', 'id');
+    }
+
+    // Relasi ke model ProfilPencari
+    public function profilPencari()
+    {
+        return $this->hasOne(ProfilPencari::class, 'user_id', 'pencari_id');
+    }
+
+    // Relasi ke model Lowongan
+    public function lowongan()
+    {
+        return $this->belongsTo(Lowongan::class, 'lowongan_id', 'id');
+    }
+
+    // relasi ke model ProfilPenyedia
+    public function penyedia()
+    {
+        return $this->hasOneThrough(
+            ProfilPenyedia::class, // Model tujuan
+            Lowongan::class,       // Model perantara
+            'id',                  // Foreign key di tabel lowongan (referensi ke tabel lamaran)
+            'user_id',             // Foreign key di tabel profil_penyedia
+            'lowongan_id',         // Local key di tabel lamaran
+            'posted_by'            // Local key di tabel lowongan
+        );
+    }
 }
