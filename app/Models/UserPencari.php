@@ -55,4 +55,36 @@ class UserPencari extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function provinsi()
+    {
+        return $this->belongsTo(Provinsi::class, 'id_provinsi', 'id');
+    }
+
+    public function kabkota()
+    {
+        return $this->belongsTo(Kabkota::class, 'id_kota', 'id');
+    }
+
+    public function kecamatan()
+    {
+        return $this->belongsTo(kecamatan::class, 'id_kecamatan', 'id');
+    }
+
+    public function pendidikan()
+    {
+        return $this->belongsTo(Pendidikan::class, 'id_pendidikan', 'id');
+    }
+
+    public function jurusan()
+    {
+        return $this->belongsTo(Jurusan::class, 'id_jurusan', 'id');
+    }
+
+    public function agama()
+    {
+        return $this->belongsTo(Agama::class, 'id_agama', 'id');
+    }
 }
+
+

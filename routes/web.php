@@ -129,6 +129,14 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
     });
 
+
+    Route::prefix('datas')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
+
+        Route::get('/pencari', [UserPencariController::class, 'data'])->name('datapencari.index');
+        Route::get('/penyedia', [UserPenyediaController::class, 'index'])->name('datapenyedia.index');
+
+    });
+
     Route::prefix('penyedias')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer,penyedia-kerja')->group(function () {
         Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');
         Route::post('/lowongan/add', [LowonganController::class, 'store'])->name('lowongan.add');

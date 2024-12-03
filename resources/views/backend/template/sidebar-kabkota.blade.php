@@ -58,7 +58,7 @@
                     <ul class="pcoded-submenu">
                         <li><a href="{{ route('admin.index') }}">Officer</a></li>
                         <li><a href="{{ route('userpencari.index') }}">Pencari Kerja</a></li>
-                        <li><a href="{{ route('userpenyedia.index') }}">Perusahaan</a></li>
+                        <li><a href="{{ route('userpenyedia.index') }}">Penyedia Kerja</a></li>
                     </ul>
                 </li>
                 @endif
