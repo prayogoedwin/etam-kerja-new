@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\LowonganAdmin;
 use App\Models\UserAdmin;
+use App\Models\Progress;
 use Yajra\DataTables\Facades\DataTables;  // Mengimpor DataTables
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,7 @@ class LowonganAdminController extends Controller
      */
     public function index(Request $request)
     {
+
         if ($request->ajax()) {
 
             $id = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
@@ -28,9 +30,17 @@ class LowonganAdminController extends Controller
 
             $lokers = LowonganAdmin::with([
                 'user:id,name,email,whatsapp',
-                'user.penyedia:id,name,id_kota'
-            ]);
-            
+                'user.penyedia:id,name,id_kota',
+                'progress' // Hanya panggil relasi tanpa filter di sini
+            ])
+            ->whereHas('progress', function ($query) {
+                // Memastikan 'progress' dengan 'modul' = 'lowongan' dan 'status_id' yang valid
+                $query->where('modul', 'lowongan')
+                      ->whereIn('kode', function($query) {
+                          // Menambahkan check untuk nilai status_id yang valid
+                          $query->select('status_id')->from('etam_lowongan');
+                      });
+            });
             
             // Filter untuk admin-kabkota dan admin-kabkota-officer
             $roles = Auth::user()->roles;

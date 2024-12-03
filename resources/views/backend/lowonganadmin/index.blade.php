@@ -52,6 +52,8 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>Judul Lowongan</th>
+                                                <th>Status Acc</th>
+                                                <th>Status</th>
                                                 <th>Tgl Mulai</th>
                                                 <th>Tgl Selesai</th>
                                                 <th>Deskripsi</th>
@@ -240,6 +242,12 @@
                     },
                     {
                         data: 'judul_lowongan'
+                    },
+                    {
+                        data: 'progress.name'
+                    },
+                    {
+                        data: 'tanggal_start'
                     },
                     {
                         data: 'tanggal_start'

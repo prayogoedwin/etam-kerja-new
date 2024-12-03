@@ -47,4 +47,11 @@ class LowonganAdmin extends Model
         return $this->belongsTo(User::class, 'posted_by', 'id');
     }
 
+    public function progress()
+    {
+        return $this->belongsTo(Progress::class, 'status_id', 'kode');
+    }
+
+    
+
 }
