@@ -223,7 +223,8 @@ class UserPenyediaController extends Controller
     
                 // Add data rows
                 foreach ($csvData as $row) {
-                    fputcsv($handle, $row);
+                    fputcsv($handle, $row, ';');  // Set separator to ':'
+                    // fputcsv($handle, $row); // Set separator to ','
                 }
     
                 fclose($handle);
