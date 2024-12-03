@@ -24,7 +24,7 @@ class BackController extends Controller
             return view('backend.dashboard.index_penyedia');
         }
 
-        if(Auth::user()->roles[0]['name'] == 'admin-kabkota'){
+        if(Auth::user()->roles[0]['name'] == 'admin-kabkota' || Auth::user()->roles[0]['name'] == 'admin-kabkota-officer'){
             return view('backend.dashboard.index_kabkota');
         }
 
