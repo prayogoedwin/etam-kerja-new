@@ -25,6 +25,7 @@ use App\Http\Controllers\BkkPenyediaController;
 use App\Http\Controllers\HistoryLamaranPencariController;
 use App\Http\Controllers\Ak1Controller;
 use App\Http\Controllers\DiterimaPencariController;
+use App\Http\Controllers\PenempatanController;
 
 
 // Route::get('/', function () {
@@ -143,7 +144,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/lowongan/pelamar/{id}', [LowonganController::class, 'pelamar'])->name('lowongan.pelamar');
         Route::get('/lowongan/detail_pelamar/{id}', [LowonganController::class, 'detailpelamar'])->name('lowongan.detailpelamar');
 
-        Route::post('/lowongan/bulk_updatepelamar', [LowonganController::class, 'bulkupdatepelamar'])->middleware('check.role:penyedia-kerja')->name('bulk.update.pelamar');
+        // Route::post('/lowongan/bulk_updatepelamar', [LowonganController::class, 'bulkupdatepelamar'])->middleware('check.role:penyedia-kerja')->name('bulk.update.pelamar');
+        Route::post('/lowongan/bulk_updatepelamar', [LowonganController::class, 'bulkupdatepelamar'])->name('bulk.update.pelamar');
         // Route::delete('/lowongan/delete/{id}', [LowonganController::class, 'softdelete'])->name('lowongan.softdelete');
 
         Route::get('/profil', [ProfilPenyediaController::class, 'index'])->name('profil.penyedia.index');
@@ -172,6 +174,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/lowongan', [LowonganAdminController::class, 'index'])->name('lowongan.admin.index');
         Route::get('/lowongan/get/{id}', [LowonganAdminController::class, 'show'])->name('lowongan.admin.detail');
         Route::put('/lowongan/update/{id}', [LowonganAdminController::class, 'update'])->name('lowongan.admin.update');
+
+        Route::get('/penempatan', [PenempatanController::class, 'index'])->name('penempatan.admin.index');
     });
 
     Route::prefix('pencaris')->group(function () {

@@ -7,7 +7,7 @@
                     <img class="img-radius" src="{{ asset('assets/etam_be/images/user/avatar-x.png') }}"
                         alt="User-Profile-Image">
                     <div class="user-details">
-                        <div id="more-details"> {{ Auth::user()->name }} 
+                        <div id="more-details"> {{ Auth::user()->name }}
                             {{-- <i class="fa fa-caret-down"></i> --}}
                         </div>
                     </div>
@@ -70,13 +70,15 @@
                     </ul>
                 </li>
 
-               
+
 
                 <li class="nav-item"><a href="{{ route('lowongan.admin.index') }}" class="nav-link "><span
                             class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
                             class="pcoded-mtext">Lowongan</span></a></li>
 
-
+                <li class="nav-item"><a href="{{ route('penempatan.admin.index') }}" class="nav-link "><span
+                            class="pcoded-micon"><i class="fa fa-archive"></i></span><span
+                            class="pcoded-mtext">Penempatan</span></a></li>
 
 
         </div>
