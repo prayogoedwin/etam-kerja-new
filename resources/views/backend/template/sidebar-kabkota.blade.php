@@ -51,17 +51,28 @@
                     </ul>
                 </li> --}}
 
-                @if (Auth::user()->roles[0]['name'] == 'admin-kabkota')
+               
                 <li class="nav-item pcoded-hasmenu">
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-users"></i></span><span class="pcoded-mtext">Users</span></a>
                     <ul class="pcoded-submenu">
+                        @if (Auth::user()->roles[0]['name'] == 'admin-kabkota')
                         <li><a href="{{ route('admin.index') }}">Officer</a></li>
+                        @endif
                         <li><a href="{{ route('userpencari.index') }}">Pencari Kerja</a></li>
                         <li><a href="{{ route('userpenyedia.index') }}">Penyedia Kerja</a></li>
                     </ul>
                 </li>
-                @endif
+           
+
+                <li class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-users"></i></span><span class="pcoded-mtext">Data</span></a>
+                    <ul class="pcoded-submenu">
+                        <li><a href="{{ route('datapencari.index') }}">Pencari Kerja</a></li>
+                        <li><a href="{{ route('datapenyedia.index') }}">Penyedia Kerja</a></li>
+                    </ul>
+                </li>
 
                 <li class="nav-item pcoded-hasmenu">
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i

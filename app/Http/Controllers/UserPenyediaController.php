@@ -69,6 +69,61 @@ class UserPenyediaController extends Controller
         return view('backend.users.penyedia.index');
     }
 
+    public function data(Request $request)
+    {
+        if ($request->ajax()) {
+
+
+            $penyedias = UserPenyedia::with([
+                'user:id,name,email,whatsapp',
+                'user.roles:id,name',
+                'provinsi:id,name',
+                'kabkota:id,name',
+                'kecamatan:id,name',
+                'sektor:id,name',
+            ]) ->get()
+            ->map(function ($pencari) {
+                // Apply the helper to get the full company type
+                $pencari->jenis_perusahaan = getFullCompanyType($pencari->jenis_perusahaan);
+                return $pencari;
+            });
+
+            // Tambahkan filter pencarian
+            if (!empty($request->search['value'])) {
+                $searchValue = $request->search['value'];
+                $penyedias->where(function ($query) use ($searchValue) {
+                    // Filter berdasarkan user
+                    $query->whereHas('user', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%")
+                              ->orWhere('email', 'like', "%$searchValue%")
+                              ->orWhere('whatsapp', 'like', "%$searchValue%");
+                    })
+                    // Filter berdasarkan provinsi
+                    ->orWhereHas('provinsi', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%");
+                    })
+
+                    // Filter berdasarkan provinsi
+                    ->orWhereHas('kabkota', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%");
+                    })
+
+                     // Filter berdasarkan provinsi
+                     ->orWhereHas('kecamatan', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%");
+                    });
+                });
+            }
+
+            return DataTables::of($penyedias)
+            ->addIndexColumn()
+            ->rawColumns(['options']) // Pastikan menambahkan ini untuk kolom options
+            ->make(true);
+        }
+
+        return view('backend.data.penyedia.index');
+    }
+
 
     public function softdelete($id)
     {

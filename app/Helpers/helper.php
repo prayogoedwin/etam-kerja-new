@@ -23,6 +23,27 @@ function getKabkota()
         ->get();
 }
 
+
+if (!function_exists('getFullCompanyType')) {
+    function getFullCompanyType($abbreviation)
+    {
+        $types = [
+            'bumd' => 'Badan Usaha Milik Daerah',
+            'bumn' => 'Badan Usaha Milik Negara',
+            'cv' => 'Comanditer Venotschaap',
+            'firma' => 'Firma',
+            'instansi' => 'Instansi',
+            'kp' => 'Koperasi',
+            'pt' => 'Perseroan Terbatas',
+            'pp' => 'Perusahaan Perorangan',
+            'po' => 'PO*',
+            'yayasan' => 'Yayasan',
+        ];
+
+        return isset($types[$abbreviation]) ? $types[$abbreviation] : '';
+    }
+}
+
 function getAgama(){
     return DB::table('etam_agama')
         ->get();

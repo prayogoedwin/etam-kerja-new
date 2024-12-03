@@ -233,11 +233,7 @@ class UserPencariController extends Controller
             Log::error("Export CSV failed: " . $e->getMessage());
             return response()->json(['error' => 'An error occurred while generating the CSV file.'], 500);
         }
-    }
-    
-    
-    
-
+    }    
 
     public function softdelete($id)
     {

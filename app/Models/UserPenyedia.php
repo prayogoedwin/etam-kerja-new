@@ -47,4 +47,24 @@ class UserPenyedia extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function provinsi()
+    {
+        return $this->belongsTo(Provinsi::class, 'id_provinsi', 'id');
+    }
+
+    public function kabkota()
+    {
+        return $this->belongsTo(Kabkota::class, 'id_kota', 'id');
+    }
+
+    public function kecamatan()
+    {
+        return $this->belongsTo(kecamatan::class, 'id_kecamatan', 'id');
+    }
+
+    public function sektor()
+    {
+        return $this->belongsTo(Sektor::class, 'id_sektor', 'id');
+    }
 }

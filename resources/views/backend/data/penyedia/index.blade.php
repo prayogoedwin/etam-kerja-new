@@ -52,8 +52,17 @@
                                                 <th>Nama</th>
                                                 <th>Email</th>
                                                 <th>Whatsapp</th>
-
-                                                <th>Options</th>
+                                                <th>NIB</th>
+                                                <th>Sektor</th>
+                                                <th>Provinsi</th>
+                                                <th>Kabkota</th>
+                                                <th>Kecamatan</th>
+                                                <th>Alamat</th>
+                                                <th>Kodepos</th>
+                                                <th>Website</th>
+                                                <th>Telepon</th>
+                                                <th>Jenis Perusahaan</th>
+                                                <th>PJ Akun (jabatan)</th>
                                             </tr>
                                         </thead>
 
@@ -168,7 +177,7 @@
             $('#simpletable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('userpenyedia.index') }}',
+                ajax: '{{ route('datapenyedia.index') }}',
                 autoWidth: false, // Menonaktifkan auto-width
                 columns: [{
                         data: 'DT_RowIndex',
@@ -176,74 +185,53 @@
                         searchable: false
                     },
                     {
-                        data: 'user_name'
+                        data: 'user.name'
                     },
                     {
-                        data: 'email'
+                        data: 'user.email'
                     },
                     {
-                        data: 'whatsapp'
+                        data: 'user.whatsapp'
                     },
-
                     {
-                        data: 'options',
-                        orderable: false,
-                        searchable: false
+                        data: 'nib'
                     },
+                    {
+                        data: 'sektor.name'
+                    },
+                    {
+                        data: 'provinsi.name'
+                    },
+                    {
+                        data: 'kabkota.name'
+                    },
+                    {
+                        data: 'kecamatan.name'
+                    },
+                    {
+                        data: 'alamat'
+                    },
+                    {
+                        data: 'kodepos'
+                    },
+                    {
+                        data: 'website'
+                    },
+                    {
+                        data: 'telpon'
+                    },
+                    {
+                        data: 'jenis_perusahaan'
+                    },
+                    {
+                        data: 'jabatan'
+                    }
                 ]
             });
         });
     </script>
 
-    <script>
-        function confirmDelete(id) {
-            // Konfirmasi penghapusan
-            var deleteUrl = "{{ route('userpenyedia.softdelete', ':id') }}".replace(':id', id);
-            if (confirm("Yakin hapus data?")) {
-                // Kirim request ke server untuk menghapus data
-                $.ajax({
-                    url: deleteUrl,
-                    type: 'DELETE',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'), // Menyertakan CSRF token
-                    },
-                    success: function(response) {
-                        // Jika berhasil, reload DataTable
-                        alert(response.message); // Menampilkan pesan
-                        $('#simpletable').DataTable().ajax.reload(); // Reload data tabel
-                    },
-                    error: function(xhr, status, error) {
-                        // Tampilkan error jika ada masalah
-                        alert('Error: ' + xhr.responseText);
-                    }
-                });
-            }
-        }
-    </script>
+    
 
-    <script>
-        function confirmReset(id) {
-            // Konfirmasi penghapusan
-            var deleteUrl = "{{ route('userpenyedia.reset', ':id') }}".replace(':id', id);
-            if (confirm("Yakin  Reset Password (Password akan direset sesuai nama email/username)?")) {
-                // Kirim request ke server untuk menghapus data
-                $.ajax({
-                    url: deleteUrl,
-                    type: 'PUT',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'), // Menyertakan CSRF token
-                    },
-                    success: function(response) {
-                        // Jika berhasil, reload DataTable
-                        alert(response.message); // Menampilkan pesan
-                        $('#simpletable').DataTable().ajax.reload(); // Reload data tabel
-                    },
-                    error: function(xhr, status, error) {
-                        // Tampilkan error jika ada masalah
-                        alert('Error: ' + xhr.responseText);
-                    }
-                });
-            }
-        }
-    </script>
+   
 @endpush
