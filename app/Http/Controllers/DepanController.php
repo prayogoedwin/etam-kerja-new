@@ -141,7 +141,16 @@ class DepanController extends Controller
     }
 
     public function berita(){
-        return view('depan.depan_berita');
+        $beritas = EtamBerita::select('id', 'name', 'cover', 'status', 'created_at')
+            ->where('status', 1)
+            ->whereNull('deleted_at')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $data['beritas'] = $beritas;
+        // echo json_encode($data);
+        // die();
+        return view('depan.depan_berita', $data);
     }
 
     public function show($id)
