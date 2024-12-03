@@ -8,6 +8,8 @@ use App\Models\UserPencari;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Support\Facades\Log;
 
 class UserPencariController extends Controller
 {
@@ -108,6 +110,8 @@ class UserPencariController extends Controller
                     });
                 });
             }
+
+           
     
             return DataTables::of($pencaris)
             ->addIndexColumn()
@@ -127,6 +131,113 @@ class UserPencariController extends Controller
     
         return view('backend.data.pencari.index');
     }
+    
+    public function exportCsv(Request $request)
+    {
+        try {
+            // Get the search parameter if available
+            $search = $request->get('search', '');
+    
+            // Query the database based on the search parameter
+            // $pencaris = UserPencari::with(['user', 'agama', 'provinsi', 'kabkota', 'kecamatan', 'pendidikan', 'jurusan'])
+            $pencaris = UserPencari::with([
+                'user:id,name,email,whatsapp',
+                'user.roles:id,name',
+                'provinsi:id,name',
+                'kabkota:id,name',
+                'kecamatan:id,name',
+                'pendidikan:id,name',
+                'jurusan:id,nama',
+                'agama:id,name'
+            ])
+            ->where(function ($query) use ($search) {  // Use $search here
+                // Filter berdasarkan user
+                $query->whereHas('user', function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%")
+                          ->orWhere('email', 'like', "%$search%")
+                          ->orWhere('whatsapp', 'like', "%$search%");
+                })
+                // Filter berdasarkan provinsi
+                ->orWhereHas('provinsi', function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%");
+                })
+                // Filter berdasarkan kabkota
+                ->orWhereHas('kabkota', function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%");
+                })
+                // Filter berdasarkan kecamatan
+                ->orWhereHas('kecamatan', function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%");
+                });
+            })
+            ->get();
+    
+            // Prepare data to export
+            $csvData = [];
+            foreach ($pencaris as $pencari) {
+                $csvData[] = [
+                    $pencari->user->name ?? '',
+                    $pencari->user->email ?? '',
+                    '"' . ($pencari->user->whatsapp ?? '') . '"',  // Add quotes around the whatsapp
+                    '"' . ($pencari->ktp ?? '') . '"',  // Add quotes around the ktp
+                    $pencari->tempat_lahir ?? '',
+                    $pencari->tanggal_lahir ?? '',
+                    $pencari->gender ?? '',
+                    $pencari->id_status_perkawinan ?? '',
+                    $pencari->agama->name ?? '',
+                    $pencari->provinsi->name ?? '',
+                    $pencari->kabkota->name ?? '',
+                    $pencari->kecamatan->name ?? '',
+                    $pencari->alamat ?? '',
+                    $pencari->kodepos ?? '',
+                    $pencari->pendidikan->name ?? '',
+                    $pencari->jurusan->nama ?? '',
+                    $pencari->tahun_lulus ?? '',
+                    $pencari->medsos ?? '',
+                    $pencari->is_diterima ?? '',
+                ];
+            }
+    
+            // Get the current date and time in the desired format
+            $dateTime = now()->format('Y-m-d_H-i-s');
+
+            // Prepare headers for the CSV response with a dynamic filename
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="data_pencari_' . $dateTime . '.csv"',
+            ];
+    
+            // CSV callback to write the data to the output
+            $callback = function () use ($csvData) {
+                $handle = fopen('php://output', 'w');
+                
+                // Add CSV headers
+                fputcsv($handle, [
+                    'Nama', 'Email', 'Whatsapp', 'NIK', 'Tempat Lahir', 'Tanggal Lahir',
+                    'Gender', 'Status Perkawinan', 'Agama', 'Provinsi', 'Kabkota', 'Kecamatan',
+                    'Alamat', 'Kodepos', 'Pendidikan Terakhir', 'Jurusan', 'Tahun Lulus',
+                    'Medsos', 'Status Kerja'
+                ]);
+    
+                // Add data rows
+                foreach ($csvData as $row) {
+                    fputcsv($handle, $row);
+                }
+    
+                fclose($handle);
+            };
+    
+            // Return the response with the stream
+            return response()->stream($callback, 200, $headers);
+        } catch (\Exception $e) {
+            Log::error("Export CSV failed: " . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while generating the CSV file.'], 500);
+        }
+    }
+    
+    
+    
+
 
     public function softdelete($id)
     {

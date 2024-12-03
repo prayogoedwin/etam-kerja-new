@@ -26,6 +26,17 @@
                 <!-- [ Main Content ] start -->
                 <div class="row">
 
+                    <div class="row align-items-center m-l-0">
+                        <div class="col-sm-6">
+                            <!-- Tombol untuk mengunduh CSV -->
+                            {{-- <a href="{{ route('datapencari.exportCsv') }}" class="btn btn-success">Unduh CSV</a> --}}
+                            <a href="javascript:void(0);" id="downloadCsv" class="btn btn-info">Unduh CSV</a>
+
+                        </div>
+                        <div class="col-sm-6 text-end">
+                        </div>
+                    </div>
+
 
                     <!-- customar project  start -->
                     <div class="col-xl-12">
@@ -87,13 +98,16 @@
 
 @push('js')
     <script>
-        $(document).ready(function() {
-            $('#simpletable').DataTable({
+      
+            $(document).ready(function() {
+            // Inisialisasi DataTable
+            var table = $('#simpletable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('datapencari.index') }}',
                 autoWidth: false, // Menonaktifkan auto-width
-                columns: [{
+                columns: [
+                    {
                         data: 'DT_RowIndex',
                         orderable: false,
                         searchable: false
@@ -162,7 +176,21 @@
                     },
                 ]
             });
+
+            // Tombol untuk mengunduh CSV
+            $('#downloadCsv').on('click', function() {
+                // Pastikan table sudah terinisialisasi sebelum digunakan
+                var searchTerm = table.search(); // Ambil term pencarian dari DataTable
+
+                // Buat URL dengan parameter pencarian
+                var url = '{{ route('datapencari.exportCsv') }}?search=' + searchTerm;
+
+                // Redirect ke URL ekspor CSV
+                window.location.href = url;
+            });
         });
+
+
     </script>
 
 @endpush

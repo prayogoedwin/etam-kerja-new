@@ -134,6 +134,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::prefix('datas')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
 
         Route::get('/pencari', [UserPencariController::class, 'data'])->name('datapencari.index');
+        Route::get('/datapencari/export-csv', [UserPencariController::class, 'exportCsv'])->name('datapencari.exportCsv');
+
         Route::get('/penyedia', [UserPenyediaController::class, 'index'])->name('datapenyedia.index');
 
     });
