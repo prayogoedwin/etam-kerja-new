@@ -20,6 +20,7 @@ class ProfilPencariController extends Controller
         $data['agamas'] = getAgama();
         $data['pendidikans'] = getPendidikan();
         $data['provinsis'] = getProvinsi();
+        $data['disabilitases'] = getJenisDisabilitas();
         // $data['profil'] = ProfilPencari::where('user_id', $userid)->first();
         $data['profil'] = ProfilPencari::with('user')->where('user_id', $userid)->first();
 

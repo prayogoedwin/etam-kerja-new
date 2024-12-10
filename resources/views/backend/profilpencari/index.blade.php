@@ -264,6 +264,52 @@
                                                     id="medsos" value="{{ $profil->medsos }}">
                                             </div>
                                         </div>
+                                        <hr>
+                                        <h5>Disabilitas</h5>
+                                        <hr>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Disabilitas</label>
+                                            </div>
+                                            <div class="col-4">
+                                                <select name="disabilitas" id="disabilitas" class=" form-select"
+                                                    disabled>
+                                                    <option value="0"
+                                                        {{ $profil->disabilitas == (0 || null) ? 'selected' : '' }}>Tidak
+                                                    </option>
+                                                    <option value="1"
+                                                        {{ $profil->disabilitas == 1 ? 'selected' : '' }}>Ya</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        @if ($profil->disabilitas == 1)
+                                            <div class="form-group row">
+                                                <div class="col-2">
+                                                    <label for="">Jenis Disabilitas</label>
+                                                </div>
+                                                <div class="col-4">
+                                                    <select name="jenis_disabilitas" id="jenis_disabilitas"
+                                                        class=" form-select" disabled>
+                                                        @foreach ($disabilitases as $disabb)
+                                                            <option value="{{ $disabb->id }}"
+                                                                {{ $profil->jenis_disabilitas == $disabb->id ? 'selected' : '' }}>
+                                                                {{ $disabb->nama_disabilitas }}</option>
+                                                        @endforeach
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-2">
+                                                    <label for="">Keterangan</label>
+                                                </div>
+                                                <div class="col-10">
+                                                    <input type="text" class="form-control"
+                                                        name="keterangan_disabilitas" id="keterangan_disabilitas"
+                                                        value="{{ $profil->keterangan_disabilitas }}" readonly>
+                                                </div>
+                                            </div>
+                                        @endif
                                     </div>
 
                                     <div class="text-end">
