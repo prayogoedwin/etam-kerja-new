@@ -26,6 +26,7 @@ use App\Http\Controllers\HistoryLamaranPencariController;
 use App\Http\Controllers\Ak1Controller;
 use App\Http\Controllers\DiterimaPencariController;
 use App\Http\Controllers\PenempatanController;
+use App\Http\Controllers\RekapController;
 
 
 // Route::get('/', function () {
@@ -222,4 +223,8 @@ Route::get('/get-kecamatan', [BackController::class, 'getKecamatan']);
 //   });
 
 Route::get('ak1/cek/{unik_kode}', [Ak1Controller::class, 'viewAk1'])->name('ak1.view');
+
+
+Route::get('/rekap31', [RekapController::class, 'ak3titik1'])->name('rekap.ak31');
+
 

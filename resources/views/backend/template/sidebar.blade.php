@@ -81,6 +81,15 @@
                             class="pcoded-mtext">Penempatan</span></a></li>
 
 
+                <li class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-users"></i></span><span class="pcoded-mtext">Rekap</span></a>
+                    <ul class="pcoded-submenu">
+                        <li><a href="{{ route('rekap.ak31') }}">IPK 3.1</a></li>
+                    </ul>
+                </li>
+
+
         </div>
     </div>
 </nav>
