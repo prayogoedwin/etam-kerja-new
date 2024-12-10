@@ -439,6 +439,27 @@
                 }
             });
         });
+
+        $('#disabilitas').on('change', function() {
+            // console.log(this.value);
+            var kd = this.value
+
+            if (kd == 1) {
+                //disabilitas
+                $('#drop_jenisdisabilitas').removeClass('d-none');
+                $('#wrap_ket_disabilitas').removeClass('d-none');
+
+                //add attr required
+                $('#jenis_disabilitas').prop('required', true);
+                $('#keterangan_disabilitas').prop('required', true);
+            } else {
+                $('#drop_jenisdisabilitas').addClass('d-none');
+                $('#wrap_ket_disabilitas').addClass('d-none');
+
+                $('#jenis_disabilitas').prop('required', false);
+                $('#keterangan_disabilitas').prop('required', false);
+            }
+        });
     </script>
 
     <script>

@@ -113,8 +113,6 @@ function getStatusKerja(){
     return '';
 }
 
-
-
 function encode_url($url){
     $random1 = substr(sha1(rand()), 0, 40);
     $random2 = substr(md5(rand()), 0, 20);
@@ -238,4 +236,10 @@ function sendWa($phone, $message)
 
     curl_close($curl);
     // echo $response;
+}
+
+function getJenisDisabilitas(){
+    return DB::table('etam_jenis_disabilitas')
+    ->whereNull('deleted_at')
+    ->get();
 }
