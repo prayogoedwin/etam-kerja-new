@@ -86,7 +86,7 @@ class UserPenyediaController extends Controller
                 'kecamatan:id,name',
                 'sektor:id,name',
             ]);
-           
+
 
             // Filter for admin-kabkota or admin-kabkota-officer roles
             if (in_array(Auth::user()->roles[0]['name'], ['admin-kabkota', 'admin-kabkota-officer'])) {
@@ -128,6 +128,9 @@ class UserPenyediaController extends Controller
 
             return DataTables::of($penyedias)
             ->addIndexColumn()
+            ->editColumn('created_at', function ($penyedia) {
+                return $penyedia->created_at->format('d M Y H:i:s');
+            })
             ->rawColumns(['options']) // Pastikan menambahkan ini untuk kolom options
             ->make(true);
         }
@@ -144,7 +147,7 @@ class UserPenyediaController extends Controller
 
             // Get the search parameter if available
             $search = $request->get('search', '');
-    
+
             // Query the database based on the search parameter
             // $pencaris = UserPencari::with(['user', 'agama', 'provinsi', 'kabkota', 'kecamatan', 'pendidikan', 'jurusan'])
             $penyedias = UserPenyedia::with([
@@ -177,7 +180,7 @@ class UserPenyediaController extends Controller
                 $query->where('id_kota', $userAdmin->kabkota_id);
             })
             ->get();
-    
+
             // Prepare data to export
             $csvData = [];
             foreach ($penyedias as $penyedia) {
@@ -200,7 +203,7 @@ class UserPenyediaController extends Controller
                     $penyedia->created_at ?? ''
                 ];
             }
-    
+
             // Get the current date and time in the desired format
             $dateTime = now()->format('Y-m-d_H-i-s');
 
@@ -209,34 +212,34 @@ class UserPenyediaController extends Controller
                 'Content-Type' => 'text/csv',
                 'Content-Disposition' => 'attachment; filename="data_penyedia_' . $dateTime . '.csv"',
             ];
-    
+
             // CSV callback to write the data to the output
             $callback = function () use ($csvData) {
                 $handle = fopen('php://output', 'w');
-                
+
                 // Add CSV headers
                 fputcsv($handle, [
                     'Nama', 'Email', 'Whatsapp', 'NIB', 'Sektor', 'Provinsi', 'Kabkota', 'Kecamatan',
                     'Alamat', 'Kodepos', 'Website', 'Telepon', 'Jenis Perusahaan',
                     'PJ Akun (Jabatan)','Tanggal Daftar',
                 ]);
-    
+
                 // Add data rows
                 foreach ($csvData as $row) {
                     fputcsv($handle, $row, ';');  // Set separator to ':'
                     // fputcsv($handle, $row); // Set separator to ','
                 }
-    
+
                 fclose($handle);
             };
-    
+
             // Return the response with the stream
             return response()->stream($callback, 200, $headers);
         } catch (\Exception $e) {
             Log::error("Export CSV failed: " . $e->getMessage());
             return response()->json(['error' => 'An error occurred while generating the CSV file.'], 500);
         }
-    }    
+    }
 
 
     public function softdelete($id)
@@ -252,7 +255,7 @@ class UserPenyediaController extends Controller
                 // Set is_deleted = 1 untuk soft delete user
                 $user->is_deleted = 1;
                 $user->save();  // Simpan perubahan
-                $user->delete(); 
+                $user->delete();
             }
 
             return response()->json(['success' => true, 'message' => 'Hapus data berhasil']);

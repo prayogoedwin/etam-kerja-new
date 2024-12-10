@@ -86,7 +86,8 @@ class Ak1PencariController extends Controller
             'users_pencari.tempat_lahir',
             'users_pencari.tanggal_lahir',
             'users_pencari.id_kota',
-            'users_pencari.foto',)
+            'users_pencari.foto',
+            'users_pencari.gender',)
             ->where('users_pencari.user_id', $id)
             ->first();
 

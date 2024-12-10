@@ -138,6 +138,20 @@ class UserPencariController extends Controller
                 }
                 return $disbb;
             })
+            ->editColumn('created_at', function ($pencari) {
+                return $pencari->created_at->format('d M Y H:i:s');
+            })
+            ->editColumn('is_diterima', function ($pencari) {
+                $status = '-';
+                if($pencari->is_diterima == 0){
+                    $status = 'Belum Bekerja';
+                }else if($pencari->is_diterima == 1){
+                    $status = 'Sudah Bekerja (Sistem)';
+                }else if($pencari->is_diterima == 2){
+                    $status = 'Sudah Bekerja (Mandiri)';
+                }
+                return $status;
+            })
             ->addColumn('options', function ($pencari) {
                 return '
                     <button class="btn btn-primary btn-sm"
