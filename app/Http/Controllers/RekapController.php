@@ -9,4 +9,12 @@ class RekapController extends Controller
     public function ak3titik1(){
         return view('backend.rekap.ak3.satu');
     }
+
+    public function ak3titik2(){
+        return view('backend.rekap.ak3.dua');
+    }
+
+    public function ak3titik4(){
+        return view('backend.rekap.ak3.empat');
+    }
 }
