@@ -70,6 +70,7 @@ class LowonganController extends Controller
     {
         // Validasi data
         $validator = Validator::make($request->all(), [
+            'is_lowongan_disabilitas' => 'required|integer',
             'jabatan_id' => 'required|integer',
             'sektor_id' => 'required|integer',
             'tanggal_start' => 'required|date',
@@ -106,6 +107,7 @@ class LowonganController extends Controller
                 'pendidikan_id' => $request->pendidikan_id,
                 'jurusan_id' => $request->jurusan_id,
                 'marital_id' => $request->marital_id,
+                'is_lowongan_disabilitas' => $request->is_lowongan_disabilitas,
                 'posted_by' => $userId,
                 'updated_by' => $userId,
             ]);
@@ -277,5 +279,22 @@ class LowonganController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function softdelete($id)
+    {
+        try {
+            // Cari admin berdasarkan ID
+            $data = Lowongan::findOrFail($id);
+
+            // Set is_deleted = 1 untuk soft delete admin
+            $data->deleted_at = now();
+            $data->save();  // Simpan perubahan
+            // $data->delete();
+            return response()->json(['success' => true, 'message' => 'hapus data  berhasil.']);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error A: ' . $e->getMessage()]);
+        }
     }
 }

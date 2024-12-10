@@ -90,6 +90,16 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="form-group">
+                                        <label for="">Disediakan untuk</label>
+                                        <select class="form-select" name="is_lowongan_disabilitas"
+                                            id="is_lowongan_disabilitas" required style="width: 100%;">
+                                            <option value="0">Umum</option>
+                                            <option value="1">Disabilitas</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
                                         <label for="jab">Jabatan</label>
                                         <select class="form-control" name="jabatan_id" id="jabatan_id" required
                                             style="width: 100%;">
@@ -333,6 +343,7 @@
                     type: 'POST',
                     url: '{{ route('lowongan.add') }}', // Ganti dengan rute yang sesuai
                     data: {
+                        is_lowongan_disabilitas: $('#is_lowongan_disabilitas').val(),
                         jabatan_id: $('#jabatan_id').val(),
                         sektor_id: $('#sektor_id').val(),
                         tanggal_start: $('#tanggal_start').val(),
@@ -444,7 +455,7 @@
     <script>
         function confirmDelete(id) {
             // Konfirmasi penghapusan
-            var deleteUrl = "{{ route('faq.softdelete', ':id') }}".replace(':id', id);
+            var deleteUrl = "{{ route('lowongan.softdelete', ':id') }}".replace(':id', id);
             if (confirm("Yakin hapus data?")) {
                 // Kirim request ke server untuk menghapus data
                 $.ajax({
