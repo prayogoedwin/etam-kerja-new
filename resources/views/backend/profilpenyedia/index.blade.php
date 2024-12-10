@@ -207,7 +207,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="form-group row">
+                                        <div class="form-group row" hidden>
                                             <div class="col-2">
                                                 <label for="">Kelurahan</label>
                                             </div>

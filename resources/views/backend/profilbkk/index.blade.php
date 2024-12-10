@@ -54,7 +54,7 @@
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
-                                                <label for="">Logo Perusahaan</label>
+                                                <label for="">Logo BKK</label>
                                             </div>
                                             <div class="col-10">
                                                 @php
