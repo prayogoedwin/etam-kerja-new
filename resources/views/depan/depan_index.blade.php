@@ -140,34 +140,34 @@
                     <!-- Additional required wrapper -->
                     <div class="swiper-wrapper">
                         @if ($lowonganDisetujui15->count())
-                        @foreach ($lowonganDisetujui15 as $lindex => $lokerTerbaru)
-                        <!-- Single Item -->
-                        <div class="swiper-slide">
-                            <div class="services-style-three">
-                                <div class="info">
-                                    <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
-                                        width="100px">
-        
-                                    <h3><a href="#">{{ $lokerTerbaru->judul_lowongan }}</a></h3>
-                                    <span class="sub-heading">{{ $lokerTerbaru->postedBy->name }} </span>
-                                    <p>
-                                      
-                                        <p>
-                                            {{ \Illuminate\Support\Str::limit($lokerTerbaru->deskripsi, 100, '...') }}
-                                        </p>
-                                        
-                                        
-                                    </p>
+                            @foreach ($lowonganDisetujui15 as $lindex => $lokerTerbaru)
+                                <!-- Single Item -->
+                                <div class="swiper-slide">
+                                    <div class="services-style-three">
+                                        <div class="info">
+                                            <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
+                                                width="100px">
 
+                                            <h3><a href="#">{{ $lokerTerbaru->judul_lowongan }}</a></h3>
+                                            <span class="sub-heading">{{ $lokerTerbaru->postedBy->name }} </span>
+                                            <p>
+
+                                            <p>
+                                                {{ \Illuminate\Support\Str::limit($lokerTerbaru->deskripsi, 100, '...') }}
+                                            </p>
+
+
+                                            </p>
+
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <!-- End Single Item -->
-                        @endforeach
+                                <!-- End Single Item -->
+                            @endforeach
                         @else
                             <p>Belum ada lowongan yang tersedia.</p>
                         @endif
-                       
+
                     </div>
 
                     <!-- Navigation -->
@@ -208,8 +208,8 @@
                                 <div class="col-lg-12">
                                     <div class="form-group">
                                         <label for="name">Judul Lowongan</label>
-                                        <input class="form-control" id="judul_lowongan" name="judul_lowongan" 
-                                        placeholder="Cari Judul Lowongan Kerja" type="text">
+                                        <input class="form-control" id="judul_lowongan" name="judul_lowongan"
+                                            placeholder="Cari Judul Lowongan Kerja" type="text">
                                     </div>
                                 </div>
 
@@ -222,7 +222,7 @@
                                         <select id="pendidikan_id" name="pendidikan_id" class="form-control">
                                             <option value="">-- Pilih Pendidikan --</option>
                                             @foreach (getPendidikan() as $id => $pendidikan)
-                                                <option value="{{ $pendidikan->kode }}">{{ $pendidikan->name }}</option>
+                                                <option value="{{ $pendidikan->id }}">{{ $pendidikan->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -234,7 +234,7 @@
                                         <select id="kabkota_id" name="kabkota_id" class="form-control">
                                             <option value="">-- Pilih Lokasi --</option>
                                             @foreach (getKabkota() as $id => $lokasi)
-                                                <option value="{{ $id }}">{{ $lokasi->name }}</option>
+                                                <option value="{{ $lokasi->id }}">{{ $lokasi->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -332,7 +332,7 @@
                 <div class="faq-style-one default-padding">
                     <h4 class="sub-heading">FAQ</h4>
                     <h2 class="title mb-30">Jenis Pertanyaan Umum <br></h2>
-                       <div class="accordion" id="faqAccordion">
+                    <div class="accordion" id="faqAccordion">
                         @if ($faq->count())
                             @foreach ($faq as $index => $faq)
                                 <div class="accordion-item">
@@ -450,34 +450,37 @@
     </div>
     <div class="container">
         <div class="row">
-           
+
             @if ($beritaTerbaru->count())
-            @foreach ($beritaTerbaru as $bindex => $beritaTerbaru)
-            <div class="col-lg-6 mt-md-30 mt-xs-30">
-                <div class="blog-style-one solid">
-                    <div class="thumb">
-                        <img src="{{ asset('storage/' . $beritaTerbaru->cover) }}" alt="Image Not Found">
-                        <a href="{{ route('berita.show', ['id' => $beritaTerbaru->id]) }}">Berita</a>
-                        <div class="info">
-                            <div class="blog-meta">
-                                <ul>
-                                    <li>
-                                        <a href="{{ route('berita.show', ['id' => $beritaTerbaru->id]) }}"><i class="fas fa-user"></i> ADMIN NAKERBISA</a>
-                                    </li>
-                                    <li>
-                                        {{ date('d F, Y', strtotime($beritaTerbaru->created_at)) }}
-                                    </li>
-                                </ul>
+                @foreach ($beritaTerbaru as $bindex => $beritaTerbaru)
+                    <div class="col-lg-6 mt-md-30 mt-xs-30">
+                        <div class="blog-style-one solid">
+                            <div class="thumb">
+                                <img src="{{ asset('storage/' . $beritaTerbaru->cover) }}" alt="Image Not Found">
+                                <a href="{{ route('berita.show', ['id' => $beritaTerbaru->id]) }}">Berita</a>
+                                <div class="info">
+                                    <div class="blog-meta">
+                                        <ul>
+                                            <li>
+                                                <a
+                                                    href="{{ route('berita.show', ['id' => encode_url($beritaTerbaru->id)]) }}"><i
+                                                        class="fas fa-user"></i> ADMIN ETAMKERJA</a>
+                                            </li>
+                                            <li>
+                                                {{ \Carbon\Carbon::parse($beritaTerbaru->created_at)->format('d F, Y') }}
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <h4>
+                                        <a
+                                            href="{{ route('berita.show', ['id' => encode_url($beritaTerbaru->id)]) }}">{{ $beritaTerbaru->name }}</a>
+                                    </h4>
+                                </div>
                             </div>
-                            <h4>
-                                <a href="{{ route('berita.show', ['id' => $beritaTerbaru->id]) }}">{{ $beritaTerbaru->name }}</a>
-                            </h4>
                         </div>
                     </div>
-                </div>
-            </div>
-            <!-- End Single Item -->
-            @endforeach
+                    <!-- End Single Item -->
+                @endforeach
             @else
                 <p>Belum ada pertanyaan yang tersedia.</p>
             @endif

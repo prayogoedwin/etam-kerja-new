@@ -30,11 +30,11 @@
                     <div class="col-lg-3">
                         <div class="form-group">
                             <label for="judul_lowongan">Judul Lowongan</label>
-                            <input class="form-control" id="judul_lowongan" name="judul_lowongan" 
+                            <input class="form-control" id="judul_lowongan" name="judul_lowongan"
                                 placeholder="Cari Judul Lowongan Kerja" type="text">
                         </div>
                     </div>
-            
+
                     <!-- Dropdown Pendidikan -->
                     <div class="col-lg-3">
                         <div class="form-group">
@@ -47,7 +47,7 @@
                             </select>
                         </div>
                     </div>
-            
+
                     <!-- Dropdown Lokasi Perusahaan -->
                     <div class="col-lg-3">
                         <div class="form-group">
@@ -55,12 +55,12 @@
                             <select id="kabkota_id" name="kabkota_id" class="form-control">
                                 <option value="">-- Pilih Lokasi --</option>
                                 @foreach (getKabkota() as $id => $lokasi)
-                                    <option value="{{ $id }}">{{ $lokasi->name }}</option>
+                                    <option value="{{ $lokasi->id }}">{{ $lokasi->name }}</option>
                                 @endforeach
                             </select>
                         </div>
                     </div>
-            
+
                     <!-- Button Cari -->
                     <div class="col-lg-3">
                         <button type="submit" name="submit" id="submit" class="btn btn-success mt-4">
@@ -69,12 +69,12 @@
                     </div>
                 </div>
             </form>
-            
+
         </div>
 
-        <div class="blog-item-box" >
+        <div class="blog-item-box">
             <div class="row" style="padding-top:50px">
-                
+
                 @forelse ($lowonganDisetujui as $lowongan)
                     <div class="col-xl-4 col-md-6 single-item">
                         <div class="blog-style-one">
@@ -82,7 +82,7 @@
                                 <a href="#">
                                     {{-- <img src="{{ asset('assets/nakerbisa_fe/img/800x600.png') }}" alt="Thumb"> --}}
                                     <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
-                                    width="100px">
+                                        width="100px">
 
                                 </a>
                             </div>
@@ -92,14 +92,17 @@
                                         <li class="sub-title">Perusahaan</li>
                                     </ul>
                                     <ul>
-                                        <li>Expire in:
+                                        <li>Expired in:
                                             {{ \Carbon\Carbon::parse($lowongan->tanggal_end)->format('d F, Y') }}</li>
                                     </ul>
                                 </div>
                                 <h3>
                                     <a href="#">{{ $lowongan->judul_lowongan }}</a>
                                 </h3>
-                                <a href="#" class="btn-simple"><i class="fas fa-angle-right"></i> Read more</a>
+                                <a href="{{ route('lowongan.show', ['id' => encode_url($lowongan->id)]) }}"
+                                    class="btn-simple">
+                                    <i class="fas fa-angle-right"></i> Read more
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -110,7 +113,7 @@
                 @endforelse
             </div>
         </div>
-        
+
         <!-- Pagination -->
         <div class="row">
             <div class="col-md-12 pagi-area text-center">
@@ -119,11 +122,13 @@
                         <!-- Previous Page Link -->
                         @if ($lowonganDisetujui->onFirstPage())
                             <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fas fa-angle-double-left"></i></a>
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i
+                                        class="fas fa-angle-double-left"></i></a>
                             </li>
                         @else
                             <li class="page-item">
-                                <a class="page-link" href="{{ $lowonganDisetujui->previousPageUrl() }}" rel="prev"><i class="fas fa-angle-double-left"></i></a>
+                                <a class="page-link" href="{{ $lowonganDisetujui->previousPageUrl() }}"
+                                    rel="prev"><i class="fas fa-angle-double-left"></i></a>
                             </li>
                         @endif
 
@@ -137,11 +142,13 @@
                         <!-- Next Page Link -->
                         @if ($lowonganDisetujui->hasMorePages())
                             <li class="page-item">
-                                <a class="page-link" href="{{ $lowonganDisetujui->nextPageUrl() }}" rel="next"><i class="fas fa-angle-double-right"></i></a>
+                                <a class="page-link" href="{{ $lowonganDisetujui->nextPageUrl() }}" rel="next"><i
+                                        class="fas fa-angle-double-right"></i></a>
                             </li>
                         @else
                             <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i class="fas fa-angle-double-right"></i></a>
+                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><i
+                                        class="fas fa-angle-double-right"></i></a>
                             </li>
                         @endif
                     </ul>

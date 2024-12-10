@@ -35,7 +35,8 @@
                                 <div class="blog-meta">
                                     <ul>
                                         <li>
-                                            <a href="#"><i class="fas fa-user"></i> ADMIN ETAM KERKA</a>
+                                            <a href="{{ route('berita.show', ['id' => encode_url($berita->id)]) }}"><i
+                                                    class="fas fa-user"></i> ADMIN ETAM KERKA</a>
                                         </li>
                                         <li>
                                             {{ $berita->created_at->format('d F Y') }}
@@ -43,7 +44,8 @@
                                     </ul>
                                 </div>
                                 <h4>
-                                    <a href="#">{{ $berita->name }}</a>
+                                    <a
+                                        href="{{ route('berita.show', ['id' => encode_url($berita->id)]) }}">{{ $berita->name }}</a>
                                 </h4>
                             </div>
                         </div>

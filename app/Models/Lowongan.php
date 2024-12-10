@@ -44,10 +44,10 @@ class Lowongan extends Model
     protected $dates = ['deleted_at'];
 
     // Relasi ke model User
-    // public function user()
-    // {
-    //     return $this->belongsTo(User::class);
-    // }
+    public function userPenyedia()
+    {
+        return $this->belongsTo(UserPenyedia::class, 'posted_by', 'user_id');
+    }
 
     // Lowongan.php
     public function postedBy()

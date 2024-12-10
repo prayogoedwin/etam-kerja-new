@@ -155,11 +155,26 @@ class DepanController extends Controller
 
     public function show($id)
     {
+        $id = decode_url($id);
         $berita = EtamBerita::findOrFail($id);
 
         return view('depan.depan_berita_detail', compact('berita'));
     }
 
+    public function lowongan_show($id){
+        $id = decode_url($id);
+        // $lowongan = Lowongan::findOrFail($id);
+        // $lowongan = Lowongan::with('userPenyedia')->findOrFail($id); // Eager loading relasi userPenyedia
+        $lowongan = Lowongan::findOrFail($id);
+
+        // Lazy loading relasi userPenyedia
+        $userPenyedia = $lowongan->userPenyedia;
+
+        // echo json_encode($lowongan);
+        // die();
+
+        return view('depan.depan_lowongan_detail', compact('lowongan','userPenyedia'));
+    }
 
     public function daftar_akun(Request $request){
         // dd($request->all());

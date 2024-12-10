@@ -151,24 +151,24 @@
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Lowongan</a>
                             <ul class="dropdown-menu">
                                 <li><a href="{{ url('/depan/lowongan-kerja') }}">Lowongan Kerja</a></li>
-                                {{-- <li><a href="{{ url('/depan/lowongan-kerja-disabilitas') }}">Lowongan Disabilitas</a> --}}
+                                <li><a href="{{ url('/depan/lowongan-kerja-disabilitas') }}">Lowongan Disabilitas</a>
+                                </li>
+                            </ul>
                         </li>
-                    </ul>
-                    </li>
 
-                    <li><a href="{{ url('/depan/bkk') }}">BKK</a></li>
+                        <li><a href="{{ url('/depan/bkk') }}">BKK</a></li>
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Informasi</a>
-                        <ul class="dropdown-menu">
-                            <li><a href="{{ url('/depan/infografis') }}">Infografis</a></li>
-                            <li><a href="{{ url('/depan/galeri') }}">Galeri</a></li>
-                            <li><a href="{{ url('/depan/berita') }}">Berita</a></li>
-                            <!-- <li><a href="project.html">Kontak</a></li> -->
-                        </ul>
-                    </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Informasi</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ url('/depan/infografis') }}">Infografis</a></li>
+                                <li><a href="{{ url('/depan/galeri') }}">Galeri</a></li>
+                                <li><a href="{{ url('/depan/berita') }}">Berita</a></li>
+                                <!-- <li><a href="project.html">Kontak</a></li> -->
+                            </ul>
+                        </li>
 
-                    <li><a href="{{ url('/login') }}">Login</a></li>
+                        <li><a href="{{ url('/login') }}">Login</a></li>
                     </ul>
                 </div><!-- /.navbar-collapse -->
 
