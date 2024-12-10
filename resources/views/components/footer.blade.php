@@ -93,11 +93,6 @@
                                 <td>30</td>
                             </tr>
                             <tr>
-                                <td>Kemarin</td>
-                                <td>&nbsp;:&nbsp;</td>
-                                <td>105</td>
-                            </tr>
-                            <tr>
                                 <td>Bulan Ini</td>
                                 <td>&nbsp;:&nbsp;</td>
                                 <td>1624</td>
