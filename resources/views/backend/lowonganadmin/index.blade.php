@@ -89,6 +89,16 @@
                             <input type="hidden" id="editId">
                             <div class="col-sm-12">
                                 <div class="form-group">
+                                    <label for="">Disediakan untuk</label>
+                                    <select class="form-control" name="is_lowongan_disabilitas" id="is_lowongan_disabilitas"
+                                        disabled>
+                                        <option value="0">Umum</option>
+                                        <option value="1">Disabilitas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
                                     <label for="jab">Jabatan</label>
                                     <select class="form-control" name="jabatan_id" id="jabatan_id" disabled>
                                         <option value="">Pilih Jabatan</option>
@@ -335,6 +345,7 @@
 
                     // Isi data modal dengan data yang diperoleh
                     $('#editId').val(dt.id);
+                    $('#is_lowongan_disabilitas').val(dt.is_lowongan_disabilitas).change();
                     $('#kabkota_id').val(dt.kabkota_id).change();
                     $('#jabatan_id').val(dt.jabatan_id).change();
                     $('#sektor_id').val(dt.sektor_id).change();
