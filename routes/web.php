@@ -226,5 +226,7 @@ Route::get('ak1/cek/{unik_kode}', [Ak1Controller::class, 'viewAk1'])->name('ak1.
 
 
 Route::get('/rekap31', [RekapController::class, 'ak3titik1'])->name('rekap.ak31');
+Route::get('/rekap32', [RekapController::class, 'ak3titik2'])->name('rekap.ak32');
+Route::get('/rekap34', [RekapController::class, 'ak3titik4'])->name('rekap.ak34');
 
 
