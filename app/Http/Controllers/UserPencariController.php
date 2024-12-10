@@ -27,7 +27,7 @@ class UserPencariController extends Controller
             ]) // Ambil data admin dengan user terkait
                 ->select('id', 'user_id');
 
-    
+
                     // Tambahkan filter pencarian
         if (!empty($request->search['value'])) {
             $searchValue = $request->search['value'];
@@ -92,13 +92,13 @@ class UserPencariController extends Controller
                 'jurusan:id,nama',
                 'agama:id,name'
             ]);
-    
+
 
             //Filter for admin-kabkota role
             if (Auth::user()->roles[0]['name'] === 'admin-kabkota' || Auth::user()->roles[0]['name'] === 'admin-kabkota-officer') {
                 $pencaris->where('id_kota', $userAdmin->kabkota_id);
             }
-                
+
             // Tambahkan filter pencarian
             if (!empty($request->search['value'])) {
                 $searchValue = $request->search['value'];
@@ -125,13 +125,22 @@ class UserPencariController extends Controller
                     });
                 });
             }
-           
-    
+
+
             return DataTables::of($pencaris)
             ->addIndexColumn()
+            ->editColumn('disabilitas', function ($pencari) {
+                $disbb = '-';
+                if($pencari->disabilitas == 1){
+                    $disbb = 'Ya';
+                }else{
+                    $disbb = 'Tidak';
+                }
+                return $disbb;
+            })
             ->addColumn('options', function ($pencari) {
                 return '
-                    <button class="btn btn-primary btn-sm" 
+                    <button class="btn btn-primary btn-sm"
                         onclick="window.location.href=\'' . url('dapur/ak1/existing') . '?ktp=' . $pencari->ktp . '\'">
                         Edit
                     </button>
@@ -139,13 +148,13 @@ class UserPencariController extends Controller
             })
             ->rawColumns(['options']) // Pastikan menambahkan ini untuk kolom options
             ->make(true);
-        
+
 
         }
-    
+
         return view('backend.data.pencari.index');
     }
-    
+
     public function exportCsv(Request $request)
     {
         try {
@@ -155,7 +164,7 @@ class UserPencariController extends Controller
 
             // Get the search parameter if available
             $search = $request->get('search', '');
-    
+
             // Query the database based on the search parameter
             // $pencaris = UserPencari::with(['user', 'agama', 'provinsi', 'kabkota', 'kecamatan', 'pendidikan', 'jurusan'])
             $pencaris = UserPencari::with([
@@ -195,8 +204,8 @@ class UserPencariController extends Controller
             }
 
             $pencaris = $pencaris->get(); // Eksekusi query
-    
-    
+
+
             // Prepare data to export
             $csvData = [];
             foreach ($pencaris as $pencari) {
@@ -223,7 +232,7 @@ class UserPencariController extends Controller
                     $pencari->created_at ?? '',
                 ];
             }
-    
+
             // Get the current date and time in the desired format
             $dateTime = now()->format('Y-m-d_H-i-s');
 
@@ -232,11 +241,11 @@ class UserPencariController extends Controller
                 'Content-Type' => 'text/csv',
                 'Content-Disposition' => 'attachment; filename="data_pencari_' . $dateTime . '.csv"',
             ];
-    
+
             // CSV callback to write the data to the output
             $callback = function () use ($csvData) {
                 $handle = fopen('php://output', 'w');
-                
+
                 // Add CSV headers
                 fputcsv($handle, [
                     'Nama', 'Email', 'Whatsapp', 'NIK', 'Tempat Lahir', 'Tanggal Lahir',
@@ -244,23 +253,23 @@ class UserPencariController extends Controller
                     'Alamat', 'Kodepos', 'Pendidikan Terakhir', 'Jurusan', 'Tahun Lulus',
                     'Medsos', 'Status Kerja', 'Tanggal Daftar'
                 ]);
-    
+
                 // Add data rows
                 foreach ($csvData as $row) {
                     fputcsv($handle, $row, ';');  // Set separator to ':'
                     // fputcsv($handle, $row); // Set separator to ','
                 }
-    
+
                 fclose($handle);
             };
-    
+
             // Return the response with the stream
             return response()->stream($callback, 200, $headers);
         } catch (\Exception $e) {
             Log::error("Export CSV failed: " . $e->getMessage());
             return response()->json(['error' => 'An error occurred while generating the CSV file.'], 500);
         }
-    }    
+    }
 
     public function softdelete($id)
     {
@@ -275,7 +284,7 @@ class UserPencariController extends Controller
                 // Set is_deleted = 1 untuk soft delete user
                 $user->is_deleted = 1;
                 $user->save();  // Simpan perubahan
-                $user->delete(); 
+                $user->delete();
             }
 
             return response()->json(['success' => true, 'message' => 'Hapus data berhasil']);
@@ -302,7 +311,7 @@ class UserPencariController extends Controller
     }
 
 
-    
+
 
 }
 ?>

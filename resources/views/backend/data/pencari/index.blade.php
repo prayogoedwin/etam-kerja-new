@@ -47,7 +47,7 @@
 
                                     </div>
                                     <div class="col-sm-6 text-end">
-                                         <a href="javascript:void(0);" id="downloadCsv" class="btn btn-success">Unduh CSV</a>
+                                        <a href="javascript:void(0);" id="downloadCsv" class="btn btn-success">Unduh CSV</a>
                                     </div>
                                 </div>
                                 <div class="table-responsive">
@@ -73,6 +73,7 @@
                                                 <th>Jurusan</th>
                                                 <th>Tahun Lulus</th>
                                                 <th>Medsos</th>
+                                                <th>Disabilitas</th>
                                                 <th>Status Kerja</th>
                                                 <th>Tanggal Daftar</th>
                                                 <th>Options</th>
@@ -100,16 +101,14 @@
 
 @push('js')
     <script>
-      
-            $(document).ready(function() {
+        $(document).ready(function() {
             // Inisialisasi DataTable
             var table = $('#simpletable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: '{{ route('datapencari.index') }}',
                 autoWidth: false, // Menonaktifkan auto-width
-                columns: [
-                    {
+                columns: [{
                         data: 'DT_RowIndex',
                         orderable: false,
                         searchable: false
@@ -169,6 +168,9 @@
                         data: 'medsos'
                     },
                     {
+                        data: 'disabilitas'
+                    },
+                    {
                         data: 'is_diterima'
                     },
                     {
@@ -194,8 +196,5 @@
                 window.location.href = url;
             });
         });
-
-
     </script>
-
 @endpush
