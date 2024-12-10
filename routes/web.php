@@ -79,6 +79,12 @@ Route::get('/captcha', function () {
 
 Route::prefix('dapur')->middleware('auth')->group(function () {
 
+    Route::get('/rekap31', [RekapController::class, 'ak3titik1'])->name('rekap.ak31');
+    Route::get('/rekap32', [RekapController::class, 'ak3titik2'])->name('rekap.ak32');
+    Route::get('/rekap34', [RekapController::class, 'ak3titik4'])->name('rekap.ak34');
+    Route::get('/rekap37', [RekapController::class, 'ak3titik7'])->name('rekap.ak37');
+    Route::get('/rekap38', [RekapController::class, 'ak3titik8'])->name('rekap.ak38');
+
     //route untuk admin
     Route::get('/dashboard', [BackController::class, 'index'])->name('dashboard');
     Route::get('/sample', [BackController::class, 'sample'])->name('sample');
@@ -226,8 +232,6 @@ Route::get('/get-kecamatan', [BackController::class, 'getKecamatan']);
 Route::get('ak1/cek/{unik_kode}', [Ak1Controller::class, 'viewAk1'])->name('ak1.view');
 
 
-Route::get('/rekap31', [RekapController::class, 'ak3titik1'])->name('rekap.ak31');
-Route::get('/rekap32', [RekapController::class, 'ak3titik2'])->name('rekap.ak32');
-Route::get('/rekap34', [RekapController::class, 'ak3titik4'])->name('rekap.ak34');
+
 
 

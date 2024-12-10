@@ -92,6 +92,18 @@
                     class="pcoded-micon"><i class="fa fa-archive"></i></span><span
                     class="pcoded-mtext">Penempatan</span></a></li>
 
+                    <li class="nav-item pcoded-hasmenu">
+                        <a href="#" class="nav-link "><span class="pcoded-micon"><i
+                                    class="feather icon-users"></i></span><span class="pcoded-mtext">Rekap</span></a>
+                        <ul class="pcoded-submenu">
+                            <li><a href="{{ route('rekap.ak31') }}">IPK 3.1</a></li>
+                            <li><a href="{{ route('rekap.ak32') }}">IPK 3.2</a></li>
+                            <li><a href="{{ route('rekap.ak34') }}">IPK 3.4</a></li>
+                            <li><a href="{{ route('rekap.ak37') }}">IPK 3.7</a></li>
+                            <li><a href="{{ route('rekap.ak38') }}">IPK 3.8</a></li>
+                        </ul>
+                    </li>
+
         </div>
     </div>
 </nav>

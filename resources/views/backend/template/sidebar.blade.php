@@ -88,6 +88,8 @@
                         <li><a href="{{ route('rekap.ak31') }}">IPK 3.1</a></li>
                         <li><a href="{{ route('rekap.ak32') }}">IPK 3.2</a></li>
                         <li><a href="{{ route('rekap.ak34') }}">IPK 3.4</a></li>
+                        <li><a href="{{ route('rekap.ak37') }}">IPK 3.7</a></li>
+                        <li><a href="{{ route('rekap.ak38') }}">IPK 3.8</a></li>
                     </ul>
                 </li>
 

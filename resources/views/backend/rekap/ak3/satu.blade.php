@@ -37,7 +37,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="row align-items-center m-l-0">
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-12">
                                         <h5>IPK III/1: IKHTISAR STATISTIK IPK (DESEMBER 2024)</h5>
                                     </div>
                                 </div>
