@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.5.5-10.4.27-MariaDB)
 # Database: etam_kerja
-# Generation Time: 2024-11-29 14:07:26 +0000
+# Generation Time: 2024-12-18 04:56:43 +0000
 # ************************************************************
 
 
@@ -32,6 +32,17 @@ CREATE TABLE `cache` (
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+LOCK TABLES `cache` WRITE;
+/*!40000 ALTER TABLE `cache` DISABLE KEYS */;
+
+INSERT INTO `cache` (`key`, `value`, `expiration`)
+VALUES
+	('captcha_3e3a95d506db1b7f4a5a2487ba7d972b','a:4:{i:0;s:1:\"j\";i:1;s:1:\"m\";i:2;s:1:\"8\";i:3;s:1:\"4\";}',1733851192),
+	('captcha_76fb195e4eab3f30b0a503ce04dcc648','a:4:{i:0;s:1:\"e\";i:1;s:1:\"f\";i:2;s:1:\"t\";i:3;s:1:\"p\";}',1733851447),
+	('captcha_b99d57ca18f8fbb82ae7c7ea21db35f5','a:4:{i:0;s:1:\"m\";i:1;s:1:\"8\";i:2;s:1:\"c\";i:3;s:1:\"4\";}',1733882572);
+
+/*!40000 ALTER TABLE `cache` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table cache_locks
@@ -79,6 +90,46 @@ VALUES
 UNLOCK TABLES;
 
 
+# Dump of table etam_ak1
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `etam_ak1`;
+
+CREATE TABLE `etam_ak1` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id_user` bigint(20) unsigned NOT NULL,
+  `tanggal_cetak` date NOT NULL,
+  `berlaku_hingga` date NOT NULL,
+  `status_cetak` enum('0','1') NOT NULL DEFAULT '0',
+  `dicetak_oleh` bigint(20) unsigned DEFAULT NULL,
+  `qr` varchar(255) DEFAULT NULL,
+  `unik_kode` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `etam_ak1_id_user_foreign` (`id_user`),
+  KEY `etam_ak1_dicetak_oleh_foreign` (`dicetak_oleh`),
+  CONSTRAINT `etam_ak1_dicetak_oleh_foreign` FOREIGN KEY (`dicetak_oleh`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `etam_ak1_id_user_foreign` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+LOCK TABLES `etam_ak1` WRITE;
+/*!40000 ALTER TABLE `etam_ak1` DISABLE KEYS */;
+
+INSERT INTO `etam_ak1` (`id`, `id_user`, `tanggal_cetak`, `berlaku_hingga`, `status_cetak`, `dicetak_oleh`, `qr`, `unik_kode`, `created_at`, `updated_at`, `deleted_at`)
+VALUES
+	(1,11,'2024-12-01','2025-06-01','1',11,'qrcodes/efb58e4ad6613f548309d84213e3401b.svg','efb58e4ad6613f548309d84213e3401b','2024-12-01 06:22:09','2024-12-01 06:22:09',NULL),
+	(2,26,'2024-12-01','2025-06-01','0',26,'qrcodes/d51bdcaa9db5efa398120df2654c7184.svg','d51bdcaa9db5efa398120df2654c7184','2024-12-01 08:09:35','2024-12-01 08:09:35',NULL),
+	(3,39,'2024-12-03','2025-06-03','1',27,'qrcodes/027e0f56713c3f6458da6a1ac392794b.svg','027e0f56713c3f6458da6a1ac392794b','2024-12-03 14:34:34','2024-12-03 14:34:34',NULL),
+	(4,40,'2024-12-03','2025-06-03','1',27,'qrcodes/3b6f88918bee9d245ee45355dc7898bf.svg','3b6f88918bee9d245ee45355dc7898bf','2024-12-03 14:37:21','2024-12-03 14:37:21',NULL),
+	(5,38,'2024-12-03','2025-06-03','0',38,'qrcodes/1eca754b39417810f501380cf38531aa.svg','1eca754b39417810f501380cf38531aa','2024-12-03 15:30:25','2024-12-03 15:30:25',NULL),
+	(6,17,'2024-12-04','2025-06-04','0',17,'qrcodes/c00912ae6f738b88cf9182fa4df09945.svg','c00912ae6f738b88cf9182fa4df09945','2024-12-03 23:44:13','2024-12-03 23:44:13',NULL);
+
+/*!40000 ALTER TABLE `etam_ak1` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 # Dump of table etam_berita
 # ------------------------------------------------------------
 
@@ -92,7 +143,7 @@ CREATE TABLE `etam_berita` (
   `like_count` int(11) NOT NULL DEFAULT 0,
   `shared_count` int(11) NOT NULL DEFAULT 0,
   `status` tinyint(1) NOT NULL DEFAULT 1,
-  `phcreated_by` bigint(20) unsigned DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `updated_by` bigint(20) unsigned DEFAULT NULL,
   `deleted_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -101,6 +152,16 @@ CREATE TABLE `etam_berita` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+LOCK TABLES `etam_berita` WRITE;
+/*!40000 ALTER TABLE `etam_berita` DISABLE KEYS */;
+
+INSERT INTO `etam_berita` (`id`, `name`, `cover`, `description`, `like_count`, `shared_count`, `status`, `created_by`, `updated_by`, `deleted_by`, `created_at`, `updated_at`, `deleted_at`)
+VALUES
+	(2,'Porprov KORPRI Kaltim Jaring 97 Atlet Bulu Tangkis Terbaik','berita/fSkTDg19nZmvHVabiwBxfGiqr4v8md71riQwkAjH.jpg','<p><strong style=\"box-sizing: border-box; font-weight: 600; color: rgb(0, 0, 0); font-family: Rubik, sans-serif; font-size: 17px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; letter-spacing: normal; orphans: 2; text-align: justify; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">Paser<span>&nbsp;</span></strong><span style=\"color: rgb(0, 0, 0); font-family: Rubik, sans-serif; font-size: 17px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: justify; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;\">&acirc;&#128;&#147; Sebanyak 97 atlet siap bertanding dalam cabang olahraga (cabor) Bulu Tangkis pada Pekan Olahraga Provinsi Korps Pegawai Republik Indonesia (Porprov KORPRI) ke-III Provinsi Kalimantan Timur (Kaltim) Tahun 2024 selama 5 hari sejak 2 &acirc;&#128;&#147; 6 Desember di gedung Bulu Tangkis jalan RA Kartini Tanah Grogot, Senin (02/12/2024).</span></p>\n',0,0,1,5,5,NULL,'2024-12-03 07:24:02','2024-12-03 07:24:02',NULL),
+	(3,'Deklarasikan Stop Kekerasan, Kaltim Komitmen Lindungi Perempuan dan Anak','berita/Y54FqJMWy3TUyFhF0vZVP731Qy5Kl9PH7xB6tscL.jpg','<p class=\"p1\" style=\"box-sizing: border-box; margin-bottom: 25px; margin-top: 0px; color: rgb(0, 0, 0); font-family: Rubik, sans-serif; font-size: 17px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: justify; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\"><span class=\"s1\" style=\"box-sizing: border-box;\">Samarinda - Pemerintah Provinsi Kalimantan Timur (Pemprov Kaltim) menggelar Deklarasi Stop Kekerasan Terhadap Perempuan dan Anak sebagai langkah mengajak masyarakat untuk aktif mencegah kekerasan terhadap perempuan dan anak.</span><p class=\"p2\" style=\"box-sizing: border-box; margin-bottom: 25px; margin-top: 0px; color: rgb(0, 0, 0); font-family: Rubik, sans-serif; font-size: 17px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: justify; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">Kegiatan deklarasi dirangkai dengan Seminar Ketahanan Keluarga yang di gelar di Odah Etam kantor Gubernur Kaltim, Selasa (3/12/2024).</p><p class=\"p2\" style=\"box-sizing: border-box; margin-bottom: 25px; margin-top: 0px; color: rgb(0, 0, 0); font-family: Rubik, sans-serif; font-size: 17px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: justify; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; background-color: rgb(255, 255, 255); text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial;\">Penjabat (Pj) Gubernur Kaltim, Akmal Malik, menegaskan bahwa langkah ini merupakan upaya kolaboratif yang diinisiasi oleh Dinas Pemberdayaan Perempuan dan Perlindungan Anak (DP3A) Kaltim untuk merespons meningkatnya angka kekerasan terhadap perempuan di daerah tersebut dalam beberapa tahun terakhir.</p><p></p></p>\n',0,0,1,5,5,NULL,'2024-12-03 07:26:04','2024-12-03 07:26:04',NULL);
+
+/*!40000 ALTER TABLE `etam_berita` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table etam_bkk_kategori
@@ -80650,7 +80711,8 @@ LOCK TABLES `etam_faqs` WRITE;
 
 INSERT INTO `etam_faqs` (`id`, `name`, `description`, `created_at`, `updated_at`, `created_by`, `updated_by`, `deleted_by`, `is_deleted`, `deleted_at`)
 VALUES
-	(1,'Apakah Lowongan Yang Tersedia Valid dan Sudah Melalui Proses Verifikasi Oleh Pemerintah ?','Ya, semua lowongan yang tampil sudah di kurasi oleh admin masing-masing kabupaten kota pengampu berdasarkan jenis lowongan, konten lowongan dan perusahaan yang memberikan sudah di verifikasi oleh admin. Proses verifikasi oleh pemerintah lowongan inilah yang membedakan ETAM KERJA dengan platform lowongan kerja swasta.','2024-11-10 15:21:46','2024-11-10 15:21:46',1,1,NULL,0,NULL);
+	(1,'Apakah Lowongan Yang Tersedia Valid dan Sudah Melalui Proses Verifikasi Oleh Pemerintah ?','Ya, semua lowongan yang tampil sudah di kurasi oleh admin masing-masing kabupaten kota pengampu berdasarkan jenis lowongan, konten lowongan dan perusahaan yang memberikan sudah di verifikasi oleh admin. Proses verifikasi oleh pemerintah lowongan inilah yang membedakan ETAM KERJA dengan platform lowongan kerja swasta.','2024-11-10 15:21:46','2024-11-10 15:21:46',1,1,NULL,0,NULL),
+	(2,'Apakah platform ETAM KERJA berbayar?','Tidak, platform ETAM KERJA gratis tanpa biaya sepeserpun','2024-12-03 07:29:32','2024-12-03 07:29:32',5,5,NULL,0,NULL);
 
 /*!40000 ALTER TABLE `etam_faqs` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -80675,6 +80737,16 @@ CREATE TABLE `etam_galeri` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+LOCK TABLES `etam_galeri` WRITE;
+/*!40000 ALTER TABLE `etam_galeri` DISABLE KEYS */;
+
+INSERT INTO `etam_galeri` (`id`, `name`, `path_file`, `status`, `created_by`, `updated_by`, `deleted_by`, `created_at`, `updated_at`, `deleted_at`)
+VALUES
+	(1,'Tarian Khas Kalimantan Timur','galeri/nS9AHjHiYyBEiuZnethcXbecBFh2AnAcIOoVmL2h.png',1,5,5,NULL,'2024-12-03 09:42:56','2024-12-03 09:42:56',NULL),
+	(2,'Wisata Kalimantan Timur','galeri/oj4ntFsE9Q0O0Tt3DetJJTqcsw4flk3FiA8lIPtJ.png',1,5,5,NULL,'2024-12-03 09:45:39','2024-12-03 09:45:39',NULL);
+
+/*!40000 ALTER TABLE `etam_galeri` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table etam_infografis
@@ -80696,6 +80768,17 @@ CREATE TABLE `etam_infografis` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+LOCK TABLES `etam_infografis` WRITE;
+/*!40000 ALTER TABLE `etam_infografis` DISABLE KEYS */;
+
+INSERT INTO `etam_infografis` (`id`, `name`, `path_file`, `status`, `created_by`, `updated_by`, `deleted_by`, `created_at`, `updated_at`, `deleted_at`)
+VALUES
+	(1,'Perkembangan Ekspor dan Impor','infografis/ZBNSBVysoBhRlH9SfbdT9aeNeGx1Vy0q6GpPRvqg.png',1,5,5,NULL,'2024-12-03 08:24:57','2024-12-03 08:24:57',NULL),
+	(2,'Perkembangan Nilai Tukar Petani','infografis/HYXXRg0ypAPS7qIMPQt7juKSOYnfu63ES1DZlWCl.png',1,5,5,NULL,'2024-12-03 08:26:17','2024-12-03 08:26:17',NULL),
+	(3,'Pertumbuhan Ekonomi Kalimantan Timur','infografis/Db5HAg7ntNIHUQfs21SvgzacJMIVi3L4nHrNblE0.jpg',1,5,5,NULL,'2024-12-03 08:26:53','2024-12-03 08:26:53',NULL);
+
+/*!40000 ALTER TABLE `etam_infografis` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table etam_jabatan
@@ -81195,6 +81278,37 @@ VALUES
 	(9678,'Pemasaran / Marketing',NULL,NULL,NULL);
 
 /*!40000 ALTER TABLE `etam_jabatan` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
+# Dump of table etam_jenis_disabilitas
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `etam_jenis_disabilitas`;
+
+CREATE TABLE `etam_jenis_disabilitas` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `nama_disabilitas` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+LOCK TABLES `etam_jenis_disabilitas` WRITE;
+/*!40000 ALTER TABLE `etam_jenis_disabilitas` DISABLE KEYS */;
+
+INSERT INTO `etam_jenis_disabilitas` (`id`, `nama_disabilitas`, `created_at`, `updated_at`, `deleted_at`)
+VALUES
+	(1,'Fisik',NULL,NULL,NULL),
+	(2,'Netra',NULL,NULL,NULL),
+	(3,'Rungu',NULL,NULL,NULL),
+	(4,'Wicara',NULL,NULL,NULL),
+	(5,'Rungu & Wicara',NULL,NULL,NULL),
+	(6,'Intelektual',NULL,NULL,NULL),
+	(7,'Mental',NULL,NULL,NULL);
+
+/*!40000 ALTER TABLE `etam_jenis_disabilitas` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
@@ -83865,16 +83979,16 @@ VALUES
 	('6311','63','KABUPATEN BALANGAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
 	('6371','63','KOTA BANJARMASIN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
 	('6372','63','KOTA BANJAR BARU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
-	('6401','64','KABUPATEN PASER','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
-	('6402','64','KABUPATEN KUTAI BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
-	('6403','64','KABUPATEN KUTAI KARTANEGARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
-	('6404','64','KABUPATEN KUTAI TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
-	('6405','64','KABUPATEN BERAU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
-	('6409','64','KABUPATEN PENAJAM PASER UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
-	('6411','64','KABUPATEN MAHAKAM HULU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
-	('6471','64','KOTA BALIKPAPAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
-	('6472','64','KOTA SAMARINDA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
-	('6474','64','KOTA BONTANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6401','64','KABUPATEN PASER','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Paser','Lorem ipsum dolor sit amet, consectetur adipiscing elit','021 2345657','kabupaten@gmail.com','https://kaltimprov.go.id/','assets/etam_fe/images/logo/kabkota/kabupaten-paser.png',NULL,NULL),
+	('6402','64','KABUPATEN KUTAI BARAT','Dinas Tenaga Kerja Dan Transmigrasi Kabupaten Kutai Barat','Lorem ipsum dolor sit amet, consectetur adipiscing elit','021 2345657','kabupaten@gmail.com','https://kaltimprov.go.id/','assets/etam_fe/images/logo/kabkota/kabupaten-kutai-barat.png',NULL,NULL),
+	('6403','64','KABUPATEN KUTAI KARTANEGARA','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Kutai Kartanegara','Lorem ipsum dolor sit amet, consectetur adipiscing elit','021 2345657','kabupaten@gmail.com','https://kaltimprov.go.id/','assets/etam_fe/images/logo/kabkota/kabupaten-kutai-kartanegara.png',NULL,NULL),
+	('6404','64','KABUPATEN KUTAI TIMUR','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Kutai Timur','Lorem ipsum dolor sit amet, consectetur adipiscing elit','021 2345657','kabupaten@gmail.com','https://kaltimprov.go.id/','assets/etam_fe/images/logo/kabkota/kabupaten-kutai-timur.png',NULL,NULL),
+	('6405','64','KABUPATEN BERAU','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Berau','Lorem ipsum dolor sit amet, consectetur adipiscing elit','021 2345657','kabupaten@gmail.com','https://kaltimprov.go.id/','assets/etam_fe/images/logo/kabkota/kabupaten-berau.png',NULL,NULL),
+	('6409','64','KABUPATEN PENAJAM PASER UTARA','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Penajam Paser Utara','Lorem ipsum dolor sit amet, consectetur adipiscing elit','021 2345657','kabupaten@gmail.com','https://kaltimprov.go.id/','assets/etam_fe/images/logo/kabkota/kabupaten-penajam-paser-utara.jpeg',NULL,NULL),
+	('6411','64','KABUPATEN MAHAKAM HULU','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Mahakam Hulu','Lorem ipsum dolor sit amet, consectetur adipiscing elit','021 2345657','kabupaten@gmail.com','https://kaltimprov.go.id/','assets/etam_fe/images/logo/kabkota/kabupaten-mahakam-ulu.png',NULL,NULL),
+	('6471','64','KOTA BALIKPAPAN','Dinas Tenaga Kerja dan Transmigrasi Kota Balikpapan','Lorem ipsum dolor sit amet, consectetur adipiscing elit','021 2345657','kabupaten@gmail.com','https://kaltimprov.go.id/','assets/etam_fe/images/logo/kabkota/kota-balikpapan.png',NULL,NULL),
+	('6472','64','KOTA SAMARINDA','Dinas Tenaga Kerja dan Transmigrasi Kota Samarainda','Lorem ipsum dolor sit amet, consectetur adipiscing elit','021 2345657','kabupaten@gmail.com','https://kaltimprov.go.id/','assets/etam_fe/images/logo/kabkota/kota-samarinda.png',NULL,NULL),
+	('6474','64','KOTA BONTANG','Dinas Tenaga Kerja dan Transmigrasi Kota Bontang','Lorem ipsum dolor sit amet, consectetur adipiscing elit','021 2345657','kabupaten@gmail.com','https://kaltimprov.go.id/','assets/etam_fe/images/logo/kabkota/kota-bontang.png',NULL,NULL),
 	('6501','65','KABUPATEN MALINAU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
 	('6502','65','KABUPATEN BULUNGAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
 	('6503','65','KABUPATEN TANA TIDUNG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
@@ -84029,6 +84143,550 @@ VALUES
 UNLOCK TABLES;
 
 
+# Dump of table etam_kabkotaOLD
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `etam_kabkotaOLD`;
+
+CREATE TABLE `etam_kabkotaOLD` (
+  `id` char(4) NOT NULL,
+  `province_id` char(2) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `kantor` varchar(255) NOT NULL,
+  `alamat` varchar(255) NOT NULL,
+  `telp` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `web` varchar(255) NOT NULL,
+  `icon` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+LOCK TABLES `etam_kabkotaOLD` WRITE;
+/*!40000 ALTER TABLE `etam_kabkotaOLD` DISABLE KEYS */;
+
+INSERT INTO `etam_kabkotaOLD` (`id`, `province_id`, `name`, `kantor`, `alamat`, `telp`, `email`, `web`, `icon`, `created_at`, `updated_at`)
+VALUES
+	('1101','11','KABUPATEN SIMEULUE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1102','11','KABUPATEN ACEH SINGKIL','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1103','11','KABUPATEN ACEH SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1104','11','KABUPATEN ACEH TENGGARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1105','11','KABUPATEN ACEH TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1106','11','KABUPATEN ACEH TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1107','11','KABUPATEN ACEH BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1108','11','KABUPATEN ACEH BESAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1109','11','KABUPATEN PIDIE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1110','11','KABUPATEN BIREUEN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1111','11','KABUPATEN ACEH UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1112','11','KABUPATEN ACEH BARAT DAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1113','11','KABUPATEN GAYO LUES','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1114','11','KABUPATEN ACEH TAMIANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1115','11','KABUPATEN NAGAN RAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1116','11','KABUPATEN ACEH JAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1117','11','KABUPATEN BENER MERIAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1118','11','KABUPATEN PIDIE JAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1171','11','KOTA BANDA ACEH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1172','11','KOTA SABANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1173','11','KOTA LANGSA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1174','11','KOTA LHOKSEUMAWE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1175','11','KOTA SUBULUSSALAM','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1201','12','KABUPATEN NIAS','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1202','12','KABUPATEN MANDAILING NATAL','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1203','12','KABUPATEN TAPANULI SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1204','12','KABUPATEN TAPANULI TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1205','12','KABUPATEN TAPANULI UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1206','12','KABUPATEN TOBA SAMOSIR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1207','12','KABUPATEN LABUHAN BATU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1208','12','KABUPATEN ASAHAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1209','12','KABUPATEN SIMALUNGUN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1210','12','KABUPATEN DAIRI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1211','12','KABUPATEN KARO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1212','12','KABUPATEN DELI SERDANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1213','12','KABUPATEN LANGKAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1214','12','KABUPATEN NIAS SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1215','12','KABUPATEN HUMBANG HASUNDUTAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1216','12','KABUPATEN PAKPAK BHARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1217','12','KABUPATEN SAMOSIR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1218','12','KABUPATEN SERDANG BEDAGAI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1219','12','KABUPATEN BATU BARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1220','12','KABUPATEN PADANG LAWAS UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1221','12','KABUPATEN PADANG LAWAS','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1222','12','KABUPATEN LABUHAN BATU SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1223','12','KABUPATEN LABUHAN BATU UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1224','12','KABUPATEN NIAS UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1225','12','KABUPATEN NIAS BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1271','12','KOTA SIBOLGA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1272','12','KOTA TANJUNG BALAI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1273','12','KOTA PEMATANG SIANTAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1274','12','KOTA TEBING TINGGI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1275','12','KOTA MEDAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1276','12','KOTA BINJAI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1277','12','KOTA PADANGSIDIMPUAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1278','12','KOTA GUNUNGSITOLI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1301','13','KABUPATEN KEPULAUAN MENTAWAI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1302','13','KABUPATEN PESISIR SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1303','13','KABUPATEN SOLOK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1304','13','KABUPATEN SIJUNJUNG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1305','13','KABUPATEN TANAH DATAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1306','13','KABUPATEN PADANG PARIAMAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1307','13','KABUPATEN AGAM','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1308','13','KABUPATEN LIMA PULUH KOTA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1309','13','KABUPATEN PASAMAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1310','13','KABUPATEN SOLOK SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1311','13','KABUPATEN DHARMASRAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1312','13','KABUPATEN PASAMAN BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1371','13','KOTA PADANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1372','13','KOTA SOLOK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1373','13','KOTA SAWAH LUNTO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1374','13','KOTA PADANG PANJANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1375','13','KOTA BUKITTINGGI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1376','13','KOTA PAYAKUMBUH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1377','13','KOTA PARIAMAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1401','14','KABUPATEN KUANTAN SINGINGI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1402','14','KABUPATEN INDRAGIRI HULU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1403','14','KABUPATEN INDRAGIRI HILIR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1404','14','KABUPATEN PELALAWAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1405','14','KABUPATEN S I A K','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1406','14','KABUPATEN KAMPAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1407','14','KABUPATEN ROKAN HULU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1408','14','KABUPATEN BENGKALIS','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1409','14','KABUPATEN ROKAN HILIR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1410','14','KABUPATEN KEPULAUAN MERANTI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1471','14','KOTA PEKANBARU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1473','14','KOTA D U M A I','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1501','15','KABUPATEN KERINCI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1502','15','KABUPATEN MERANGIN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1503','15','KABUPATEN SAROLANGUN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1504','15','KABUPATEN BATANG HARI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1505','15','KABUPATEN MUARO JAMBI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1506','15','KABUPATEN TANJUNG JABUNG TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1507','15','KABUPATEN TANJUNG JABUNG BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1508','15','KABUPATEN TEBO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1509','15','KABUPATEN BUNGO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1571','15','KOTA JAMBI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1572','15','KOTA SUNGAI PENUH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1601','16','KABUPATEN OGAN KOMERING ULU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1602','16','KABUPATEN OGAN KOMERING ILIR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1603','16','KABUPATEN MUARA ENIM','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1604','16','KABUPATEN LAHAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1605','16','KABUPATEN MUSI RAWAS','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1606','16','KABUPATEN MUSI BANYUASIN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1607','16','KABUPATEN BANYU ASIN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1608','16','KABUPATEN OGAN KOMERING ULU SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1609','16','KABUPATEN OGAN KOMERING ULU TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1610','16','KABUPATEN OGAN ILIR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1611','16','KABUPATEN EMPAT LAWANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1612','16','KABUPATEN PENUKAL ABAB LEMATANG ILIR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1613','16','KABUPATEN MUSI RAWAS UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1671','16','KOTA PALEMBANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1672','16','KOTA PRABUMULIH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1673','16','KOTA PAGAR ALAM','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1674','16','KOTA LUBUKLINGGAU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1701','17','KABUPATEN BENGKULU SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1702','17','KABUPATEN REJANG LEBONG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1703','17','KABUPATEN BENGKULU UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1704','17','KABUPATEN KAUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1705','17','KABUPATEN SELUMA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1706','17','KABUPATEN MUKOMUKO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1707','17','KABUPATEN LEBONG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1708','17','KABUPATEN KEPAHIANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1709','17','KABUPATEN BENGKULU TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1771','17','KOTA BENGKULU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1801','18','KABUPATEN LAMPUNG BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1802','18','KABUPATEN TANGGAMUS','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1803','18','KABUPATEN LAMPUNG SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1804','18','KABUPATEN LAMPUNG TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1805','18','KABUPATEN LAMPUNG TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1806','18','KABUPATEN LAMPUNG UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1807','18','KABUPATEN WAY KANAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1808','18','KABUPATEN TULANGBAWANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1809','18','KABUPATEN PESAWARAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1810','18','KABUPATEN PRINGSEWU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1811','18','KABUPATEN MESUJI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1812','18','KABUPATEN TULANG BAWANG BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1813','18','KABUPATEN PESISIR BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1871','18','KOTA BANDAR LAMPUNG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1872','18','KOTA METRO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1901','19','KABUPATEN BANGKA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1902','19','KABUPATEN BELITUNG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1903','19','KABUPATEN BANGKA BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1904','19','KABUPATEN BANGKA TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1905','19','KABUPATEN BANGKA SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1906','19','KABUPATEN BELITUNG TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('1971','19','KOTA PANGKAL PINANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('2101','21','KABUPATEN KARIMUN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('2102','21','KABUPATEN BINTAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('2103','21','KABUPATEN NATUNA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('2104','21','KABUPATEN LINGGA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('2105','21','KABUPATEN KEPULAUAN ANAMBAS','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('2171','21','KOTA B A T A M','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('2172','21','KOTA TANJUNG PINANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3101','31','KABUPATEN KEPULAUAN SERIBU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3171','31','KOTA JAKARTA SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3172','31','KOTA JAKARTA TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3173','31','KOTA JAKARTA PUSAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3174','31','KOTA JAKARTA BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3175','31','KOTA JAKARTA UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3201','32','KABUPATEN BOGOR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3202','32','KABUPATEN SUKABUMI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3203','32','KABUPATEN CIANJUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3204','32','KABUPATEN BANDUNG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3205','32','KABUPATEN GARUT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3206','32','KABUPATEN TASIKMALAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3207','32','KABUPATEN CIAMIS','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3208','32','KABUPATEN KUNINGAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3209','32','KABUPATEN CIREBON','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3210','32','KABUPATEN MAJALENGKA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3211','32','KABUPATEN SUMEDANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3212','32','KABUPATEN INDRAMAYU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3213','32','KABUPATEN SUBANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3214','32','KABUPATEN PURWAKARTA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3215','32','KABUPATEN KARAWANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3216','32','KABUPATEN BEKASI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3217','32','KABUPATEN BANDUNG BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3218','32','KABUPATEN PANGANDARAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3271','32','KOTA BOGOR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3272','32','KOTA SUKABUMI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3273','32','KOTA BANDUNG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3274','32','KOTA CIREBON','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3275','32','KOTA BEKASI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3276','32','KOTA DEPOK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3277','32','KOTA CIMAHI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3278','32','KOTA TASIKMALAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3279','32','KOTA BANJAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3301','33','KABUPATEN CILACAP','Dinas Ketenagakerjaan dan Perindustrian','JALAN PERWIRA NO. 30 CILACAP','(0282) 534005 - 533778','disnakerincilacap@gmail.com','disnakerin.cilacapkab.go.id','assets/images/kontingen/Kabupaten_Cilacap.png',NULL,NULL),
+	('3302','33','KABUPATEN BANYUMAS','Dinas Tenaga Kerja Koperasi dan UKM','Jalan Mochamad Besar No. 2 Pabuaran , Purwokerto ','(0281) 7772505','dinnakerkopukm.banyumas@gmail.com','https://dinnakerkopukm.banyumaskab.go.id/','assets/images/kontingen/Kabupaten_Banyumas.png',NULL,NULL),
+	('3303','33','KABUPATEN PURBALINGGA','Dinas Tenaga Kerja','JL. Letjend. S. Parman No. 17, Purbalingga','0281 891187','dinnaker@purbalinggakab.go.id','dinnaker.purbalinggakab.go.id','assets/images/kontingen/Kabupaten_Purbalingga.png',NULL,NULL),
+	('3304','33','KABUPATEN BANJARNEGARA','Dinas Tenaga Kerja, Penanaman Modal Dan Pelayanan Terpadu Satu pintu','JL. LETJEND SUPRAPTO NO. 234 A , SEMAMPIR, BANJARNEGARA, 53418','(0286) 591012, 591189 ','disnakerbanjarnegara@yahoo.co.id dan perijinan_terpadu@banjarnegarakab.go.id','www.disnakerpmptsp.banjarnegarakab.go.id','assets/images/kontingen/Kabupaten_Banjarnegara.png',NULL,NULL),
+	('3305','33','KABUPATEN KEBUMEN','Dinas Tenaga Kerja','Jalan. Cendrawasih No.28','(0287) 3883219','pentakebumenkab@gmail.com','bursakerja.kebumenkab.go.id','assets/images/kontingen/Kabupaten_Kebumen.png',NULL,NULL),
+	('3306','33','KABUPATEN PURWOREJO','DINAS PERINDUSTRIAN, TRANSMIGRASI DAN TENAGA KERJA','JL. IR. H. JUANDA, PURWOREJO','(0275) 321070','dinperintransnaker@purworejokab.go.id','dinperintransnaker.purworejokab.go.id','assets/images/kontingen/Kabupaten_Purworejo.png',NULL,NULL),
+	('3307','33','KABUPATEN WONOSOBO','Dinas Tenaga Kerja Perindustran dan Transmigrasi Kabupaten Wonosobo','JL. GATOT SUBROTO KM 5 WONOSOBO 56317','(0286) 322 138','disnaker.wonosobo@gmail.com','disnakertrans.wonosobokab.go.id','assets/images/kontingen/Kabupaten_Wonosobo.png',NULL,NULL),
+	('3308','33','KABUPATEN MAGELANG','Dinas Perindustrian dan Tenaga Kerja','Jl. Kartini No. 1 B, Magelang','0293 362423','pentatrans.kabmgl@gmail.com','www.magelangkab.go.id','assets/images/kontingen/Kabupaten_Magelang.png',NULL,NULL),
+	('3309','33','KABUPATEN BOYOLALI','Dinas Koperasi dan Tenaga Kerja','Jl. Nusantara No. Tlp (0276) 321321 Fax 322322 Boyolali (573210) Provinsi Jawa Tengah','(0276) 321321 Fax 322322','diskopnaker.boyolali.go.id','diskopnaker.boyolali.go.id','assets/images/kontingen/Kabupaten_Boyolali.png',NULL,NULL),
+	('3310','33','KABUPATEN KLATEN','Dinas Perindustrian dan Tenaga Kerja','Gedung Pemda II Lt. 1, Jln. Pemuda No. 294, Klaten  ',' Telp : (0272) 321046','disperinaker@klaten.go.id','disperinaker@klaten.go.id','assets/images/kontingen/Kabupaten_Klaten.png',NULL,NULL),
+	('3311','33','KABUPATEN SUKOHARJO','Dinas Perindustrian dan Tenaga Kerja','GEDUNG MENARA WIJAYA LANTAI 4, JALAN JENDRAL SUDIRMAN NOMOR 199 SUKOHARJO,  KODE POS 57521','(0271) 593068, 593083 Fax. (0271) 593335','dispernaker_sukoharjokab@gmail.com','dispernaker.sukoharjokab.go.id','assets/images/kontingen/Kabupaten_Sukoharjo.png',NULL,NULL),
+	('3312','33','KABUPATEN WONOGIRI','Dinas Tenaga Kerja','Jalan Pemuda I Nomor 5 Wonogiri 57612','(0273)321029','nakerwonogirikab@gmail.com','disnakerwonogiri.id','assets/images/kontingen/Kabupaten_Wonogiri.png',NULL,NULL),
+	('3313','33','KABUPATEN KARANGANYAR','DINAS PERDAGANGAN, PERINDUSTRIAN DAN TENAGA KERJA','Jl. K.H. Samanhudi, Komplek Perkantoran Cangakan Karanganyar','( 0271 ) 495024','disdagperinaker@karanganyarkab.go.id','www.disdagperinaker.karanganyarkab.go.id','assets/images/kontingen/Kabupaten_Karanganyar.png',NULL,NULL),
+	('3314','33','KABUPATEN SRAGEN','DINAS TENAGA KERJA','JL. RA. KARTINI NO. 160, PLUMBUNGAN, KARANGMALANG, KAB. SRAGEN','(0271) 890645','disnakertrans@sragenkab.go.id','www.sragen.go.id','assets/images/kontingen/Kabupaten_Sragen.png',NULL,NULL),
+	('3315','33','KABUPATEN GROBOGAN','DINAS TENAGA KERJA DAN TRANSMIGRASI','Jl. Dr. Sutomo No. 8 Purwodadi - 58111','0292-421967','disnakertrans.grobogan@gmail.com','https://disnakertrans.grobogan.go.id/','assets/images/kontingen/Kabupaten_Grobogan.png',NULL,NULL),
+	('3316','33','KABUPATEN BLORA','Dinas Perindustrian dan Tenaga Kerja','Jln. GOR. I No. 1 Komplek Perkantoran ','( 0296 )531984, 532152','dinperinnakerblora1@gmail.com',' dinperinaker.blorakab.go.id','assets/images/kontingen/Kabupaten_Blora.png',NULL,NULL),
+	('3317','33','KABUPATEN REMBANG','Dinas Perindustrian dan Tenaga Kerja Kabupaten Rembang','Jl. Pemuda Km. 3 Rembang - Jawa Tengah - 59219',' (0295) 691349',' dpmptspnaker@rembangkab.go.id','https://dpmptspnaker.rembangkab.go.id/','assets/images/kontingen/Kabupaten_Rembang.png',NULL,NULL),
+	('3318','33','KABUPATEN PATI','DINAS TENAGA KERJA','JL. PANGLIMA SUDIRMAN NO. 70 PATI, 59114','(0295) 381471','disnakerpati@gmail.com','disnaker.patikab.go.id','assets/images/kontingen/Kabupaten_Pati.png',NULL,NULL),
+	('3319','33','KABUPATEN KUDUS','Dinas Tenaga Kerja, perindustrian, koperasi, usaha kecil dan menengah','Jl. Conge No 99 Ngembalrejo Bae Kudus','0291-438691','bkokudus@yahoo.co.id','-','assets/images/kontingen/Kabupaten_Kudus.png',NULL,NULL),
+	('3320','33','KABUPATEN JEPARA','Dinas Koperasi UKM Tenaga Kerja dan Transmigrasi ','NULL','NULL','NULL','NULL','assets/images/kontingen/Kabupaten_Jepara.png',NULL,NULL),
+	('3321','33','KABUPATEN DEMAK','Dinas Tenaga Kerja dan Perindustrian','Jalan Bhayangkara Baru no 105 Demak','0291-681142','bko_demak@yahoo.com','http://dinnakerind.demakkab.go.id','assets/images/kontingen/Kabupaten_Demak.png',NULL,NULL),
+	('3322','33','KABUPATEN SEMARANG','DINAS TENAGA KERJA ','JL. PEMUDA NO. 7 UNGARAN 50511','(024) 6921160','penta.kab.semarang@gmail.com','https://disnaker.semarangkab.go.id','assets/images/kontingen/Kabupaten_Semarang.png',NULL,NULL),
+	('3323','33','KABUPATEN TEMANGGUNG','dinas perindustrian dan tenaga kerja<br>','Jalan Gajah Mada no 76 Temanggung','0293 491949','layanannaker.temanggung@gmail.com','www.dinperinaker.temanggungkab.go.id','assets/images/kontingen/Kabupaten_Temanggung.png',NULL,NULL),
+	('3324','33','KABUPATEN KENDAL','DINAS PERINDUSTRIAN DAN TENAGA KERJA','Jl. Soekarno Hatta No.62 Kendal','0294 381275','disnaker@kendalkab.go.id','www.disnaker.kendalkab.go.id','assets/images/kontingen/Kabupaten_Kendal.png',NULL,NULL),
+	('3325','33','KABUPATEN BATANG','Dinas Ketenagakerjaan','Jl. Dr. Soetomo  No. 14 ','(0285) 39070767  ','disnaker@batangkab.go.id','disnaker.batangkab.go.id','assets/images/kontingen/Kabupaten_Batang.png',NULL,NULL),
+	('3326','33','KABUPATEN PEKALONGAN','Dinas Koperasi, Usaha Kecil dan Menengah dan Tenaga Kerja','Jl Pahlawan Km 5 Kajen, Kajen Kab. Pekalongan','(0285) 381992','dinkopukmdannaker@pekalongankab.com','http://dinkopukmdannaker.pekalongankab.go.id','assets/images/kontingen/Kabupaten_Pekalongan.png',NULL,NULL),
+	('3327','33','KABUPATEN PEMALANG','Dinas Tenaga Kerja','Jalan Gatot Subroto No.35 Pemalang','0284-321278, 322104','disnakerpemalang@gmail.com','disnaker.pemalangkab.go.id','assets/images/kontingen/Kabupaten_Pemalang.png',NULL,NULL),
+	('3328','33','KABUPATEN TEGAL','Dinas Perindustrian Transmigrasi dan Tenaga Kerja','JL. Dr. SOETOMO NO 12 SLAWI','(0283)491784','naker.slawi@gmail.com','www.tegalkab.go.id','assets/images/kontingen/Kabupaten_Tegal.png',NULL,NULL),
+	('3329','33','KABUPATEN BREBES','Dinas Perindustrian dan Tenaga Kerja','Jl. MT Haryono No.68 Brebes','0283673023','dinpernakerbrebes@gmail.com','dinperinaker.brebeskab.go.id','assets/images/kontingen/Kabupaten_Brebes.png',NULL,NULL),
+	('3371','33','KOTA MAGELANG','DINAS TENAGA KERJA','Jl. Jend  Ahmad Yani  No. 319 Magelang','(0293) 362860, 362583','disnakerkotamagelang@gmail.com','www.disnaker.magelangkota.go.id','assets/images/kontingen/Kota_Magelang.png',NULL,NULL),
+	('3372','33','KOTA SURAKARTA','Dinas Tenaga Kerja','Jl. Brigjend. Slamet Riyadi No. 306 Surakarta','(0271) 714800 - 719825, Fax. (0271) 719825','disnakersurakarta@gmail.com, disnaker@surakarta.go.id','www.disnaker.surakarta.go.id','assets/images/kontingen/Kota_Surakarta.png',NULL,NULL),
+	('3373','33','KOTA SALATIGA','Dinas Perindustrian dan Tenaga Kerja','Jl. Ki Penjawi No. 12 Salatiga','(0298) 313492','disperinnaker@salatiga.go.id','https://disperinnaker.salatiga.go.id','assets/images/kontingen/Kota_Salatiga.png',NULL,NULL),
+	('3374','33','KOTA SEMARANG','DINAS TENAGA KERJA','Jl. Ki Mangunsarkoro No.21, Karangkidul, Kec. Semarang Tengah, Kota Semarang, Jawa Tengah 50241','(024) 8440335','nakersmg@gmail.com','http://disnaker.semarangkota.go.id/','assets/images/kontingen/Kota_Semarang.png',NULL,NULL),
+	('3375','33','KOTA PEKALONGAN','Dinas Perindustrian  dan Tenaga Kerja ','Jl. Majapahit No 14, Podosugih, Pekalongan Barat','(0285) 421731','pentalatas.kotapekalongan@gmail.com','dinperinaker.pekalongankota.go.id','assets/images/kontingen/Kota_Pekalongan.png',NULL,NULL),
+	('3376','33','KOTA TEGAL','Dinas Tenaga Kerja dan Perindustrian','Jl. Hang Tuah No. 25 Tegal','(0283)351729','disnakerin.tegalkota@gmail.com','disnakerin.tegalkota.go.id','assets/images/kontingen/Kota_Tegal.png',NULL,NULL),
+	('3401','34','KABUPATEN KULON PROGO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3402','34','KABUPATEN BANTUL','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3403','34','KABUPATEN GUNUNG KIDUL','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3404','34','KABUPATEN SLEMAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3471','34','KOTA YOGYAKARTA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3501','35','KABUPATEN PACITAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3502','35','KABUPATEN PONOROGO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3503','35','KABUPATEN TRENGGALEK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3504','35','KABUPATEN TULUNGAGUNG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3505','35','KABUPATEN BLITAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3506','35','KABUPATEN KEDIRI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3507','35','KABUPATEN MALANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3508','35','KABUPATEN LUMAJANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3509','35','KABUPATEN JEMBER','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3510','35','KABUPATEN BANYUWANGI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3511','35','KABUPATEN BONDOWOSO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3512','35','KABUPATEN SITUBONDO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3513','35','KABUPATEN PROBOLINGGO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3514','35','KABUPATEN PASURUAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3515','35','KABUPATEN SIDOARJO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3516','35','KABUPATEN MOJOKERTO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3517','35','KABUPATEN JOMBANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3518','35','KABUPATEN NGANJUK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3519','35','KABUPATEN MADIUN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3520','35','KABUPATEN MAGETAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3521','35','KABUPATEN NGAWI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3522','35','KABUPATEN BOJONEGORO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3523','35','KABUPATEN TUBAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3524','35','KABUPATEN LAMONGAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3525','35','KABUPATEN GRESIK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3526','35','KABUPATEN BANGKALAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3527','35','KABUPATEN SAMPANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3528','35','KABUPATEN PAMEKASAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3529','35','KABUPATEN SUMENEP','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3571','35','KOTA KEDIRI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3572','35','KOTA BLITAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3573','35','KOTA MALANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3574','35','KOTA PROBOLINGGO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3575','35','KOTA PASURUAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3576','35','KOTA MOJOKERTO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3577','35','KOTA MADIUN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3578','35','KOTA SURABAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3579','35','KOTA BATU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3601','36','KABUPATEN PANDEGLANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3602','36','KABUPATEN LEBAK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3603','36','KABUPATEN TANGERANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3604','36','KABUPATEN SERANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3671','36','KOTA TANGERANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3672','36','KOTA CILEGON','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3673','36','KOTA SERANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('3674','36','KOTA TANGERANG SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5101','51','KABUPATEN JEMBRANA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5102','51','KABUPATEN TABANAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5103','51','KABUPATEN BADUNG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5104','51','KABUPATEN GIANYAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5105','51','KABUPATEN KLUNGKUNG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5106','51','KABUPATEN BANGLI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5107','51','KABUPATEN KARANG ASEM','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5108','51','KABUPATEN BULELENG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5171','51','KOTA DENPASAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5201','52','KABUPATEN LOMBOK BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5202','52','KABUPATEN LOMBOK TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5203','52','KABUPATEN LOMBOK TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5204','52','KABUPATEN SUMBAWA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5205','52','KABUPATEN DOMPU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5206','52','KABUPATEN BIMA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5207','52','KABUPATEN SUMBAWA BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5208','52','KABUPATEN LOMBOK UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5271','52','KOTA MATARAM','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5272','52','KOTA BIMA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5301','53','KABUPATEN SUMBA BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5302','53','KABUPATEN SUMBA TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5303','53','KABUPATEN KUPANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5304','53','KABUPATEN TIMOR TENGAH SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5305','53','KABUPATEN TIMOR TENGAH UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5306','53','KABUPATEN BELU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5307','53','KABUPATEN ALOR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5308','53','KABUPATEN LEMBATA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5309','53','KABUPATEN FLORES TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5310','53','KABUPATEN SIKKA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5311','53','KABUPATEN ENDE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5312','53','KABUPATEN NGADA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5313','53','KABUPATEN MANGGARAI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5314','53','KABUPATEN ROTE NDAO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5315','53','KABUPATEN MANGGARAI BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5316','53','KABUPATEN SUMBA TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5317','53','KABUPATEN SUMBA BARAT DAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5318','53','KABUPATEN NAGEKEO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5319','53','KABUPATEN MANGGARAI TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5320','53','KABUPATEN SABU RAIJUA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5321','53','KABUPATEN MALAKA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('5371','53','KOTA KUPANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6101','61','KABUPATEN SAMBAS','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6102','61','KABUPATEN BENGKAYANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6103','61','KABUPATEN LANDAK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6104','61','KABUPATEN MEMPAWAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6105','61','KABUPATEN SANGGAU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6106','61','KABUPATEN KETAPANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6107','61','KABUPATEN SINTANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6108','61','KABUPATEN KAPUAS HULU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6109','61','KABUPATEN SEKADAU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6110','61','KABUPATEN MELAWI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6111','61','KABUPATEN KAYONG UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6112','61','KABUPATEN KUBU RAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6171','61','KOTA PONTIANAK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6172','61','KOTA SINGKAWANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6201','62','KABUPATEN KOTAWARINGIN BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6202','62','KABUPATEN KOTAWARINGIN TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6203','62','KABUPATEN KAPUAS','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6204','62','KABUPATEN BARITO SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6205','62','KABUPATEN BARITO UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6206','62','KABUPATEN SUKAMARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6207','62','KABUPATEN LAMANDAU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6208','62','KABUPATEN SERUYAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6209','62','KABUPATEN KATINGAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6210','62','KABUPATEN PULANG PISAU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6211','62','KABUPATEN GUNUNG MAS','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6212','62','KABUPATEN BARITO TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6213','62','KABUPATEN MURUNG RAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6271','62','KOTA PALANGKA RAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6301','63','KABUPATEN TANAH LAUT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6302','63','KABUPATEN KOTA BARU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6303','63','KABUPATEN BANJAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6304','63','KABUPATEN BARITO KUALA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6305','63','KABUPATEN TAPIN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6306','63','KABUPATEN HULU SUNGAI SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6307','63','KABUPATEN HULU SUNGAI TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6308','63','KABUPATEN HULU SUNGAI UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6309','63','KABUPATEN TABALONG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6310','63','KABUPATEN TANAH BUMBU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6311','63','KABUPATEN BALANGAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6371','63','KOTA BANJARMASIN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6372','63','KOTA BANJAR BARU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6401','64','KABUPATEN PASER','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Paser','NULL','NULL','NULL','NULL','assets/etam_fe/images/logo/kabkota/kabupaten-paser.png',NULL,NULL),
+	('6402','64','KABUPATEN KUTAI BARAT','Dinas Tenaga Kerja Dan Transmigrasi Kabupaten Kutai Barat','NULL','NULL','NULL','NULL','assets/etam_fe/images/logo/kabkota/kabupaten-kutai-barat.png',NULL,NULL),
+	('6403','64','KABUPATEN KUTAI KARTANEGARA','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Kutai Kartanegara','NULL','NULL','NULL','NULL','assets/etam_fe/images/logo/kabkota/kabupaten-kutai-kartanegara.png',NULL,NULL),
+	('6404','64','KABUPATEN KUTAI TIMUR','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Kutai Timur','NULL','NULL','NULL','NULL','assets/etam_fe/images/logo/kabkota/kabupaten-kutai-timur.png',NULL,NULL),
+	('6405','64','KABUPATEN BERAU','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Berau','NULL','NULL','NULL','NULL','assets/etam_fe/images/logo/kabkota/kabupaten-berau.png',NULL,NULL),
+	('6409','64','KABUPATEN PENAJAM PASER UTARA','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Penajam Paser Utara','NULL','NULL','NULL','NULL','assets/etam_fe/images/logo/kabkota/kabupaten-penajam-paser-utara.jpeg',NULL,NULL),
+	('6411','64','KABUPATEN MAHAKAM HULU','Dinas Tenaga Kerja dan Transmigrasi Kabupaten Mahakam Hulu','NULL','NULL','NULL','NULL','assets/etam_fe/images/logo/kabkota/kabupaten-mahakam-ulu.png',NULL,NULL),
+	('6471','64','KOTA BALIKPAPAN','Dinas Tenaga Kerja dan Transmigrasi Kota Balikpapan','NULL','NULL','NULL','NULL','assets/etam_fe/images/logo/kabkota/kota-balikpapan.png',NULL,NULL),
+	('6472','64','KOTA SAMARINDA','Dinas Tenaga Kerja dan Transmigrasi Kota Samarainda','NULL','NULL','NULL','NULL','assets/etam_fe/images/logo/kabkota/kota-samarinda.png',NULL,NULL),
+	('6474','64','KOTA BONTANG','Dinas Tenaga Kerja dan Transmigrasi Kota Bontang','NULL','NULL','NULL','NULL','assets/etam_fe/images/logo/kabkota/kota-bontang.png',NULL,NULL),
+	('6501','65','KABUPATEN MALINAU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6502','65','KABUPATEN BULUNGAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6503','65','KABUPATEN TANA TIDUNG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6504','65','KABUPATEN NUNUKAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('6571','65','KOTA TARAKAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7101','71','KABUPATEN BOLAANG MONGONDOW','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7102','71','KABUPATEN MINAHASA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7103','71','KABUPATEN KEPULAUAN SANGIHE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7104','71','KABUPATEN KEPULAUAN TALAUD','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7105','71','KABUPATEN MINAHASA SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7106','71','KABUPATEN MINAHASA UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7107','71','KABUPATEN BOLAANG MONGONDOW UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7108','71','KABUPATEN SIAU TAGULANDANG BIARO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7109','71','KABUPATEN MINAHASA TENGGARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7110','71','KABUPATEN BOLAANG MONGONDOW SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7111','71','KABUPATEN BOLAANG MONGONDOW TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7171','71','KOTA MANADO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7172','71','KOTA BITUNG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7173','71','KOTA TOMOHON','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7174','71','KOTA KOTAMOBAGU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7201','72','KABUPATEN BANGGAI KEPULAUAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7202','72','KABUPATEN BANGGAI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7203','72','KABUPATEN MOROWALI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7204','72','KABUPATEN POSO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7205','72','KABUPATEN DONGGALA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7206','72','KABUPATEN TOLI-TOLI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7207','72','KABUPATEN BUOL','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7208','72','KABUPATEN PARIGI MOUTONG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7209','72','KABUPATEN TOJO UNA-UNA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7210','72','KABUPATEN SIGI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7211','72','KABUPATEN BANGGAI LAUT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7212','72','KABUPATEN MOROWALI UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7271','72','KOTA PALU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7301','73','KABUPATEN KEPULAUAN SELAYAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7302','73','KABUPATEN BULUKUMBA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7303','73','KABUPATEN BANTAENG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7304','73','KABUPATEN JENEPONTO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7305','73','KABUPATEN TAKALAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7306','73','KABUPATEN GOWA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7307','73','KABUPATEN SINJAI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7308','73','KABUPATEN MAROS','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7309','73','KABUPATEN PANGKAJENE DAN KEPULAUAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7310','73','KABUPATEN BARRU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7311','73','KABUPATEN BONE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7312','73','KABUPATEN SOPPENG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7313','73','KABUPATEN WAJO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7314','73','KABUPATEN SIDENRENG RAPPANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7315','73','KABUPATEN PINRANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7316','73','KABUPATEN ENREKANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7317','73','KABUPATEN LUWU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7318','73','KABUPATEN TANA TORAJA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7322','73','KABUPATEN LUWU UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7325','73','KABUPATEN LUWU TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7326','73','KABUPATEN TORAJA UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7371','73','KOTA MAKASSAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7372','73','KOTA PAREPARE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7373','73','KOTA PALOPO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7401','74','KABUPATEN BUTON','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7402','74','KABUPATEN MUNA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7403','74','KABUPATEN KONAWE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7404','74','KABUPATEN KOLAKA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7405','74','KABUPATEN KONAWE SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7406','74','KABUPATEN BOMBANA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7407','74','KABUPATEN WAKATOBI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7408','74','KABUPATEN KOLAKA UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7409','74','KABUPATEN BUTON UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7410','74','KABUPATEN KONAWE UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7411','74','KABUPATEN KOLAKA TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7412','74','KABUPATEN KONAWE KEPULAUAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7413','74','KABUPATEN MUNA BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7414','74','KABUPATEN BUTON TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7415','74','KABUPATEN BUTON SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7471','74','KOTA KENDARI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7472','74','KOTA BAUBAU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7501','75','KABUPATEN BOALEMO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7502','75','KABUPATEN GORONTALO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7503','75','KABUPATEN POHUWATO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7504','75','KABUPATEN BONE BOLANGO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7505','75','KABUPATEN GORONTALO UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7571','75','KOTA GORONTALO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7601','76','KABUPATEN MAJENE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7602','76','KABUPATEN POLEWALI MANDAR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7603','76','KABUPATEN MAMASA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7604','76','KABUPATEN MAMUJU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7605','76','KABUPATEN MAMUJU UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('7606','76','KABUPATEN MAMUJU TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8101','81','KABUPATEN MALUKU TENGGARA BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8102','81','KABUPATEN MALUKU TENGGARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8103','81','KABUPATEN MALUKU TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8104','81','KABUPATEN BURU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8105','81','KABUPATEN KEPULAUAN ARU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8106','81','KABUPATEN SERAM BAGIAN BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8107','81','KABUPATEN SERAM BAGIAN TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8108','81','KABUPATEN MALUKU BARAT DAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8109','81','KABUPATEN BURU SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8171','81','KOTA AMBON','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8172','81','KOTA TUAL','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8201','82','KABUPATEN HALMAHERA BARAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8202','82','KABUPATEN HALMAHERA TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8203','82','KABUPATEN KEPULAUAN SULA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8204','82','KABUPATEN HALMAHERA SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8205','82','KABUPATEN HALMAHERA UTARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8206','82','KABUPATEN HALMAHERA TIMUR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8207','82','KABUPATEN PULAU MOROTAI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8208','82','KABUPATEN PULAU TALIABU','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8271','82','KOTA TERNATE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('8272','82','KOTA TIDORE KEPULAUAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9101','91','KABUPATEN FAKFAK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9102','91','KABUPATEN KAIMANA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9103','91','KABUPATEN TELUK WONDAMA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9104','91','KABUPATEN TELUK BINTUNI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9105','91','KABUPATEN MANOKWARI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9106','91','KABUPATEN SORONG SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9107','91','KABUPATEN SORONG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9108','91','KABUPATEN RAJA AMPAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9109','91','KABUPATEN TAMBRAUW','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9110','91','KABUPATEN MAYBRAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9111','91','KABUPATEN MANOKWARI SELATAN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9112','91','KABUPATEN PEGUNUNGAN ARFAK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9171','91','KOTA SORONG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9401','94','KABUPATEN MERAUKE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9402','94','KABUPATEN JAYAWIJAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9403','94','KABUPATEN JAYAPURA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9404','94','KABUPATEN NABIRE','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9408','94','KABUPATEN KEPULAUAN YAPEN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9409','94','KABUPATEN BIAK NUMFOR','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9410','94','KABUPATEN PANIAI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9411','94','KABUPATEN PUNCAK JAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9412','94','KABUPATEN MIMIKA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9413','94','KABUPATEN BOVEN DIGOEL','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9414','94','KABUPATEN MAPPI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9415','94','KABUPATEN ASMAT','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9416','94','KABUPATEN YAHUKIMO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9417','94','KABUPATEN PEGUNUNGAN BINTANG','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9418','94','KABUPATEN TOLIKARA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9419','94','KABUPATEN SARMI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9420','94','KABUPATEN KEEROM','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9426','94','KABUPATEN WAROPEN','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9427','94','KABUPATEN SUPIORI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9428','94','KABUPATEN MAMBERAMO RAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9429','94','KABUPATEN NDUGA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9430','94','KABUPATEN LANNY JAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9431','94','KABUPATEN MAMBERAMO TENGAH','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9432','94','KABUPATEN YALIMO','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9433','94','KABUPATEN PUNCAK','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9434','94','KABUPATEN DOGIYAI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9435','94','KABUPATEN INTAN JAYA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9436','94','KABUPATEN DEIYAI','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL),
+	('9471','94','KOTA JAYAPURA','NULL','NULL','NULL','NULL','NULL','NULL',NULL,NULL);
+
+/*!40000 ALTER TABLE `etam_kabkotaOLD` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 # Dump of table etam_kecamatan
 # ------------------------------------------------------------
 
@@ -84040,7 +84698,7 @@ CREATE TABLE `etam_kecamatan` (
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `etam_kecamatan_regency_id_foreign` (`regency_id`),
-  CONSTRAINT `etam_kecamatan_regency_id_foreign` FOREIGN KEY (`regency_id`) REFERENCES `etam_kabkota` (`id`) ON DELETE CASCADE
+  CONSTRAINT `etam_kecamatan_regency_id_foreign` FOREIGN KEY (`regency_id`) REFERENCES `etam_kabkotaold` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 LOCK TABLES `etam_kecamatan` WRITE;
@@ -91295,8 +91953,12 @@ LOCK TABLES `etam_lamaran` WRITE;
 
 INSERT INTO `etam_lamaran` (`id`, `pencari_id`, `lowongan_id`, `kabkota_penempatan_id`, `progres_id`, `keterangan`, `created_at`, `updated_at`, `deleted_at`)
 VALUES
-	(1,17,4,6472,3,'selamat bekerja','2024-11-29 09:28:31','2024-11-29 10:45:41',NULL),
-	(2,11,4,6472,3,'selamat bekerja','2024-11-29 09:34:36','2024-11-29 10:45:41',NULL);
+	(1,17,4,6472,3,'besuk berangkat','2024-11-29 09:28:31','2024-12-01 05:45:19',NULL),
+	(2,11,4,6472,3,'selamat anda diterima','2024-11-29 09:34:36','2024-12-11 09:27:56',NULL),
+	(4,26,8,6472,3,'besuk jam 8 ke kantor','2024-12-03 15:25:41','2024-12-03 15:28:54',NULL),
+	(5,39,8,6472,5,NULL,'2024-12-03 15:27:48','2024-12-03 15:28:36',NULL),
+	(6,38,8,6472,4,NULL,'2024-12-03 15:29:51','2024-12-03 15:29:51',NULL),
+	(7,17,8,6472,4,NULL,'2024-12-04 00:52:27','2024-12-04 00:52:27',NULL);
 
 /*!40000 ALTER TABLE `etam_lamaran` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91317,6 +91979,7 @@ CREATE TABLE `etam_lowongan` (
   `judul_lowongan` varchar(255) NOT NULL,
   `kabkota_id` int(11) NOT NULL,
   `lokasi_penempatan_text` text NOT NULL,
+  `kisaran_gaji` int(11) DEFAULT NULL,
   `jumlah_pria` int(11) NOT NULL,
   `jumlah_wanita` int(11) NOT NULL,
   `deskripsi` text DEFAULT NULL,
@@ -91343,12 +92006,15 @@ CREATE TABLE `etam_lowongan` (
 LOCK TABLES `etam_lowongan` WRITE;
 /*!40000 ALTER TABLE `etam_lowongan` DISABLE KEYS */;
 
-INSERT INTO `etam_lowongan` (`id`, `nama_perusahaan_bybkk`, `jabatan_id`, `sektor_id`, `tanggal_start`, `tanggal_end`, `judul_lowongan`, `kabkota_id`, `lokasi_penempatan_text`, `jumlah_pria`, `jumlah_wanita`, `deskripsi`, `status_id`, `pendidikan_id`, `jurusan_id`, `marital_id`, `acc_by`, `acc_by_role`, `acc_at`, `is_lowongan_bkk`, `is_lowongan_ln`, `is_lowongan_disabilitas`, `nama_petugas`, `nip_petugas`, `kompetensi`, `posted_by`, `created_at`, `updated_at`, `deleted_at`)
+INSERT INTO `etam_lowongan` (`id`, `nama_perusahaan_bybkk`, `jabatan_id`, `sektor_id`, `tanggal_start`, `tanggal_end`, `judul_lowongan`, `kabkota_id`, `lokasi_penempatan_text`, `kisaran_gaji`, `jumlah_pria`, `jumlah_wanita`, `deskripsi`, `status_id`, `pendidikan_id`, `jurusan_id`, `marital_id`, `acc_by`, `acc_by_role`, `acc_at`, `is_lowongan_bkk`, `is_lowongan_ln`, `is_lowongan_disabilitas`, `nama_petugas`, `nip_petugas`, `kompetensi`, `posted_by`, `created_at`, `updated_at`, `deleted_at`)
 VALUES
-	(1,NULL,1211,3,'2024-11-01','2024-11-30','dibutuhkan',6472,'samarinda',2,1,'keahlian abc',1,3,3101,'B',1,'super-admin','2024-11-11 14:38:08',0,0,0,NULL,NULL,NULL,3,'2024-11-11 13:16:20','2024-11-11 14:38:08','2024-11-12 00:15:51'),
-	(2,NULL,1212,3,'2024-11-01','2024-11-30','Dibutuhkan pegawai',6472,'samarinda',2,1,'Memiliki kemampuan abcdef',1,8,8001,'B',1,'super-admin','2024-11-11 16:40:36',0,0,0,NULL,NULL,NULL,7,'2024-11-11 16:24:58','2024-11-11 16:40:36','2024-11-12 08:57:47'),
-	(3,NULL,1212,9,'2024-11-01','2024-11-30','dibutuhkan pegawai',6472,'samarinda',2,1,'memiliki keahlian abc',1,3,3101,'B',1,'super-admin','2024-11-12 01:13:54',0,0,0,NULL,NULL,NULL,9,'2024-11-12 01:10:45','2024-11-12 01:13:54','2024-11-12 09:51:36'),
-	(4,NULL,2113,19,'2024-11-12','2024-11-30','di butuhkan admin 22',6472,'samarinda',2,1,'memiliki keahlian akunting',1,3,3114,'B',12,'penyedia-kerja','2024-11-26 07:41:55',0,0,0,NULL,NULL,NULL,12,'2024-11-12 01:57:18','2024-11-26 07:41:55',NULL);
+	(1,NULL,1211,3,'2024-11-01','2024-11-30','dibutuhkan',6472,'samarinda',3000000,2,1,'keahlian abc',1,3,3101,'B',1,'super-admin','2024-12-10 14:38:08',0,0,0,NULL,NULL,NULL,3,'2024-11-11 13:16:20','2024-11-11 14:38:08','2024-11-12 00:15:51'),
+	(2,NULL,1212,3,'2024-11-01','2024-11-30','Dibutuhkan pegawai',6472,'samarinda',3000000,2,1,'Memiliki kemampuan abcdef',1,8,8001,'B',1,'super-admin','2024-12-10 16:40:36',0,0,0,NULL,NULL,NULL,7,'2024-11-11 16:24:58','2024-11-11 16:40:36','2024-11-12 08:57:47'),
+	(3,NULL,1212,9,'2024-11-01','2024-11-30','dibutuhkan pegawai',6472,'samarinda',3000000,2,1,'memiliki keahlian abc',1,3,3101,'B',1,'super-admin','2024-12-10 01:13:54',0,0,0,NULL,NULL,NULL,9,'2024-11-12 01:10:45','2024-11-12 01:13:54','2024-11-12 09:51:36'),
+	(4,NULL,2113,19,'2024-12-10','2024-12-31','Dibutuhkan Junior Programmer',6472,'samarinda',3000000,2,1,'memiliki keahlian akunting',1,3,3114,'B',12,'penyedia-kerja','2024-12-10 07:41:55',0,0,0,NULL,NULL,NULL,12,'2024-11-12 01:57:18','2024-11-26 07:41:55',NULL),
+	(7,NULL,1211,2,'2024-12-10','2024-12-31','Dibutuhkan Senior Analis',6472,'kota samarinda',2300000,2,2,'memiliki kemampuan',1,8,8016,'B',5,'super-admin','2024-12-10 01:00:11',0,0,0,NULL,NULL,NULL,12,'2024-11-30 08:35:20','2024-12-04 01:00:11',NULL),
+	(8,NULL,1211,2,'2024-12-03','2024-12-13','Dibutuhkan Akuntan / Auditor',6472,'kota samarinda',3000000,2,1,'Memiliki keahlian akuntansi',1,8,8016,'B',37,'admin-kabkota-officer','2024-12-10 15:00:36',0,0,0,NULL,NULL,NULL,41,'2024-12-03 14:47:55','2024-12-03 15:00:36',NULL),
+	(10,NULL,3213,6,'2024-12-10','2024-12-31','Dibutuhkan Asisten Farmasi',6472,'samarinda',4000000,0,2,'Memahami dalam bidang farmasi',1,6,6253,'B',35,'admin-kabkota','2024-12-10 19:44:54',0,0,1,NULL,NULL,NULL,12,'2024-12-10 19:43:06','2024-12-10 19:44:54',NULL);
 
 /*!40000 ALTER TABLE `etam_lowongan` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91382,6 +92048,36 @@ VALUES
 UNLOCK TABLES;
 
 
+# Dump of table etam_pencari_keahlian
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `etam_pencari_keahlian`;
+
+CREATE TABLE `etam_pencari_keahlian` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `keahlian` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `etam_pencari_keahlian_user_id_foreign` (`user_id`),
+  CONSTRAINT `etam_pencari_keahlian_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+LOCK TABLES `etam_pencari_keahlian` WRITE;
+/*!40000 ALTER TABLE `etam_pencari_keahlian` DISABLE KEYS */;
+
+INSERT INTO `etam_pencari_keahlian` (`id`, `user_id`, `keahlian`, `created_at`, `updated_at`, `deleted_at`)
+VALUES
+	(1,26,'Packaging Paket','2024-11-30 17:48:00','2024-11-30 17:50:34','2024-11-30 17:50:34'),
+	(2,26,'Microsoft Office','2024-11-30 17:50:27','2024-11-30 17:50:27',NULL),
+	(3,17,'Microsoft Office','2024-12-04 00:51:38','2024-12-04 00:51:38',NULL);
+
+/*!40000 ALTER TABLE `etam_pencari_keahlian` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 # Dump of table etam_pencari_pendidikan
 # ------------------------------------------------------------
 
@@ -91401,6 +92097,16 @@ CREATE TABLE `etam_pencari_pendidikan` (
   CONSTRAINT `etam_pencari_pendidikan_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+LOCK TABLES `etam_pencari_pendidikan` WRITE;
+/*!40000 ALTER TABLE `etam_pencari_pendidikan` DISABLE KEYS */;
+
+INSERT INTO `etam_pencari_pendidikan` (`id`, `user_id`, `pendidikan_id`, `jurusan_id`, `instansi`, `tahun`, `created_at`, `updated_at`)
+VALUES
+	(2,26,2,2103,'SMP Negeri 1',2020,'2024-11-30 17:14:10','2024-11-30 17:14:10'),
+	(3,17,8,8001,'Universitas Gadjah Mada',2024,'2024-12-04 00:51:18','2024-12-04 00:51:18');
+
+/*!40000 ALTER TABLE `etam_pencari_pendidikan` ENABLE KEYS */;
+UNLOCK TABLES;
 
 
 # Dump of table etam_pendidikan
@@ -91795,7 +92501,15 @@ VALUES
 	(47,'2024_11_28_035439_create_etam_pencari_pendidikan_table',36),
 	(48,'2024_11_29_130342_create_user_bkk_table',37),
 	(49,'2024_11_29_130627_create_users_bkk_table',38),
-	(50,'2024_11_29_131924_create_etam_bkk_kategori_table',39);
+	(50,'2024_11_29_131924_create_etam_bkk_kategori_table',39),
+	(51,'2024_11_30_082225_add_kisaran_gaji_to_etam_lowongan_table',40),
+	(54,'2024_11_30_113008_add_id_jabatan_harapan_to_users_pencari_table',41),
+	(55,'2024_11_30_115936_drop_id_desa_from_users_pencari_table',42),
+	(56,'2024_11_30_080953_created_etam_ak1_table',43),
+	(58,'2024_11_30_173004_create_etam_pencari_keahlian_table',44),
+	(59,'2024_12_01_063604_add_column_is_finished_in_users',45),
+	(60,'2024_12_03_125150_remove_id_desa_from_users_penyedia_table',46),
+	(61,'2024_12_10_095429_create_etam_jenis_disabilitas_table',47);
 
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91838,6 +92552,9 @@ INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`)
 VALUES
 	(1,'App\\Models\\User',1),
 	(1,'App\\Models\\User',5),
+	(4,'App\\Models\\User',27),
+	(4,'App\\Models\\User',35),
+	(4,'App\\Models\\User',42),
 	(5,'App\\Models\\User',4),
 	(5,'App\\Models\\User',6),
 	(5,'App\\Models\\User',8),
@@ -91845,15 +92562,35 @@ VALUES
 	(5,'App\\Models\\User',11),
 	(5,'App\\Models\\User',13),
 	(5,'App\\Models\\User',17),
+	(5,'App\\Models\\User',23),
+	(5,'App\\Models\\User',24),
+	(5,'App\\Models\\User',25),
+	(5,'App\\Models\\User',26),
+	(5,'App\\Models\\User',31),
+	(5,'App\\Models\\User',38),
+	(5,'App\\Models\\User',39),
+	(5,'App\\Models\\User',40),
+	(5,'App\\Models\\User',43),
+	(5,'App\\Models\\User',47),
+	(5,'App\\Models\\User',48),
 	(6,'App\\Models\\User',3),
 	(6,'App\\Models\\User',7),
 	(6,'App\\Models\\User',9),
 	(6,'App\\Models\\User',12),
+	(6,'App\\Models\\User',32),
+	(6,'App\\Models\\User',33),
+	(6,'App\\Models\\User',34),
+	(6,'App\\Models\\User',41),
+	(6,'App\\Models\\User',44),
+	(6,'App\\Models\\User',45),
 	(7,'App\\Models\\User',18),
 	(7,'App\\Models\\User',19),
 	(7,'App\\Models\\User',20),
 	(7,'App\\Models\\User',21),
-	(7,'App\\Models\\User',22);
+	(7,'App\\Models\\User',22),
+	(7,'App\\Models\\User',46),
+	(8,'App\\Models\\User',36),
+	(8,'App\\Models\\User',37);
 
 /*!40000 ALTER TABLE `model_has_roles` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91941,7 +92678,7 @@ VALUES
 	(5,'pencari-kerja','web','2024-11-10 05:42:37','2024-11-10 05:42:37'),
 	(6,'penyedia-kerja','web','2024-11-10 05:42:37','2024-11-10 05:42:37'),
 	(7,'admin-bkk','web','2024-11-10 05:42:37','2024-11-10 05:42:37'),
-	(8,'pimpinan','web','2024-11-10 05:42:37','2024-11-10 05:42:37');
+	(8,'admin-kabkota-officer','web','2024-11-10 05:42:37','2024-11-10 05:42:37');
 
 /*!40000 ALTER TABLE `roles` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -91969,8 +92706,7 @@ LOCK TABLES `sessions` WRITE;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`)
 VALUES
-	('c0dwYwaXGjC2coc1CPlShiN4sRlKTN5AOmlwghKl',22,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoidFRLaHZOanllY0doODBRMWVEdDYwcmFqS3NyRVFxb3J1ejhyQ2FpbCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kZXBhbi9ia2siO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToyMjt9',1732889205),
-	('Sr5jt4YijWDErrhorRXpZd3hZxZxFJTzd9VGfBRm',11,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUjQ3NmFOYkFVczVsYjVXVU9ibkw5SHU5ZjhDWEJzQUdkTlBSQWNsbyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXB1ci9wZW5jYXJpcy9sb3dvbmdhbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjExO30=',1732877494);
+	('Kd1Sc5Qxac8QBeJd2q4hWk2vfGdk9JwoeKo6KqtU',35,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiT0lyeWhEb2dyMEpKZnhwOUp1Vm56RjE0NVlwd1NtcmVBcWRtY2dSQiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXB1ci9yZWthcDM4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MzU7fQ==',1733884502);
 
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -92005,7 +92741,12 @@ LOCK TABLES `user_admins` WRITE;
 
 INSERT INTO `user_admins` (`id`, `user_id`, `province_id`, `kabkota_id`, `kecamatan_id`, `created_by`, `updated_by`, `deleted_by`, `is_deleted`, `deleted_at`, `created_at`, `updated_at`, `foto`)
 VALUES
-	(1,5,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,'2024-11-11 16:05:33','2024-11-11 16:05:33',NULL);
+	(1,5,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,'2024-11-11 16:05:33','2024-11-11 16:05:33',NULL),
+	(2,27,64,6471,NULL,1,1,NULL,0,NULL,'2024-12-01 06:00:25','2024-12-01 06:00:25',NULL),
+	(3,35,64,6472,NULL,5,5,NULL,0,NULL,'2024-12-03 14:06:05','2024-12-03 14:06:05',NULL),
+	(4,36,64,6471,6471011,5,5,NULL,0,NULL,'2024-12-03 14:07:00','2024-12-03 14:07:00',NULL),
+	(5,37,64,6472,6472021,5,5,NULL,0,NULL,'2024-12-03 14:07:52','2024-12-03 14:07:52',NULL),
+	(6,42,64,6405,NULL,5,5,NULL,0,NULL,'2024-12-03 23:46:17','2024-12-03 23:46:17',NULL);
 
 /*!40000 ALTER TABLE `user_admins` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -92029,6 +92770,7 @@ CREATE TABLE `users` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   `is_deleted` tinyint(4) NOT NULL DEFAULT 0,
+  `is_finished` int(11) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -92036,14 +92778,26 @@ CREATE TABLE `users` (
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 
-INSERT INTO `users` (`id`, `name`, `email`, `whatsapp`, `otp`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `deleted_at`, `is_deleted`)
+INSERT INTO `users` (`id`, `name`, `email`, `whatsapp`, `otp`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `deleted_at`, `is_deleted`, `is_finished`)
 VALUES
-	(1,'Super Admin','superadmin@example.com',NULL,NULL,NULL,'$2y$12$JUzJp8zJglC49MfX49iV1OqtrQZcWqXHNY2oeXPXpIo/JCG1GEtaG',NULL,'2024-11-10 15:19:44','2024-11-10 15:19:44',NULL,0),
-	(5,'admin_prov','adminprov@gmail.com','087887084019',NULL,NULL,'$2y$12$pGHzcgQI6hD90J1ieXealOeRqDm7jSLU7Ta8GTXujx06ZiNqSq0ti',NULL,'2024-11-11 16:05:33','2024-11-11 16:06:03',NULL,0),
-	(11,'enisulandari@gmail.com','enisulandari@gmail.com','087887084019','TVDUH',NULL,'$2y$12$JXz/jDl5zorysyKaRIi9W.EUXgN9E2w7UVUBITVFWryOMZ7Xc6OS2',NULL,'2024-11-12 01:47:59','2024-11-28 08:56:28',NULL,0),
-	(12,'ucitech13@gmail.com','ucitech13@gmail.com','087887084018','MZDCK',NULL,'$2y$12$JUzJp8zJglC49MfX49iV1OqtrQZcWqXHNY2oeXPXpIo/JCG1GEtaG',NULL,'2024-11-12 01:52:38','2024-11-12 01:52:38',NULL,0),
-	(17,'ucit@gmail.com','ucit@gmail.com','087887084011','7BKAP',NULL,'$2y$12$cdYpsaqlg6NYIym/qO8Gp.bKxhC.qICVmI/p54Ck4tlAO..uJf9ha',NULL,'2024-11-29 09:14:34','2024-11-29 09:14:34',NULL,0),
-	(22,'cobabkk@gmail.com','cobabkk@gmail.com','087887084013','8RQ7S',NULL,'$2y$12$TCZTcUM1DoHqNtIFi3PlXO/Xtvas5HxV.n8Mdob1GrKTUHrY8Nydi',NULL,'2024-11-29 13:34:22','2024-11-29 13:34:22',NULL,0);
+	(1,'Super Admin','superadmin@example.com',NULL,NULL,NULL,'$2y$12$JUzJp8zJglC49MfX49iV1OqtrQZcWqXHNY2oeXPXpIo/JCG1GEtaG',NULL,'2024-11-10 15:19:44','2024-11-10 15:19:44',NULL,0,0),
+	(5,'admin_prov','adminprov@gmail.com','087887084019',NULL,NULL,'$2y$12$cdYpsaqlg6NYIym/qO8Gp.bKxhC.qICVmI/p54Ck4tlAO..uJf9ha',NULL,'2024-11-11 16:05:33','2024-11-11 16:06:03',NULL,0,0),
+	(11,'enisulandari@gmail.com','enisulandari@gmail.com','087887084019','TVDUH',NULL,'$2y$12$egkqyzJeUjorwyespCKOBemk02zLRGeCGN9g36lzHzXmwpq9H.lhK',NULL,'2024-11-12 01:47:59','2024-11-30 06:17:26',NULL,0,0),
+	(12,'ucitech13@gmail.com','ucitech13@gmail.com','087887084018','MZDCK',NULL,'$2y$12$JUzJp8zJglC49MfX49iV1OqtrQZcWqXHNY2oeXPXpIo/JCG1GEtaG',NULL,'2024-11-12 01:52:38','2024-11-12 01:52:38',NULL,0,0),
+	(17,'ucit@gmail.com','ucit@gmail.com','087887084011','7BKAP',NULL,'$2y$12$cdYpsaqlg6NYIym/qO8Gp.bKxhC.qICVmI/p54Ck4tlAO..uJf9ha',NULL,'2024-11-29 09:14:34','2024-11-29 09:14:34',NULL,0,0),
+	(22,'cobabkk@gmail.com','cobabkk@gmail.com','087887084020','8RQ7S',NULL,'$2y$12$TCZTcUM1DoHqNtIFi3PlXO/Xtvas5HxV.n8Mdob1GrKTUHrY8Nydi',NULL,'2024-11-29 13:34:22','2024-11-29 13:34:22',NULL,0,0),
+	(26,'erlyamelati@gmail.com','erlyamelati@gmail.com','087887084099','PLSAS',NULL,'$2y$12$wGgJpyx/NBmFpYxD3vVXTe7eRtHERBu8sC1J0KhnMk8lFBHPCKhqW',NULL,'2024-11-30 13:10:49','2024-11-30 13:10:49',NULL,0,0),
+	(27,'Admin Kota Balikpapan','admbalikpapan@mail.com','087887084055',NULL,NULL,'$2y$12$cdYpsaqlg6NYIym/qO8Gp.bKxhC.qICVmI/p54Ck4tlAO..uJf9ha',NULL,'2024-12-01 06:00:25','2024-12-01 06:00:25',NULL,0,0),
+	(34,'astama@mail.com','astama@mail.com','087887084055','64QFT',NULL,'$2y$12$cJGi40kcPn1oTc7eBn0n2.dd3I/G9ot4zfUX0BjHiS/T6407Gimva',NULL,'2024-12-03 13:30:55','2024-12-03 13:30:55',NULL,0,0),
+	(35,'Admin Kota Samarinda','admsamarinda@mail.com','087887084044',NULL,NULL,'$2y$12$cdYpsaqlg6NYIym/qO8Gp.bKxhC.qICVmI/p54Ck4tlAO..uJf9ha',NULL,'2024-12-03 14:06:05','2024-12-03 14:06:05',NULL,0,0),
+	(36,'Officer Balikpapan','officerbalikpapan@mail.com','087887084077',NULL,NULL,'$2y$12$cdYpsaqlg6NYIym/qO8Gp.bKxhC.qICVmI/p54Ck4tlAO..uJf9ha',NULL,'2024-12-03 14:07:00','2024-12-03 14:07:00',NULL,0,0),
+	(37,'Officer Samarinda','officersamarinda@mail.com','087887084044',NULL,NULL,'$2y$12$cdYpsaqlg6NYIym/qO8Gp.bKxhC.qICVmI/p54Ck4tlAO..uJf9ha',NULL,'2024-12-03 14:07:52','2024-12-03 14:07:52',NULL,0,0),
+	(38,'edwin@mail.com','edwin@mail.com','087887084022','JCVEA',NULL,'$2y$12$qHR7vMq69BmpRDIN/d7Nq.MCSCjbqoEFVGqnz1DlYdNBAsG3QtJuK',NULL,'2024-12-03 14:09:49','2024-12-03 14:09:49',NULL,0,0),
+	(39,'setia@mail.com','setia@mail.com','087887084031','XKD3T',NULL,'$2y$12$iI4Yr9sQNXjJEYdiBTtFZOVQ5zFrKoJzGstFxNaPmORFlxjLvQm2a',NULL,'2024-12-03 14:12:55','2024-12-03 14:12:55',NULL,0,0),
+	(40,'setia2@fic15.com','setia2@fic15.com','087887084021','AX9U2',NULL,'$2y$12$nQXI8b2fqk4EPgPynQ7tY.nJ5mpUMzE7nTRKeqHTN.1DItgCGw5TO',NULL,'2024-12-03 14:35:32','2024-12-03 14:37:12',NULL,0,1),
+	(41,'samarindajaya@mail.com','samarindajaya@mail.com','087887084001','9RSEH',NULL,'$2y$12$df2mQPuXu.W4Obr3b6Ln/uc3zAbubaResaLucvavf6E5cvVTaUPeq',NULL,'2024-12-03 14:45:17','2024-12-03 14:45:17',NULL,0,0),
+	(42,'Admin Kab Berau','admkabberau@mail.com','087887084099',NULL,NULL,'$2y$12$PysuVmFghk1Gip6lN9h9z..BmgLD8Uuc/RekOuLyJWZUqCymTsFAO',NULL,'2024-12-03 23:46:17','2024-12-03 23:46:17',NULL,0,0),
+	(47,'setia3@fic15.com','setia3@fic15.com','087887084031','3RZAR',NULL,'$2y$12$MIiDprwx4cTy2GnnsZHtNOwx5fvsEvPyLVjDGY6AT/wFdUCse3O.u',NULL,'2024-12-10 09:40:33','2024-12-10 09:40:33',NULL,0,0);
 
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -92090,7 +92844,7 @@ LOCK TABLES `users_bkk` WRITE;
 
 INSERT INTO `users_bkk` (`id`, `user_id`, `no_sekolah`, `id_sekolah`, `name`, `website`, `alamat`, `id_provinsi`, `id_kota`, `id_kecamatan`, `kodepos`, `nama_bkk`, `no_bkk`, `tanggal_aktif_bkk`, `tanggal_non_aktif_bkk`, `telpon`, `hp`, `contact_person`, `jabatan`, `foto`, `tanggal_register`, `status_id`, `created_at`, `updated_at`, `deleted_at`)
 VALUES
-	(1,22,'1123',12,'BKK UJI COBA','testing.com','alamataja',64,6411,6411030,'77373',NULL,NULL,'2024-11-29',NULL,'0811','0822','Zaenal','Pimpinan',NULL,'2024-11-29 13:35:49',1,'2024-11-29 13:35:49','2024-11-29 13:35:49',NULL);
+	(1,22,'1123',12,'BKK UJI COBA','testing.com','alamataja',64,6411,6411030,'77373',NULL,NULL,'2024-11-29',NULL,'0811','0822','Zaenal','Pimpinan','logo_perusahaan/i4aKyyZtcLGvWh6ZKmyIBmh5zpr1iTNINdTo4UVm.png','2024-11-29 13:35:49',1,'2024-11-29 13:35:49','2024-11-29 14:36:47',NULL);
 
 /*!40000 ALTER TABLE `users_bkk` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -92113,7 +92867,6 @@ CREATE TABLE `users_pencari` (
   `id_provinsi` int(11) NOT NULL,
   `id_kota` int(11) NOT NULL,
   `id_kecamatan` int(11) NOT NULL,
-  `id_desa` varchar(10) NOT NULL,
   `alamat` varchar(200) NOT NULL,
   `kodepos` varchar(5) NOT NULL,
   `id_pendidikan` int(11) NOT NULL,
@@ -92121,6 +92874,7 @@ CREATE TABLE `users_pencari` (
   `tahun_lulus` int(11) NOT NULL,
   `id_status_perkawinan` char(1) NOT NULL,
   `id_agama` int(11) NOT NULL,
+  `id_jabatan_harapan` int(11) DEFAULT NULL,
   `foto` varchar(255) DEFAULT NULL,
   `status_id` int(11) NOT NULL,
   `last_login` timestamp NULL DEFAULT NULL,
@@ -92143,10 +92897,15 @@ CREATE TABLE `users_pencari` (
 LOCK TABLES `users_pencari` WRITE;
 /*!40000 ALTER TABLE `users_pencari` DISABLE KEYS */;
 
-INSERT INTO `users_pencari` (`id`, `user_id`, `ktp`, `toket`, `name`, `tempat_lahir`, `tanggal_lahir`, `gender`, `id_provinsi`, `id_kota`, `id_kecamatan`, `id_desa`, `alamat`, `kodepos`, `id_pendidikan`, `id_jurusan`, `tahun_lulus`, `id_status_perkawinan`, `id_agama`, `foto`, `status_id`, `last_login`, `is_alumni_bkk`, `bkk_id`, `disabilitas`, `jenis_disabilitas`, `keterangan_disabilitas`, `posted_by`, `created_at`, `updated_at`, `deleted_at`, `is_diterima`, `medsos`)
+INSERT INTO `users_pencari` (`id`, `user_id`, `ktp`, `toket`, `name`, `tempat_lahir`, `tanggal_lahir`, `gender`, `id_provinsi`, `id_kota`, `id_kecamatan`, `alamat`, `kodepos`, `id_pendidikan`, `id_jurusan`, `tahun_lulus`, `id_status_perkawinan`, `id_agama`, `id_jabatan_harapan`, `foto`, `status_id`, `last_login`, `is_alumni_bkk`, `bkk_id`, `disabilitas`, `jenis_disabilitas`, `keterangan_disabilitas`, `posted_by`, `created_at`, `updated_at`, `deleted_at`, `is_diterima`, `medsos`)
 VALUES
-	(5,11,'3374053006920003',NULL,'Eni Sulandari','Demak','2000-02-02','P',64,6472,6472021,'6472021001','Jl. Pemuda No 99','77373',3,3101,2023,'B',1,'foto_pencarikerja/MrBMXbmEE3jBGCF7ix0SGPFgkt1FICwlkNiEk5d9.jpg',1,NULL,0,NULL,NULL,NULL,NULL,11,'2024-11-12 01:50:17','2024-11-29 09:12:10',NULL,0,'@okeoce2'),
-	(6,17,'3374090909090909',NULL,'Udin Zaelani','Denpasar','2000-12-12','L',64,6405,6405070,'6405070006','Jl. gg Manggarai No 88 RT2 RW33','78978',8,8016,2023,'B',1,'foto_pencarikerja/YTsObyNCZYYuJrzjhyLrmeZ1GeUa85WUVCgz6Z5r.jpg',1,NULL,0,NULL,NULL,NULL,NULL,17,'2024-11-29 09:16:08','2024-11-29 09:16:53',NULL,0,'testing.id');
+	(5,11,'3374053006920001',NULL,'Eni Sulandari','Demak','2000-02-02','P',64,6472,6472021,'Jl. Pemuda No 99','77373',3,3101,2023,'B',1,NULL,'foto_pencarikerja/MrBMXbmEE3jBGCF7ix0SGPFgkt1FICwlkNiEk5d9.jpg',1,NULL,0,NULL,NULL,NULL,NULL,11,'2024-11-12 01:50:17','2024-12-11 09:27:56',NULL,1,'@okeoce'),
+	(6,17,'3374090909090909',NULL,'Udin Zaelani','Denpasar','2000-12-12','L',64,6405,6405070,'Jl. gg Manggarai No 88 RT2 RW33','78978',8,8016,2023,'B',1,NULL,'foto_pencarikerja/YTsObyNCZYYuJrzjhyLrmeZ1GeUa85WUVCgz6Z5r.jpg',1,NULL,0,NULL,NULL,NULL,NULL,17,'2024-11-29 09:16:08','2024-12-01 05:45:19',NULL,1,'testing.id'),
+	(7,26,'3374053006920003',NULL,'Erlya Melati','Balikpapan','2000-02-02','P',64,6471,6471040,'Jl. majumundur','77373',6,6132,2023,'B',1,3313,'foto_pencarikerja/z9L1Qa9YGH2xIstnbAgJQL2pJONhJiNLctJrc5mJ.jpg',1,NULL,0,NULL,NULL,NULL,NULL,26,'2024-11-30 13:13:25','2024-12-03 15:28:54',NULL,1,'@okeoke'),
+	(8,38,'3374090909090902',NULL,'Edwin Smr','Bandung','2000-02-02','L',64,6472,6472021,'Jl. Mundurmaju','78978',8,8001,2023,'B',1,1323,NULL,1,NULL,0,NULL,NULL,NULL,NULL,38,'2024-12-03 14:11:09','2024-12-03 14:11:09',NULL,0,'testing.id'),
+	(9,39,'3374090909090907',NULL,'Setia Bpn','Samarinda','2000-03-03','L',64,6471,6471011,'Jl. Thamrin 92','78978',8,8003,2023,'B',1,2111,'profile_photos/UTZ58Oro39ENKePOqCX9rZOcAU48zMXWPx01klUY.jpg',1,NULL,0,NULL,NULL,NULL,NULL,39,'2024-12-03 14:14:02','2024-12-03 14:34:31',NULL,0,'testing.id'),
+	(10,40,'3374053006920056',NULL,'Zaenuri Anwar','Balikpapan','2001-09-09','L',64,6471,6471030,'Jl. Gajahmada 44','77373',3,3120,2022,'B',1,NULL,NULL,1,NULL,0,NULL,NULL,NULL,NULL,40,'2024-12-03 14:37:12','2024-12-03 14:37:12',NULL,0,NULL),
+	(11,47,'3374053006920004',NULL,'Malik Bergani','Samarinda','2001-02-02','L',64,6405,6405021,'Jl. Gang Pinggir 34','77373',3,3107,2023,'B',1,1345,NULL,1,NULL,0,NULL,'1','3','tidak bisa mendengar',47,'2024-12-10 09:44:00','2024-12-10 10:15:32',NULL,0,'@okeoce');
 
 /*!40000 ALTER TABLE `users_pencari` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -92170,7 +92929,6 @@ CREATE TABLE `users_penyedia` (
   `id_provinsi` smallint(5) unsigned NOT NULL,
   `id_kota` smallint(5) unsigned NOT NULL,
   `id_kecamatan` mediumint(8) unsigned NOT NULL,
-  `id_desa` char(10) NOT NULL,
   `alamat` varchar(200) DEFAULT NULL,
   `kodepos` varchar(5) DEFAULT NULL,
   `telpon` varchar(13) DEFAULT NULL,
@@ -92191,9 +92949,11 @@ CREATE TABLE `users_penyedia` (
 LOCK TABLES `users_penyedia` WRITE;
 /*!40000 ALTER TABLE `users_penyedia` DISABLE KEYS */;
 
-INSERT INTO `users_penyedia` (`id`, `user_id`, `name`, `luar_negri`, `deskripsi`, `jenis_perusahaan`, `nomor_sip3mi`, `nib`, `id_sektor`, `id_provinsi`, `id_kota`, `id_kecamatan`, `id_desa`, `alamat`, `kodepos`, `telpon`, `jabatan`, `website`, `status_id`, `foto`, `shared_by_id`, `posted_by`, `created_at`, `updated_at`, `deleted_at`)
+INSERT INTO `users_penyedia` (`id`, `user_id`, `name`, `luar_negri`, `deskripsi`, `jenis_perusahaan`, `nomor_sip3mi`, `nib`, `id_sektor`, `id_provinsi`, `id_kota`, `id_kecamatan`, `alamat`, `kodepos`, `telpon`, `jabatan`, `website`, `status_id`, `foto`, `shared_by_id`, `posted_by`, `created_at`, `updated_at`, `deleted_at`)
 VALUES
-	(4,12,'PT Manyaran Maju',0,'bergerang di bidang','pt',NULL,'123abc',19,64,6472,6472021,'6472021001','Jl. Gajahmada No 99','77373','022374756','HRD','testing.com',1,'logo_perusahaan/K5f6R5Oab7F4Xz8xFBUrjLMFIDTNpBOv4d7oGFW9.png',NULL,12,'2024-11-12 01:54:34','2024-11-28 09:09:29',NULL);
+	(4,12,'PT Manyaran Maju',0,'bergerang di bidang','pt',NULL,'123abc',19,64,6472,6472021,'Jl. Gajahmada No 99','77373','022374756','HRD','testing.com',1,'logo_perusahaan/K5f6R5Oab7F4Xz8xFBUrjLMFIDTNpBOv4d7oGFW9.png',NULL,12,'2024-11-12 01:54:34','2024-11-28 09:09:29',NULL),
+	(6,34,'Astama Jaya',0,'perusahaan bidang ekspedisi','pt',NULL,'123abc',4,64,6472,6472030,'Jl. Sentosa No 1','77373','0291','HRD','testing.com',1,NULL,NULL,34,'2024-12-03 13:34:49','2024-12-03 13:34:49',NULL),
+	(7,41,'Samarinda Jaya',0,'Perusahaan bidang ekspedisi','pt',NULL,'123abc',4,64,6472,6472021,'Jl. Pemuda 99','78978','0192828323','HRD','testing.com',1,NULL,NULL,41,'2024-12-03 14:46:23','2024-12-03 14:46:23',NULL);
 
 /*!40000 ALTER TABLE `users_penyedia` ENABLE KEYS */;
 UNLOCK TABLES;
