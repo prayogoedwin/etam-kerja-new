@@ -68,7 +68,7 @@ class UserPencari extends Model
 
     public function kecamatan()
     {
-        return $this->belongsTo(kecamatan::class, 'id_kecamatan', 'id');
+        return $this->belongsTo(Kecamatan::class, 'id_kecamatan', 'id');
     }
 
     public function pendidikan()
@@ -86,5 +86,3 @@ class UserPencari extends Model
         return $this->belongsTo(Agama::class, 'id_agama', 'id');
     }
 }
-
-

@@ -60,7 +60,7 @@ class UserPenyedia extends Model
 
     public function kecamatan()
     {
-        return $this->belongsTo(kecamatan::class, 'id_kecamatan', 'id');
+        return $this->belongsTo(Kecamatan::class, 'id_kecamatan', 'id');
     }
 
     public function sektor()
