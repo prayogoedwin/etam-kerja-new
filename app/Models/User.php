@@ -67,4 +67,9 @@ class User extends Authenticatable
         return $this->hasOne(UserPenyedia::class, 'user_id', 'id');
         // 'user_id' adalah foreign key di tabel 'penyedias' yang merujuk ke 'id' pada tabel 'users'
     }
+
+    public function admin()
+    {
+        return $this->hasOne(UserAdmin::class, 'user_id', 'id');
+    }
 }

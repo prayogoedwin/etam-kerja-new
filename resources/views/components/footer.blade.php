@@ -1,5 +1,19 @@
 <!-- Start Footer
     ============================================= -->
+@php
+    $today = DB::table('visitors')->whereDate('created_at', now())->count(); // Pengunjung hari ini
+
+    $currentMonth = DB::table('visitors')
+        ->whereMonth('created_at', now()->month)
+        ->whereYear('created_at', now()->year)
+        ->count();
+
+    $currentYear = DB::table('visitors')
+        ->whereYear('created_at', now()->year)
+        ->count();
+
+    $all = DB::table('visitors')->count();
+@endphp
 <footer class="bg-dark text-light">
     <div class="footer-shape">
         <div class="item">
@@ -90,22 +104,22 @@
                             <tr>
                                 <td>Hari ini</td>
                                 <td>&nbsp;:&nbsp;</td>
-                                <td>30</td>
+                                <td>{{ $today }}</td>
                             </tr>
                             <tr>
                                 <td>Bulan Ini</td>
                                 <td>&nbsp;:&nbsp;</td>
-                                <td>1624</td>
+                                <td>{{ $currentMonth }}</td>
                             </tr>
                             <tr>
                                 <td>Tahun Ini</td>
                                 <td>&nbsp;:&nbsp;</td>
-                                <td>30.404</td>
+                                <td>{{ $currentYear }}</td>
                             </tr>
                             <tr>
                                 <td>Keseluruhan</td>
                                 <td>&nbsp;:&nbsp;</td>
-                                <td>109.887</td>
+                                <td>{{ $all }}</td>
                             </tr>
 
 

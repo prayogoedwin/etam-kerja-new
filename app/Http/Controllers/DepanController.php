@@ -32,21 +32,26 @@ class DepanController extends Controller
 
         // Query pencarian berdasarkan parameter
         $lowonganDisetujui15 = Lowongan::where('status_id', 1) // Lowongan yang disetujui
-        ->with('postedBy:id,name')
-        ->orderBy('tanggal_start', 'desc')
-        ->limit(15)
-        ->get();
+            ->with('postedBy:id,name')
+            ->orderBy('tanggal_start', 'desc')
+            ->limit(15)
+            ->get();
+
+        $pencari = UserPencari::whereNull('deleted_at')->count();
+        $lowongan = Lowongan::where('status_id', 1)->whereNull('deleted_at')->count();
+        $penyedia = UserPenyedia::whereNull('deleted_at')->count();
 
         // dd($lowonganDisetujui15->toArray());
 
         // Mengirim faq ke view depan_index
-        return view('depan.depan_index', compact('faq', 'beritaTerbaru', 'lowonganDisetujui15'));
+        return view('depan.depan_index', compact('faq', 'beritaTerbaru', 'lowonganDisetujui15', 'pencari', 'lowongan', 'penyedia'));
     }
 
 
 
-    public function bkk(){
-       // Mengambil data yang kolom deleted_at nya NULL (belum di-soft delete)
+    public function bkk()
+    {
+        // Mengambil data yang kolom deleted_at nya NULL (belum di-soft delete)
         $data_bkk = UserBkk::whereNull('deleted_at')->get();
 
         // Melempar data ke view
@@ -54,11 +59,13 @@ class DepanController extends Controller
         // echo json_encode($data_bkk);
     }
 
-    public function login(){
+    public function login()
+    {
         return view('depan.depan_login');
     }
 
-    public function register(){
+    public function register()
+    {
         // Mengambil data agama menggunakan model Depan
         $depanModel = new Depan();
         $data['agama'] = $depanModel->getAllAgama(); // Mendapatkan semua data agama
@@ -106,7 +113,7 @@ class DepanController extends Controller
 
         // Query pencarian berdasarkan parameter
         $lowonganDisetujui = Lowongan::where('status_id', 1) // Lowongan yang disetujui
-            ->where('is_lowongan_disabilitas',1)
+            ->where('is_lowongan_disabilitas', 1)
             ->where('deleted_at', null)
             ->when($judulLowongan, function ($query, $judulLowongan) {
                 return $query->where('judul_lowongan', 'like', '%' . $judulLowongan . '%');
@@ -124,23 +131,26 @@ class DepanController extends Controller
         return view('depan.depan_lowongan_kerja_disabilitas', compact('lowonganDisetujui'));
     }
 
-    public function infografis(){
+    public function infografis()
+    {
         $infografis = EtamInfografis::whereNull('deleted_at')
-        ->where('status', 1)
-        ->orderBy('created_at', 'desc')
-        ->paginate(10);
+            ->where('status', 1)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
         return view('depan.depan_infografis', compact('infografis'));
     }
 
-    public function galeri(){
+    public function galeri()
+    {
         $galeris = EtamGaleri::whereNull('deleted_at')
-        ->where('status', 1)
-        ->orderBy('created_at', 'desc')
-        ->paginate(10);
+            ->where('status', 1)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
         return view('depan.depan_galeri', compact('galeris'));
     }
 
-    public function berita(){
+    public function berita()
+    {
         $beritas = EtamBerita::select('id', 'name', 'cover', 'status', 'created_at')
             ->where('status', 1)
             ->whereNull('deleted_at')
@@ -161,7 +171,8 @@ class DepanController extends Controller
         return view('depan.depan_berita_detail', compact('berita'));
     }
 
-    public function lowongan_show($id){
+    public function lowongan_show($id)
+    {
         $id = decode_url($id);
         // $lowongan = Lowongan::findOrFail($id);
         // $lowongan = Lowongan::with('userPenyedia')->findOrFail($id); // Eager loading relasi userPenyedia
@@ -173,10 +184,11 @@ class DepanController extends Controller
         // echo json_encode($lowongan);
         // die();
 
-        return view('depan.depan_lowongan_detail', compact('lowongan','userPenyedia'));
+        return view('depan.depan_lowongan_detail', compact('lowongan', 'userPenyedia'));
     }
 
-    public function daftar_akun(Request $request){
+    public function daftar_akun(Request $request)
+    {
         // dd($request->all());
         $request->validate([
             'role_dipilih' => 'required',
@@ -185,24 +197,25 @@ class DepanController extends Controller
         $url_role = encode_url($request->role_dipilih);
         // dd($url_role);
 
-        return redirect()->to('depan/daftar?rl='.$url_role);
+        return redirect()->to('depan/daftar?rl=' . $url_role);
     }
 
-    public function daftar(Request $request){
+    public function daftar(Request $request)
+    {
         // Tangkap parameter rl dari URL
         $rl = $request->input('rl'); // atau bisa juga menggunakan $request->query('rl')
         // echo 'Parameter rl: ' . $rl;
         $decode_rl = decode_url($rl);
-        if($decode_rl != 'pencari-kerja' && $decode_rl != 'penyedia-kerja' && $decode_rl != 'admin-bkk'){
+        if ($decode_rl != 'pencari-kerja' && $decode_rl != 'penyedia-kerja' && $decode_rl != 'admin-bkk') {
             return abort(404);
         }
 
         $nm_role = '';
-        if($decode_rl == 'pencari-kerja'){
+        if ($decode_rl == 'pencari-kerja') {
             $nm_role = 'Pencari Kerja';
-        } else if($decode_rl == 'penyedia-kerja'){
+        } else if ($decode_rl == 'penyedia-kerja') {
             $nm_role = 'Penyedia Kerja';
-        } else if($decode_rl == 'admin-bkk'){
+        } else if ($decode_rl == 'admin-bkk') {
             $nm_role = 'Bursa Kerja Khusus';
         }
 
@@ -223,14 +236,15 @@ class DepanController extends Controller
         // echo json_encode($data);
     }
 
-    public function cek_awal_akun(Request $request){
+    public function cek_awal_akun(Request $request)
+    {
         // return response()->json([
         //     'email' => $request->email,
         //     'wa' => $request->wa,
         // ]);
 
         $userEmail = User::where('email', $request->email)->first();
-        if($userEmail){
+        if ($userEmail) {
             return response()->json([
                 'status' => 5,
                 'message' => 'Email sudah pernah terdaftar'
@@ -238,10 +252,10 @@ class DepanController extends Controller
         }
 
         $userWa = User::where('whatsapp', $request->wa)
-        ->whereNull('deleted_at')
-        ->first();
+            ->whereNull('deleted_at')
+            ->first();
 
-        if($userWa){
+        if ($userWa) {
             return response()->json([
                 'status' => 0,
                 'message' => 'Nomor whatsapp sudah pernah terdaftar'
@@ -277,14 +291,15 @@ class DepanController extends Controller
         ]);
     }
 
-    public function cek_awal_otp(Request $request){
+    public function cek_awal_otp(Request $request)
+    {
 
         $cek = User::where([
             ['email', '=', $request->email_registered],
             ['otp', '=', $request->otp]
         ])->first();
 
-        if(!$cek){
+        if (!$cek) {
             return response()->json([
                 'status' => 0,
                 'message' => 'Kode OTP salah'
@@ -298,7 +313,8 @@ class DepanController extends Controller
         ]);
     }
 
-    public function akhir_daftar_akun(Request $request){
+    public function akhir_daftar_akun(Request $request)
+    {
 
         $imel = session('email_registered');
         $user = User::where('email', $imel)->first();
@@ -359,7 +375,8 @@ class DepanController extends Controller
         }
     }
 
-    public function akhir_daftar_akun_perush(Request $request){
+    public function akhir_daftar_akun_perush(Request $request)
+    {
         $imel = session('email_registered');
         $user = User::where('email', $imel)->first();
 
@@ -411,7 +428,8 @@ class DepanController extends Controller
         }
     }
 
-    public function akhir_daftar_akun_bkk(Request $request){
+    public function akhir_daftar_akun_bkk(Request $request)
+    {
         $imel = session('email_registered');
         $user = User::where('email', $imel)->first();
 
@@ -462,7 +480,8 @@ class DepanController extends Controller
         }
     }
 
-    public function getKabkotaByProv($prov_id){
+    public function getKabkotaByProv($prov_id)
+    {
         $kabkota = DB::table('etam_kabkota')->where('province_id', $prov_id)->get();
 
         return response()->json($kabkota);
@@ -476,13 +495,15 @@ class DepanController extends Controller
         return response()->json($kecamatan);
     }
 
-    public function getDesaByKec($kec_id){
+    public function getDesaByKec($kec_id)
+    {
         $desa = DB::table('etam_desa')->where('district_id', $kec_id)->get();
 
         return response()->json($desa);
     }
 
-    public function getJurusanByPendidikan($pendidikan_id){
+    public function getJurusanByPendidikan($pendidikan_id)
+    {
         $pendidikan = DB::table('etam_jurusan')->where('id_pendidikans', $pendidikan_id)->get();
 
         return response()->json($pendidikan);
