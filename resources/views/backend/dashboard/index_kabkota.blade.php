@@ -1,6 +1,7 @@
 @extends('backend.template.backend')
 
 @section('content')
+
     <body class="box-layout container background-green">
         <!-- [ Main Content ] start -->
         <div class="pcoded-main-container">
@@ -14,8 +15,7 @@
                                     <h5 class="m-b-10">Dashboard</h5>
                                 </div>
                                 <ul class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="#"><i
-                                                class="feather icon-home"></i></a></li>
+                                    <li class="breadcrumb-item"><a href="#"><i class="feather icon-home"></i></a></li>
                                     <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                                 </ul>
                             </div>
@@ -35,7 +35,7 @@
                                     <div class="card-body">
                                         <div class="row align-items-center">
                                             <div class="col-8">
-                                                <h4 class="text-c-yellow">40</h4>
+                                                <h4 class="text-c-yellow">{{ $lowonganPending }}</h4>
                                                 <h6 class="text-muted m-b-0">Lowongan</h6>
                                             </div>
                                             <div class="col-4 text-end">
@@ -61,7 +61,7 @@
                                     <div class="card-body">
                                         <div class="row align-items-center">
                                             <div class="col-8">
-                                                <h4 class="text-c-green">101</h4>
+                                                <h4 class="text-c-green">{{ $lamaranBelumProses }}</h4>
                                                 <h6 class="text-muted m-b-0">Lamaran</h6>
                                             </div>
                                             <div class="col-4 text-end">
@@ -113,7 +113,7 @@
                                     <div class="card-body">
                                         <div class="row align-items-center">
                                             <div class="col-8">
-                                                <h4 class="text-c-yellow">66</h4>
+                                                <h4 class="text-c-yellow">{{ $pencariKerja }}</h4>
                                                 <h6 class="text-muted m-b-0">Pencari Kerja Baru</h6>
                                             </div>
                                             <div class="col-4 text-end">
@@ -139,7 +139,7 @@
                                     <div class="card-body">
                                         <div class="row align-items-center">
                                             <div class="col-8">
-                                                <h4 class="text-c-green">3</h4>
+                                                <h4 class="text-c-green">{{ $penyedia }}</h4>
                                                 <h6 class="text-muted m-b-0">Perusahaan Baru</h6>
                                             </div>
                                             <div class="col-4 text-end">
@@ -165,7 +165,7 @@
                                     <div class="card-body">
                                         <div class="row align-items-center">
                                             <div class="col-8">
-                                                <h4 class="text-c-green">1</h4>
+                                                <h4 class="text-c-green">{{ $bkk }}</h4>
                                                 <h6 class="text-muted m-b-0">BKK Baru</h6>
                                             </div>
                                             <div class="col-4 text-end">

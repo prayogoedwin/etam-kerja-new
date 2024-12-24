@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckUserRole;
 
@@ -27,14 +28,14 @@ use App\Http\Controllers\Ak1Controller;
 use App\Http\Controllers\DiterimaPencariController;
 use App\Http\Controllers\PenempatanController;
 use App\Http\Controllers\RekapController;
-
+use App\Http\Middleware\TrackVisitors;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
 // });
 
 
-Route::get('/', [DepanController::class, 'index']);
+Route::get('/', [DepanController::class, 'index'])->middleware(TrackVisitors::class);
 
 
 Route::get('/depan/bkk', [DepanController::class, 'bkk']);
@@ -114,7 +115,6 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/berita/{id}/edit', [EtamBeritaController::class, 'edit'])->name('berita.edit');
         Route::put('/berita/{id}', [EtamBeritaController::class, 'update'])->name('berita.update');
         Route::delete('/berita/delete/{id}', [EtamBeritaController::class, 'destroy'])->name('berita.destroy');
-
     });
 
     // Route::prefix('users')->group(function () {
@@ -134,8 +134,6 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/penyedia', [UserPenyediaController::class, 'index'])->name('userpenyedia.index');
         Route::delete('/penyedia/delete/{id}', [UserPenyediaController::class, 'softdelete'])->name('userpenyedia.softdelete');
         Route::put('/penyedia/reset/{id}', [UserPenyediaController::class, 'reset'])->name('userpenyedia.reset');
-
-
     });
 
 
@@ -146,7 +144,6 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
         Route::get('/penyedia', [UserPenyediaController::class, 'data'])->name('datapenyedia.index');
         Route::get('/datapenyedia/export-csv', [UserPenyediaController::class, 'exportCsv'])->name('datapenyedia.exportCsv');
-
     });
 
     Route::prefix('penyedias')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer,penyedia-kerja')->group(function () {
@@ -178,7 +175,6 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/existing', [Ak1Controller::class, 'cetakExisting'])->name('ak1.existing');
         Route::get('/print/{id}', [Ak1Controller::class, 'printAk1'])->name('ak1.print');
         Route::put('/update/{id}', [Ak1Controller::class, 'updateUser'])->name('ak1.update');
-
     });
 
     Route::prefix('admins')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
@@ -230,8 +226,3 @@ Route::get('/get-kecamatan', [BackController::class, 'getKecamatan']);
 //   });
 
 Route::get('ak1/cek/{unik_kode}', [Ak1Controller::class, 'viewAk1'])->name('ak1.view');
-
-
-
-
-

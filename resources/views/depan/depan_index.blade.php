@@ -394,7 +394,8 @@
                         <div class="col-lg-4 col-md-4 item">
                             <div class="fun-fact">
                                 <div class="counter">
-                                    <div class="timer" data-to="200" data-speed="2000">200</div>
+                                    <div class="timer" data-to="{{ $lowongan }}" data-speed="2000">
+                                        {{ $lowongan }}</div>
                                     <div class="operator"></div>
                                 </div>
                                 <span class="medium">Lowongan Tersedia</span>
@@ -406,7 +407,8 @@
                         <div class="col-lg-4 col-md-4 item">
                             <div class="fun-fact">
                                 <div class="counter">
-                                    <div class="timer" data-to="300" data-speed="2000">300</div>
+                                    <div class="timer" data-to="{{ $pencari }}" data-speed="2000">
+                                        {{ $pencari }}</div>
                                     <div class="operator"></div>
                                 </div>
                                 <span class="medium">Pencari Kerja</span>
@@ -418,7 +420,8 @@
                         <div class="col-lg-4 col-md-4 item">
                             <div class="fun-fact">
                                 <div class="counter">
-                                    <div class="timer" data-to="40" data-speed="2000">40</div>
+                                    <div class="timer" data-to="{{ $penyedia }}" data-speed="2000">
+                                        {{ $penyedia }}</div>
                                     <div class="operator"></div>
                                 </div>
                                 <span class="medium">Penyedia Kerja</span>
