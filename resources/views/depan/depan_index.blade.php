@@ -15,7 +15,8 @@
                     <div class="row align-center">
                         <div class="col-xl-7 col-lg-9">
                             <div class="content">
-                                <h2>Mempertemukan Perusahaan dengan <br> Pencari Kerja Berkualitas.</h2>
+                                <img src="{{ asset('assets') }}/etam_fe/hut_kaltim.png">
+                                {{-- <h2>Mempertemukan Perusahaan dengan <br> Pencari Kerja Berkualitas.</h2> --}}
                                 <p>
                                     Melalui ETAM KERJA pemerintah hadir sebagai perantara bagi perusahaan dan pencari
                                     kerja
