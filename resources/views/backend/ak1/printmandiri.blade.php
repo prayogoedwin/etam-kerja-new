@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kartu Tanda Bukti Pendaftaran Pencari Kerja</title>
+    <title>Kartu Tanda Bukti Pendaftaran Pemberi Kerja</title>
     <!-- Favicon icon -->
     <link rel="icon" href="{{ asset('assets/etam_be/images/logo/icon_etam.png') }}" type="image/x-icon">
     <link rel="stylesheet" href="./assets/css/style.css" />
@@ -359,11 +359,11 @@
                     </p>
                 </header>
                 <div class="job-seeker">
-                    <h5 class="title-border">Kartu Tanda Bukti Pendaftaran Pencari Kerja</h5>
+                    <h5 class="title-border">Kartu Tanda Bukti Pendaftaran Pemberi Kerja</h5>
 
 
                     <!-- <span><em>8</em><em>4</em><em>5</em><em>0</em><em class="empty"></em><em>0</em><em>6</em><em>2</em><em>6</em><em>6</em><em>7</em><em>8</em><em class="empty"></em><em>0</em><em>0</em><em>1</em><em>7</em><em>2</em><em>5</em><em>6</em></span></p> -->
-                    <p class="fill-square"><b>No. Pendaftaran Pencari Kerja</b> <span>
+                    <p class="fill-square"><b>No. Pendaftaran Pemberi Kerja</b> <span>
                             <em class="empty"></em>
 
 
@@ -407,7 +407,7 @@
                                 <div class="signing">
                                     <img src="{{ asset('storage/' . $pencari->foto) }}" width="118" height="118"
                                         alt="Foto Profil" />
-                                    <p>TTD Pencari Kerja</p>
+                                    <p>TTD Pemberi Kerja</p>
                                 </div>
                                 <div class="info-detail">
                                     <p style="margin-bottom: 0px;"><span>Nama Lengkap</span>
@@ -460,13 +460,13 @@
                         </tr>
                         <tr>
                             <td>3.</td>
-                            <td>APABILA PENCARI KERJA YANG BERSANGKUTAN TELAH DITERIMA BEKERJA MAKA INSTANSI /
+                            <td>APABILA PEMBERI KERJA YANG BERSANGKUTAN TELAH DITERIMA BEKERJA MAKA INSTANSI /
                                 PERUSAHAAN YANG MENERIMA AGAR MENGEMBALIKAN KARTU AK I INI</td>
                         </tr>
                         <tr>
                             <td>4.</td>
                             <td>KARTU INI BERLAKU SELAMA 2 (DUA) TAHUN DENGAN KEHARUSAN KETENTUAN MELAPOR SETIAP 6
-                                (ENAM) BULAN SEKALI BAGI PENCARI KERJA YANG BELUM MENDAPATKAN PEKERJAAN</td>
+                                (ENAM) BULAN SEKALI BAGI PEMBERI KERJA YANG BELUM MENDAPATKAN PEKERJAAN</td>
                         </tr>
                     </tbody>
                 </table>

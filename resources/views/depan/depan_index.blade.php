@@ -16,7 +16,7 @@
                         <div class="col-xl-7 col-lg-9">
                             <div class="content">
                                 <img src="{{ asset('assets') }}/etam_fe/hut_kaltim.png">
-                                {{-- <h2>Mempertemukan Perusahaan dengan <br> Pencari Kerja Berkualitas.</h2> --}}
+                                {{-- <h2>Mempertemukan Perusahaan dengan <br> Pemberi Kerja Berkualitas.</h2> --}}
                                 <p>
                                     Melalui ETAM KERJA pemerintah hadir sebagai perantara bagi perusahaan dan pencari
                                     kerja
@@ -47,7 +47,7 @@
                     <div class="row align-center">
                         <div class="col-xl-7 col-lg-9">
                             <div class="content">
-                                <h2>Mudah Menemukan <br> Pencari Kerja <br /> Lokal</h2>
+                                <h2>Mudah Menemukan <br> Pemberi Kerja <br /> Lokal</h2>
                                 <p>
                                     ETAM KERJA hadir untuk memperbanyak pilihan perusahaan di Kalimantan Timur akan
                                     kebutuhan tenaga kerja lokal
@@ -412,7 +412,7 @@
                                         {{ $pencari }}</div>
                                     <div class="operator"></div>
                                 </div>
-                                <span class="medium">Pencari Kerja</span>
+                                <span class="medium">Pemberi Kerja</span>
                             </div>
                         </div>
                         <!-- End Single item -->

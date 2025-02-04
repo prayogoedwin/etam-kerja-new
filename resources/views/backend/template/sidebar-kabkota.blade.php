@@ -7,7 +7,7 @@
                     <img class="img-radius" src="{{ asset('assets/etam_be/images/user/avatar-x.png') }}"
                         alt="User-Profile-Image">
                     <div class="user-details">
-                        <div id="more-details"> {{ Auth::user()->name }} 
+                        <div id="more-details"> {{ Auth::user()->name }}
                             {{-- <i class="fa fa-caret-down"></i> --}}
                         </div>
                     </div>
@@ -51,25 +51,25 @@
                     </ul>
                 </li> --}}
 
-               
+
                 <li class="nav-item pcoded-hasmenu">
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-users"></i></span><span class="pcoded-mtext">Users</span></a>
                     <ul class="pcoded-submenu">
                         @if (Auth::user()->roles[0]['name'] == 'admin-kabkota')
-                        <li><a href="{{ route('admin.index') }}">Officer</a></li>
+                            <li><a href="{{ route('admin.index') }}">Officer</a></li>
                         @endif
-                        <li><a href="{{ route('userpencari.index') }}">Pencari Kerja</a></li>
+                        <li><a href="{{ route('userpencari.index') }}">Pemberi Kerja</a></li>
                         <li><a href="{{ route('userpenyedia.index') }}">Penyedia Kerja</a></li>
                     </ul>
                 </li>
-           
+
 
                 <li class="nav-item pcoded-hasmenu">
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-users"></i></span><span class="pcoded-mtext">Data</span></a>
                     <ul class="pcoded-submenu">
-                        <li><a href="{{ route('datapencari.index') }}">Pencari Kerja</a></li>
+                        <li><a href="{{ route('datapencari.index') }}">Pemberi Kerja</a></li>
                         <li><a href="{{ route('datapenyedia.index') }}">Penyedia Kerja</a></li>
                     </ul>
                 </li>
@@ -78,7 +78,8 @@
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-users"></i></span><span class="pcoded-mtext">AK1</span></a>
                     <ul class="pcoded-submenu">
-                        <li><a href="javascript:void(0);" class="menu-link" data-bs-toggle="modal" data-bs-target="#ak1Modal">Cetak</a></li>
+                        <li><a href="javascript:void(0);" class="menu-link" data-bs-toggle="modal"
+                                data-bs-target="#ak1Modal">Cetak</a></li>
                         {{-- <li><a href="{{route('ak1.existing')}}" class="menu-link" >Cetak</a></li> --}}
                         <li><a href="{{ route('ak1.data') }}">Data</a></li>
                     </ul>
@@ -89,20 +90,20 @@
                             class="pcoded-mtext">Lowongan</span></a></li>
 
                 <li class="nav-item"><a href="{{ route('penempatan.admin.index') }}" class="nav-link "><span
-                    class="pcoded-micon"><i class="fa fa-archive"></i></span><span
-                    class="pcoded-mtext">Penempatan</span></a></li>
+                            class="pcoded-micon"><i class="fa fa-archive"></i></span><span
+                            class="pcoded-mtext">Penempatan</span></a></li>
 
-                    <li class="nav-item pcoded-hasmenu">
-                        <a href="#" class="nav-link "><span class="pcoded-micon"><i
-                                    class="feather icon-users"></i></span><span class="pcoded-mtext">Rekap</span></a>
-                        <ul class="pcoded-submenu">
-                            <li><a href="{{ route('rekap.ak31') }}">IPK 3.1</a></li>
-                            <li><a href="{{ route('rekap.ak32') }}">IPK 3.2</a></li>
-                            <li><a href="{{ route('rekap.ak34') }}">IPK 3.4</a></li>
-                            <li><a href="{{ route('rekap.ak37') }}">IPK 3.7</a></li>
-                            <li><a href="{{ route('rekap.ak38') }}">IPK 3.8</a></li>
-                        </ul>
-                    </li>
+                <li class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-users"></i></span><span class="pcoded-mtext">Rekap</span></a>
+                    <ul class="pcoded-submenu">
+                        <li><a href="{{ route('rekap.ak31') }}">IPK 3.1</a></li>
+                        <li><a href="{{ route('rekap.ak32') }}">IPK 3.2</a></li>
+                        <li><a href="{{ route('rekap.ak34') }}">IPK 3.4</a></li>
+                        <li><a href="{{ route('rekap.ak37') }}">IPK 3.7</a></li>
+                        <li><a href="{{ route('rekap.ak38') }}">IPK 3.8</a></li>
+                    </ul>
+                </li>
 
             </ul>
 

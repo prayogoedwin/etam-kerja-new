@@ -9,7 +9,7 @@
                         style="background-image: asset(etam_fe/img/shape/map-light.png);">
                         <h4>Ingin Mendaftar Sebagai?</h4>
                         <ul>
-                            <li><a href="#">Pencari Kerja</a></li>
+                            <li><a href="#">Pemberi Kerja</a></li>
                             <li><a href="#">Perusahaan</a></li>
                             <li><a href="#">BKK</a></li>
                             <li><a href="{{ url('/depan/login') }}">Sudah punya akun? Login <span
@@ -28,7 +28,7 @@
                         <h2 class="accordion-header" id="headingOne">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                Pencari Kerja
+                                Pemberi Kerja
                             </button>
                         </h2>
                         <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
