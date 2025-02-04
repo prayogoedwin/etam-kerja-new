@@ -38,7 +38,7 @@ class UserAdmin extends Model
 
     public function kecamatan()
     {
-        return $this->belongsTo(kecamatan::class, 'kecamatan_id', 'id');
+        return $this->belongsTo(Kecamatan::class, 'kecamatan_id', 'id');
     }
     
 
