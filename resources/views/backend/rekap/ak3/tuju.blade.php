@@ -38,7 +38,7 @@
                             <div class="card-body">
                                 <div class="row align-items-center m-l-0">
                                     <div class="col-sm-12">
-                                        <h5>IPK III/7 : PEMBERI KERJA YANG TERDAFTAR, DITEMPATKAN DAN DIHAPUSKAN (DESEMBER
+                                        <h5>IPK III/7 : PENCARI KERJA YANG TERDAFTAR, DITEMPATKAN DAN DIHAPUSKAN (DESEMBER
                                             2024)</h5>
                                     </div>
                                 </div>

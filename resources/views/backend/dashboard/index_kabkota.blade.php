@@ -114,7 +114,7 @@
                                         <div class="row align-items-center">
                                             <div class="col-8">
                                                 <h4 class="text-c-yellow">{{ $pencariKerja }}</h4>
-                                                <h6 class="text-muted m-b-0">Pemberi Kerja Baru</h6>
+                                                <h6 class="text-muted m-b-0">Pencari Kerja Baru</h6>
                                             </div>
                                             <div class="col-4 text-end">
                                                 <i class="feather icon-bar-chart-2 f-28"></i>
@@ -124,7 +124,7 @@
                                     <div class="card-footer bg-c-yellow">
                                         <div class="row align-items-center">
                                             <div class="col-9">
-                                                <p class="text-white m-b-0">Pemberi Kerja Baru Hari Ini</p>
+                                                <p class="text-white m-b-0">Pencari Kerja Baru Hari Ini</p>
                                             </div>
                                             <div class="col-3 text-end">
                                                 <i class="feather icon-trending-up text-white f-16"></i>

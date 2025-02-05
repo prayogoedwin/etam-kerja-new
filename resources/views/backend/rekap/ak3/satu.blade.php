@@ -45,7 +45,7 @@
                                     <table class="table table-bordered">
                                         <thead class="text-center">
                                             <tr>
-                                                <th rowspan="3">I.PEMBERI KERJA</th>
+                                                <th rowspan="3">I.PENCARI KERJA</th>
                                                 <th colspan="10">KELOMPOK UMUR</th>
                                                 <th rowspan="2" colspan="3">Jumlah</th>
                                             </tr>
@@ -74,7 +74,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>1. Pemberi kerja yang belum ditempatkan pada bulan yang lalu</td>
+                                                <td>1. Pencari kerja yang belum ditempatkan pada bulan yang lalu</td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
@@ -90,7 +90,7 @@
                                                 <td>0</td>
                                             </tr>
                                             <tr>
-                                                <td>2. Pemberi kerja yang terdaftar pada bulan ini</td>
+                                                <td>2. Pencari kerja yang terdaftar pada bulan ini</td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
@@ -122,7 +122,7 @@
                                                 <td>0</td>
                                             </tr>
                                             <tr>
-                                                <td>3. Pemberi kerja yang ditempatkan pada bulan ini</td>
+                                                <td>3. Pencari kerja yang ditempatkan pada bulan ini</td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
@@ -138,7 +138,7 @@
                                                 <td>0</td>
                                             </tr>
                                             <tr>
-                                                <td>4. Pemberi kerja yang dihapuskan pada bulan ini</td>
+                                                <td>4. Pencari kerja yang dihapuskan pada bulan ini</td>
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
@@ -170,7 +170,7 @@
                                                 <td>0</td>
                                             </tr>
                                             <tr>
-                                                <td>5. Pemberi kerja yang belum ditempatkan pada akhir bulan ini (A-B)</td>
+                                                <td>5. Pencari kerja yang belum ditempatkan pada akhir bulan ini (A-B)</td>
                                                 <td>0</td>
                                                 <td>0</td>
                                                 <td>0</td>

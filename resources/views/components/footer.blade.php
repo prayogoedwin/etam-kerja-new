@@ -31,7 +31,7 @@
                         <p>
                             ETAM KERJA adalah Sistem Informasi Penempatan Tenaga Kerja yang di kelola oleh Dinas Tenaga
                             Kerja & Transmigrasi Provinsi Kalimantan Timur. <br />
-                            <!-- Sistem ini dibuat sebagai bentuk pelayanan dari pemerintah untuk menunjang proses mempertemukan pemberi kerja dengan perusahaan yang membutuhkan tenaga kerja.  -->
+                            <!-- Sistem ini dibuat sebagai bentuk pelayanan dari pemerintah untuk menunjang proses mempertemukan pencari kerja dengan perusahaan yang membutuhkan tenaga kerja.  -->
                         </p>
                         <!-- <div class="opening-hours">
                                 <h5>Opening Hours</h5>
@@ -199,7 +199,7 @@
                         <label for="">Daftar Sebagai</label>
                         <select name="role_dipilih" id="role_dipilih" required>
                             <option value="">Pilih</option>
-                            <option value="pencari-kerja">Pemberi Kerja</option>
+                            <option value="pencari-kerja">Pencari Kerja</option>
                             <option value="penyedia-kerja">Penyedia Kerja</option>
                             <option value="admin-bkk">BKK</option>
                         </select>

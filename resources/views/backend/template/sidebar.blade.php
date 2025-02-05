@@ -56,7 +56,7 @@
                                 class="feather icon-users"></i></span><span class="pcoded-mtext">Users</span></a>
                     <ul class="pcoded-submenu">
                         <li><a href="{{ route('admin.index') }}">Admin</a></li>
-                        <li><a href="{{ route('userpencari.index') }}">Pemberi Kerja</a></li>
+                        <li><a href="{{ route('userpencari.index') }}">Pencari Kerja</a></li>
                         <li><a href="{{ route('userpenyedia.index') }}">Penyedia Kerja</a></li>
                     </ul>
                 </li>
@@ -65,7 +65,7 @@
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-users"></i></span><span class="pcoded-mtext">Data</span></a>
                     <ul class="pcoded-submenu">
-                        <li><a href="{{ route('datapencari.index') }}">Pemberi Kerja</a></li>
+                        <li><a href="{{ route('datapencari.index') }}">Pencari Kerja</a></li>
                         <li><a href="{{ route('datapenyedia.index') }}">Penyedia Kerja</a></li>
                     </ul>
                 </li>

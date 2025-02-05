@@ -38,8 +38,8 @@
                             <div class="card-body">
                                 <div class="row align-items-center m-l-0">
                                     <div class="col-sm-12">
-                                        <h5>IPK III/8 : PENEMPATAN PEMBERI KERJA MENURUT JENIS ANTAR KERJA TINGKAT
-                                            PENDIDIKAN PEMBERI KERJA, PENERIMA TENAGA KERJA DAN JENIS KELAMIN (DESEMBER
+                                        <h5>IPK III/8 : PENEMPATAN PENCARI KERJA MENURUT JENIS ANTAR KERJA TINGKAT
+                                            PENDIDIKAN PENCARI KERJA, PENERIMA TENAGA KERJA DAN JENIS KELAMIN (DESEMBER
                                             2024)</h5>
                                     </div>
                                 </div>
@@ -49,7 +49,7 @@
                                         <thead class="text-center">
                                             <tr>
                                                 <th rowspan="3">Kode</th>
-                                                <th rowspan="3">I . Tingkat Pendidikan Pemberi Kerja yg ditempatkan</th>
+                                                <th rowspan="3">I . Tingkat Pendidikan Pencari Kerja yg ditempatkan</th>
                                                 <th colspan="9">Jenis Antar Kerja</th>
                                                 <th rowspan="2" colspan="3">Jumlah</th>
                                             </tr>
@@ -361,7 +361,7 @@
                                         <thead class="text-center">
                                             <tr>
                                                 <th rowspan="3">Kode</th>
-                                                <th rowspan="3">I . Tingkat Pendidikan Pemberi Kerja yg ditempatkan</th>
+                                                <th rowspan="3">I . Tingkat Pendidikan Pencari Kerja yg ditempatkan</th>
                                                 <th colspan="9">Jenis Antar Kerja</th>
                                                 <th rowspan="2" colspan="3">Jumlah</th>
                                             </tr>
