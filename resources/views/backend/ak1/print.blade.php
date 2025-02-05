@@ -328,7 +328,7 @@
                         <ul>
                             @forelse ($keterampilans as $skill)
                                 <li>
-                                    {{ $skill->keahlian ?? '-' }}<br> 
+                                    {{ $skill->keahlian ?? '-' }}<br>
                                 </li>
                             @empty
                                 <li>-</li>
@@ -339,8 +339,8 @@
                         <h6 class="text-center">PETUGAS ANTAR KERJA</h6>
                         <p><br /><br /><br /></p>
                         <p class="text-center" style="margin-bottom: 0px;"><span class="text-underline">
-                               {{ $admins->user->name }}</span> 
-                               {{-- <br />NIP. ___________________</p> --}}
+                                {{ $admins->user->name }}</span>
+                            {{-- <br />NIP. ___________________</p> --}}
                     </div>
                 </div>
             </div>
@@ -348,13 +348,14 @@
                 <header>
                     {{-- <img src="https://bursakerja.jatengprov.go.id/assets/images/kontingen/Kabupaten_Semarang.png"
                         width="60" height="60" alt="KABUPATEN SEMARANG" /> --}}
-                        <img src="{{ url($admins->kabkota->icon) }}" width="60" height="60" alt="{{ $admins->kabkota->kantor }}" />
-                        {{-- <img src="{{ url($admins->kabkota->icon) }}" width="60" height="60" alt="{{ $admins->kabkota->kantor }}" /> --}}
-                        
-                    <p>{{ $admins->kabkota->kantor}}
-                        <small>{{ $admins->kabkota->alamat}}<br />
-                            Telp:{{ $admins->kabkota->telp}}| Email:{{ $admins->kabkota->email}}<br />
-                            {{ $admins->kabkota->web}} </small>
+                    <img src="{{ url($admins->kabkota->icon) }}" width="60" height="60"
+                        alt="{{ $admins->kabkota->kantor }}" />
+                    {{-- <img src="{{ url($admins->kabkota->icon) }}" width="60" height="60" alt="{{ $admins->kabkota->kantor }}" /> --}}
+
+                    <p>{{ $admins->kabkota->kantor }}
+                        <small>{{ $admins->kabkota->alamat }}<br />
+                            Telp:{{ $admins->kabkota->telp }}| Email:{{ $admins->kabkota->email }}<br />
+                            {{ $admins->kabkota->web }} </small>
                     </p>
                 </header>
                 <div class="job-seeker">
@@ -404,12 +405,13 @@
                         <div style="width: 100%;">
                             <div style="display: flex;">
                                 <div class="signing">
-                                    <img src="{{ asset('storage/' . $pencari->foto) }}" width="118"
-                                        height="118" alt="Foto Profil" />
+                                    <img src="{{ asset('storage/' . $pencari->foto) }}" width="118" height="118"
+                                        alt="Foto Profil" />
                                     <p>TTD Pencari Kerja</p>
                                 </div>
                                 <div class="info-detail">
-                                    <p style="margin-bottom: 0px;"><span>Nama Lengkap</span> {{ $pencari->name ?? '-' }}
+                                    <p style="margin-bottom: 0px;"><span>Nama Lengkap</span>
+                                        {{ $pencari->name ?? '-' }}
                                     </p>
                                     <p style="margin-bottom: 0px;"><span>Tempat / Tgl Lahir</span>
                                         {{ $pencari->tempat_lahir ?? '-' }} ,

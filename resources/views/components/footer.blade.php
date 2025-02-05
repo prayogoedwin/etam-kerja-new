@@ -8,9 +8,7 @@
         ->whereYear('created_at', now()->year)
         ->count();
 
-    $currentYear = DB::table('visitors')
-        ->whereYear('created_at', now()->year)
-        ->count();
+    $currentYear = DB::table('visitors')->whereYear('created_at', now()->year)->count();
 
     $all = DB::table('visitors')->count();
 @endphp
@@ -202,7 +200,7 @@
                         <select name="role_dipilih" id="role_dipilih" required>
                             <option value="">Pilih</option>
                             <option value="pencari-kerja">Pencari Kerja</option>
-                            <option value="penyedia-kerja">Penyedia Kerja</option>
+                            <option value="penyedia-kerja">Pemberi Kerja</option>
                             <option value="admin-bkk">BKK</option>
                         </select>
                     </div>
@@ -249,11 +247,14 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-P78YEXK6RP"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    window.dataLayer = window.dataLayer || [];
 
-  gtag('config', 'G-P78YEXK6RP');
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-P78YEXK6RP');
 </script>
 
 </body>

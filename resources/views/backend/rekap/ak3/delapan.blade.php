@@ -38,7 +38,9 @@
                             <div class="card-body">
                                 <div class="row align-items-center m-l-0">
                                     <div class="col-sm-12">
-                                        <h5>IPK III/8 : PENEMPATAN PENCARI KERJA MENURUT JENIS ANTAR KERJA TINGKAT PENDIDIKAN PENCARI KERJA, PENERIMA TENAGA KERJA DAN JENIS KELAMIN (DESEMBER 2024)</h5>
+                                        <h5>IPK III/8 : PENEMPATAN PENCARI KERJA MENURUT JENIS ANTAR KERJA TINGKAT
+                                            PENDIDIKAN PENCARI KERJA, PENERIMA TENAGA KERJA DAN JENIS KELAMIN (DESEMBER
+                                            2024)</h5>
                                     </div>
                                 </div>
                                 <div class="table-responsive">
@@ -328,12 +330,13 @@
                                                 <td></td>
                                                 <td></td>
                                             </tr>
-                            
-                            
+
+
                                             <!-- REKAP -->
                                             <tr class="text-center">
                                                 <td></td>
-                                                <td><p class="fw-bold">JUMLAH</p>
+                                                <td>
+                                                    <p class="fw-bold">JUMLAH</p>
                                                 </td>
                                                 <td>0</td>
                                                 <td>0</td>
@@ -351,7 +354,7 @@
                                         </tbody>
                                     </table>
 
-                                    <br/>
+                                    <br />
 
 
                                     <table class="table table-bordered">
@@ -495,12 +498,13 @@
                                                 <td></td>
                                                 <td></td>
                                             </tr>
-                            
-                            
+
+
                                             <!-- REKAP -->
                                             <tr class="text-center">
                                                 <td></td>
-                                                <td><p class="fw-bold">JUMLAH</p>
+                                                <td>
+                                                    <p class="fw-bold">JUMLAH</p>
                                                 </td>
                                                 <td>0</td>
                                                 <td>0</td>
@@ -540,5 +544,4 @@
 
 
 @push('js')
-   
 @endpush

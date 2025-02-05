@@ -425,7 +425,7 @@
                                         {{ $penyedia }}</div>
                                     <div class="operator"></div>
                                 </div>
-                                <span class="medium">Penyedia Kerja</span>
+                                <span class="medium">Pemberi Kerja</span>
                             </div>
                         </div>
                         <!-- End Single item -->

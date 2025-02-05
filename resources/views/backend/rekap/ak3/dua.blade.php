@@ -38,7 +38,8 @@
                             <div class="card-body">
                                 <div class="row align-items-center m-l-0">
                                     <div class="col-sm-12">
-                                        <h5>IPK III/2: PENCARI KERJA YANG TERDAFTAR, DITEMPATKAN DAN DIHAPUSKAN (DESEMBER 2024)</h5>
+                                        <h5>IPK III/2: PENCARI KERJA YANG TERDAFTAR, DITEMPATKAN DAN DIHAPUSKAN (DESEMBER
+                                            2024)</h5>
                                     </div>
                                 </div>
                                 <div class="table-responsive">
@@ -81,7 +82,7 @@
                                                 <td>10</td>
                                                 <td>11</td>
                                             </tr>
-                                           
+
                                             <tr>
                                                 <td>1000</td>
                                                 <td>SEKOLAH DASAR</td>
@@ -157,7 +158,7 @@
                                                 <td></td>
                                             </tr>
 
-                                            
+
 
                                             <!-- REKAP -->
                                             <tr class="text-center">
@@ -177,7 +178,7 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                    
+
 
 
 
@@ -201,5 +202,4 @@
 
 
 @push('js')
-   
 @endpush

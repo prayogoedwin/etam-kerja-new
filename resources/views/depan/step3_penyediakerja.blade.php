@@ -10,7 +10,7 @@
             <input type="text" class="form-control" id="nama_perusahaan" name="nama_perusahaan" required>
         </div>
         <div class="mb-3">
-            <label for="" class="form-label">Penyedia lowongan kerja luar negeri</label>
+            <label for="" class="form-label">Pemberi lowongan kerja luar negeri</label>
             <select class="form-select" id="luar_negri" name="luar_negri" required>
                 <option selected disabled>Pilih</option>
                 <option value="0">Tidak</option>

@@ -188,10 +188,10 @@
                                         </tbody>
                                         <thead class="text-center">
                                             <tr>
-                                                <th >II. LOWONGAN</th>
-                                                <th >L</th>
-                                                <th >W</th>
-                                                <th >L+W</th>
+                                                <th>II. LOWONGAN</th>
+                                                <th>L</th>
+                                                <th>W</th>
+                                                <th>L+W</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -264,5 +264,4 @@
 
 
 @push('js')
-   
 @endpush
