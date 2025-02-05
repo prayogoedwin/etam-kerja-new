@@ -76,7 +76,7 @@
         <div class="text-center">
             <img src="{{ asset('assets/etam_fe/images/logo/LOGO_ETAM_KERJA.png') }}" height="75" alt="">
         </div>
-        <h2 class="text-center mb-4">Register {{ $dt['role_name'] }} </h2>
+        <h2 class="text-center mb-4">Register {{ replacePenyediaKerja($dt['role_name']) }} </h2>
         <div class="step-indicator">
             <div class="circle active" data-step="1">1</div>
             <div class="circle" data-step="2">2</div>

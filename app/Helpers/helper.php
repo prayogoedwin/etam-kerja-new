@@ -44,6 +44,17 @@ if (!function_exists('getFullCompanyType')) {
     }
 }
 
+if (!function_exists('replacePenyediaKerja')) {
+    function replacePenyediaKerja($inputString) {
+        // Menggunakan str_replace untuk mengganti semua kemunculan
+        return str_replace(
+            ['Penyedia Kerja', 'penyedia kerja', 'penyedia_kerja'],
+            ['Pemberi Kerja', 'pemberi kerja', 'pemberi_kerja'],
+            $inputString
+        );
+    }
+}
+
 function getAgama(){
     return DB::table('etam_agama')
         ->get();
