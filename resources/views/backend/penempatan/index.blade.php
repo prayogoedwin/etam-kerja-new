@@ -51,7 +51,7 @@
                                                 <th>Alamat</th>
                                                 <th>Gender</th>
                                                 <th>Waktu</th>
-                                                <th>Penyedia</th>
+                                                <th>Pemberi</th>
                                                 <th>Alamat</th>
                                             </tr>
                                         </thead>

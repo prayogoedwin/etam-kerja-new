@@ -60,7 +60,7 @@
                             <li><a href="{{ route('admin.index') }}">Officer</a></li>
                         @endif
                         <li><a href="{{ route('userpencari.index') }}">Pencari Kerja</a></li>
-                        <li><a href="{{ route('userpenyedia.index') }}">Penyedia Kerja</a></li>
+                        <li><a href="{{ route('userpenyedia.index') }}">Pemberi Kerja</a></li>
                     </ul>
                 </li>
 
@@ -70,7 +70,7 @@
                                 class="feather icon-users"></i></span><span class="pcoded-mtext">Data</span></a>
                     <ul class="pcoded-submenu">
                         <li><a href="{{ route('datapencari.index') }}">Pencari Kerja</a></li>
-                        <li><a href="{{ route('datapenyedia.index') }}">Penyedia Kerja</a></li>
+                        <li><a href="{{ route('datapenyedia.index') }}">Pemberi Kerja</a></li>
                     </ul>
                 </li>
 

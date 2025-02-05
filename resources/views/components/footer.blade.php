@@ -200,7 +200,7 @@
                         <select name="role_dipilih" id="role_dipilih" required>
                             <option value="">Pilih</option>
                             <option value="pencari-kerja">Pencari Kerja</option>
-                            <option value="penyedia-kerja">Penyedia Kerja</option>
+                            <option value="penyedia-kerja">Pemberi Kerja</option>
                             <option value="admin-bkk">BKK</option>
                         </select>
                     </div>
