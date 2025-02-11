@@ -256,6 +256,24 @@
 
     gtag('config', 'G-P78YEXK6RP');
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function toggleRegisterMenu() {
+            var registerMenu = document.getElementById("register-menu");
+
+            if (window.innerWidth <= 768) {
+                registerMenu.style.display = "block"; // Tampilkan di mobile
+            } else {
+                registerMenu.style.display = "none"; // Sembunyikan di desktop
+            }
+        }
+        toggleRegisterMenu();
+
+        // Jalankan saat ukuran layar berubah
+        window.addEventListener("resize", toggleRegisterMenu);
+    });
+</script>
+
 
 </body>
 
