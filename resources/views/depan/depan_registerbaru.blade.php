@@ -493,7 +493,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-
+    <script>
+        document.getElementById("kodepos").addEventListener("input", function(e) {
+            let value = this.value.replace(/\D/g, "");
+            if (value.length > 5) value = value.slice(0, 5);
+            this.value = value;
+        });
+    </script>
 </body>
 
 </html>

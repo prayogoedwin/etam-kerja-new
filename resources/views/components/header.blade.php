@@ -169,6 +169,7 @@
                         </li>
 
                         <li><a href="{{ url('/login') }}">Login</a></li>
+                        <li id="register-menu"><a href="#" onclick="askRoleRegister()">Register</a></li>
                     </ul>
                 </div><!-- /.navbar-collapse -->
 
