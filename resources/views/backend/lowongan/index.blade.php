@@ -76,7 +76,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="modal-report" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+        <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -118,6 +118,23 @@
                                             @foreach ($sektors as $sekt)
                                                 <option value="{{ $sekt->id }}">{{ $sekt->name }}</option>
                                             @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="pendid">Pendidikan</label>
+                                        <select class="form-control" name="pendidikan_id" id="pendidikan_id" required>
+                                            <option value="">Pilih Pendidikan</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="">Jurusan</label>
+                                        <select class="form-control" name="jurusan_id" id="jurusan_id" style="width: 100%;"
+                                            required>
+                                            <option value="">Pilih Jurusan</option>
                                         </select>
                                     </div>
                                 </div>
@@ -195,23 +212,6 @@
                                     <div class="form-group">
                                         {{-- <label class="floating-label" for="desk">Deskripsi</label> --}}
                                         <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3" placeholder="Deskripsi Pekerjaan"></textarea>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label for="pendid">Pendidikan</label>
-                                        <select class="form-control" name="pendidikan_id" id="pendidikan_id" required>
-                                            <option value="">Pilih Pendidikan</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label for="">Jurusan</label>
-                                        <select class="form-control" name="jurusan_id" id="jurusan_id"
-                                            style="width: 100%;" required>
-                                            <option value="">Pilih Jurusan</option>
-                                        </select>
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
@@ -519,10 +519,12 @@
                 });
             });
 
-            $("#jurusan_id").select2({
-                placeholder: "Pilih Jurusan",
-                allowClear: true,
-                dropdownParent: $("#modal-report")
+            $('#modal-report').on('shown.bs.modal', function() {
+                $('#jurusan_id').select2({
+                    placeholder: "Pilih Jurusan",
+                    allowClear: true,
+                    dropdownParent: $('#modal-report')
+                });
             });
 
             $("#jabatan_id").select2({
