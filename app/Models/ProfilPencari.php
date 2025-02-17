@@ -29,6 +29,8 @@ class ProfilPencari extends Model
         'kodepos',
         'id_pendidikan',
         'id_jurusan',
+        'asal_sekolah_universitas',
+        'nilai_ijazah_ipk',
         'tahun_lulus',
         'id_status_perkawinan',
         'id_agama',

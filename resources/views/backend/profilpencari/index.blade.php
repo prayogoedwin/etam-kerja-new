@@ -248,6 +248,26 @@
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
+                                                <label for="">Asal Sekolah / Universitas</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="text" class="form-control"
+                                                    name="asal_sekolah_universitas" id="asal_sekolah_universitas"
+                                                    value="{{ $profil->asal_sekolah_universitas }}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Nilai Ijazah / IPK</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="text" class="form-control" name="nilai_ijazah_ipk"
+                                                    id="nilai_ijazah_ipk" value="{{ $profil->nilai_ijazah_ipk }}"
+                                                    oninput="this.value = this.value.replace(/,/g, '.');">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-2">
                                                 <label for="">Telpon</label>
                                             </div>
                                             <div class="col-10">

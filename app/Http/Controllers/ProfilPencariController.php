@@ -92,6 +92,8 @@ class ProfilPencariController extends Controller
             'kodepos' => 'required|string',
             'id_pendidikan' => 'required|numeric',
             'id_jurusan' => 'required|numeric',
+            'asal_sekolah_universitas' => 'nullable|string',
+            'nilai_ijazah_ipk' => 'nullable|string',
             'medsos' => 'nullable|string',
             'foto' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
             'whatsapp' => 'nullable|string|max:15', // Validasi whatsapp
