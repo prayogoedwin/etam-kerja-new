@@ -61,7 +61,8 @@
                                         <tr>
                                             <td>Gaji</td>
                                             <td>:</td>
-                                            <td>Rp. {{ number_format($lowongan->kisaran_gaji, 0, ',', '.') }}</td>
+                                            <td>Rp. {{ number_format($lowongan->kisaran_gaji, 0, ',', '.') }} s/d
+                                                {{ number_format($lowongan->kisaran_gaji_akhir, 0, ',', '.') }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -212,6 +213,16 @@
                                             <th>Jurusan</th>
                                             <th>:</th>
                                             <th id="jurusan"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Nilai Ijazah / IPK</th>
+                                            <th>:</th>
+                                            <th id="nilai_ijazah_ipk"></th>
+                                        </tr>
+                                        <tr>
+                                            <th>Asal Sekolah/Universitas</th>
+                                            <th>:</th>
+                                            <th id="asal_sekolah_universitas"></th>
                                         </tr>
                                     </thead>
                                 </table>
@@ -376,6 +387,9 @@
 
                         $('#pendidikan').html(response.data.pendidikan.name);
                         $('#jurusan').html(response.data.jurusan.nama);
+
+                        $('#nilai_ijazah_ipk').html(response.data.nilai_ijazah_ipk);
+                        $('#asal_sekolah_universitas').html(response.data.asal_sekolah_universitas);
                     } else {
                         // Display error message
                         alert('Error: ' + response.message);

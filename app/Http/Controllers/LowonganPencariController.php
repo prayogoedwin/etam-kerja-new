@@ -19,8 +19,8 @@ class LowonganPencariController extends Controller
     {
         if ($request->ajax()) {
             $lokers = LowonganPencari::select('id', 'judul_lowongan', 'tanggal_start', 'tanggal_end', 'deskripsi')
-            ->where('status_id', 1)
-            ->where('deleted_at', null)
+            ->where('status_id', '1')
+            // ->where('deleted_at', null)
             ->get();
 
             return DataTables::of($lokers)

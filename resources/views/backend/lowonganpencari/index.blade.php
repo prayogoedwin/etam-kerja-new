@@ -159,6 +159,20 @@
                             <div class="col-sm-12">
                                 <div class="row">
                                     <div class="col-6">
+                                        <label class="floating-label" for="jumpri">Kisaran Gaji Awal</label>
+                                        <input type="text" class="form-control" name="kisaran_gaji" id="kisaran_gaji"
+                                            disabled>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="floating-label" for="jumwat">Kisaran Gaji Akhir</label>
+                                        <input type="text" class="form-control" name="kisaran_gaji_akhir"
+                                            id="kisaran_gaji_akhir" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-6">
                                         <label class="floating-label" for="jumpri">Jumlah Pria</label>
                                         <input type="number" class="form-control" name="jumlah_pria" id="jumlah_pria"
                                             disabled>
@@ -262,11 +276,11 @@
                         data: 'tanggal_end'
                     },
                     {
-                    data: 'deskripsi',
-                    render: function(data, type, row) {
-                        // Memotong teks deskripsi jika lebih dari 100 karakter
-                        return data.length > 100 ? data.substring(0, 100) + '...' : data;
-                    }
+                        data: 'deskripsi',
+                        render: function(data, type, row) {
+                            // Memotong teks deskripsi jika lebih dari 100 karakter
+                            return data.length > 100 ? data.substring(0, 100) + '...' : data;
+                        }
                     },
                     {
                         data: 'options',
@@ -301,6 +315,9 @@
                     $('#lokasi_penempatan_text').val(dt.lokasi_penempatan_text);
                     $('#jumlah_pria').val(dt.jumlah_pria);
                     $('#jumlah_wanita').val(dt.jumlah_wanita);
+                    $('#kisaran_gaji').val(formatRupiah(dt.kisaran_gaji));
+                    $('#kisaran_gaji_akhir').val(formatRupiah(dt.kisaran_gaji_akhir));
+
                     $('#deskripsi').val(dt.deskripsi);
 
                     $('#pendidikan_id').val(dt.pendidikan_id);
@@ -338,6 +355,13 @@
                     alert('Error: ' + xhr.responseText);
                 }
             });
+        }
+
+        function formatRupiah(angka) {
+            if (angka === null || angka === undefined || angka === '') {
+                return '';
+            }
+            return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
         }
     </script>
 
