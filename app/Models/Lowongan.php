@@ -22,6 +22,7 @@ class Lowongan extends Model
         'kabkota_id',
         'lokasi_penempatan_text',
         'kisaran_gaji',
+        'kisaran_gaji_akhir',
         'jumlah_pria',
         'jumlah_wanita',
         'deskripsi',

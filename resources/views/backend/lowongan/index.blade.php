@@ -162,10 +162,18 @@
                                     </div>
                                 </div>
                                 <div class="col-sm-12">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <input class="form-control" type="number" id="kisaran_gaji"
-                                                name="kisaran_gaji" placeholder="Kisaran Gaji">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <input class="form-control" type="number" id="kisaran_gaji"
+                                                    name="kisaran_gaji" placeholder="Kisaran Gaji Awal">
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <input class="form-control" type="number" id="kisaran_gaji_akhir"
+                                                    name="kisaran_gaji_akhir" placeholder="Kisaran Gaji Akhir">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -352,6 +360,7 @@
                         kabkota_id: $('#kabkota_id').val(),
                         lokasi_penempatan_text: $('#lokasi_penempatan_text').val(),
                         kisaran_gaji: $('#kisaran_gaji').val(),
+                        kisaran_gaji_akhir: $('#kisaran_gaji_akhir').val(),
                         jumlah_pria: $('#jumlah_pria').val(),
                         jumlah_wanita: $('#jumlah_wanita').val(),
                         deskripsi: $('#deskripsi').val(),
