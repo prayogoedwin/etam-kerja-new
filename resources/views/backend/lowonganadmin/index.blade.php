@@ -55,6 +55,7 @@
                                                 <th>Status Acc</th>
                                                 <th>Tgl Mulai</th>
                                                 <th>Tgl Selesai</th>
+                                                <th>Pemberi Kerja</th>
                                                 <th>Deskripsi</th>
                                                 <th>Aksi</th>
                                             </tr>
@@ -274,6 +275,9 @@
                     },
                     {
                         data: 'tanggal_end'
+                    },
+                    {
+                        data: 'penyedia.name'
                     },
                     {
                         data: 'deskripsi'

@@ -31,7 +31,8 @@ class LowonganAdminController extends Controller
             $lokers = LowonganAdmin::with([
                 'user:id,name,email,whatsapp',
                 'user.penyedia:id,name,id_kota',
-                'progress' // Hanya panggil relasi tanpa filter di sini
+                'progress', // Hanya panggil relasi tanpa filter di sini
+                'penyedia:id,user_id,name,id_kota' // Tambahkan relasi penyedia
             ])
             ->whereHas('progress', function ($query) {
                 // Memastikan 'progress' dengan 'modul' = 'lowongan' dan 'status_id' yang valid
@@ -41,7 +42,7 @@ class LowonganAdminController extends Controller
                           $query->select('status_id')->from('etam_lowongan');
                       });
             });
-            
+
             // Filter untuk admin-kabkota dan admin-kabkota-officer
             $roles = Auth::user()->roles;
             if (!empty($roles) && in_array($roles[0]['name'], ['admin-kabkota', 'admin-kabkota-officer'])) {

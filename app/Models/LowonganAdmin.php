@@ -52,6 +52,10 @@ class LowonganAdmin extends Model
         return $this->belongsTo(Progress::class, 'status_id', 'kode');
     }
 
-    
+    // Menambahkan relasi ke tabel users_penyedia
+    public function penyedia()
+    {
+        return $this->hasOne(UserPenyedia::class, 'user_id', 'posted_by');
+    }
 
 }
