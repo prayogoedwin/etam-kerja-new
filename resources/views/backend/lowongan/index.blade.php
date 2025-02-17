@@ -323,8 +323,14 @@
                     {
                         data: 'tanggal_end'
                     },
+                    // {
+                    //     data: 'deskripsi'
+                    // },
                     {
-                        data: 'deskripsi'
+                        data: 'deskripsi',
+                        render: function(data, type, row) {
+                            return data.length > 100 ? data.substring(0, 100) + '...' : data;
+                        }
                     },
                     {
                         data: 'progres_name'
