@@ -151,7 +151,13 @@
             columns: [
                 { data: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'name' },
-                { data: 'description' },
+                // { data: 'description' },
+                {
+                        data: 'description',
+                        render: function(data, type, row) {
+                            return data.length > 30 ? data.substring(0, 30) + '...' : data;
+                        }
+                    },
                 { data: 'options', orderable: false, searchable: false },
             ]
         });
