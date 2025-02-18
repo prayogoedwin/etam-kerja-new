@@ -134,7 +134,7 @@
                             </div>
                             <div class="col-sm-12">
                                 <div class="form-group">
-                                    {{-- <label class="floating-label" for="jdllow">Judul Lowongan</label> --}}
+                                    <label class="floating-label" for="jdllow">Judul Lowongan</label>
                                     <textarea class="form-control" id="judul_lowongan" name="judul_lowongan" rows="3"></textarea>
                                 </div>
                             </div>
@@ -188,7 +188,7 @@
                             </div>
                             <div class="col-sm-12">
                                 <div class="form-group">
-                                    {{-- <label class="floating-label" for="desk">Deskripsi</label> --}}
+                                    <label class="floating-label" for="desk">Deskripsi</label>
                                     <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"></textarea>
                                 </div>
                             </div>
