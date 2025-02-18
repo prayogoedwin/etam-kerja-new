@@ -244,28 +244,160 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalEditLabel">Edit Admin</h5>
+                        <h5 class="modal-title" id="modalEditLabel">Edit Data Lowongan</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="editAdminForm">
+                        <form id="editForm">
                             <input type="hidden" id="editId">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label class="floating-label" for="pertanyaan">Pertanyaan</label>
-                                    <textarea class="form-control" id="editPertanyaan" name="pertanyaan" rows="3"></textarea>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="">Disediakan untuk</label>
+                                        <select class="form-select" name="is_lowongan_disabilitas_edit"
+                                            id="is_lowongan_disabilitas_edit" required style="width: 100%;">
+                                            <option value="0">Umum</option>
+                                            <option value="1">Disabilitas</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="jab">Jabatan</label>
+                                        <select class="form-control" name="jabatan_id_edit" id="jabatan_id_edit" required
+                                            style="width: 100%;">
+                                            <option value="">Pilih Jabatan</option>
+                                            @foreach ($jabatans as $jab)
+                                                <option value="{{ $jab->id }}">{{ $jab->nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="jab">Sektor</label>
+                                        <select class="form-control" name="sektor_id_edit" id="sektor_id_edit" required>
+                                            <option value="">Pilih Sektor</option>
+                                            @foreach ($sektors as $sekt)
+                                                <option value="{{ $sekt->id }}">{{ $sekt->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="pendid">Pendidikan</label>
+                                        <select class="form-control" name="pendidikan_id_edit" id="pendidikan_id_edit"
+                                            required>
+                                            <option value="">Pilih Pendidikan</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="">Jurusan</label>
+                                        <select class="form-control" name="jurusan_id_edit" id="jurusan_id_edit"
+                                            style="width: 100%;" required>
+                                            <option value="">Pilih Jurusan</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label for="jab">Tanggal Mulai</label>
+                                            <input type="date" class="form-control" name="tanggal_start_edit"
+                                                id="tanggal_start_edit">
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="jab">Tanggal Selesai</label>
+                                            <input type="date" class="form-control" name="tanggal_end_edit"
+                                                id="tanggal_end_edit">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <textarea class="form-control" id="judul_lowongan_edit" name="judul_lowongan_edit" rows="3"
+                                            placeholder="Judul Lowongan"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="jab">Kabupaten / Kota</label>
+                                        <select class="form-control" name="kabkota_id_edit" id="kabkota_id_edit"
+                                            required>
+                                            <option value="">Pilih Kabkota</option>
+                                            @foreach ($kabkotas as $kabkot)
+                                                <option value="{{ $kabkot->id }}">{{ $kabkot->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <input class="form-control" type="text" id="lokasi_penempatan_text_edit"
+                                                name="lokasi_penempatan_text_edit" placeholder="Lokasi Penempatan">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <input class="form-control" type="number" id="kisaran_gaji_edit"
+                                                    name="kisaran_gaji_edit" placeholder="Kisaran Gaji Awal">
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="form-group">
+                                                <input class="form-control" type="number" id="kisaran_gaji_akhir_edit"
+                                                    name="kisaran_gaji_akhir_edit" placeholder="Kisaran Gaji Akhir">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label class="floating-label" for="jumpri">Jumlah Pria</label>
+                                            <input type="number" class="form-control" name="jumlah_pria_edit"
+                                                id="jumlah_pria_edit">
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="floating-label" for="jumwat">Jumlah Wanita</label>
+                                            <input type="number" class="form-control" name="jumlah_wanita_edit"
+                                                id="jumlah_wanita_edit">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <textarea class="form-control" id="deskripsi_edit" name="deskripsi_edit" rows="3"
+                                            placeholder="Deskripsi Pekerjaan"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="stskawin">Status Perkawinan</label>
+                                        <select class="form-control" id="status_perkawinan_id_edit"
+                                            name="status_perkawinan_id_edit" required>
+                                            <option selected>Pilih Status</option>
+                                            @foreach ($maritals as $marit)
+                                                <option value="{{ $marit->id }}">{{ $marit->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+
+                                <div class="col-sm-12">
+
+                                    <button class="float-end btn btn-warning">Update</button>
                                 </div>
                             </div>
-
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label class="floating-label" for="jawaban">Jawaban</label>
-                                    <textarea class="form-control" id="editJawaban" name="jawaban" rows="3"></textarea>
-                                </div>
-                                <button class="btn btn-primary" onclick="updateFaq()" type="button">Submit</button>
-
-                            </div>
-
                         </form>
                     </div>
                 </div>
@@ -404,61 +536,144 @@
                     }
                 });
             });
+
+
+            $('#editForm').submit(function(e) {
+                e.preventDefault(); // Prevent form from submitting normally
+
+                // Clear previous error messages
+                $('#errorMessages').html('').addClass('d-none');
+
+                // Get data from the modal form
+                var id = $('#editId').val();
+                var islowongandisabilitas = $('#is_lowongan_disabilitas_edit').val();
+                var jabatan_id = $('#jabatan_id_edit').val();
+                var sektor_id = $('#sektor_id_edit').val();
+                var pendidikan_id = $('#pendidikan_id_edit').val();
+                var jurusan_id = $('#jurusan_id_edit').val();
+                var tanggal_start = $('#tanggal_start_edit').val();
+                var tanggal_end = $('#tanggal_end_edit').val();
+                var judul_lowongan = $('#judul_lowongan_edit').val();
+                var kabkota_id = $('#kabkota_id_edit').val();
+                var lokasi_penempatan_text = $('#lokasi_penempatan_text_edit').val();
+                var kisaran_gaji = $('#kisaran_gaji_edit').val();
+                var kisaran_gaji_akhir = $('#kisaran_gaji_akhir_edit').val();
+                var jumlah_pria = $('#jumlah_pria_edit').val();
+                var jumlah_wanita = $('#jumlah_wanita_edit').val();
+                var deskripsi = $('#deskripsi_edit').val();
+                var marital_id = $('#status_perkawinan_id_edit').val();
+
+                // Send the data to the update route
+                $.ajax({
+                    url: "{{ route('lowongan.update', ':id') }}".replace(':id', id),
+                    type: 'PUT',
+                    data: {
+                        _token: "{{ csrf_token() }}", // CSRF token for security
+                        is_lowongan_disabilitas: islowongandisabilitas,
+                        jabatan_id: jabatan_id,
+                        sektor_id: sektor_id,
+                        pendidikan_id: pendidikan_id,
+                        jurusan_id: jurusan_id,
+                        tanggal_start: tanggal_start,
+                        tanggal_end: tanggal_end,
+                        judul_lowongan: judul_lowongan,
+                        kabkota_id: kabkota_id,
+                        lokasi_penempatan_text: lokasi_penempatan_text,
+                        kisaran_gaji: kisaran_gaji,
+                        kisaran_gaji_akhir: kisaran_gaji_akhir,
+                        jumlah_pria: jumlah_pria,
+                        jumlah_wanita: jumlah_wanita,
+                        deskripsi: deskripsi,
+                        marital_id: marital_id
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Display success message
+                            alert(response.message);
+                            // Close modal
+                            $('#modal-edit').modal('hide');
+                            // Optionally, reload the table or page to reflect the update
+                            location.reload();
+                        } else {
+                            // Display error message
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Error: ' + xhr.responseText);
+                    }
+                });
+            });
         });
     </script>
 
     <script>
-        function showEditModal(id) {
-            var detailUrl = "{{ route('faq.detail', ':id') }}".replace(':id', id);
+        function showData(id) {
+
+            $.ajax({
+                url: '{{ route('get-all-pendidikan') }}', // Endpoint Laravel
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    // Kosongkan dropdown
+                    let $pendidikanSelect = $('#pendidikan_id_edit');
+                    $pendidikanSelect.empty();
+                    $pendidikanSelect.append(
+                        '<option value="">-- Pilih Pendidikan --</option>');
+
+                    // Looping data dari response dan tambahkan ke select
+                    $.each(data, function(index, item) {
+                        $pendidikanSelect.append(
+                            `<option value="${item.id}">${item.name}</option>`
+                        );
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+
+            var detailUrl = "{{ route('lowongan.detail', ':id') }}".replace(':id', id);
             $.ajax({
                 url: detailUrl,
                 type: 'GET',
                 success: function(response) {
+                    console.log(response);
+
                     let dt = response.data;
+                    var sts = response.success;
 
-                    // Isi data modal dengan data yang diperoleh
-                    $('#editId').val(dt.id);
-                    $('#editPertanyaan').val(dt.name);
-                    $('#editJawaban').val(dt.description);
+                    if (sts == 1) {
+                        // Isi data modal dengan data yang diperoleh
+                        $('#editId').val(dt.id);
 
-                    // Tampilkan modal edit
-                    $('#modal-edit').modal('show');
-                },
-                error: function(xhr) {
-                    alert('Error: ' + xhr.responseText);
-                }
-            });
-        }
-    </script>
+                        $('#is_lowongan_disabilitas_edit').val(dt.is_lowongan_disabilitas).trigger('change');
+                        $('#jabatan_id_edit').val(dt.jabatan_id).trigger('change');
+                        $('#sektor_id_edit').val(dt.sektor_id).trigger('change');
+                        $('#pendidikan_id_edit').val(dt.pendidikan_id).trigger('change');
 
-    <script>
-        function updateFaq() {
-            // Get data from the modal form
-            var id = $('#editId').val();
-            var name = $('#editPertanyaan').val();
-            var description = $('#editJawaban').val();
+                        $('#tanggal_start_edit').val(dt.tanggal_start);
+                        $('#tanggal_end_edit').val(dt.tanggal_end);
+                        $('#judul_lowongan_edit').val(dt.judul_lowongan);
+                        $('#kabkota_id_edit').val(dt.kabkota_id).trigger('change');
+                        $('#lokasi_penempatan_text_edit').val(dt.lokasi_penempatan_text);
+                        $('#kisaran_gaji_edit').val(dt.kisaran_gaji);
+                        $('#kisaran_gaji_akhir_edit').val(dt.kisaran_gaji_akhir);
+                        $('#jumlah_pria_edit').val(dt.jumlah_pria);
+                        $('#jumlah_wanita_edit').val(dt.jumlah_wanita);
+                        $('#deskripsi_edit').val(dt.deskripsi);
+                        $('#status_perkawinan_id_edit').val(dt.marital_id).trigger('change');
 
-            // Send the data to the update route
-            $.ajax({
-                url: "{{ route('faq.update', ':id') }}".replace(':id', id),
-                type: 'PUT',
-                data: {
-                    _token: "{{ csrf_token() }}", // CSRF token for security
-                    name: name,
-                    description: description
-                },
-                success: function(response) {
-                    if (response.success) {
-                        // Display success message
-                        alert(response.message);
-                        // Close modal
-                        $('#modal-edit').modal('hide');
-                        // Optionally, reload the table or page to reflect the update
-                        location.reload();
-                    } else {
-                        // Display error message
-                        alert('Error: ' + response.message);
+                        //set timeout
+                        setTimeout(function() {
+                            $('#jurusan_id_edit').val(dt.jurusan_id).trigger('change');
+                        }, 1000);
+
+                        // Tampilkan modal edit
+                        $('#modal-edit').modal('show');
                     }
+
+
                 },
                 error: function(xhr) {
                     alert('Error: ' + xhr.responseText);
@@ -525,6 +740,38 @@
                 });
             });
 
+            $('#pendidikan_id_edit').on('change', function() {
+                // console.log(this.value);
+                console.log('pendidikan aidi edit change');
+                var kd = this.value
+
+                // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
+                $.ajax({
+                    url: "{{ route('get-jurusan-bypendidikan', ':id') }}".replace(':id',
+                        kd), // Panggil API
+                    type: 'GET',
+                    success: function(response) {
+                        // Kosongkan dropdown kecamatan sebelumnya
+                        $('#jurusan_id_edit').empty();
+
+                        // Tambahkan opsi default
+                        $('#jurusan_id_edit').append(
+                            '<option selected disabled>Pilih Jurusan</option>');
+
+                        // Loop data kecamatan dan tambahkan ke dropdown
+                        $.each(response, function(index, jurusan) {
+                            $('#jurusan_id_edit').append('<option value="' + jurusan
+                                .id +
+                                '">' +
+                                jurusan.nama + '</option>');
+                        });
+                    },
+                    error: function(xhr) {
+                        console.error(xhr);
+                    }
+                });
+            });
+
             $('#modal-report').on('shown.bs.modal', function() {
                 $('#jurusan_id').select2({
                     placeholder: "Pilih Jurusan",
@@ -533,10 +780,25 @@
                 });
             });
 
+            $('#modal-edit').on('shown.bs.modal', function() {
+                $('#jurusan_id_edit').select2({
+                    placeholder: "Pilih Jurusan",
+                    allowClear: true,
+                    dropdownParent: $('#modal-edit')
+                });
+            });
+
+
             $("#jabatan_id").select2({
                 placeholder: "Pilih Jabatan",
                 allowClear: true,
                 dropdownParent: $("#modal-report")
+            });
+
+            $("#jabatan_id_edit").select2({
+                placeholder: "Pilih Jabatan",
+                allowClear: true,
+                dropdownParent: $("#modal-edit")
             });
         });
     </script>

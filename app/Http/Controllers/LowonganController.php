@@ -39,6 +39,7 @@ class LowonganController extends Controller
                     // <button class="btn btn-primary btn-sm" onclick="showEditModal(' . $data->id . ')">Edit</button>
                     return '
                         <a href="' . route('lowongan.pelamar', encode_url($loker->id)) . '" class="btn btn-info btn-sm">Lihat Pelamar</a>
+                        <a href="javascript:void(0)" onclick="showData(' . $loker->id . ')" class="btn btn-warning btn-sm">Edit</a>
                         <button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $loker->id . ')">Delete</button>
                     ';
                 })
@@ -140,7 +141,13 @@ class LowonganController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+            $data = Lowongan::all()->findOrFail($id);
+
+            return response()->json(['success' => 1, 'data' => $data]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => 0, 'message' => 'Error: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -156,7 +163,59 @@ class LowonganController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'is_lowongan_disabilitas' => 'required|integer',
+            'jabatan_id' => 'required|integer',
+            'sektor_id' => 'required|integer',
+            'tanggal_start' => 'required|date',
+            'tanggal_end' => 'required|date',
+            'judul_lowongan' => 'required|string|max:255',
+            'kabkota_id' => 'required|integer',
+            'lokasi_penempatan_text' => 'required|string',
+            'kisaran_gaji' => 'required|integer',
+            'kisaran_gaji_akhir' => 'nullable|integer',
+            'jumlah_pria' => 'required|integer',
+            'jumlah_wanita' => 'required|integer',
+            'deskripsi' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()]);
+        }
+
+        DB::beginTransaction();
+        try {
+            // $userId = auth()->user()->id;
+            // $acc_by_role = Auth::user()->roles[0]['name'];
+
+            // Cari admin berdasarkan ID
+            $data = Lowongan::findOrFail($id);
+
+            $data->update([
+                'is_lowongan_disabilitas' => $request->is_lowongan_disabilitas,
+                'jabatan_id' => $request->jabatan_id,
+                'sektor_id' => $request->sektor_id,
+                'tanggal_start' => $request->tanggal_start,
+                'tanggal_end' => $request->tanggal_end,
+                'judul_lowongan' => $request->judul_lowongan,
+                'kabkota_id' => $request->kabkota_id,
+                'lokasi_penempatan_text' => $request->lokasi_penempatan_text,
+                'kisaran_gaji' => $request->kisaran_gaji,
+                'kisaran_gaji_akhir' => $request->kisaran_gaji_akhir,
+                'jumlah_pria' => $request->jumlah_pria,
+                'jumlah_wanita' => $request->jumlah_wanita,
+                'deskripsi' => $request->deskripsi,
+                'acc_by' => null,
+                'acc_by_role' => null,
+                'acc_at' => null
+            ]);
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'update data berhasil']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
     }
 
     public function pelamar(Request $request, string $id)

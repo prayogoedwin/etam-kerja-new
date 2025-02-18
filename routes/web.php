@@ -149,6 +149,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::prefix('penyedias')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer,penyedia-kerja')->group(function () {
         Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');
         Route::post('/lowongan/add', [LowonganController::class, 'store'])->name('lowongan.add');
+        Route::get('/lowongan/detail/{id}', [LowonganController::class, 'show'])->name('lowongan.detail');
+        Route::put('/lowongan/update/{id}', [LowonganController::class, 'update'])->name('lowongan.update');
         Route::get('/lowongan/pelamar/{id}', [LowonganController::class, 'pelamar'])->name('lowongan.pelamar');
         Route::get('/lowongan/detail_pelamar/{id}', [LowonganController::class, 'detailpelamar'])->name('lowongan.detailpelamar');
 
