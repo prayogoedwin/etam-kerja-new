@@ -205,6 +205,7 @@ class LowonganController extends Controller
                 'jumlah_pria' => $request->jumlah_pria,
                 'jumlah_wanita' => $request->jumlah_wanita,
                 'deskripsi' => $request->deskripsi,
+                'status_id' => 0,
                 'acc_by' => null,
                 'acc_by_role' => null,
                 'acc_at' => null
