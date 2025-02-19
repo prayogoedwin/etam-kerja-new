@@ -2,6 +2,13 @@
 
 @section('content')
 
+<style>
+    .highlight-error {
+        border-color: red;
+        box-shadow: 0 0 5px red;
+    }
+</style>
+
     <body class="box-layout container background-green">
         <!-- [ Main Content ] start -->
         <div class="pcoded-main-container">
@@ -687,7 +694,65 @@
         }
     </script>
     <script>
+        // function updateData() {
+        //     var id = $('#editId').val();
+        //     var tkn = $('#_token').val();
+        //     let dataf = new FormData(document.getElementById("profilForm"));
+
+        //     // Tambahkan CSRF token dan metode PUT
+        //     dataf.append('_token', tkn);
+        //     dataf.append('_method', 'PUT');
+
+        //     // Send the data to the update route
+        //     $.ajax({
+        //         url: "{{ route('profil.pencari.update', ':id') }}".replace(':id', id),
+        //         type: 'POST',
+        //         data: dataf,
+        //         processData: false,
+        //         contentType: false,
+        //         success: function(response) {
+        //             // console.log(response);
+        //             if (response.status == 1) {
+        //                 // Optionally, reload the table or page to reflect the update
+        //                 alert(response.message);
+        //                 location.reload();
+        //             } else {
+        //                 // Display error message
+        //                 alert('Error: ' + JSON.stringify(response.errors));
+        //             }
+        //         },
+        //         error: function(xhr) {
+        //             alert('Error: ' + xhr.responseText);
+        //         }
+        //     });
+        // }
+    </script>
+
+    <script>
         function updateData() {
+            var form = document.getElementById("profilForm");
+            var requiredFields = form.querySelectorAll("[required]");
+            var isValid = true;
+
+            // Remove previous error highlights
+            requiredFields.forEach(function(field) {
+                field.classList.remove("highlight-error");
+            });
+
+            // Check each required field
+            requiredFields.forEach(function(field) {
+                if (field.value.trim() === "") {
+                    field.classList.add("highlight-error");
+                    isValid = false;
+                }
+            });
+
+            // If any field is invalid, prevent form submission
+            if (!isValid) {
+                alert("Mohon lengkapi semua field yang diperlukan.");
+                return;
+            }
+
             var id = $('#editId').val();
             var tkn = $('#_token').val();
             let dataf = new FormData(document.getElementById("profilForm"));
@@ -704,13 +769,10 @@
                 processData: false,
                 contentType: false,
                 success: function(response) {
-                    // console.log(response);
                     if (response.status == 1) {
-                        // Optionally, reload the table or page to reflect the update
                         alert(response.message);
                         location.reload();
                     } else {
-                        // Display error message
                         alert('Error: ' + JSON.stringify(response.errors));
                     }
                 },
@@ -719,7 +781,22 @@
                 }
             });
         }
+
+        // Optional: Add real-time validation on input fields
+        document.addEventListener("DOMContentLoaded", function() {
+            var requiredFields = document.querySelectorAll("[required]");
+            requiredFields.forEach(function(field) {
+                field.addEventListener("input", function() {
+                    if (field.value.trim() === "") {
+                        field.classList.add("highlight-error");
+                    } else {
+                        field.classList.remove("highlight-error");
+                    }
+                });
+            });
+        });
     </script>
+
     <script>
         $("#jurusan_id_modal").select2({
             placeholder: "Pilih Jurusan",
