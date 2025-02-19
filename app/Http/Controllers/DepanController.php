@@ -279,7 +279,7 @@ class DepanController extends Controller
             // 'otp_created_at' => now()
         ]);
         // dd($userWa);
-        sendWa($user->whatsapp, 'Lanjutkan pendaftaran dengan memasukkan Kode OTP berikut : *' . $otp . '*');
+        // sendWa($user->whatsapp, 'Lanjutkan pendaftaran dengan memasukkan Kode OTP berikut : *' . $otp . '*');
 
         session(['email_registered' => $request->email]);
         // dd(session('email_registered'));
