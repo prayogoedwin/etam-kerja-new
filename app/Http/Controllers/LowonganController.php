@@ -325,7 +325,7 @@ class LowonganController extends Controller
         $lowongan = Lowongan::find($real_id);
 
         // Buat file CSV
-        $csvFileName = 'pelamar_lowongan:_'.$lowongan->judul_lowongan.'_'.date('Ymd_His') . '.csv';
+        $csvFileName = 'pelamar_lowongan_'.$lowongan->judul_lowongan.'_'.date('Ymd_His') . '.csv';
         $handle = fopen('php://output', 'w');
 
         // Set header untuk file CSV
