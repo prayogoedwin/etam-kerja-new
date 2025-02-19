@@ -300,8 +300,10 @@ class LowonganController extends Controller
             'etam_progres.kode as kodelamaran',
             'etam_progres.name as statuslamaran'
         )
-        ->join('users', 'etam_lamaran.pencari_id', '=', 'users.id')
-        ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id')
+        ->join('users', 'etam_lamaran.pencari_id', '=', 'users.id') // Join dengan tabel users
+        ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id') // Join dengan tabel users_pencari
+        ->join('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode') // Join dengan tabel etam_progres
+
         ->leftJoin('etam_provinsi', 'users_pencari.id_provinsi', '=', 'etam_provinsi.id')
         ->leftJoin('etam_kabkota', 'users_pencari.id_kota', '=', 'etam_kabkota.id')
         ->leftJoin('etam_kecamatan', 'users_pencari.id_kecamatan', '=', 'etam_kecamatan.id')
@@ -309,11 +311,10 @@ class LowonganController extends Controller
         ->leftJoin('etam_pendidikan', 'users_pencari.id_pendidikan', '=', 'etam_pendidikan.id')
         ->leftJoin('etam_jurusan', 'users_pencari.id_jurusan', '=', 'etam_jurusan.id')
 
-        ->leftJoin('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode')
   
-        ->where('etam_lamaran.lowongan_id', $id)
-        ->where('etam_progres.modul', 'lamaran')
-        ->whereNull('etam_lamaran.deleted_at')
+        ->where('etam_lamaran.lowongan_id', $id) // Filter berdasarkan lowongan_id
+        ->where('etam_progres.modul', 'lamaran') // Filter berdasarkan modul pada etam_progres
+        ->whereNull('etam_lamaran.deleted_at') // Pastikan data tidak terhapus
         ->get();
 
         echo json_encode($pelamars);
