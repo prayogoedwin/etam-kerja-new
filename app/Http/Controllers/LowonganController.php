@@ -309,12 +309,14 @@ class LowonganController extends Controller
         ->leftJoin('etam_pendidikan', 'users_pencari.id_pendidikan', '=', 'etam_pendidikan.id')
         ->leftJoin('etam_jurusan', 'users_pencari.id_jurusan', '=', 'etam_jurusan.id')
 
-        ->join('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode')
+        ->leftJoin('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode')
   
         ->where('etam_lamaran.lowongan_id', $id)
         ->where('etam_progres.modul', 'lamaran')
         ->whereNull('etam_lamaran.deleted_at')
         ->get();
+
+        echo json_encode($pelamars);
 
         // Buat file CSV
         $csvFileName = 'pelamar_' . date('Ymd_His') . '.csv';
