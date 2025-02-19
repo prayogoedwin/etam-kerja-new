@@ -304,12 +304,12 @@ class LowonganController extends Controller
         ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id') // Join dengan tabel users_pencari
         ->join('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode') // Join dengan tabel etam_progres
 
-        ->leftJoin('etam_provinsi', 'users_pencari.id_provinsi', '=', 'etam_provinsi.id')
-        ->leftJoin('etam_kabkota', 'users_pencari.id_kota', '=', 'etam_kabkota.id')
-        ->leftJoin('etam_kecamatan', 'users_pencari.id_kecamatan', '=', 'etam_kecamatan.id')
+        // ->leftJoin('etam_provinsi', 'users_pencari.id_provinsi', '=', 'etam_provinsi.id')
+        // ->leftJoin('etam_kabkota', 'users_pencari.id_kota', '=', 'etam_kabkota.id')
+        // ->leftJoin('etam_kecamatan', 'users_pencari.id_kecamatan', '=', 'etam_kecamatan.id')
 
-        ->leftJoin('etam_pendidikan', 'users_pencari.id_pendidikan', '=', 'etam_pendidikan.id')
-        ->leftJoin('etam_jurusan', 'users_pencari.id_jurusan', '=', 'etam_jurusan.id')
+        // ->leftJoin('etam_pendidikan', 'users_pencari.id_pendidikan', '=', 'etam_pendidikan.id')
+        // ->leftJoin('etam_jurusan', 'users_pencari.id_jurusan', '=', 'etam_jurusan.id')
 
   
         ->where('etam_lamaran.lowongan_id', $id) // Filter berdasarkan lowongan_id
