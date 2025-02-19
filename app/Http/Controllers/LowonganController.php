@@ -302,9 +302,9 @@ class LowonganController extends Controller
         )
         ->join('users', 'etam_lamaran.pencari_id', '=', 'users.id')
         ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id')
-        ->join('etam_provinsi', 'users_pencari.id_provinsi', '=', 'etam_provinsi.id')
-        ->join('etam_kabkota', 'users_pencari.id_kota', '=', 'etam_kabkota.id')
-        ->join('etam_kecamatan', 'users_pencari.id_kecamatan', '=', 'etam_kecamatan.id')
+        ->leftJoin('etam_provinsi', 'users_pencari.id_provinsi', '=', 'etam_provinsi.id')
+        ->leftJoin('etam_kabkota', 'users_pencari.id_kota', '=', 'etam_kabkota.id')
+        ->leftJoin('etam_kecamatan', 'users_pencari.id_kecamatan', '=', 'etam_kecamatan.id')
 
         ->leftJoin('etam_pendidikan', 'users_pencari.id_pendidikan', '=', 'etam_pendidikan.id')
         ->leftJoin('etam_jurusan', 'users_pencari.id_jurusan', '=', 'etam_jurusan.id')
