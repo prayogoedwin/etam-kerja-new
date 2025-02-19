@@ -226,7 +226,7 @@
                                                 <input type="hidden" id="temp_pendidikan_id"
                                                     value="{{ $profil->id_pendidikan }}">
                                                 <select class="form-select" id="id_pendidikan" name="id_pendidikan"
-                                                    required>
+                                                    required >
                                                     <option value="">Pilih Pendidikan</option>
                                                     @foreach ($pendidikans as $ag)
                                                         <option value="{{ $ag->id }}">{{ $ag->name }}</option>
