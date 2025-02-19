@@ -293,7 +293,7 @@ class LowonganController extends Controller
             'etam_kecamatan.name as kec',
 
             'etam_pendidikan.name as pendidikan',
-            'etam_jurusan.name as jurusan',
+            'etam_jurusan.nama as jurusan',
 
             'etam_lamaran.keterangan',
             'etam_lamaran.created_at',
