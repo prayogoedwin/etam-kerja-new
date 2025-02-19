@@ -294,17 +294,17 @@ class DepanController extends Controller
     public function cek_awal_otp(Request $request)
     {
 
-        $cek = User::where([
-            ['email', '=', $request->email_registered],
-            ['otp', '=', $request->otp]
-        ])->first();
+        // $cek = User::where([
+        //     ['email', '=', $request->email_registered],
+        //     ['otp', '=', $request->otp]
+        // ])->first();
 
-        if (!$cek) {
-            return response()->json([
-                'status' => 0,
-                'message' => 'Kode OTP salah'
-            ]);
-        }
+        // if (!$cek) {
+        //     return response()->json([
+        //         'status' => 0,
+        //         'message' => 'Kode OTP salah'
+        //     ]);
+        // }
 
         return response()->json([
             'status' => 1,
