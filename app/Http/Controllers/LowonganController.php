@@ -317,6 +317,7 @@ class LowonganController extends Controller
         ->get();
 
         echo json_encode($pelamars);
+        die();
 
         // Buat file CSV
         $csvFileName = 'pelamar_' . date('Ymd_His') . '.csv';
