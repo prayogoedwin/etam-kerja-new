@@ -351,7 +351,7 @@ class LowonganController extends Controller
             'Asal Sekolah / Universitas',
             'Email',
             'WhatsApp',
-            'Hari/Tanggal Melamar',
+            'Waktu Melamar',
             'Status Lamaran'
         ]);
 
