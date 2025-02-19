@@ -100,10 +100,17 @@
                                             <div class="col-2">
                                                 <label for=""></label>
                                             </div>
+                                            @if ($xfoto != null)
+                                            <div class="col-10">
+                                                <input type="file" class="validation-file" id="foto" name="foto"
+                                                    accept="image/png, image/gif, image/jpeg">
+                                            </div>
+                                            @else
                                             <div class="col-10">
                                                 <input type="file" class="validation-file" id="foto" name="foto"
                                                     accept="image/png, image/gif, image/jpeg" required>
                                             </div>
+                                            @endif
                                         </div>
                                         <div class="form-group row">
                                             <div class="col-2">
