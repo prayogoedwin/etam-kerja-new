@@ -280,6 +280,7 @@ class LowonganController extends Controller
 
     public function downloadPelamar(Request $request, string $id)
     {
+        $real_id = decode_url($id);
         // Ambil data pelamar sesuai dengan lowongan_id
         $pelamars = Lamaran::select(
             'etam_lamaran.id',
@@ -304,21 +305,21 @@ class LowonganController extends Controller
         ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id') // Join dengan tabel users_pencari
         ->join('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode') // Join dengan tabel etam_progres
 
-        // ->leftJoin('etam_provinsi', 'users_pencari.id_provinsi', '=', 'etam_provinsi.id')
-        // ->leftJoin('etam_kabkota', 'users_pencari.id_kota', '=', 'etam_kabkota.id')
-        // ->leftJoin('etam_kecamatan', 'users_pencari.id_kecamatan', '=', 'etam_kecamatan.id')
+        ->leftJoin('etam_provinsi', 'users_pencari.id_provinsi', '=', 'etam_provinsi.id')
+        ->leftJoin('etam_kabkota', 'users_pencari.id_kota', '=', 'etam_kabkota.id')
+        ->leftJoin('etam_kecamatan', 'users_pencari.id_kecamatan', '=', 'etam_kecamatan.id')
 
-        // ->leftJoin('etam_pendidikan', 'users_pencari.id_pendidikan', '=', 'etam_pendidikan.id')
-        // ->leftJoin('etam_jurusan', 'users_pencari.id_jurusan', '=', 'etam_jurusan.id')
+        ->leftJoin('etam_pendidikan', 'users_pencari.id_pendidikan', '=', 'etam_pendidikan.id')
+        ->leftJoin('etam_jurusan', 'users_pencari.id_jurusan', '=', 'etam_jurusan.id')
 
   
-        ->where('etam_lamaran.lowongan_id', $id) // Filter berdasarkan lowongan_id
+        ->where('etam_lamaran.lowongan_id', $real_id) // Filter berdasarkan lowongan_id
         ->where('etam_progres.modul', 'lamaran') // Filter berdasarkan modul pada etam_progres
         ->whereNull('etam_lamaran.deleted_at') // Pastikan data tidak terhapus
         ->get();
 
-        echo json_encode($pelamars);
-        die();
+        // echo json_encode($pelamars);
+        // die();
 
         // Buat file CSV
         $csvFileName = 'pelamar_' . date('Ymd_His') . '.csv';
