@@ -304,6 +304,7 @@ class LowonganController extends Controller
         ->join('users', 'etam_lamaran.pencari_id', '=', 'users.id') // Join dengan tabel users
         ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id') // Join dengan tabel users_pencari
         ->join('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode') // Join dengan tabel etam_progres
+      
 
         ->leftJoin('etam_provinsi', 'users_pencari.id_provinsi', '=', 'etam_provinsi.id')
         ->leftJoin('etam_kabkota', 'users_pencari.id_kota', '=', 'etam_kabkota.id')
@@ -321,8 +322,10 @@ class LowonganController extends Controller
         // echo json_encode($pelamars);
         // die();
 
+        $lowongan = Lowongan::find($real_id);
+
         // Buat file CSV
-        $csvFileName = 'pelamar_' . date('Ymd_His') . '.csv';
+        $csvFileName = 'pelamar_lowongan:_'.$lowongan->judul_lowongan.'_'.date('Ymd_His') . '.csv';
         $handle = fopen('php://output', 'w');
 
         // Set header untuk file CSV
