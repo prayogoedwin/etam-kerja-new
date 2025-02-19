@@ -95,7 +95,7 @@
                                             </div>
                                             <div class="col-10">
                                                 <input type="file" class="validation-file" id="foto" name="foto"
-                                                    accept="image/png, image/gif, image/jpeg">
+                                                    accept="image/png, image/gif, image/jpeg" required>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -104,7 +104,7 @@
                                             </div>
                                             <div class="col-10">
                                                 <input type="text" class="form-control" name="ktp" id="ktp"
-                                                    value="{{ $profil->ktp }}">
+                                                    value="{{ $profil->ktp }}" required>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -113,7 +113,7 @@
                                             </div>
                                             <div class="col-10">
                                                 <input type="text" class="form-control" name="name" id="name"
-                                                    value="{{ $profil->name }}">
+                                                    value="{{ $profil->name }}" required>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -122,7 +122,7 @@
                                             </div>
                                             <div class="col-10">
                                                 <input type="text" class="form-control" name="tempat_lahir"
-                                                    id="tempat_lahir" value="{{ $profil->tempat_lahir }}">
+                                                    id="tempat_lahir" value="{{ $profil->tempat_lahir }}" required>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -131,7 +131,7 @@
                                             </div>
                                             <div class="col-2">
                                                 <input type="date" class="form-control" name="tanggal_lahir"
-                                                    id="tanggal_lahir" value="{{ $profil->tanggal_lahir }}">
+                                                    id="tanggal_lahir" value="{{ $profil->tanggal_lahir }}" required>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -206,7 +206,7 @@
                                                 <label for="">Alamat</label>
                                             </div>
                                             <div class="col-10">
-                                                <textarea class="form-control" name="alamat" id="alamat" cols="30" rows="3">{{ $profil->alamat }}</textarea>
+                                                <textarea class="form-control" name="alamat" id="alamat" cols="30" rows="3" required>{{ $profil->alamat }}</textarea>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -215,7 +215,7 @@
                                             </div>
                                             <div class="col-10">
                                                 <input type="text" class=" form-control" name="kodepos"
-                                                    id="kodepos" value="{{ $profil->kodepos }}">
+                                                    id="kodepos" value="{{ $profil->kodepos }}" required>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -253,7 +253,7 @@
                                             <div class="col-10">
                                                 <input type="text" class="form-control"
                                                     name="asal_sekolah_universitas" id="asal_sekolah_universitas"
-                                                    value="{{ $profil->asal_sekolah_universitas }}">
+                                                    value="{{ $profil->asal_sekolah_universitas }}" required>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -263,7 +263,7 @@
                                             <div class="col-10">
                                                 <input type="text" class="form-control" name="nilai_ijazah_ipk"
                                                     id="nilai_ijazah_ipk" value="{{ $profil->nilai_ijazah_ipk }}"
-                                                    oninput="this.value = this.value.replace(/,/g, '.');">
+                                                    oninput="this.value = this.value.replace(/,/g, '.');" required>
                                             </div>
                                         </div>
                                         <div class="form-group row">
@@ -272,7 +272,7 @@
                                             </div>
                                             <div class="col-10">
                                                 <input type="number" class=" form-control" name="whatsapp"
-                                                    id="whatsapp" value="{{ $profil->user->whatsapp }}">
+                                                    id="whatsapp" value="{{ $profil->user->whatsapp }}" required>
                                             </div>
                                         </div>
                                         <div class="form-group row">
