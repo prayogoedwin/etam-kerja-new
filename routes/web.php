@@ -153,7 +153,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::put('/lowongan/update/{id}', [LowonganController::class, 'update'])->name('lowongan.update');
         Route::get('/lowongan/pelamar/{id}', [LowonganController::class, 'pelamar'])->name('lowongan.pelamar');
         // Route::get('/lowongan/pelamar/{id}', [LowonganController::class, 'pelamar'])->name('lowongan.pelamar');
-        Route::get('/lowongan/download-pelamar/{id}', [YourController::class, 'downloadPelamar'])->name('lowongan.download-pelamar');
+        Route::get('/lowongan/download-pelamar/{id}', [LowonganController::class, 'downloadPelamar'])->name('lowongan.download-pelamar');
         Route::get('/lowongan/detail_pelamar/{id}', [LowonganController::class, 'detailpelamar'])->name('lowongan.detailpelamar');
 
         // Route::post('/lowongan/bulk_updatepelamar', [LowonganController::class, 'bulkupdatepelamar'])->middleware('check.role:penyedia-kerja')->name('bulk.update.pelamar');
