@@ -278,6 +278,68 @@ class LowonganController extends Controller
         // echo json_encode($data);
     }
 
+    public function downloadPelamar(Request $request, string $id)
+    {
+        // Ambil data pelamar sesuai dengan lowongan_id
+        $pelamars = Lamaran::select(
+            'etam_lamaran.id',
+            'users.id as user_id',
+            'users.email',
+            'users.whatsapp',
+            'users_pencari.name',
+            'etam_lamaran.keterangan',
+            'etam_lamaran.created_at',
+            'etam_progres.kode as kodelamaran',
+            'etam_progres.name as statuslamaran'
+        )
+        ->join('users', 'etam_lamaran.pencari_id', '=', 'users.id')
+        ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id')
+        ->join('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode')
+        ->where('etam_lamaran.lowongan_id', $id)
+        ->where('etam_progres.modul', 'lamaran')
+        ->whereNull('etam_lamaran.deleted_at')
+        ->get();
+
+        // Buat file CSV
+        $csvFileName = 'pelamar_' . date('Ymd_His') . '.csv';
+        $handle = fopen('php://output', 'w');
+
+        // Set header untuk file CSV
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $csvFileName . '"');
+
+        // Tulis header kolom
+        fputcsv($handle, [
+            'ID',
+            'User ID',
+            'Email',
+            'WhatsApp',
+            'Name',
+            'Keterangan',
+            'Created At',
+            'Kode Lamaran',
+            'Status Lamaran'
+        ]);
+
+        // Tulis data pelamar ke file CSV
+        foreach ($pelamars as $pelamar) {
+            fputcsv($handle, [
+                $pelamar->id,
+                $pelamar->user_id,
+                $pelamar->email,
+                $pelamar->whatsapp,
+                $pelamar->name,
+                $pelamar->keterangan,
+                $pelamar->created_at->format('Y-m-d H:i:s'),
+                $pelamar->kodelamaran,
+                $pelamar->statuslamaran
+            ]);
+        }
+
+        fclose($handle);
+        exit;
+    }
+
     public function detailpelamar(string $id){
         $userid = short_decode_url($id);
         // dd($userid);

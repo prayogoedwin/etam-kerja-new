@@ -16,6 +16,7 @@
                                 <div class="page-header-title">
                                     <h5 class="m-b-10">Pelamar Lowongan</h5>
                                 </div>
+                                <a href="{{ route('lowongan.download-pelamar', encode_url($lowongan->id)) }}" class="btn btn-info btn-sm">Download Pelamar</a>
                                 {{-- <ul class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
                                     <li class="breadcrumb-item"><a href="#!">Hospital</a></li>
