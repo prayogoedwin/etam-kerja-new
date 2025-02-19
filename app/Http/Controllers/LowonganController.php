@@ -286,7 +286,15 @@ class LowonganController extends Controller
             'users.id as user_id',
             'users.email',
             'users.whatsapp',
-            'users_pencari.name',
+            // 'users_pencari.name',
+            'users_pencari.*',
+            'etam_provinsi.name as prov',
+            'etam_kabkota.name as kabkota',
+            'etam_kecamatan.name as kec',
+
+            'etam_pendidikan.name as pendidikan',
+            'etam_jurusan.name as jurusan',
+
             'etam_lamaran.keterangan',
             'etam_lamaran.created_at',
             'etam_progres.kode as kodelamaran',
@@ -294,7 +302,15 @@ class LowonganController extends Controller
         )
         ->join('users', 'etam_lamaran.pencari_id', '=', 'users.id')
         ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id')
+        ->join('etam_provinsi', 'users_pencari.id_provinsi', '=', 'etam_provinsi.id')
+        ->join('etam_kabkota', 'users_pencari.id_kabkota', '=', 'etam_kabkota.id')
+        ->join('etam_kecamatan', 'users_pencari.id_kecamatan', '=', 'etam_kecamatan.id')
+
+        ->join('etam_pendidikan', 'users_pencari.id_pendidikan', '=', 'etam_pendidikan.id')
+        ->join('etam_jurusan', 'users_pencari.id_jurusan', '=', 'etam_jurusan.id')
+
         ->join('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode')
+  
         ->where('etam_lamaran.lowongan_id', $id)
         ->where('etam_progres.modul', 'lamaran')
         ->whereNull('etam_lamaran.deleted_at')
@@ -310,14 +326,24 @@ class LowonganController extends Controller
 
         // Tulis header kolom
         fputcsv($handle, [
-            'ID',
-            'User ID',
+            'No',
+            'Nama',
+            'Jenis Kelamin',
+            'Tempat Lahir',
+            'Tanggal Lahir',
+            'Provinsi',
+            'Kab/Kota',
+            'Kecamatan',
+            'Alamat',
+            'Kodepos',
+            'Tahun Lulus',
+            'Pendidikan Akhir',
+            'Jurusan',
+            'Nilai Ijazah/IPK',
+            'Asal Sekolah / Universitas',
             'Email',
             'WhatsApp',
-            'Name',
-            'Keterangan',
-            'Created At',
-            'Kode Lamaran',
+            'Hari/Tanggal Melamar',
             'Status Lamaran'
         ]);
 
@@ -325,13 +351,23 @@ class LowonganController extends Controller
         foreach ($pelamars as $pelamar) {
             fputcsv($handle, [
                 $pelamar->id,
-                $pelamar->user_id,
+                $pelamar->name,
+                $pelamar->gender,
+                $pelamar->tempat_lahir,
+                $pelamar->tanggal_lahir,
+                $pelamar->prov,
+                $pelamar->kabkota,
+                $pelamar->kec,
+                $pelamar->alamat,
+                $pelamar->kodepos,
+                $pelamar->tahun_lulus,
+                $pelamar->pendidikan,
+                $pelamar->jurusan,
+                $pelamar->nilai_ijzah_ipk,
+                $pelamar->asal_sekolah_universitas,
                 $pelamar->email,
                 $pelamar->whatsapp,
-                $pelamar->name,
-                $pelamar->keterangan,
                 $pelamar->created_at->format('Y-m-d H:i:s'),
-                $pelamar->kodelamaran,
                 $pelamar->statuslamaran
             ]);
         }
