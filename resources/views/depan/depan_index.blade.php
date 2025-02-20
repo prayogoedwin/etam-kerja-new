@@ -38,7 +38,7 @@
                     <!-- End Banner Thumb -->
                 </div>
                 <!-- Start Shape -->
-                {{-- <div class="banner-shape-right" style="background: url({{ asset('assets') }}/etam_fe/img/shape/3-5.png);"></div> --}}
+                <div class="banner-shape-right" style="background: url({{ asset('assets') }}/etam_fe/img/shape/3-5.png);"></div>
                 <!-- End Shape -->
             </div>
             <!-- End Single Item -->
