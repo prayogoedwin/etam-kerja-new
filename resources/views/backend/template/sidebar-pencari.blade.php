@@ -68,8 +68,8 @@
 
                 {{-- <li class="nav-item"><a href="etam.html" class="nav-link "><span class="pcoded-micon"><i class="feather icon-mail"></i></span><span class="pcoded-mtext">Lamaran Kerja</span></a></li> --}}
 
-                <li class="nav-item"><a href="{{ route('ak1.index') }}" class="nav-link "><span class="pcoded-micon"><i
-                                class="feather icon-book"></i></span><span class="pcoded-mtext">AK1</span></a></li>
+                {{-- <li class="nav-item"><a href="{{ route('ak1.index') }}" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-book"></i></span><span class="pcoded-mtext">AK1</span></a></li> --}}
 
         </div>
     </div>
