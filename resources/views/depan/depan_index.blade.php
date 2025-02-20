@@ -15,12 +15,15 @@
                     <div class="row align-center">
                         <div class="col-xl-7 col-lg-9">
                             <div class="content">
-                                <img src="{{ asset('assets') }}/etam_fe/hut_kaltim.png">
-                                {{-- <h2>Mempertemukan Perusahaan dengan <br> Pencari Kerja Berkualitas.</h2> --}}
-                                <p>
+                                {{-- <img src="{{ asset('assets') }}/etam_fe/hut_kaltim.png"> --}}
+                                
+                                <h3>Selamat dan Sukses untuk</h3>
+                                <h3>Gubernur dan Wakil Gubernur Provinsi Kalimantan Timur</h3>
+                                <h3>Dr. Rudy Mas’ud, S.E., M.E. dan Seno Aji, S.H.</h3>
+                                {{-- <p>
                                     Melalui ETAM KERJA pemerintah hadir sebagai perantara bagi perusahaan dan pencari
                                     kerja
-                                </p>
+                                </p> --}}
                                 <!-- <div class="button">
                                         <a class="btn circle btn-theme btn-md radius animation" href="#">Get Consultant</a>
                                     </div> -->
@@ -30,13 +33,12 @@
                     </div>
                     <!-- Banner Thumb -->
                     <div class="banner-thumb">
-                        <img src="{{ asset('assets') }}/etam_fe/images/pj-gub-kaltim.png" alt="illustration">
+                        <img src="{{ asset('assets') }}/etam_fe/images/GUBERNUR-KALTIM-NEW.png" alt="illustration"  style="margin-top:-50px">
                     </div>
                     <!-- End Banner Thumb -->
                 </div>
                 <!-- Start Shape -->
-                <div class="banner-shape-right"
-                    style="background: url({{ asset('assets') }}/etam_fe/img/shape/3-5.png);"></div>
+                {{-- <div class="banner-shape-right" style="background: url({{ asset('assets') }}/etam_fe/img/shape/3-5.png);"></div> --}}
                 <!-- End Shape -->
             </div>
             <!-- End Single Item -->
