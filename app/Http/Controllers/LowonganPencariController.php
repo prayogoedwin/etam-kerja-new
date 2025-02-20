@@ -101,17 +101,28 @@ class LowonganPencariController extends Controller
 
             $userId = auth()->user()->id;
 
+            // Gunakan transaksi untuk memastikan atomicity
+            DB::beginTransaction();
+
             // Cari admin berdasarkan ID
             $dataLow = LowonganPencari::findOrFail($id);
 
             // Cek apakah sudah ada pencari_id yang sama di tabel etam_lamaran
+            // $existingLamaran = DB::table('etam_lamaran')
+            //     ->where('pencari_id', $userId)
+            //     ->where('lowongan_id', $dataLow['id'])
+            //     ->first();
+
+            // Kunci baris untuk mencegah race condition
             $existingLamaran = DB::table('etam_lamaran')
                 ->where('pencari_id', $userId)
-                ->where('lowongan_id', $dataLow['id'])
+                ->where('lowongan_id', $dataLow->id)
+                ->lockForUpdate() // Kunci baris selama transaksi
                 ->first();
 
             // Jika sudah ada, kembalikan error
             if ($existingLamaran) {
+                DB::rollBack();
                 return response()->json([
                     'success' => true,
                     'message' => 'Gagal menyimpan lamaran, anda sudah melamar untuk lowongan ini'
@@ -131,7 +142,13 @@ class LowonganPencariController extends Controller
             $result = $lowonganPencari->insertLamaran($dataInsert);
 
             return response()->json(['success' => true, 'message' => 'Berhasil melamar pekerjaan']);
+
+            // Commit transaksi jika sukses
+            DB::commit();
         } catch (\Exception $e) {
+            // Rollback jika terjadi error
+            DB::rollBack();
+
             return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     }
