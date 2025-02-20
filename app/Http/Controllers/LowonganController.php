@@ -371,7 +371,7 @@ class LowonganController extends Controller
                 $pelamar->tahun_lulus,
                 $pelamar->pendidikan,
                 $pelamar->jurusan,
-                $pelamar->nilai_ijzah_ipk,
+                $pelamar->nilai_ijazah_ipk,
                 $pelamar->asal_sekolah_universitas,
                 $pelamar->email,
                 $pelamar->whatsapp,
