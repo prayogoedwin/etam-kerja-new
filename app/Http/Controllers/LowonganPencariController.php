@@ -117,7 +117,6 @@ class LowonganPencariController extends Controller
             $existingLamaran = DB::table('etam_lamaran')
                 ->where('pencari_id', $userId)
                 ->where('lowongan_id', $dataLow->id)
-                ->lockForUpdate() // Kunci baris selama transaksi
                 ->first();
 
             // Jika sudah ada, kembalikan error
@@ -129,22 +128,34 @@ class LowonganPencariController extends Controller
                 ]);
             }
 
+            // $dataInsert = array(
+            //     'pencari_id' => $userId,
+            //     'lowongan_id' => $dataLow['id'],
+            //     'kabkota_penempatan_id' => $dataLow['kabkota_id'],
+            //     'progres_id' => 4,
+            //     'keterangan' => null
+            // );
+
+            // Panggil model LowonganPencari dan gunakan fungsi insertLamaran
+            // $lowonganPencari = new LowonganPencari();
+            // $result = $lowonganPencari->insertLamaran($dataInsert);
+
             $dataInsert = array(
                 'pencari_id' => $userId,
                 'lowongan_id' => $dataLow['id'],
                 'kabkota_penempatan_id' => $dataLow['kabkota_id'],
                 'progres_id' => 4,
-                'keterangan' => null
+                'keterangan' => null,
+                'created_at' => now(),
             );
 
-            // Panggil model LowonganPencari dan gunakan fungsi insertLamaran
-            $lowonganPencari = new LowonganPencari();
-            $result = $lowonganPencari->insertLamaran($dataInsert);
-
-            return response()->json(['success' => true, 'message' => 'Berhasil melamar pekerjaan']);
+            // Lakukan insert ke tabel etam_lamaran
+            DB::table('etam_lamaran')->insert($dataInsert);
 
             // Commit transaksi jika sukses
             DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'Berhasil melamar pekerjaan']);
         } catch (\Exception $e) {
             // Rollback jika terjadi error
             DB::rollBack();
