@@ -336,6 +336,7 @@ class LowonganController extends Controller
         fputcsv($handle, [
             'No',
             'Nama',
+            'NIK',
             'Jenis Kelamin',
             'Tempat Lahir',
             'Tanggal Lahir',
@@ -360,6 +361,7 @@ class LowonganController extends Controller
             fputcsv($handle, [
                 $pelamar->id,
                 $pelamar->name,
+                'ktp:'.$pelamar->ktp,
                 $pelamar->gender,
                 $pelamar->tempat_lahir,
                 $pelamar->tanggal_lahir,
