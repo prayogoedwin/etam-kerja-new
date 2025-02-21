@@ -271,6 +271,7 @@ class DepanController extends Controller
             'whatsapp' => $request->wa,
             'password' => $request->password
         ]);
+        $userId = $user->id;
         $user->syncRoles($role->name);
 
         $otp = generateOtp();
@@ -278,10 +279,101 @@ class DepanController extends Controller
             'otp' => $otp,
             // 'otp_created_at' => now()
         ]);
+
+        if($role->table_name == 'users_pencari'){
+            UserPencari::create([
+                'user_id' => $userId,
+                'ktp' => $userId,
+                'name' => $userId,
+                'tempat_lahir' => $userId,
+                'tanggal_lahir' => now(),
+                'gender' => 0,
+                'id_provinsi' => $userId,
+                'id_kota' => $userId,
+                'id_kecamatan' => $userId,
+                // 'id_desa' => $request->desa_id,
+                'alamat' => $userId,
+                'kodepos' => $userId,
+                'id_pendidikan' => $userId,
+                'id_jurusan' => $userId,
+                'tahun_lulus' => $userId,
+                'id_status_perkawinan' => 0,
+                'id_agama' => $userId,
+                'id_jabatan_harapan' => null,
+                'foto' => null,
+                'status_id' => 1,
+                'is_alumni_bkk' => 0,
+                'bkk_id' => null,
+                'toket' => null,
+                'disabilitas' => null,
+                'jenis_disabilitas' => null,
+                'keterangan_disabilitas' => null,
+                'posted_by' => $userId,
+                'updated_at' => now(), // Update the timestamp
+                'is_diterima' => 0,
+                'medsos' => null
+            ]);
+        }
+
+        if($role->table_name == 'penyedia-kerja'){
+            UserPenyedia::create([
+                'user_id' => $userId,
+                'name' => $userId,
+                'luar_negri' => 0,
+                'deskripsi' => null,
+                'jenis_perusahaan' => 0,
+                'nomor_sip3mi' => null,
+                'nib' => $userId,
+                'id_sektor' => $userId,
+                'id_provinsi' => $userId,
+                'id_kota' => $userId,
+                'id_kecamatan' => $userId,
+                // 'id_desa' => $request->desa_id,
+                'alamat' => $userId,
+                'kodepos' => $userId,
+                'telpon' => $userId,
+                'jabatan' => $userId,
+                'website' => null,
+                'status_id' => 1,
+                'foto' => null,
+                'shared_by_id' => null,
+                'posted_by' => $userId,
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+        }
+
+        if($role->table_name == 'admin-bkk'){
+            UserBkk::create([
+                'user_id' => $userId,
+                'no_sekolah' => $userId,
+                'id_sekolah' => $userId,
+                'name' => $userIde,
+                'website' => $userId,
+                'id_provinsi' => $userId,
+                'id_kota' => $userId,
+                'id_kecamatan' => $userId,
+                'alamat' => $userId,
+                'kodepos' => $userId,
+                // 'no_bkk' => $request->no_bkk,
+                'tanggal_aktif_bkk' => date('Y-m-d H:i:s'),
+                'tanggal_non_aktif_bkk' => null,
+                'telpon' => $userId,
+                'hp' => $userId,
+                'contact_person' => $userId,
+                'jabatan' => $userId,
+                'foto' => null,
+                'status_id' => 1,
+                'tanggal_register' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+        }
+
         // dd($userWa);
         // sendWa($user->whatsapp, 'Lanjutkan pendaftaran dengan memasukkan Kode OTP berikut : *' . $otp . '*');
 
         session(['email_registered' => $request->email]);
+        session(['user_id_registered' => $userId]);
+
         // dd(session('email_registered'));
 
         return response()->json([
@@ -313,10 +405,11 @@ class DepanController extends Controller
         ]);
     }
 
-    public function akhir_daftar_akun(Request $request)
+    public function akhir_daftar_akun_bak(Request $request)
     {
 
         $imel = session('email_registered');
+        $user_id_registered = session('user_id_registered');
         $user = User::where('email', $imel)->first();
 
         // dd($user->id);
@@ -375,6 +468,67 @@ class DepanController extends Controller
         }
     }
 
+    public function akhir_daftar_akun(Request $request)
+    {
+
+        $imel = session('email_registered');
+        $user_id_registered = session('user_id_registered');
+        $user = User::where('email', $imel)->first();
+
+        // dd($user->id);
+
+        DB::beginTransaction();
+        try {
+            // create 
+            UserPencari::where('user_id', $user->id)
+            ->update([
+                'ktp' => $request->nik,
+                'name' => $request->nama_lengkap,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'gender' => $request->gender_id,
+                'id_provinsi' => '64',
+                'id_kota' => $request->kabkota_id,
+                'id_kecamatan' => $request->kecamatan_id,
+                // 'id_desa' => $request->desa_id,
+                'alamat' => $request->alamat,
+                'kodepos' => $request->kodepos,
+                'id_pendidikan' => $request->pendidikan_id,
+                'id_jurusan' => $request->jurusan_id,
+                'tahun_lulus' => $request->tahun_lulus,
+                'id_status_perkawinan' => $request->status_perkawinan_id,
+                'id_agama' => $request->agama_id,
+                'id_jabatan_harapan' => $request->jabatan_harapan_id,
+                'foto' => null,
+                'status_id' => 1,
+                'is_alumni_bkk' => 0,
+                'bkk_id' => null,
+                'toket' => null,
+                'disabilitas' => $request->disabilitas,
+                'jenis_disabilitas' => $request->jenis_disabilitas,
+                'keterangan_disabilitas' => $request->keterangan_disabilitas,
+                'posted_by' => $user->id,
+                'updated_at' => now(), // Update the timestamp
+                'is_diterima' => 0,
+                'medsos' => $request->medsos
+            ]);
+
+            DB::commit();
+
+            return redirect()->to('login')->with('success', 'Berhasil membuat akun silahkan login');
+        } catch (\Throwable $th) {
+            // DB::rollBack();
+            // return back()->with('error', $th->getMessage());
+            DB::rollBack();
+            Log::error($th);
+            // return back()->with('error', $th->getMessage());
+            return response()->json([
+                'status' => 0,
+                'message' => $th->getMessage()
+            ]);
+        }
+    }
+
     public function akhir_daftar_akun_perush(Request $request)
     {
         $imel = session('email_registered');
@@ -385,8 +539,10 @@ class DepanController extends Controller
         DB::beginTransaction();
         try {
             // create affiliator
-            UserPenyedia::create([
-                'user_id' => $user->id,
+            // UserPenyedia::create([
+            UserPenyedia::where('user_id', $user->id)
+                ->update([
+                // 'user_id' => $user->id,
                 'name' => $request->nama_perusahaan,
                 'luar_negri' => $request->luar_negri,
                 'deskripsi' => $request->deskripsi,
@@ -438,8 +594,10 @@ class DepanController extends Controller
         DB::beginTransaction();
         try {
             // create affiliator
-            UserBkk::create([
-                'user_id' => $user->id,
+            // UserBkk::create([
+            UserBkk::where('user_id', $user->id)
+                ->update([   
+                // 'user_id' => $user->id,
                 'no_sekolah' => $request->no_sekolah,
                 'id_sekolah' => $request->id_sekolah,
                 'name' => $request->name,
