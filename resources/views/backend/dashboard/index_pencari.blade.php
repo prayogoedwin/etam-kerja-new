@@ -117,7 +117,18 @@
                         </div>
                         <!-- page statustic card end -->
 
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/ei55ekQHysw?si=FHBdZ_yulZsly9oZ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <div class="alert alert-warning">
+                            <marquee behavior="" direction="left">Untuk pengalaman terbaik saat menggunakan sistem ini,
+                                gunakan browser modern seperti Google Chrome, Mozilla Firefox, atau browser modern lainnya.
+                            </marquee>
+                        </div>
+
+
+                        <iframe width="560" height="315"
+                            src="https://www.youtube.com/embed/ei55ekQHysw?si=FHBdZ_yulZsly9oZ" title="YouTube video player"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     </div>
 
 

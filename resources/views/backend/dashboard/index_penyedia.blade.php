@@ -109,7 +109,7 @@
                                 </div>
                             </div>
 
-                            
+
 
 
 
@@ -117,9 +117,17 @@
                         <!-- page statustic card end -->
                     </div>
 
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/6BXoUmI4G-Q?si=4S8Hal7hmyAfIHD-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    <div class="alert alert-warning">
+                        <marquee behavior="" direction="left">Untuk pengalaman terbaik saat menggunakan sistem ini,
+                            gunakan browser modern seperti Google Chrome, Mozilla Firefox, atau browser modern lainnya.
+                        </marquee>
+                    </div>
 
-
+                    <iframe width="560" height="315"
+                        src="https://www.youtube.com/embed/6BXoUmI4G-Q?si=4S8Hal7hmyAfIHD-" title="YouTube video player"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
                 </div>
                 <!-- [ Main Content ] end -->

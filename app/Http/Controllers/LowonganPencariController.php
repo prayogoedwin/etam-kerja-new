@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\LowonganPencari;
+use App\Models\ProfilPencari;
 use Yajra\DataTables\Facades\DataTables;  // Mengimpor DataTables
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -106,6 +107,18 @@ class LowonganPencariController extends Controller
 
             // Cari admin berdasarkan ID
             $dataLow = LowonganPencari::findOrFail($id);
+
+            //get profil pencari
+            $profil = ProfilPencari::where('user_id', $userId)->first();
+
+            //check if profil->foto is null
+            if($profil->foto == null){
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda belum mengunggah foto profil, silahkan lengkapi profil terlebih dahulu'
+                ]);
+            }
 
             // Cek apakah sudah ada pencari_id yang sama di tabel etam_lamaran
             // $existingLamaran = DB::table('etam_lamaran')
