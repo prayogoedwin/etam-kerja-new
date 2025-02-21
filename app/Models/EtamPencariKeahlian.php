@@ -21,4 +21,10 @@ class EtamPencariKeahlian extends Model
     ];
 
     protected $dates = ['deleted_at'];
+
+     // Definisikan relasi ke model User
+     public function user()
+     {
+         return $this->belongsTo(User::class, 'user_id', 'id');
+     }
 }

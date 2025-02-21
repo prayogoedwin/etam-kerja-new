@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Lowongan;
 use App\Models\Lamaran;
 use App\Models\ProfilPencari;
+use App\Models\EtamPencariPendidikan;
+use App\Models\EtamPencariKeahlian;
 use Yajra\DataTables\Facades\DataTables;  // Mengimpor DataTables
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -304,7 +306,7 @@ class LowonganController extends Controller
         ->join('users', 'etam_lamaran.pencari_id', '=', 'users.id') // Join dengan tabel users
         ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id') // Join dengan tabel users_pencari
         ->join('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode') // Join dengan tabel etam_progres
-      
+
 
         ->leftJoin('etam_provinsi', 'users_pencari.id_provinsi', '=', 'etam_provinsi.id')
         ->leftJoin('etam_kabkota', 'users_pencari.id_kota', '=', 'etam_kabkota.id')
@@ -313,7 +315,7 @@ class LowonganController extends Controller
         ->leftJoin('etam_pendidikan', 'users_pencari.id_pendidikan', '=', 'etam_pendidikan.id')
         ->leftJoin('etam_jurusan', 'users_pencari.id_jurusan', '=', 'etam_jurusan.id')
 
-  
+
         ->where('etam_lamaran.lowongan_id', $real_id) // Filter berdasarkan lowongan_id
         ->where('etam_progres.modul', 'lamaran') // Filter berdasarkan modul pada etam_progres
         ->whereNull('etam_lamaran.deleted_at') // Pastikan data tidak terhapus
@@ -404,6 +406,44 @@ class LowonganController extends Controller
         $pelamar->pendidikan = $pelamar->pendidikan();
         $pelamar->jurusan = $pelamar->jurusan();
 
+        $pendidikans = EtamPencariPendidikan::with(['user', 'pendidikan', 'jurusan'])
+        ->where('user_id', $userid) // Menambahkan kondisi where untuk user_id
+        ->get();
+
+        $table_pendidikan = '';
+        if(count($pendidikans) > 0){
+            foreach ($pendidikans as $key => $value) {
+                $table_pendidikan .= '<tr>';
+
+                $table_pendidikan .= '<td>' . $value->pendidikan->name . '</td>';
+                $table_pendidikan .= '<td>' . $value->jurusan->nama . '</td>';
+                $table_pendidikan .= '<td>' . $value->instansi . '</td>';
+                $table_pendidikan .= '<td>' . $value->tahun . '</td>';
+
+                $table_pendidikan .= '</tr>';
+            }
+        } else {
+            $table_pendidikan = '<tr class=" text-center"><td colspan="4">Belum ada data</td></tr>';
+        }
+
+        $kahlians = EtamPencariKeahlian::with(['user'])
+        ->where('user_id', $userid) // Menambahkan kondisi where untuk user_id
+        ->get();
+
+        $table_keahlian = '';
+        if(count($kahlians) > 0){
+            foreach ($kahlians as $key => $value) {
+                $table_keahlian .= '<tr>';
+
+                $table_keahlian .= '<td>' . $value->keahlian . '</td>';
+
+                $table_keahlian .= '</tr>';
+            }
+        } else {
+            $table_keahlian = '<tr class=" text-center"><td colspan="1">Belum ada data</td></tr>';
+        }
+
+
         if(!$pelamar){
             return response()->json([
                 'status' => 0,
@@ -413,7 +453,10 @@ class LowonganController extends Controller
 
         return response()->json([
             'status' => 1,
-            'data' => $pelamar
+            'data' => $pelamar,
+            // 'pendidikan' => $pendidikans,
+            'table_pendidikan' => $table_pendidikan,
+            'table_keahlian' => $table_keahlian
         ]);
     }
 

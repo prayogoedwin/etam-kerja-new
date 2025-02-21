@@ -22,4 +22,21 @@ class EtamPencariPendidikan extends Model
         'updated_at'
     ];
 
+     // Definisikan relasi ke model User
+     public function user()
+     {
+         return $this->belongsTo(User::class, 'user_id', 'id');
+     }
+
+     // Definisikan relasi ke model Pendidikan
+     public function pendidikan()
+     {
+         return $this->belongsTo(Pendidikan::class, 'pendidikan_id', 'id');
+     }
+
+     // Definisikan relasi ke model Jurusan
+     public function jurusan()
+     {
+         return $this->belongsTo(Jurusan::class, 'jurusan_id', 'id');
+     }
 }

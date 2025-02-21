@@ -16,7 +16,8 @@
                                 <div class="page-header-title">
                                     <h5 class="m-b-10">Pelamar Lowongan</h5>
                                 </div>
-                                <a href="{{ route('lowongan.download-pelamar', encode_url($lowongan->id)) }}" class="btn btn-info btn-sm">Download Pelamar</a>
+                                <a href="{{ route('lowongan.download-pelamar', encode_url($lowongan->id)) }}"
+                                    class="btn btn-info btn-sm">Download Pelamar</a>
                                 {{-- <ul class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
                                     <li class="breadcrumb-item"><a href="#!">Hospital</a></li>
@@ -138,7 +139,7 @@
                         <h5 class="modal-title" id="modalEditLabel">Data Pelamar</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" id="printableArea">
                         <div class="row">
                             <div class="col-12">
                                 <table align="center" width="100%">
@@ -228,6 +229,33 @@
                                     </thead>
                                 </table>
                                 <hr>
+                                <h4>Pendidikan Formal</h4>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tingkat</th>
+                                            <th>Jurusan</th>
+                                            <th>Sekolah/Perguruan Tinggi</th>
+                                            <th>Tahun</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bodyPendidikan">
+
+                                    </tbody>
+                                </table>
+                                <hr>
+                                <h4>Ketrampilan/Keahlian</h4>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Ketrampilan/Keahlian</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bodyKeahlian">
+
+                                    </tbody>
+                                </table>
+                                <hr>
                                 <h4>Lainnya</h4>
                                 <hr>
                                 <table align="center" width="100%">
@@ -248,8 +276,10 @@
                         </div>
 
 
-                        <div class="float-end">
+                        <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            <button type="button" class="btn btn-primary"
+                                onclick="printDiv('printableArea')">Print</button>
                         </div>
 
                     </div>
@@ -391,6 +421,12 @@
 
                         $('#nilai_ijazah_ipk').html(response.data.nilai_ijazah_ipk);
                         $('#asal_sekolah_universitas').html(response.data.asal_sekolah_universitas);
+
+                        //set body pendidikan
+                        $('#bodyPendidikan').html(response.table_pendidikan);
+
+                        //set body keahlian
+                        $('#bodyKeahlian').html(response.table_keahlian);
                     } else {
                         // Display error message
                         alert('Error: ' + response.message);
@@ -401,5 +437,26 @@
                 }
             });
         }
+
+        function printDiv(divId) {
+            var printContents = document.getElementById(divId).innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            document.body.innerHTML = printContents;
+
+            window.print();
+
+            document.body.innerHTML = originalContents;
+            location.reload(); // Reload the page to restore the original content
+        }
     </script>
+
+    <style>
+        @media print {
+            .modal-footer {
+                display: none;
+                /* Menyembunyikan seluruh footer modal saat mencetak */
+            }
+        }
+    </style>
 @endpush
