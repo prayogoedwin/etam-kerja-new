@@ -2,8 +2,10 @@
 
 <!-- Start Banner Area
     ============================================= -->
-<div class="banner-area banner-style-two content-right navigation-icon-solid navigation-right-botom navigation-custom-large overflow-hidden bg-cover"
-    style="background: url({{ asset('assets') }}/etam_fe/img/shape/banner.jpg);">
+{{-- <div class="banner-area banner-style-two content-right navigation-icon-solid navigation-right-botom navigation-custom-large overflow-hidden bg-cover"
+    style="background: url({{ asset('assets') }}/etam_fe/img/shape/banner.jpg);"> --}}
+<div
+    class="banner-area banner-style-two content-right navigation-icon-solid navigation-right-botom navigation-custom-large overflow-hidden bg-cover">
     <!-- Slider main container -->
     <div class="banner-style-two-carousel">
         <!-- Additional required wrapper -->
@@ -16,10 +18,11 @@
                         <div class="col-xl-7 col-lg-9">
                             <div class="content">
                                 {{-- <img src="{{ asset('assets') }}/etam_fe/hut_kaltim.png"> --}}
-                                
-                                <h3>Selamat dan Sukses untuk</h3>
-                                <h3>Gubernur dan Wakil Gubernur Provinsi Kalimantan Timur</h3>
-                                <h3>Dr. Rudy Mas’ud, S.E., M.E. dan Seno Aji, S.H.</h3>
+                                {{-- <img src="{{ asset('assets') }}/etam_fe/images/logo/logo_kaltim.png" style="width:100px"> --}}
+
+                                <h1 style="font-size:75px; color:#03A859"><b>KALTIM SUKSES</b></h1>
+                                <h1 style="font-size:45px;  color:#EFC926"><b>MENUJU GENERASI EMAS</b></h1>
+                                {{-- <h3>Dr. Rudy Mas’ud, S.E., M.E. dan Seno Aji, S.H.</h3> --}}
                                 {{-- <p>
                                     Melalui ETAM KERJA pemerintah hadir sebagai perantara bagi perusahaan dan pencari
                                     kerja
@@ -33,12 +36,13 @@
                     </div>
                     <!-- Banner Thumb -->
                     <div class="banner-thumb">
-                        <img src="{{ asset('assets') }}/etam_fe/images/GUBERNUR-KALTIM-NEW.png" alt="illustration"  style="margin-top:-50px">
+                        <img src="{{ asset('assets') }}/etam_fe/images/gub-wagub-kaltim.png" alt="illustration"
+                            style="margin-top:-50px;">
                     </div>
                     <!-- End Banner Thumb -->
                 </div>
                 <!-- Start Shape -->
-                <div class="banner-shape-right" style="background: url({{ asset('assets') }}/etam_fe/img/shape/3-5.png);"></div>
+                {{-- <div class="banner-shape-right" style="background: url({{ asset('assets') }}/etam_fe/img/shape/3-5.png);"></div> --}}
                 <!-- End Shape -->
             </div>
             <!-- End Single Item -->
