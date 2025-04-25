@@ -55,4 +55,14 @@ class Lowongan extends Model
     {
         return $this->belongsTo(User::class, 'posted_by', 'id');
     }
+
+    public function pendidikan()
+    {
+        return $this->belongsTo(Pendidikan::class, 'pendidikan_id');
+    }
+
+    public function kabkota()
+    {
+        return $this->belongsTo(KabKota::class, 'kabkota_id', 'id');
+    }
 }
