@@ -63,6 +63,6 @@ class Lowongan extends Model
 
     public function kabkota()
     {
-        return $this->belongsTo(KabKota::class, 'kabkota_id', 'id');
+        return $this->belongsTo(Kabkota::class, 'kabkota_id', 'id');
     }
 }
