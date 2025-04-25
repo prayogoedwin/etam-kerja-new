@@ -28,7 +28,14 @@ class LowonganController extends Controller
                 $query->where('lokasi_penempatan_text', 'like', '%' . $request->lokasi_perusahaan . '%');
             }
 
+            $query->where('status_id', 1);
+            $query->where('is_lowongan_disabilitas', 0);
+
             // $lowongans = $query->get();
+            $query->whereNull('deleted_at');
+
+            $query->orderBy('tanggal_start', 'desc');
+
             $lowongans = $query->limit(50)->get();
 
 
