@@ -67,7 +67,7 @@ class LowonganController extends Controller
                     'kebutuhan_pria' => $item->jumlah_pria,
                     'kebutuhan_wanita' => $item->jumlah_wanita,
                     'deskripsi' => $item->deskripsi,
-                    'link_lowongan_kerja' => 'https://etamkerja.kaltimprov.go.id/depan/lowongan-kerja/' . $item->id,
+                    'link_lowongan_kerja' => 'https://etamkerja.kaltimprov.go.id/depan/depan/lowongan-detail/' . encode_url($item->id),
                 ];
             });
 
