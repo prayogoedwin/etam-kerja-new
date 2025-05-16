@@ -9,7 +9,7 @@
                         $xfoto = asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto);
                     @endphp --}}
                     @php
-                        $cekft = getRowPenyediaById(Auth::user()->id)->foto ?? null;
+                        $cekfoto = getRowPenyediaById(Auth::user()->id)->foto ?? null;
                         $xfoto = isset(getRowPenyediaById(Auth::user()->id)->foto)
                             ? asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto)
                             : asset('path/ke/gambar/default.jpg');
