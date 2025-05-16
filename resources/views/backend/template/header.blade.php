@@ -164,9 +164,15 @@
                                         class="img-radius" alt="User-Profile-Image">
                                 @endif
                             @elseif (Auth::user()->roles[0]['name'] == 'penyedia-kerja')
-                                @php
+                                {{-- @php
                                     $cekft = getRowPenyediaById(Auth::user()->id)->foto;
                                     $xfoto = asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto);
+                                @endphp --}}
+                                @php
+                                    $cekft = getRowPenyediaById(Auth::user()->id)->foto ?? null;
+                                    $xfoto = isset(getRowPenyediaById(Auth::user()->id)->foto)
+                                        ? asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto)
+                                        : asset('path/ke/gambar/default.jpg');
                                 @endphp
                                 @if ($cekft != null)
                                     <img src="{{ $xfoto }}" class="img-radius" alt="User-Profile-Image">
