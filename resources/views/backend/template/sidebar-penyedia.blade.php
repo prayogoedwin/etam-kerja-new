@@ -4,9 +4,15 @@
 
             <div class="">
                 <div class="main-menu-header">
-                    @php
+                    {{-- @php
                         $cekfoto = getRowPenyediaById(Auth::user()->id)->foto;
                         $xfoto = asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto);
+                    @endphp --}}
+                    @php
+                        $cekft = getRowPenyediaById(Auth::user()->id)->foto ?? null;
+                        $xfoto = isset(getRowPenyediaById(Auth::user()->id)->foto)
+                            ? asset('storage/' . getRowPenyediaById(Auth::user()->id)->foto)
+                            : asset('path/ke/gambar/default.jpg');
                     @endphp
                     @if ($cekfoto != null)
                         <img class="img-radius" src="{{ $xfoto }}" alt="User-Profile-Image" width="300px">
