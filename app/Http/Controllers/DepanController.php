@@ -315,7 +315,7 @@ class DepanController extends Controller
             ]);
         }
 
-        if($role->table_name == 'penyedia-kerja'){
+        if($role->table_name == 'users_penyedia'){
             UserPenyedia::create([
                 'user_id' => $userId,
                 'name' => $userId,
@@ -479,7 +479,7 @@ class DepanController extends Controller
 
         DB::beginTransaction();
         try {
-            // create 
+            // create
             UserPencari::where('user_id', $user->id)
             ->update([
                 'ktp' => $request->nik,
@@ -596,7 +596,7 @@ class DepanController extends Controller
             // create affiliator
             // UserBkk::create([
             UserBkk::where('user_id', $user->id)
-                ->update([   
+                ->update([
                 // 'user_id' => $user->id,
                 'no_sekolah' => $request->no_sekolah,
                 'id_sekolah' => $request->id_sekolah,
