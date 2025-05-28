@@ -67,7 +67,7 @@ class LowonganController extends Controller
                         'id' => $item->kabkota_id,
                         'kabkota' => optional($item->kabkota)->name ?? '-',
                     ],
-                    'nama_perusahaan' => optional($item->userPenyedia)->nama_perusahaan ?? '-',
+                    'nama_perusahaan' => optional($item->userPenyedia)->name ?? '-',
                     'logo_perusahaan' => 'https://etamkerja.kaltimprov.go.id/storage/'.optional($item->userPenyedia)->foto ?? 'https://etamkerja.kaltimprov.go.id/assets/etam_be/images/user/avatar-x.png',
                     'tanggal_buka' => $item->tanggal_start,
                     'tanggal_tutup' => $item->tanggal_end,
