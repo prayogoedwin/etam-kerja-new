@@ -13,15 +13,22 @@ class LowonganController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Lowongan::with('pendidikan', 'kabkota'); // include relasi
+            $query = Lowongan::with('pendidikan', 'kabkota', 'userPenyedia'); // include relasi
 
             // Filter dinamis berdasarkan input
             if ($request->filled('judul_lowongan')) {
                 $query->where('judul_lowongan', 'like', '%' . $request->judul_lowongan . '%');
             }
 
+            // if ($request->filled('pendidikan')) {
+            //     $query->where('pendidikan_id', $request->pendidikan);
+            // }
+
             if ($request->filled('pendidikan')) {
-                $query->where('pendidikan_id', $request->pendidikan);
+                // Ubah query untuk mencari berdasarkan nama pendidikan
+                $query->whereHas('pendidikan', function($q) use ($request) {
+                    $q->where('name', 'like', '%' . $request->pendidikan . '%');
+                });
             }
 
             if ($request->filled('lokasi_perusahaan')) {
@@ -60,6 +67,8 @@ class LowonganController extends Controller
                         'id' => $item->kabkota_id,
                         'kabkota' => optional($item->kabkota)->name ?? '-',
                     ],
+                    'nama_perusahaan' => optional($item->userPenyedia)->nama_perusahaan ?? '-',
+                    'logo_perusahaan' => 'https://etamkerja.kaltimprov.go.id/storage/'.optional($item->userPenyedia)->foto ?? 'https://etamkerja.kaltimprov.go.id/assets/etam_be/images/user/avatar-x.png',
                     'tanggal_buka' => $item->tanggal_start,
                     'tanggal_tutup' => $item->tanggal_end,
                     'kisaran_gaji_mulai' => $item->kisaran_gaji,
@@ -67,6 +76,7 @@ class LowonganController extends Controller
                     'kebutuhan_pria' => $item->jumlah_pria,
                     'kebutuhan_wanita' => $item->jumlah_wanita,
                     'deskripsi' => $item->deskripsi,
+                    'is_lowongan_disabilitas' => $item->is_lowongan_disabilitas,
                     'link_lowongan_kerja' => 'https://etamkerja.kaltimprov.go.id/depan/lowongan-detail/' . encode_url($item->id),
                 ];
             });
