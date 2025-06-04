@@ -36,13 +36,13 @@ class LowonganController extends Controller
             }
 
             if ($request->filled('jenis_lowongan')) {
-                $jns = $request->filled('jenis_lowongan');
-                if( $jns == 'disabilitas'){
-                    $query->where('is_lowongan_disabilitas', 1);
-                }else{
+                $jns = $request->input('jenis_lowongan'); // Mengambil nilai sebenarnya, bukan hanya memeriksa apakah ada
+                if ($jns == 'disabilitas') {
+                    $query->where('is_lowongan_disabilitas', '=', 1);
+                } else {
                     $query->where('is_lowongan_disabilitas', '!=', 1);
                 }
-            }else{
+            } else {
                 $query->where('is_lowongan_disabilitas', '!=', 1);
             }
 
