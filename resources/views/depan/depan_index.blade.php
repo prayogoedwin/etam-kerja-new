@@ -1,146 +1,30 @@
 @include('components.header')
-
-<<<<<<< HEAD
-=======
-
->>>>>>> 6baddd5e2494dd89a64f8f0a1cb74a93c0f88b30
 <!-- Start Banner Area
     ============================================= -->
 {{-- <div class="banner-area banner-style-two content-right navigation-icon-solid navigation-right-botom navigation-custom-large overflow-hidden bg-cover"
     style="background: url({{ asset('assets') }}/etam_fe/img/shape/banner.jpg);"> --}}
-<<<<<<< HEAD
 <div
     class="banner-area banner-style-two content-right navigation-icon-solid navigation-right-botom navigation-custom-large overflow-hidden bg-cover">
-=======
-<div class="banner-area banner-style-two content-right navigation-icon-solid navigation-right-botom navigation-custom-large overflow-hidden bg-cover">
->>>>>>> 6baddd5e2494dd89a64f8f0a1cb74a93c0f88b30
     <!-- Slider main container -->
     <div class="banner-style-two-carousel">
         <!-- Additional required wrapper -->
         <div class="swiper-wrapper">
-
-<<<<<<< HEAD
-            <!-- Single Item -->
-            <div class="swiper-slide banner-style-two">
-                <div class="container">
-                    <div class="row align-center">
-                        <div class="col-xl-7 col-lg-9">
-                            <div class="content">
-                                {{-- <img src="{{ asset('assets') }}/etam_fe/hut_kaltim.png"> --}}
-                                {{-- <img src="{{ asset('assets') }}/etam_fe/images/logo/logo_kaltim.png" style="width:100px"> --}}
-
-                                <h1 style="font-size:75px; color:#03A859"><b>KALTIM SUKSES</b></h1>
-                                <h1 style="font-size:45px;  color:#EFC926"><b>MENUJU GENERASI EMAS</b></h1>
-                                {{-- <h3>Dr. Rudy Mas’ud, S.E., M.E. dan Seno Aji, S.H.</h3> --}}
-                                {{-- <p>
-                                    Melalui ETAM KERJA pemerintah hadir sebagai perantara bagi perusahaan dan pencari
-                                    kerja
-                                </p> --}}
-                                <!-- <div class="button">
-                                        <a class="btn circle btn-theme btn-md radius animation" href="#">Get Consultant</a>
-                                    </div> -->
-                                <div class="shape-circle"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Banner Thumb -->
-                    <div class="banner-thumb">
-                        <img src="{{ asset('assets') }}/etam_fe/images/gub-wagub-kaltim.png" alt="illustration"
-                            style="margin-top:-50px;">
-                    </div>
-                    <!-- End Banner Thumb -->
-                </div>
-                <!-- Start Shape -->
-                {{-- <div class="banner-shape-right" style="background: url({{ asset('assets') }}/etam_fe/img/shape/3-5.png);"></div> --}}
-                <!-- End Shape -->
+            <div class="swiper-slide banner-style-two" style="padding:0;">
+                <img src="{{ asset('assets') }}/banner/etam-kerja-kaltim.jpg" alt="Banner Kaltim"
+                    style="width:100%; height:auto; display:block;">
             </div>
-            <!-- End Single Item -->
-
-            <!-- Single Item -->
-            {{-- <div class="swiper-slide banner-style-two">
-                <div class="container">
-                    <div class="row align-center">
-                        <div class="col-xl-7 col-lg-9">
-                            <div class="content">
-                                <h2>Mudah Menemukan <br> Pencari Kerja <br /> Lokal</h2>
-                                <p>
-                                    ETAM KERJA hadir untuk memperbanyak pilihan perusahaan di Kalimantan Timur akan
-                                    kebutuhan tenaga kerja lokal
-                                </p>
-                                <!-- <div class="button">
-                                        <a class="btn circle btn-theme btn-md radius animation" href="#">Get Consultant</a>
-                                    </div> -->
-                                <div class="shape-circle"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Banner Thumb -->
-                    <div class="banner-thumb">
-                        <img src="{{ asset('assets') }}/etam_fe/img/illustration/2.png" alt="illustration">
-                    </div>
-                    <!-- End Banner Thumb -->
-                </div>
-                <!-- Start Shape -->
-                <div class="banner-shape-right"
-                    style="background: url({{ asset('assets') }}/etam_fe/img/shape/3-5.png);"></div>
-                <!-- End Shape -->
-            </div> --}}
-            <!-- End Single Item -->
-
-            <!-- Single Item -->
-            {{-- <div class="swiper-slide banner-style-two">
-                <div class="container">
-                    <div class="row align-center">
-                        <div class="col-xl-7 col-lg-9">
-                            <div class="content">
-                                <h2>Tersedia Lowongan <br> Tervalidasi Oleh Pemerintah</h2>
-                                <p>
-                                    ETAM KERJA hadir untuk memperbanyak pilihan lowongan kerja valid untuk para pencari
-                                    kerja di Kalimantan Timur
-                                </p>
-                                <!-- <div class="button">
-                                        <a class="btn circle btn-theme btn-md radius animation" href="#">Get Consultant</a>
-                                    </div> -->
-                                <div class="shape-circle"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Banner Thumb -->
-                    <div class="banner-thumb">
-                        <img src="{{ asset('assets') }}/etam_fe/img/illustration/3.png" alt="illustration">
-                    </div>
-                    <!-- End Banner Thumb -->
-                </div>
-                <!-- Start Shape -->
-                <div class="banner-shape-right"
-                    style="background: url({{ asset('assets') }}/etam_fe/img/shape/3-5.png);"></div>
-                <!-- End Shape -->
-            </div> --}}
-            <!-- End Single Item -->
-=======
-           <div class="swiper-slide banner-style-two" style="padding:0;">
-                <img src="{{ asset('assets') }}/banner/etam-kerja-kaltim.jpg" alt="Banner Kaltim" style="width:100%; height:auto; display:block;">
-           </div>
 
             <div class="swiper-slide banner-style-two" style="padding:0;">
-                <img src="{{ asset('assets') }}/banner/gen-emas-kaltim.jpg" alt="Banner Kaltim" style="width:100%; height:auto; display:block;">
+                <img src="{{ asset('assets') }}/banner/gen-emas-kaltim.jpg" alt="Banner Kaltim"
+                    style="width:100%; height:auto; display:block;">
             </div>
->>>>>>> 6baddd5e2494dd89a64f8f0a1cb74a93c0f88b30
-
         </div>
 
         <!-- Navigation -->
-<<<<<<< HEAD
-        <div class="swiper-nav-left">
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
-        </div>
-=======
-         {{-- <div class="swiper-nav-left">
+        {{-- <div class="swiper-nav-left">
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
         </div> --}}
->>>>>>> 6baddd5e2494dd89a64f8f0a1cb74a93c0f88b30
 
     </div>
 </div>
@@ -148,12 +32,9 @@
 
 <!-- Start Services
     ============================================= -->
-<<<<<<< HEAD
-<div class="services-style-three-area default-padding-top half-bg-dark"
+<div class="services-style-three-area half-bg-dark"
     style="background-image: url({{ asset('assets') }}/etam_fe/img/shape/52.png);">
-=======
-<div class="services-style-three-area half-bg-dark" style="background-image: url({{ asset('assets') }}/etam_fe/img/shape/52.png);">
->>>>>>> 6baddd5e2494dd89a64f8f0a1cb74a93c0f88b30
+
 
     <div class="container">
         <div class="row">
