@@ -2998,7 +2998,11 @@ p {
     # Banner Styles
 =================================================================== */
 .banner-area {
+<<<<<<< HEAD
 	height: 100%;
+=======
+	height: 81%;
+>>>>>>> 6baddd5e2494dd89a64f8f0a1cb74a93c0f88b30
 	width: 100%;
 	position: relative;
 }

@@ -1,16 +1,25 @@
 @include('components.header')
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6baddd5e2494dd89a64f8f0a1cb74a93c0f88b30
 <!-- Start Banner Area
     ============================================= -->
 {{-- <div class="banner-area banner-style-two content-right navigation-icon-solid navigation-right-botom navigation-custom-large overflow-hidden bg-cover"
     style="background: url({{ asset('assets') }}/etam_fe/img/shape/banner.jpg);"> --}}
+<<<<<<< HEAD
 <div
     class="banner-area banner-style-two content-right navigation-icon-solid navigation-right-botom navigation-custom-large overflow-hidden bg-cover">
+=======
+<div class="banner-area banner-style-two content-right navigation-icon-solid navigation-right-botom navigation-custom-large overflow-hidden bg-cover">
+>>>>>>> 6baddd5e2494dd89a64f8f0a1cb74a93c0f88b30
     <!-- Slider main container -->
     <div class="banner-style-two-carousel">
         <!-- Additional required wrapper -->
         <div class="swiper-wrapper">
 
+<<<<<<< HEAD
             <!-- Single Item -->
             <div class="swiper-slide banner-style-two">
                 <div class="container">
@@ -108,14 +117,30 @@
                 <!-- End Shape -->
             </div> --}}
             <!-- End Single Item -->
+=======
+           <div class="swiper-slide banner-style-two" style="padding:0;">
+                <img src="{{ asset('assets') }}/banner/etam-kerja-kaltim.jpg" alt="Banner Kaltim" style="width:100%; height:auto; display:block;">
+           </div>
+
+            <div class="swiper-slide banner-style-two" style="padding:0;">
+                <img src="{{ asset('assets') }}/banner/gen-emas-kaltim.jpg" alt="Banner Kaltim" style="width:100%; height:auto; display:block;">
+            </div>
+>>>>>>> 6baddd5e2494dd89a64f8f0a1cb74a93c0f88b30
 
         </div>
 
         <!-- Navigation -->
+<<<<<<< HEAD
         <div class="swiper-nav-left">
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
         </div>
+=======
+         {{-- <div class="swiper-nav-left">
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div> --}}
+>>>>>>> 6baddd5e2494dd89a64f8f0a1cb74a93c0f88b30
 
     </div>
 </div>
@@ -123,8 +148,12 @@
 
 <!-- Start Services
     ============================================= -->
+<<<<<<< HEAD
 <div class="services-style-three-area default-padding-top half-bg-dark"
     style="background-image: url({{ asset('assets') }}/etam_fe/img/shape/52.png);">
+=======
+<div class="services-style-three-area half-bg-dark" style="background-image: url({{ asset('assets') }}/etam_fe/img/shape/52.png);">
+>>>>>>> 6baddd5e2494dd89a64f8f0a1cb74a93c0f88b30
 
     <div class="container">
         <div class="row">
