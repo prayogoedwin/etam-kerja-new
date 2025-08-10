@@ -41,7 +41,7 @@
             <div class="col-lg-8 offset-lg-2">
                 <div class="site-heading secondary text-center">
 
-                    <h2 class="title">Lowongan Kerja Tebaru</h2>
+                    <h2 class="title">Lowongan Kerja TebaruU</h2>
                     <!-- <h4 class="sub-heading">A</h4> -->
                     <br />
                     <div class="devider"></div>
