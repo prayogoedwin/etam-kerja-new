@@ -13,4 +13,9 @@ Route::get('/user', function (Request $request) {
 Route::get('/ping', fn () => ['pong' => true]);
 Route::get('/lowongan', [LowonganController::class, 'index']);
 
+
+
 Route::get('/dashboard/pencari', [DashboardController::class, 'pencari']);
+Route::get('/dashboard/lamaran', [DashboardController::class, 'prosesLamaran']);
+
+
