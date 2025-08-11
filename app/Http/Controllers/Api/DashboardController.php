@@ -470,6 +470,57 @@ class DashboardController extends Controller
         }
     }
 
+    public function topSektor(Request $request)
+    {
+        try {
+            // Ambil 5 sektor dengan jumlah lowongan terbanyak
+            $dataSektor = Lowongan::select(
+                    'sektor_id',
+                    DB::raw('COUNT(*) as jumlah')
+                )
+                ->groupBy('sektor_id')
+                ->orderByDesc('jumlah')
+                ->limit(5)
+                ->get();
+
+            // Ambil nama sektor dari tabel sektor (misal tabelnya etam_sektor)
+            $sektorList = \App\Models\Sektor::whereIn('id', $dataSektor->pluck('sektor_id'))
+                ->pluck('name', 'id');
+
+            // Format hasil
+            $result = [];
+            foreach ($dataSektor as $row) {
+                $result[] = [
+                    'sektor_id' => $row->sektor_id,
+                    'nama_sektor' => $sektorList[$row->sektor_id] ?? 'Tidak Diketahui',
+                    'jumlah' => $row->jumlah
+                ];
+            }
+
+            // Hitung total untuk persentase
+            $total = array_sum(array_column($result, 'jumlah'));
+            foreach ($result as &$row) {
+                $row['persentase'] = $total > 0 ? round(($row['jumlah'] / $total) * 100, 2) : 0;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data top 5 sektor berhasil diambil',
+                'data' => $result
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error mengambil data top sektor: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+
 
 
 

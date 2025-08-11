@@ -22,6 +22,9 @@ Route::get('/dashboard/lowongan', [DashboardController::class, 'lowongan']);
 Route::get('/dashboard/penempatan', [DashboardController::class, 'penempatan']);
 Route::get('/dashboard/top_pendidikan', [DashboardController::class, 'topPendidikan']);
 Route::get('/dashboard/top_jurusan', [DashboardController::class, 'topJurusan']);
+Route::get('/dashboard/top_sektor', [DashboardController::class, 'topSektor']);
+
+
 
 
 
