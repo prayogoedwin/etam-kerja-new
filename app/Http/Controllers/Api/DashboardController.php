@@ -103,7 +103,7 @@ class DashboardController extends Controller
                 )
                 ->join('etam_user_pencari', 'etam_lamaran.pencari_id', '=', 'etam_user_pencari.id')
                 ->whereIn('kabkota_penempatan_id', $semuaKabkota->pluck('id'))
-                ->whereNotIn('progres_id', [3, 5])
+                // ->whereNotIn('progres_id', [3, 5])
                 ->groupBy('kabkota_penempatan_id', 'etam_user_pencari.gender')
                 ->get();
 
