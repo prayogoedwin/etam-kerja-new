@@ -17,5 +17,6 @@ Route::get('/lowongan', [LowonganController::class, 'index']);
 
 Route::get('/dashboard/pencari', [DashboardController::class, 'pencari']);
 Route::get('/dashboard/lamaran', [DashboardController::class, 'prosesLamaran']);
+Route::get('/dashboard/perusahaan', [DashboardController::class, 'perusahaan']);
 
 

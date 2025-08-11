@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Kabkota;
 use App\Models\UserPencari;
+use App\Models\UserPenyedia;
 use App\Models\Lamaran;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -161,5 +162,65 @@ class DashboardController extends Controller
             ], 500);
         }
     }
+
+    public function perusahaan(Request $request)
+    {
+        try {
+            // Ambil kabupaten/kota dengan province_id = 64 saja
+            $semuaKabkota = Kabkota::where('province_id', 64)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            // Query untuk menghitung jumlah perusahaan per kab/kota
+            $dataPerusahaan = UserPenyedia::select(
+                    'id_kota',
+                    DB::raw('COUNT(*) as jumlah')
+                )
+                ->whereIn('id_kota', $semuaKabkota->pluck('id'))
+                ->groupBy('id_kota')
+                ->get();
+
+            // Siapkan array hasil awal
+            $result = [];
+            foreach ($semuaKabkota as $kabkota) {
+                $result[] = [
+                    'id_kota' => $kabkota->id,
+                    'nama_kota' => $kabkota->name,
+                    'jumlah' => 0
+                ];
+            }
+
+            // Masukkan data hasil query ke array hasil
+            foreach ($dataPerusahaan as $data) {
+                $index = array_search($data->id_kota, array_column($result, 'id_kota'));
+                if ($index !== false) {
+                    $result[$index]['jumlah'] = $data->jumlah;
+                }
+            }
+
+            // Hitung total perusahaan keseluruhan
+            $totalPerusahaan = array_sum(array_column($result, 'jumlah'));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data jumlah perusahaan berhasil diambil',
+                'data' => $result,
+                'summary' => [
+                    'total_kabkota' => count($result),
+                    'total_perusahaan' => $totalPerusahaan
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error mengambil data perusahaan: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
 }
