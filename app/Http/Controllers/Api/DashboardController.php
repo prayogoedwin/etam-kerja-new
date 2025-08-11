@@ -9,6 +9,7 @@ use App\Models\UserPenyedia;
 use App\Models\Lamaran;
 use App\Models\Lowongan;
 use App\Models\Pendidikan;
+use App\Models\Jurusan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -418,6 +419,57 @@ class DashboardController extends Controller
             ], 500);
         }
     }
+
+    public function topJurusan(Request $request)
+    {
+        try {
+            // Ambil 5 jurusan terbanyak dari UserPencari
+            $dataJurusan = UserPencari::select(
+                    'id_jurusan',
+                    DB::raw('COUNT(*) as jumlah')
+                )
+                ->groupBy('id_jurusan')
+                ->orderByDesc('jumlah')
+                ->limit(5)
+                ->get();
+
+            // Ambil nama jurusan dari tabel etam_jurusan
+            $jurusanList = Jurusan::whereIn('id', $dataJurusan->pluck('id_jurusan'))
+                ->pluck('nama', 'id');
+
+            // Format hasil
+            $result = [];
+            foreach ($dataJurusan as $row) {
+                $result[] = [
+                    'id_jurusan' => $row->id_jurusan,
+                    'nama_jurusan' => $jurusanList[$row->id_jurusan] ?? 'Tidak Diketahui',
+                    'jumlah' => $row->jumlah
+                ];
+            }
+
+            // Hitung total untuk persentase
+            $total = array_sum(array_column($result, 'jumlah'));
+            foreach ($result as &$row) {
+                $row['persentase'] = $total > 0 ? round(($row['jumlah'] / $total) * 100, 2) : 0;
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data top 5 jurusan berhasil diambil',
+                'data' => $result
+            ], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error mengambil data top jurusan: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
 
 
