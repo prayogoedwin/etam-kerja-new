@@ -294,7 +294,7 @@ class DashboardController extends Controller
         }
     }
 
-      public function penempatan(Request $request)
+    public function penempatan(Request $request)
     {
         try {
             // Ambil kabupaten/kota dengan province_id = 64 saja
@@ -368,7 +368,6 @@ class DashboardController extends Controller
             ], 500);
         }
     }
-
 
     public function topPendidikan(Request $request)
     {
