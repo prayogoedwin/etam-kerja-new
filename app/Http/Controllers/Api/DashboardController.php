@@ -98,10 +98,10 @@ class DashboardController extends Controller
             // Query untuk menghitung jumlah pelamar dalam proses (progres_id != 3 dan != 5)
             $dataLamaran = Lamaran::select(
                     'kabkota_penempatan_id',
-                    'etam_user_pencari.gender',
+                    'users_pencari.gender',
                     DB::raw('COUNT(etam_lamaran.id) as jumlah')
                 )
-                ->join('etam_user_pencari', 'etam_lamaran.pencari_id', '=', 'etam_user_pencari.id')
+                ->join('users_pencari', 'etam_lamaran.pencari_id', '=', 'users_pencari.id')
                 ->whereIn('kabkota_penempatan_id', $semuaKabkota->pluck('id'))
                 // ->whereNotIn('progres_id', [3, 5])
                 ->groupBy('kabkota_penempatan_id', 'etam_user_pencari.gender')
