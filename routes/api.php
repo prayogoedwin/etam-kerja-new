@@ -20,6 +20,7 @@ Route::get('/dashboard/lamaran', [DashboardController::class, 'prosesLamaran']);
 Route::get('/dashboard/perusahaan', [DashboardController::class, 'perusahaan']);
 Route::get('/dashboard/lowongan', [DashboardController::class, 'lowongan']);
 Route::get('/dashboard/penempatan', [DashboardController::class, 'penempatan']);
+Route::get('/dashboard/top_pendidikan', [DashboardController::class, 'topPendidikan']);
 
 
 
