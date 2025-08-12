@@ -29,6 +29,7 @@ use App\Http\Controllers\DiterimaPencariController;
 use App\Http\Controllers\PenempatanController;
 use App\Http\Controllers\RekapController;
 use App\Http\Middleware\TrackVisitors;
+use App\Http\Controllers\DashboardPimpinanController;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -217,6 +218,10 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
     //ubah password
     Route::post('/ubah-password', [BackController::class, 'ubahPassword'])->name('ubah-password');
+});
+
+Route::prefix('eksekutif')->group(function () {
+    Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');
 });
 
 
