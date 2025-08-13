@@ -86,7 +86,7 @@
 
         <!-- Section 4: Jumlah Lowongan -->
         <div class="section">
-            <div class="section-title">Jumlah Lowongan</div>
+            <div class="section-title">Jumlah Kebutuhan Tenaga Kerja</div>
             <div id="chart4" class="chart-container"></div>
         </div>
 
@@ -358,7 +358,7 @@
                     type: 'column'
                 },
                 title: {
-                    text: 'Jumlah Lowongan per Kabupaten/Kota'
+                    text: 'Jumlah Kebutuhan Tenaga Kerja per Kabupaten/Kota'
                 },
                 exporting: {
                     enabled: true,
