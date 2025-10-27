@@ -45,12 +45,12 @@
                         <span class="pcoded-mtext">Dashboard</span>
                     </a>
                 </li>
-                {{-- <li class="nav-item">
-                    <a href="{{ route('lowongan.index') }}" class="nav-link ">
-                        <span class="pcoded-micon"><i class="feather icon-briefcase"></i></span>
-                        <span class="pcoded-mtext">Lowongan Kerja</span>
+                <li class="nav-item">
+                    <a href="{{ route('alumni.index') }}" class="nav-link ">
+                        <span class="pcoded-micon"><i class="feather icon-users"></i></span>
+                        <span class="pcoded-mtext">Alumni</span>
                     </a>
-                </li> --}}
+                </li>
 
 
                 <!-- Layouts -->

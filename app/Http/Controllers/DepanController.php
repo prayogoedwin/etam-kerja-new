@@ -342,12 +342,12 @@ class DepanController extends Controller
             ]);
         }
 
-        if($role->table_name == 'admin-bkk'){
+        if($role->table_name == 'users_bkk'){
             UserBkk::create([
                 'user_id' => $userId,
                 'no_sekolah' => $userId,
-                'id_sekolah' => $userId,
-                'name' => $userIde,
+                'id_sekolah' => 1,
+                'name' => $userId,
                 'website' => $userId,
                 'id_provinsi' => $userId,
                 'id_kota' => $userId,
@@ -477,6 +477,15 @@ class DepanController extends Controller
 
         // dd($user->id);
 
+        $bkk_id = null;
+        $is_alumni_bkk = 0;
+        $bkkParam = $request->input('bkk');
+
+        if ($bkkParam !== null && $bkkParam !== '') {
+            $bkk_id = short_decode_url($request->input('bkk'));
+            $is_alumni_bkk = 1;
+        }
+
         DB::beginTransaction();
         try {
             // create
@@ -501,8 +510,8 @@ class DepanController extends Controller
                 'id_jabatan_harapan' => $request->jabatan_harapan_id,
                 'foto' => null,
                 'status_id' => 1,
-                'is_alumni_bkk' => 0,
-                'bkk_id' => null,
+                'is_alumni_bkk' => $is_alumni_bkk,
+                'bkk_id' => $bkk_id,
                 'toket' => null,
                 'disabilitas' => $request->disabilitas,
                 'jenis_disabilitas' => $request->jenis_disabilitas,

@@ -30,6 +30,7 @@ use App\Http\Controllers\PenempatanController;
 use App\Http\Controllers\RekapController;
 use App\Http\Middleware\TrackVisitors;
 use App\Http\Controllers\DashboardPimpinanController;
+use App\Http\Controllers\AlumniController;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -214,6 +215,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::prefix('bkks')->group(function () {
         Route::get('/profil', [ProfilBkkController::class, 'index'])->name('profil.bkk.index');
         Route::put('/profil/update/{id}', [ProfilBkkController::class, 'update'])->name('profil.bkk.update');
+
+        Route::get('/alumni', [AlumniController::class, 'index'])->name('alumni.index');
+        Route::get('/alumni/detail/{id}', [AlumniController::class, 'show'])->name('alumni.detail');
     });
 
     //ubah password

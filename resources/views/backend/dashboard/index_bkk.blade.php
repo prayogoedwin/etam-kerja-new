@@ -109,9 +109,19 @@
                                 </div>
                             </div>
 
-
-
-
+                        </div>
+                        @php
+                            $url_role = encode_url('pencari-kerja');
+                            $userId = Auth::user()->id;
+                            $encUserId = short_encode_url($userId);
+                            $allurl = '/depan/daftar?rl=' . $url_role . '&bkk=' . $encUserId;
+                        @endphp
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="{{ url($allurl) }}" target="_blank" class="btn btn-sm btn-primary">URL Register
+                                    Alumni
+                                    {{ Auth::user()->id }}</a>
+                            </div>
                         </div>
                         <!-- page statustic card end -->
                     </div>
