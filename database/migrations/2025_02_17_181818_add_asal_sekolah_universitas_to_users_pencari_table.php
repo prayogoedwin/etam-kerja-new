@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users_pencari', function (Blueprint $table) {
-            $table->string('asal_sekolah_universitas', 255)->after('id_jurusan');
+            if (! Schema::hasColumn('users_pencari', 'asal_sekolah_universitas')) {
+                $table->string('asal_sekolah_universitas', 255)->after('id_jurusan');
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users_pencari', function (Blueprint $table) {
-            $table->dropColumn('asal_sekolah_universitas');
+            if (! Schema::hasColumn('users_pencari', 'asal_sekolah_universitas')) {
+                $table->dropColumn('asal_sekolah_universitas');
+            }
         });
     }
 };

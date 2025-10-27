@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('etam_lowongan', function (Blueprint $table) {
-            $table->integer('kisaran_gaji_akhir')->nullable()->after('kisaran_gaji');
+            if (! Schema::hasColumn('etam_lowongan', 'kisaran_gaji_akhir')) {
+                $table->integer('kisaran_gaji_akhir')->nullable()->after('kisaran_gaji');
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('etam_lowongan', function (Blueprint $table) {
-            $table->dropColumn('kisaran_gaji_akhir');
+            if (! Schema::hasColumn('etam_lowongan', 'kisaran_gaji_akhir')) {
+                $table->dropColumn('kisaran_gaji_akhir');
+            }
         });
     }
 };

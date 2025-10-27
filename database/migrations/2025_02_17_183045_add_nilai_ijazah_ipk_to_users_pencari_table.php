@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users_pencari', function (Blueprint $table) {
-            $table->decimal('nilai_ijazah_ipk', 5, 2)->nullable()->after('asal_sekolah_universitas');
+            if (! Schema::hasColumn('users_pencari', 'nilai_ijazah_ipk')) {
+                $table->decimal('nilai_ijazah_ipk', 5, 2)->nullable()->after('asal_sekolah_universitas');
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users_pencari', function (Blueprint $table) {
-            $table->dropColumn('nilai_ijazah_ipk');
+            if (! Schema::hasColumn('users_pencari', 'nilai_ijazah_ipk')) {
+                $table->dropColumn('nilai_ijazah_ipk');
+            }
         });
     }
 };
