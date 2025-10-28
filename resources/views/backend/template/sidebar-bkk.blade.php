@@ -45,12 +45,20 @@
                         <span class="pcoded-mtext">Dashboard</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-folder"></i></span><span class="pcoded-mtext">Data</span></a>
+                    <ul class="pcoded-submenu">
+                        <li><a href="{{ route('bkk.index') }}">BKK</a></li>
+                        <li><a href="{{ route('alumni.index') }}">Alumni</a></li>
+                    </ul>
+                </li>
+                {{-- <li class="nav-item">
                     <a href="{{ route('alumni.index') }}" class="nav-link ">
                         <span class="pcoded-micon"><i class="feather icon-users"></i></span>
                         <span class="pcoded-mtext">Alumni</span>
                     </a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <a href="{{ route('perusahaan.index') }}" class="nav-link ">
                         <span class="pcoded-micon"><i class="feather icon-tablet"></i></span>
