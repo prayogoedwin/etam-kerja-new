@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\EtamJobFair;
+use App\Models\EtamJobFairPerush;
 use App\Models\User;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -41,9 +42,6 @@ class JobFairController extends Controller
 
             return DataTables::of($jobFairs)
                 ->addIndexColumn()
-                ->addColumn('penyelenggara_name', function ($jobFair) {
-                    return $jobFair->penyelenggaraUser ? $jobFair->penyelenggaraUser->name : ($jobFair->penyelenggara ?? 'N/A');
-                })
                 ->addColumn('jenis_penyelenggara_text', function ($jobFair) {
                     return $jobFair->jenis_penyelenggara == 0 ? 'Pemerintah' : 'Swasta';
                 })
@@ -74,11 +72,53 @@ class JobFairController extends Controller
                     return $jobFair->tanggal_selesai ? $jobFair->tanggal_selesai->format('d M Y') : '-';
                 })
                 ->addColumn('options', function ($jobFair) {
-                    return '
-                        <button class="btn btn-info btn-sm" onclick="showDetailModal(' . $jobFair->id . ')">Detail</button>
-                        <button class="btn btn-primary btn-sm" onclick="showEditModal(' . $jobFair->id . ')">Edit</button>
-                        <button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $jobFair->id . ')">Delete</button>
+                    $html = '<div class="btn-group-vertical" role="group">';
+                    
+                    // Button Detail
+                    $html .= '<button class="btn btn-info btn-sm mb-1" onclick="showDetailModal(' . $jobFair->id . ')">Detail</button>';
+                    
+                    // Button Edit
+                    $html .= '<button class="btn btn-primary btn-sm mb-1" onclick="showEditModal(' . $jobFair->id . ')">Edit</button>';
+                    
+                    // Button Verifikasi / Batal Verifikasi - HANYA untuk super-admin dan admin-provinsi
+                    $user = Auth::user();
+                    $allowedRoles = ['super-admin', 'admin-provinsi'];
+                    $userRoles = $user->roles->pluck('name')->toArray();
+                    $hasVerifyPermission = !empty(array_intersect($allowedRoles, $userRoles));
+                    
+                    if ($hasVerifyPermission) {
+                        if ($jobFair->status_verifikasi == 0) {
+                            // Belum diverifikasi - tampilkan tombol Verifikasi
+                            $html .= '<form action="' . route('jobfair.verifikasi', $jobFair->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin verifikasi job fair ini?\')">
+                                ' . csrf_field() . '
+                                <button type="submit" class="btn btn-success btn-sm mb-1 w-100">✓ Verifikasi</button>
+                            </form>';
+                        } else {
+                            // Sudah diverifikasi - tampilkan tombol Batal Verifikasi
+                            $html .= '<form action="' . route('jobfair.unverifikasi', $jobFair->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin membatalkan verifikasi?\')">
+                                ' . csrf_field() . '
+                                <button type="submit" class="btn btn-warning btn-sm mb-1 w-100">✗ Batal Verifikasi</button>
+                            </form>';
+                        }
+                    }
+
+                    $html .= '
+                        <form action="' . route('jobfair.perusahaan', $jobFair->id) . '" method="GET" style="display:inline;">
+                            <button type="submit" class="btn btn-primary btn-sm mb-1 w-100">🏢 Lihat Perusahaan</button>
+                        </form>
                     ';
+
+                    
+                    // Button Delete
+                    $html .= '<form action="' . route('jobfair.destroy', $jobFair->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin menghapus?\')">
+                        ' . csrf_field() . '
+                        ' . method_field('DELETE') . '
+                        <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
+                    </form>';
+                    
+                    $html .= '</div>';
+                    
+                    return $html;
                 })
                 ->rawColumns(['options', 'status_verifikasi_badge', 'status_badge'])
                 ->make(true);
@@ -94,7 +134,7 @@ class JobFairController extends Controller
     {
         try {
             // Validasi input
-            $validator = Validator::make($request->all(), [
+            $validated = $request->validate([
                 'jenis_penyelenggara' => 'required|integer|in:0,1',
                 'nama_job_fair' => 'required|string|max:255',
                 'penyelenggara' => 'nullable|string|max:255',
@@ -110,14 +150,6 @@ class JobFairController extends Controller
                 'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
                 'status' => 'required|integer|in:0,1',
             ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
 
             // Generate slug
             $slug = Str::slug($request->nama_job_fair);
@@ -135,7 +167,7 @@ class JobFairController extends Controller
             // Create job fair
             $jobFair = EtamJobFair::create([
                 'jenis_penyelenggara' => $request->jenis_penyelenggara,
-                'id_penyelenggara' => $request->id_penyelenggara,
+                'id_penyelenggara' => Auth::id(),
                 'nama_job_fair' => $request->nama_job_fair,
                 'slug' => $slug,
                 'penyelenggara' => $request->penyelenggara,
@@ -154,17 +186,10 @@ class JobFairController extends Controller
                 'created_by' => Auth::id(),
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Job Fair berhasil ditambahkan',
-                'data' => $jobFair
-            ]);
+            return redirect()->route('jobfair.index')->with('success', 'Job Fair berhasil ditambahkan!');
         } catch (\Exception $e) {
             Log::error("Error creating job fair: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
-            ], 500);
+            return redirect()->back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 
@@ -202,7 +227,7 @@ class JobFairController extends Controller
             $jobFair = EtamJobFair::findOrFail($id);
 
             // Validasi input
-            $validator = Validator::make($request->all(), [
+            $validated = $request->validate([
                 'jenis_penyelenggara' => 'required|integer|in:0,1',
                 'nama_job_fair' => 'required|string|max:255',
                 'penyelenggara' => 'nullable|string|max:255',
@@ -218,14 +243,6 @@ class JobFairController extends Controller
                 'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
                 'status' => 'required|integer|in:0,1',
             ]);
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors()
-                ], 422);
-            }
 
             // Generate slug jika nama job fair berubah
             $slug = $jobFair->slug;
@@ -252,7 +269,7 @@ class JobFairController extends Controller
             // Update job fair
             $jobFair->update([
                 'jenis_penyelenggara' => $request->jenis_penyelenggara,
-                'id_penyelenggara' => $request->id_penyelenggara,
+                'id_penyelenggara' => $request->id_penyelenggara ?? Auth::id(),
                 'nama_job_fair' => $request->nama_job_fair,
                 'slug' => $slug,
                 'penyelenggara' => $request->penyelenggara,
@@ -270,17 +287,10 @@ class JobFairController extends Controller
                 'updated_by' => Auth::id(),
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Job Fair berhasil diupdate',
-                'data' => $jobFair
-            ]);
+            return redirect()->route('jobfair.index')->with('success', 'Job Fair berhasil diupdate!');
         } catch (\Exception $e) {
             Log::error("Error updating job fair: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
-            ], 500);
+            return redirect()->back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 
@@ -299,16 +309,10 @@ class JobFairController extends Controller
             // Soft delete
             $jobFair->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Job Fair berhasil dihapus'
-            ]);
+            return redirect()->route('jobfair.index')->with('success', 'Job Fair berhasil dihapus!');
         } catch (\Exception $e) {
             Log::error("Error deleting job fair: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
-            ], 500);
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 
@@ -318,6 +322,16 @@ class JobFairController extends Controller
     public function verifikasi($id)
     {
         try {
+            // Authorization check - hanya super-admin dan admin-provinsi
+            $user = Auth::user();
+            $allowedRoles = ['super-admin', 'admin-provinsi'];
+            $userRoles = $user->roles->pluck('name')->toArray();
+            $hasPermission = !empty(array_intersect($allowedRoles, $userRoles));
+            
+            if (!$hasPermission) {
+                return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk verifikasi job fair!');
+            }
+            
             $jobFair = EtamJobFair::findOrFail($id);
             
             $jobFair->update([
@@ -326,16 +340,10 @@ class JobFairController extends Controller
                 'updated_by' => Auth::id(),
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Job Fair berhasil diverifikasi'
-            ]);
+            return redirect()->route('jobfair.index')->with('success', 'Job Fair berhasil diverifikasi!');
         } catch (\Exception $e) {
             Log::error("Error verifying job fair: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
-            ], 500);
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 
@@ -345,6 +353,16 @@ class JobFairController extends Controller
     public function unverifikasi($id)
     {
         try {
+            // Authorization check - hanya super-admin dan admin-provinsi
+            $user = Auth::user();
+            $allowedRoles = ['super-admin', 'admin-provinsi'];
+            $userRoles = $user->roles->pluck('name')->toArray();
+            $hasPermission = !empty(array_intersect($allowedRoles, $userRoles));
+            
+            if (!$hasPermission) {
+                return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk membatalkan verifikasi job fair!');
+            }
+            
             $jobFair = EtamJobFair::findOrFail($id);
             
             $jobFair->update([
@@ -353,16 +371,10 @@ class JobFairController extends Controller
                 'updated_by' => Auth::id(),
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Verifikasi Job Fair berhasil dibatalkan'
-            ]);
+            return redirect()->route('jobfair.index')->with('success', 'Verifikasi Job Fair berhasil dibatalkan!');
         } catch (\Exception $e) {
             Log::error("Error unverifying job fair: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
-            ], 500);
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 
@@ -417,4 +429,250 @@ class JobFairController extends Controller
             ], 500);
         }
     }
+
+
+    /**
+     * Halaman daftar perusahaan job fair
+     */
+    public function perusahaan($jobfairId, Request $request)
+    {
+        try {
+            $jobFair = EtamJobFair::findOrFail($jobfairId);
+
+            if ($request->ajax()) {
+                $perusahaan = EtamJobFairPerush::with([
+                    'user:id,name,email',
+                    'creator:id,name'
+                ])
+                ->where('jobfair_id', $jobfairId)
+                ->select('*');
+
+                return DataTables::of($perusahaan)
+                    ->addIndexColumn()
+                    ->addColumn('user_name', function ($item) {
+                        return $item->user ? $item->user->name : '-';
+                    })
+                    ->addColumn('user_email', function ($item) {
+                        return $item->user ? $item->user->email : '-';
+                    })
+                    ->addColumn('status_badge', function ($item) {
+                        return $item->status_badge;
+                    })
+                    ->editColumn('created_at', function ($item) {
+                        return $item->created_at ? $item->created_at->format('d M Y H:i') : '-';
+                    })
+                    ->addColumn('options', function ($item) {
+                        $html = '<div class="btn-group-vertical" role="group">';
+                        
+                        // Button Edit
+                        $html .= '<button class="btn btn-primary btn-sm mb-1" onclick="showEditPerusahaanModal(' . $item->id . ')">Edit</button>';
+                        
+                        // Button Change Status
+                        if ($item->status == 0) {
+                            // Pending - bisa approve atau reject
+                            $html .= '<button class="btn btn-success btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 1)">Approve</button>';
+                            $html .= '<button class="btn btn-warning btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 2)">Reject</button>';
+                        } elseif ($item->status == 1) {
+                            // Approved - bisa reject
+                            $html .= '<button class="btn btn-warning btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 2)">Reject</button>';
+                        } elseif ($item->status == 2) {
+                            // Rejected - bisa approve
+                            $html .= '<button class="btn btn-success btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 1)">Approve</button>';
+                        }
+                        
+                        // Button Delete
+                        $html .= '<form action="' . route('jobfair.perusahaan.destroy', [$item->jobfair_id, $item->id]) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin menghapus?\')">
+                            ' . csrf_field() . '
+                            ' . method_field('DELETE') . '
+                            <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
+                        </form>';
+                        
+                        $html .= '</div>';
+                        
+                        return $html;
+                    })
+                    ->rawColumns(['options', 'status_badge'])
+                    ->make(true);
+            }
+
+            return view('backend.jobfair.perusahaan', compact('jobFair'));
+        } catch (\Exception $e) {
+            Log::error("Error loading perusahaan page: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Store perusahaan ke job fair
+     */
+    public function storePerusahaan($jobfairId, Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'status' => 'required|integer|in:0,1,2',
+            ]);
+
+            // Cek apakah perusahaan sudah terdaftar di job fair ini
+            $exists = EtamJobFairPerush::where('jobfair_id', $jobfairId)
+                ->where('user_id', $request->user_id)
+                ->exists();
+
+            if ($exists) {
+                return redirect()->back()->with('error', 'Perusahaan sudah terdaftar di job fair ini!');
+            }
+
+            EtamJobFairPerush::create([
+                'jobfair_id' => $jobfairId,
+                'user_id' => $request->user_id,
+                'status' => $request->status,
+                'created_by' => Auth::id(),
+            ]);
+
+            return redirect()->route('jobfair.perusahaan', $jobfairId)
+                ->with('success', 'Perusahaan berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            Log::error("Error storing perusahaan: " . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get detail perusahaan
+     */
+    public function showPerusahaan($jobfairId, $id)
+    {
+        try {
+            $perusahaan = EtamJobFairPerush::with(['user', 'creator'])
+                ->findOrFail($id);
+
+            return response()->json([
+                'success' => true,
+                'data' => $perusahaan
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update perusahaan
+     */
+    public function updatePerusahaan($jobfairId, $id, Request $request)
+    {
+        try {
+            $perusahaan = EtamJobFairPerush::findOrFail($id);
+
+            $validated = $request->validate([
+                'user_id' => 'required|exists:users,id',
+                'status' => 'required|integer|in:0,1,2',
+            ]);
+
+            // Cek apakah perusahaan sudah terdaftar di job fair ini (kecuali yang sedang diedit)
+            $exists = EtamJobFairPerush::where('jobfair_id', $jobfairId)
+                ->where('user_id', $request->user_id)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($exists) {
+                return redirect()->back()->with('error', 'Perusahaan sudah terdaftar di job fair ini!');
+            }
+
+            $perusahaan->update([
+                'user_id' => $request->user_id,
+                'status' => $request->status,
+                'updated_by' => Auth::id(),
+            ]);
+
+            return redirect()->route('jobfair.perusahaan', $jobfairId)
+                ->with('success', 'Perusahaan berhasil diupdate!');
+        } catch (\Exception $e) {
+            Log::error("Error updating perusahaan: " . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete perusahaan dari job fair
+     */
+    public function destroyPerusahaan($jobfairId, $id)
+    {
+        try {
+            $perusahaan = EtamJobFairPerush::findOrFail($id);
+            
+            // Set deleted_by sebelum soft delete
+            $perusahaan->deleted_by = Auth::id();
+            $perusahaan->save();
+            
+            // Soft delete
+            $perusahaan->delete();
+
+            return redirect()->route('jobfair.perusahaan', $jobfairId)
+                ->with('success', 'Perusahaan berhasil dihapus!');
+        } catch (\Exception $e) {
+            Log::error("Error deleting perusahaan: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Change status perusahaan
+     */
+    public function changeStatusPerusahaan($jobfairId, $id, Request $request)
+    {
+        try {
+            $perusahaan = EtamJobFairPerush::findOrFail($id);
+            
+            $validated = $request->validate([
+                'status' => 'required|integer|in:0,1,2',
+            ]);
+
+            $perusahaan->update([
+                'status' => $request->status,
+                'updated_by' => Auth::id(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status berhasil diubah!',
+                'status' => $perusahaan->status
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Error changing status: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get users dengan role penyedia-kerja
+     */
+    public function getPenyediaKerja()
+    {
+        try {
+            $users = User::whereHas('roles', function ($query) {
+                    $query->where('name', 'penyedia-kerja');
+                })
+                ->select('id', 'name', 'email')
+                ->where('is_deleted', 0)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $users
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 }
