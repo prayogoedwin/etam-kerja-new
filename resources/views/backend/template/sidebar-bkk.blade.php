@@ -51,35 +51,13 @@
                         <span class="pcoded-mtext">Alumni</span>
                     </a>
                 </li>
-
-
-                <!-- Layouts -->
-                {{-- <li class="menu-item open">
-                    <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <i class="menu-icon tf-icons bx bx-table"></i>
-                        <div data-i18n="Layouts">Lowongan Kerja</div>
+                <li class="nav-item">
+                    <a href="{{ route('perusahaan.index') }}" class="nav-link ">
+                        <span class="pcoded-micon"><i class="feather icon-tablet"></i></span>
+                        <span class="pcoded-mtext">Perusahaan</span>
                     </a>
-
-                    <ul class="menu-sub">
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                <div data-i18n="Without menu">Lowongan Kerja</div>
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                <div data-i18n="Without navbar">History Loker</div>
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                <div data-i18n="Without navbar">Penempatan</div>
-                            </a>
-                        </li>
-
-
-                    </ul>
-                </li> --}}
+                </li>
+            </ul>
 
         </div>
     </div>

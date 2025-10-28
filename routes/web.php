@@ -32,7 +32,7 @@ use App\Http\Middleware\TrackVisitors;
 use App\Http\Controllers\DashboardPimpinanController;
 use App\Http\Controllers\AlumniController;
 use App\Http\Controllers\JobFairController;
-
+use App\Http\Controllers\PerusahaanController;
 
 
 // Route::get('/', function () {
@@ -97,7 +97,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::get('/jobfair/{id}', [JobFairController::class, 'show'])->name('jobfair.show');
     Route::put('/jobfair/{id}', [JobFairController::class, 'update'])->name('jobfair.update');
     Route::delete('/jobfair/{id}', [JobFairController::class, 'destroy'])->name('jobfair.destroy');
-    
+
     // Additional Routes
     Route::post('/jobfair/{id}/verifikasi', [JobFairController::class, 'verifikasi'])->name('jobfair.verifikasi');
     Route::post('/jobfair/{id}/unverifikasi', [JobFairController::class, 'unverifikasi'])->name('jobfair.unverifikasi');
@@ -234,6 +234,16 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
         Route::get('/alumni', [AlumniController::class, 'index'])->name('alumni.index');
         Route::get('/alumni/detail/{id}', [AlumniController::class, 'show'])->name('alumni.detail');
+
+        Route::get('/perusahaan', [PerusahaanController::class, 'index'])->name('perusahaan.index');
+        Route::get('/daftar-perusahaan-by-bkk', [PerusahaanController::class, 'daftarperusahaan'])->name('daftarperusahaan.index');
+        Route::post('/akhir_daftar-akun-perush', [PerusahaanController::class, 'akhir_daftar_akun_perush_bybkk'])->name('akhir-daftar-akun-perush-bybkk');
+        Route::delete('/perusahaan/delete/{id}', [PerusahaanController::class, 'softdelete'])->name('perusahaan.softdelete');
+        Route::get('/perusahaan_lowongan/{id}', [PerusahaanController::class, 'perusahaan_lowongan'])->name('perusahaan.lowongan');
+        Route::post('/perusahaan_lowongan/add', [PerusahaanController::class, 'store_lowongan'])->name('perusahaanlowongan.add');
+        Route::delete('/perusahaan_lowongan/delete/{id}', [PerusahaanController::class, 'softdelete_lowongan'])->name('perusahaanlowongan.softdelete');
+        // Route::delete('/lowongan/delete/{id}', [LowonganController::class, 'softdelete'])->name('lowongan.softdelete');
+        Route::get('/cekaja', [PerusahaanController::class, 'cekaja']);
     });
 
     //ubah password
