@@ -33,7 +33,7 @@ use App\Http\Controllers\DashboardPimpinanController;
 use App\Http\Controllers\AlumniController;
 use App\Http\Controllers\JobFairController;
 use App\Http\Controllers\PerusahaanController;
-
+use App\Http\Controllers\BkkController;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -242,7 +242,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/perusahaan_lowongan/{id}', [PerusahaanController::class, 'perusahaan_lowongan'])->name('perusahaan.lowongan');
         Route::post('/perusahaan_lowongan/add', [PerusahaanController::class, 'store_lowongan'])->name('perusahaanlowongan.add');
         Route::delete('/perusahaan_lowongan/delete/{id}', [PerusahaanController::class, 'softdelete_lowongan'])->name('perusahaanlowongan.softdelete');
-        // Route::delete('/lowongan/delete/{id}', [LowonganController::class, 'softdelete'])->name('lowongan.softdelete');
+
+        Route::get('/bkk', [BkkController::class, 'index'])->name('bkk.index');
         Route::get('/cekaja', [PerusahaanController::class, 'cekaja']);
     });
 
