@@ -104,6 +104,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::post('/jobfair/{id}/toggle-status', [JobFairController::class, 'toggleStatus'])->name('jobfair.toggle-status');
     Route::get('/jobfair-users', [JobFairController::class, 'getUsers'])->name('jobfair.users');
 
+    Route::get('/jobfair-penyedia-kerja', [JobFairController::class, 'getPenyediaKerja'])->name('jobfair.penyedia-kerja');
+
     // Routes untuk Perusahaan Job Fair
     Route::get('/jobfair/{jobfair}/perusahaan', [JobFairController::class, 'perusahaan'])->name('jobfair.perusahaan');
     Route::post('/jobfair/{jobfair}/perusahaan', [JobFairController::class, 'storePerusahaan'])->name('jobfair.perusahaan.store');
@@ -112,8 +114,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::delete('/jobfair/{jobfair}/perusahaan/{id}', [JobFairController::class, 'destroyPerusahaan'])->name('jobfair.perusahaan.destroy');
     Route::post('/jobfair/{jobfair}/perusahaan/{id}/change-status', [JobFairController::class, 'changeStatusPerusahaan'])->name('jobfair.perusahaan.change-status');
 
-    // Route untuk get penyedia kerja
-    Route::get('/jobfair/penyedia-kerja', [JobFairController::class, 'getPenyediaKerja'])->name('jobfair.penyedia-kerja');
+    Route::get('/api/get-penyedia-kerja', [JobFairController::class, 'getPenyediaKerjaList'])->name('api.penyedia-kerja');
 
     //route untuk admin
     Route::get('/dashboard', [BackController::class, 'index'])->name('dashboard');

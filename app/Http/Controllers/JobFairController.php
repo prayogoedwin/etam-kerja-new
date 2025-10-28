@@ -431,7 +431,7 @@ class JobFairController extends Controller
     }
 
 
-    /**
+/**
      * Halaman daftar perusahaan job fair
      */
     public function perusahaan($jobfairId, Request $request)
@@ -650,28 +650,108 @@ class JobFairController extends Controller
     }
 
     /**
-     * Get users dengan role penyedia-kerja
+     * Get users dengan role penyedia-kerja (with search)
      */
-    public function getPenyediaKerja()
+    public function getPenyediaKerja(Request $request)
     {
         try {
-            $users = User::whereHas('roles', function ($query) {
+            $search = $request->get('search', '');
+            $page = $request->get('page', 1);
+            $perPage = 10;
+
+            $query = User::whereHas('roles', function ($query) {
                     $query->where('name', 'penyedia-kerja');
                 })
-                ->select('id', 'name', 'email')
-                ->where('is_deleted', 0)
+                ->where('is_deleted', 0);
+
+            // Filter berdasarkan search (minimal 4 karakter)
+            if (strlen($search) >= 4) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                      ->orWhere('email', 'like', "%$search%");
+                });
+            }
+
+            // Pagination
+            $total = $query->count();
+            $users = $query->select('id', 'name', 'email')
                 ->orderBy('name', 'asc')
+                ->skip(($page - 1) * $perPage)
+                ->take($perPage)
                 ->get();
 
+            // Format untuk Select2
+            $results = $users->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'text' => $user->name . ' (' . $user->email . ')'
+                ];
+            });
+
             return response()->json([
-                'success' => true,
-                'data' => $users
+                'results' => $results,
+                'pagination' => [
+                    'more' => ($page * $perPage) < $total
+                ]
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'success' => false,
-                'message' => 'Error: ' . $e->getMessage()
+                'results' => [],
+                'pagination' => ['more' => false]
             ], 500);
+        }
+    }
+
+    public function getPenyediaKerjaList(Request $request)
+    {
+        try {
+            $search = $request->get('search', '');
+            $page = $request->get('page', 1);
+            $perPage = 10;
+
+            // Query users dengan role penyedia-kerja
+            $query = User::whereHas('roles', function ($query) {
+                    $query->where('name', 'penyedia-kerja');
+                })
+                ->where('is_deleted', 0);
+
+            // Filter berdasarkan search (minimal 4 karakter)
+            if (strlen($search) >= 4) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%$search%")
+                      ->orWhere('email', 'like', "%$search%");
+                });
+            }
+
+            // Pagination
+            $total = $query->count();
+            $users = $query->select('id', 'name', 'email')
+                ->orderBy('name', 'asc')
+                ->skip(($page - 1) * $perPage)
+                ->take($perPage)
+                ->get();
+
+            // Format untuk Select2
+            $results = $users->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'text' => $user->name . ' (' . $user->email . ')'
+                ];
+            });
+
+            return response()->json([
+                'results' => $results,
+                'pagination' => [
+                    'more' => ($page * $perPage) < $total
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Error getting penyedia kerja: " . $e->getMessage());
+            return response()->json([
+                'results' => [],
+                'pagination' => ['more' => false],
+                'error' => $e->getMessage()
+            ], 200); // Return 200 supaya Select2 tidak error
         }
     }
 
