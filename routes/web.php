@@ -31,6 +31,9 @@ use App\Http\Controllers\RekapController;
 use App\Http\Middleware\TrackVisitors;
 use App\Http\Controllers\DashboardPimpinanController;
 use App\Http\Controllers\AlumniController;
+use App\Http\Controllers\JobFairController;
+
+
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -87,6 +90,19 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::get('/rekap34', [RekapController::class, 'ak3titik4'])->name('rekap.ak34');
     Route::get('/rekap37', [RekapController::class, 'ak3titik7'])->name('rekap.ak37');
     Route::get('/rekap38', [RekapController::class, 'ak3titik8'])->name('rekap.ak38');
+
+    // Job Fair Routes
+    Route::get('/jobfair', [JobFairController::class, 'index'])->name('jobfair.index');
+    Route::post('/jobfair', [JobFairController::class, 'store'])->name('jobfair.store');
+    Route::get('/jobfair/{id}', [JobFairController::class, 'show'])->name('jobfair.show');
+    Route::put('/jobfair/{id}', [JobFairController::class, 'update'])->name('jobfair.update');
+    Route::delete('/jobfair/{id}', [JobFairController::class, 'destroy'])->name('jobfair.destroy');
+    
+    // Additional Routes
+    Route::post('/jobfair/{id}/verifikasi', [JobFairController::class, 'verifikasi'])->name('jobfair.verifikasi');
+    Route::post('/jobfair/{id}/unverifikasi', [JobFairController::class, 'unverifikasi'])->name('jobfair.unverifikasi');
+    Route::post('/jobfair/{id}/toggle-status', [JobFairController::class, 'toggleStatus'])->name('jobfair.toggle-status');
+    Route::get('/jobfair-users', [JobFairController::class, 'getUsers'])->name('jobfair.users');
 
     //route untuk admin
     Route::get('/dashboard', [BackController::class, 'index'])->name('dashboard');

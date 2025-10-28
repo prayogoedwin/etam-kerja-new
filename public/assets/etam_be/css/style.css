@@ -28422,8 +28422,8 @@ body.box-layout .pcoded-navbar.theme-horizontal ~ .pcoded-header {
 }
 
 .form-group .floating-label {
-    position: absolute;
-    top: 11px;
+    /* position: absolute; */
+    top: 0px;
     left: 0;
     font-size: 0.875rem;
     z-index: 1;
