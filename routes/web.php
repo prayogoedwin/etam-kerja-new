@@ -114,6 +114,16 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::delete('/jobfair/{jobfair}/perusahaan/{id}', [JobFairController::class, 'destroyPerusahaan'])->name('jobfair.perusahaan.destroy');
     Route::post('/jobfair/{jobfair}/perusahaan/{id}/change-status', [JobFairController::class, 'changeStatusPerusahaan'])->name('jobfair.perusahaan.change-status');
 
+    Route::get('jobfair/{jobfairId}/perusahaan/{userId}/lowongan', [JobFairController::class, 'lowongan'])->name('jobfair.lowongan');
+    Route::post('jobfair/{jobfairId}/perusahaan/{userId}/lowongan', [JobFairController::class, 'storeLowongan'])->name('jobfair.lowongan.store');
+    Route::get('jobfair/{jobfairId}/perusahaan/{userId}/lowongan/{id}', [JobFairController::class, 'showLowongan'])->name('jobfair.lowongan.show');
+    Route::put('jobfair/{jobfairId}/perusahaan/{userId}/lowongan/{id}', [JobFairController::class, 'updateLowongan'])->name('jobfair.lowongan.update');
+    Route::delete('jobfair/{jobfairId}/perusahaan/{userId}/lowongan/{id}', [JobFairController::class, 'destroyLowongan'])->name('jobfair.lowongan.destroy');
+
+     // Helper Routes
+    Route::get('jobfair/get-all-pendidikan', [JobFairController::class, 'getAllPendidikan'])->name('jobfair.get-all-pendidikan');
+    Route::get('get-jurusan-bypendidikan/{id}', [JobFairController::class, 'getJurusanByPendidikan'])->name('get-jurusan-bypendidikan');
+
     Route::get('/api/get-penyedia-kerja', [JobFairController::class, 'getPenyediaKerjaList'])->name('api.penyedia-kerja');
 
     //route untuk admin
