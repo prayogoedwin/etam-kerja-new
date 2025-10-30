@@ -545,6 +545,15 @@ class DepanController extends Controller
 
         // dd($user->id);
 
+        $bkk_id = null;
+        // $is_alumni_bkk = 0;
+        $bkkParam = $request->input('bkk');
+
+        if ($bkkParam !== null && $bkkParam !== '') {
+            $bkk_id = short_decode_url($request->input('bkk'));
+            // $is_alumni_bkk = 1;
+        }
+
         DB::beginTransaction();
         try {
             // create affiliator
@@ -570,6 +579,7 @@ class DepanController extends Controller
                 'website' => $request->website,
                 'status_id' => 1,
                 'foto' => null,
+                'by_bkk_id' => $bkk_id,
                 'shared_by_id' => null,
                 'posted_by' => $user->id,
                 'created_at' => date('Y-m-d H:i:s'),

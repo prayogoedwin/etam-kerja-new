@@ -5,6 +5,7 @@
     ?>
     <form action="{{ route('akhir-daftar-akun-perush') }}" method="post">
         @csrf
+        <input type="hidden" name="bkk" id="bkk" value="{{ request('bkk') }}">
         <div class="mb-3">
             <label for="perusahaanName" class="form-label">Nama Perusahaan</label>
             <input type="text" class="form-control" id="nama_perusahaan" name="nama_perusahaan" required>

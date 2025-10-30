@@ -12,7 +12,7 @@
         </div> --}}
         <form action="{{ route('akhir-daftar-akun') }}" method="post">
             @csrf
-            <input type="text" name="bkk" id="bkk" value="{{ request('bkk') }}">
+            <input type="hidden" name="bkk" id="bkk" value="{{ request('bkk') }}">
             <div class="mb-3">
                 <label for="district" class="form-label">Disabilitas</label>
                 <select class="form-select" id="disabilitas" name="disabilitas" required>
