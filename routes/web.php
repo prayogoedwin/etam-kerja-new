@@ -109,6 +109,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     // Routes untuk Perusahaan Job Fair
     Route::get('/jobfair/{jobfair}/perusahaan', [JobFairController::class, 'perusahaan'])->name('jobfair.perusahaan');
     Route::post('/jobfair/{jobfair}/perusahaan', [JobFairController::class, 'storePerusahaan'])->name('jobfair.perusahaan.store');
+    Route::post('/jobfair/{jobfair}/join', [JobFairController::class, 'joinJobFair'])->name('jobfair.join'); //untuk perusahaan daftar sendiri
     Route::get('/jobfair/{jobfair}/perusahaan/{id}', [JobFairController::class, 'showPerusahaan'])->name('jobfair.perusahaan.show');
     Route::put('/jobfair/{jobfair}/perusahaan/{id}', [JobFairController::class, 'updatePerusahaan'])->name('jobfair.perusahaan.update');
     Route::delete('/jobfair/{jobfair}/perusahaan/{id}', [JobFairController::class, 'destroyPerusahaan'])->name('jobfair.perusahaan.destroy');

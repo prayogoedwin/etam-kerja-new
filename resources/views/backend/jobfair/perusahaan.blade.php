@@ -66,10 +66,31 @@
                                         <i class="feather icon-arrow-left"></i> Kembali
                                     </a>
                                 </div>
-                                <div class="col-sm-6 text-end">
-                                    <button class="btn btn-success btn-sm btn-round has-ripple" data-bs-toggle="modal"
-                                        data-bs-target="#modal-add"><i class="feather icon-plus"></i> Tambah Perusahaan</button>
-                                </div>
+
+                                @if (Auth::user()->roles[0]['name'] != 'penyedia-kerja' && Auth::user()->roles[0]['name'] != 'pencari-kerja' )
+                                     <div class="col-sm-6 text-end">
+                                        <button class="btn btn-success btn-sm btn-round has-ripple" data-bs-toggle="modal"
+                                            data-bs-target="#modal-add"><i class="feather icon-plus"></i> Tambah Perusahaan</button>
+                                    </div>
+                                @endif
+
+                               @if (Auth::user()->roles[0]['name'] == 'penyedia-kerja')
+                                    <div class="col-sm-6 text-end">
+                                        <a href="{{ route('jobfair.join', $jobFair->id) }}" 
+                                        class="btn btn-success btn-sm btn-round has-ripple"
+                                        onclick="event.preventDefault(); document.getElementById('join-jobfair-form').submit();">
+                                            <i class="feather icon-plus"></i> Ikuti JobFair Sebagai Penyedia
+                                        </a>
+                                        
+                                        <form id="join-jobfair-form" 
+                                            action="{{ route('jobfair.join', $jobFair->id) }}" 
+                                            method="POST" 
+                                            style="display: none;">
+                                            @csrf
+                                        </form>
+                                    </div>
+                                @endif
+                               
                             </div>
                             <div class="table-responsive mt-3">
                                 <table id="simpletable" class="table table-bordered table-striped mb-0">

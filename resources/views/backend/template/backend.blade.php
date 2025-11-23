@@ -4,6 +4,10 @@
     @include('backend.template.sidebar')
 @endif
 
+@if (Auth::user()->roles[0]['name'] == 'admin-provinsi')
+    @include('backend.template.sidebar')
+@endif
+
 
 @if (Auth::user()->roles[0]['name'] == 'admin-kabkota' || Auth::user()->roles[0]['name'] == 'admin-kabkota-officer')
     @include('backend.template.sidebar-kabkota')

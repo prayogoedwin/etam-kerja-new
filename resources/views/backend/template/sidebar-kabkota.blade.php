@@ -89,6 +89,12 @@
                             class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
                             class="pcoded-mtext">Lowongan</span></a></li>
 
+                <li class="nav-item"><a href="{{ route('jobfair.index') }}" class="nav-link "><span
+                            class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
+                            class="pcoded-mtext">Job Fair</span></a></li>
+
+
+
                 <li class="nav-item"><a href="{{ route('penempatan.admin.index') }}" class="nav-link "><span
                             class="pcoded-micon"><i class="fa fa-archive"></i></span><span
                             class="pcoded-mtext">Penempatan</span></a></li>

@@ -57,10 +57,17 @@
                             <div class="row align-items-center m-l-0">
                                 <div class="col-sm-6">
                                 </div>
-                                <div class="col-sm-6 text-end">
-                                    <button class="btn btn-success btn-sm btn-round has-ripple" data-bs-toggle="modal"
-                                        data-bs-target="#modal-report"><i class="feather icon-plus"></i> Add Data</button>
-                                </div>
+                                
+
+                                @if (Auth::user()->roles[0]['name'] != 'penyedia-kerja' && Auth::user()->roles[0]['name'] != 'pencari-kerja' )
+                                    <div class="col-sm-6 text-end">
+                                        <button class="btn btn-success btn-sm btn-round has-ripple" data-bs-toggle="modal"
+                                            data-bs-target="#modal-report"><i class="feather icon-plus"></i> Add Data</button>
+                                    </div>
+                                @endif
+
+                                
+
                             </div>
                             <div class="table-responsive">
                                 <table id="simpletable" class="table table-bordered table-striped mb-0">
@@ -106,13 +113,14 @@
                         <div class="row">
                             <!-- Kolom Kiri -->
                             <div class="col-sm-6">
-                                <div class="form-group">
+                                <div class="form-group" hidden> 
                                     <label for="jenis_penyelenggara">Jenis Penyelenggara <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="jenis_penyelenggara" name="jenis_penyelenggara" required>
+                                    {{-- <select class="form-control" id="jenis_penyelenggara" name="jenis_penyelenggara" required>
                                         <option value="">Pilih Jenis Penyelenggara</option>
                                         <option value="0">Pemerintah</option>
                                         <option value="1">Swasta</option>
-                                    </select>
+                                    </select> --}}
+                                    <input type="text" class="form-control" id="jenis_penyelenggara" name="jenis_penyelenggara" value="0">
                                 </div>
 
                                 <div class="form-group">
@@ -228,13 +236,14 @@
                         <div class="row">
                             <!-- Kolom Kiri -->
                             <div class="col-sm-6">
-                                <div class="form-group">
+                                <div class="form-group" hidden>
                                     <label for="editJenisPenyelenggara">Jenis Penyelenggara <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="editJenisPenyelenggara" name="jenis_penyelenggara" required>
+                                    {{-- <select class="form-control" id="editJenisPenyelenggara" name="jenis_penyelenggara" required>
                                         <option value="">Pilih Jenis Penyelenggara</option>
                                         <option value="0">Pemerintah</option>
                                         <option value="1">Swasta</option>
-                                    </select>
+                                    </select> --}}
+                                     <input type="text" class="form-control" id="editJenisPenyelenggara" name="jenis_penyelenggara" value="0">
                                 </div>
 
                                 <div class="form-group">

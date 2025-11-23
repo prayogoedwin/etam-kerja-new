@@ -152,4 +152,38 @@ class EtamJobFair extends Model
     {
         return $query->where('status_verifikasi', 1);
     }
+
+    public function lowongan()
+    {
+        return $this->hasMany(Lowongan::class, 'jobfair_id', 'id')
+                    ->where('tipe_lowongan', 1);  // Filter hanya lowongan job fair
+    }
+
+    public function lowonganAktif()
+    {
+        return $this->hasMany(Lowongan::class, 'jobfair_id', 'id')
+                    ->where('tipe_lowongan', 1)
+                    ->where('progres', 1);  // Hanya lowongan aktif
+    }
+
+    public function perusahaan()
+    {
+        return $this->hasMany(EtamJobFairPerush::class, 'jobfair_id', 'id');
+    }
+
+    public function getTotalLowonganAttribute()
+    {
+        return $this->lowongan()->count();
+    }
+
+    public function getTotalLowonganAktifAttribute()
+    {
+        return $this->lowonganAktif()->count();
+    }
+
+     public function getTotalPerusahaanAttribute()
+    {
+        return $this->perusahaan()->count();
+    }
+
 }

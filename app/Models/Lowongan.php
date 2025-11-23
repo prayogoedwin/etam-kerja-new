@@ -37,6 +37,7 @@ class Lowongan extends Model
         'is_lowongan_ln',
         'is_lowongan_disabilitas',
         'tipe_lowongan',
+        'jobfair_id', 
         'nama_petugas',
         'nip_petugas',
         'kompetensi',
@@ -66,4 +67,27 @@ class Lowongan extends Model
     {
         return $this->belongsTo(Kabkota::class, 'kabkota_id', 'id');
     }
+
+     public function jobfair()
+    {
+        return $this->belongsTo(EtamJobFair::class, 'jobfair_id', 'id');
+    }
+
+    public function scopeLowonganUmum($query)
+    {
+        return $query->where('tipe_lowongan', 0)
+                    ->whereNull('jobfair_id');
+    }
+
+    public function scopeLowonganJobFair($query, $jobfairId = null)
+    {
+        $query = $query->where('tipe_lowongan', 1);
+        
+        if ($jobfairId) {
+            $query->where('jobfair_id', $jobfairId);
+        }
+        
+        return $query;
+    }
+    
 }

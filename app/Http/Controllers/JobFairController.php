@@ -29,12 +29,19 @@ class JobFairController extends Controller
      */
     public function index(Request $request)
     {
+         // Mendapatkan ID pengguna yang sedang login
         if ($request->ajax()) {
+
+            $user = Auth::user();
+
             $jobFairs = EtamJobFair::with([
                 'penyelenggaraUser:id,name,email',
                 'verifikator:id,name',
                 'creator:id,name'
-            ])->select('*');
+            ])
+            ->where('deleted_at', NULL)
+            ->orderBy('created_at', 'desc') // atau column lain yang mau di-sort
+            ->select('*');
 
             // Tambahkan filter pencarian
             if (!empty($request->search['value'])) {
@@ -47,6 +54,20 @@ class JobFairController extends Controller
                             $q->where('name', 'like', "%$searchValue%");
                         });
                 });
+            }
+
+            if ($user->roles[0]['name'] == 'pencari-kerja'){
+                $jobFairs->where('status_verifikasi', 1);
+                $jobFairs->where('status', 1);
+            }
+
+            if ($user->roles[0]['name'] == 'penyedia-kerja'){
+                $jobFairs->where('status_verifikasi', 1);
+                $jobFairs->where('status', 1);
+            }
+
+            if ($user->roles[0]['name'] == 'admin-kabkota'){
+                $jobFairs->where('id_penyelenggara', $user->id);
             }
 
             return DataTables::of($jobFairs)
@@ -80,50 +101,92 @@ class JobFairController extends Controller
                 ->editColumn('tanggal_selesai', function ($jobFair) {
                     return $jobFair->tanggal_selesai ? $jobFair->tanggal_selesai->format('d M Y') : '-';
                 })
-                ->addColumn('options', function ($jobFair) {
+                ->addColumn('options', function ($jobFair) use ($user) {
                     $html = '<div class="btn-group-vertical" role="group">';
-                    
-                    // Button Detail
-                    $html .= '<button class="btn btn-info btn-sm mb-1" onclick="showDetailModal(' . $jobFair->id . ')">Detail</button>';
-                    
-                    // Button Edit
-                    $html .= '<button class="btn btn-primary btn-sm mb-1" onclick="showEditModal(' . $jobFair->id . ')">Edit</button>';
-                    
-                    // Button Verifikasi / Batal Verifikasi - HANYA untuk super-admin dan admin-provinsi
-                    $user = Auth::user();
-                    $allowedRoles = ['super-admin', 'admin-provinsi'];
-                    $userRoles = $user->roles->pluck('name')->toArray();
-                    $hasVerifyPermission = !empty(array_intersect($allowedRoles, $userRoles));
-                    
-                    if ($hasVerifyPermission) {
-                        if ($jobFair->status_verifikasi == 0) {
-                            // Belum diverifikasi - tampilkan tombol Verifikasi
-                            $html .= '<form action="' . route('jobfair.verifikasi', $jobFair->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin verifikasi job fair ini?\')">
-                                ' . csrf_field() . '
-                                <button type="submit" class="btn btn-success btn-sm mb-1 w-100">✓ Verifikasi</button>
-                            </form>';
-                        } else {
-                            // Sudah diverifikasi - tampilkan tombol Batal Verifikasi
-                            $html .= '<form action="' . route('jobfair.unverifikasi', $jobFair->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin membatalkan verifikasi?\')">
-                                ' . csrf_field() . '
-                                <button type="submit" class="btn btn-warning btn-sm mb-1 w-100">✗ Batal Verifikasi</button>
-                            </form>';
-                        }
-                    }
 
-                    $html .= '
+                    if ($user->roles[0]['name'] == 'pencari-kerja'){
+
+                        // Button Detail
+                        $html .= '<button class="btn btn-info btn-sm mb-1" onclick="showDetailModal(' . $jobFair->id . ')">Detail</button>';
+                        $html .= '
                         <form action="' . route('jobfair.perusahaan', $jobFair->id) . '" method="GET" style="display:inline;">
                             <button type="submit" class="btn btn-primary btn-sm mb-1 w-100">🏢 Lihat Perusahaan</button>
                         </form>
-                    ';
+                        ';
 
+                    }
+
+                    if ($user->roles[0]['name'] == 'penyedia-kerja'){
+
+                        // Button Detail
+                        $html .= '<button class="btn btn-info btn-sm mb-1" onclick="showDetailModal(' . $jobFair->id . ')">Detail</button>';
+                        $html .= '
+                        <form action="' . route('jobfair.perusahaan', $jobFair->id) . '" method="GET" style="display:inline;">
+                            <button type="submit" class="btn btn-primary btn-sm mb-1 w-100">🏢 Lihat Keikutsertaan</button>
+                        </form>
+                        ';
                     
-                    // Button Delete
-                    $html .= '<form action="' . route('jobfair.destroy', $jobFair->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin menghapus?\')">
-                        ' . csrf_field() . '
-                        ' . method_field('DELETE') . '
-                        <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
-                    </form>';
+                    }
+
+                    if ($user->roles[0]['name'] == 'admin-provinsi' || $user->roles[0]['name'] == 'super-admin'){
+
+                         // Button Detail
+                        $html .= '<button class="btn btn-info btn-sm mb-1" onclick="showDetailModal(' . $jobFair->id . ')">Detail</button>';
+                        
+                        // Button Edit
+                        $html .= '<button class="btn btn-primary btn-sm mb-1" onclick="showEditModal(' . $jobFair->id . ')">Edit</button>';
+                        
+                        // Button Verifikasi / Batal Verifikasi - HANYA untuk super-admin dan admin-provinsi
+                        $user = Auth::user();
+                        $allowedRoles = ['super-admin', 'admin-provinsi'];
+                        $userRoles = $user->roles->pluck('name')->toArray();
+                        $hasVerifyPermission = !empty(array_intersect($allowedRoles, $userRoles));
+                        
+                        if ($hasVerifyPermission) {
+                            if ($jobFair->status_verifikasi == 0) {
+                                // Belum diverifikasi - tampilkan tombol Verifikasi
+                                $html .= '<form action="' . route('jobfair.verifikasi', $jobFair->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin verifikasi job fair ini?\')">
+                                    ' . csrf_field() . '
+                                    <button type="submit" class="btn btn-success btn-sm mb-1 w-100">✓ Verifikasi</button>
+                                </form>';
+                            } else {
+                                // Sudah diverifikasi - tampilkan tombol Batal Verifikasi
+                                $html .= '<form action="' . route('jobfair.unverifikasi', $jobFair->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin membatalkan verifikasi?\')">
+                                    ' . csrf_field() . '
+                                    <button type="submit" class="btn btn-warning btn-sm mb-1 w-100">✗ Batal Verifikasi</button>
+                                </form>';
+                            }
+                        }
+
+                        $html .= '
+                            <form action="' . route('jobfair.perusahaan', $jobFair->id) . '" method="GET" style="display:inline;">
+                                <button type="submit" class="btn btn-primary btn-sm mb-1 w-100">🏢 Lihat Perusahaan</button>
+                            </form>
+                        ';
+
+                        
+                        // Button Delete
+                        $html .= '<form action="' . route('jobfair.destroy', $jobFair->id) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin menghapus?\')">
+                            ' . csrf_field() . '
+                            ' . method_field('DELETE') . '
+                            <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
+                        </form>';
+
+                    }
+
+                    if ($user->roles[0]['name'] == 'admin-kabkota' || Auth::user()->roles[0]['name'] == 'admin-kabkota-officer'){
+
+                        // Button Detail
+                        $html .= '<button class="btn btn-info btn-sm mb-1" onclick="showDetailModal(' . $jobFair->id . ')">Detail</button>';
+                        $html .= '
+                        <form action="' . route('jobfair.perusahaan', $jobFair->id) . '" method="GET" style="display:inline;">
+                            <button type="submit" class="btn btn-primary btn-sm mb-1 w-100">🏢 Lihat Perusahaan</button>
+                        </form>
+                        ';
+                    
+                    }
+                    
+                   
                     
                     $html .= '</div>';
                     
@@ -446,14 +509,18 @@ class JobFairController extends Controller
     public function perusahaan($jobfairId, Request $request)
     {
         try {
+
+            $user = Auth::user();
             $jobFair = EtamJobFair::findOrFail($jobfairId);
 
             if ($request->ajax()) {
+
                 $perusahaan = EtamJobFairPerush::with([
                     'user:id,name,email',
                     'creator:id,name'
                 ])
                 ->where('jobfair_id', $jobfairId)
+                ->where('deleted_at', NULL)
                 ->select('*');
 
                 return DataTables::of($perusahaan)
@@ -470,35 +537,64 @@ class JobFairController extends Controller
                     ->editColumn('created_at', function ($item) {
                         return $item->created_at ? $item->created_at->format('d M Y H:i') : '-';
                     })
-                    ->addColumn('options', function ($item) {
+                    ->addColumn('options', function ($item) use ($user) {
                         $html = '<div class="btn-group-vertical" role="group">';
-                        
-                        // Button Edit
-                        $html .= '<button class="btn btn-primary btn-sm mb-1" onclick="showEditPerusahaanModal(' . $item->id . ')">Edit</button>';
-                        
-                        // Button Change Status
-                        if ($item->status == 0) {
-                            // Pending - bisa approve atau reject
-                            $html .= '<button class="btn btn-success btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 1)">Approve</button>';
-                            $html .= '<button class="btn btn-warning btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 2)">Reject</button>';
-                        } elseif ($item->status == 1) {
-                            // Approved - bisa reject
-                            $html .= '<button class="btn btn-warning btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 2)">Reject</button>';
-                        } elseif ($item->status == 2) {
-                            // Rejected - bisa approve
-                            $html .= '<button class="btn btn-success btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 1)">Approve</button>';
+
+                        if ($user->roles[0]['name'] == 'penyedia-kerja'){
+
+                            if($item->status == 1){
+                                
+                                $html .= '<button class="btn btn-danger btn-sm mb-1" onclick="event.preventDefault(); Swal.fire({
+                                            icon: \'warning\',
+                                            title: \'Tidak Dapat Dibatalkan\',
+                                            text: \'Status sudah di-approve. Untuk pembatalan, silakan hubungi penyelenggara.\',
+                                            confirmButtonText: \'OK\'
+                                        });">Batalkan</button>';
+
+                            }else  if($item->status == 2){
+                                
+                                $html .= '<button class="btn btn-warning btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 0)">Request Verif Ulang</button>';
+
+                            }else{
+
+                                $html .= '<form action="' . route('jobfair.perusahaan.destroy', [$item->jobfair_id, $item->id]) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin menghapus?\')">
+                                    ' . csrf_field() . '
+                                    ' . method_field('DELETE') . '
+                                    <button type="submit" class="btn btn-danger btn-sm w-100">Batal Daftar</button>
+                                </form>';
+                            }
+                           
+
                         }
 
-                        $html .= '<form action="' . route('jobfair.lowongan', [$item->jobfair_id, $item->user_id]) . '" method="GET" style="display:inline;">
-                                    <button type="submit" class="btn btn-info btn-sm mb-1 w-100">📋 Lowongan</button>
-                                </form>';
-                        
-                        // Button Delete
-                        $html .= '<form action="' . route('jobfair.perusahaan.destroy', [$item->jobfair_id, $item->id]) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin menghapus?\')">
-                            ' . csrf_field() . '
-                            ' . method_field('DELETE') . '
-                            <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
-                        </form>';
+                        if ($user->roles[0]['name'] == 'admin-provinsi' || $user->roles[0]['name'] == 'super-admin' || $user->roles[0]['name'] == 'admin-kabkota' ){
+                            // Button Edit
+                            // $html .= '<button class="btn btn-primary btn-sm mb-1" onclick="showEditPerusahaanModal(' . $item->id . ')">Edit</button>';
+                            
+                            // Button Change Status
+                            if ($item->status == 0) {
+                                // Pending - bisa approve atau reject
+                                $html .= '<button class="btn btn-success btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 1)">Approve</button>';
+                                $html .= '<button class="btn btn-warning btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 2)">Reject</button>';
+                            } elseif ($item->status == 1) {
+                                // Approved - bisa reject
+                                $html .= '<button class="btn btn-warning btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 2)">Reject</button>';
+                            } elseif ($item->status == 2) {
+                                // Rejected - bisa approve
+                                $html .= '<button class="btn btn-success btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 1)">Approve</button>';
+                            }
+
+                            $html .= '<form action="' . route('jobfair.lowongan', [$item->jobfair_id, $item->user_id]) . '" method="GET" style="display:inline;">
+                                        <button type="submit" class="btn btn-info btn-sm mb-1 w-100">📋 Lowongan</button>
+                                    </form>';
+                            
+                            // Button Delete
+                            $html .= '<form action="' . route('jobfair.perusahaan.destroy', [$item->jobfair_id, $item->id]) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin menghapus?\')">
+                                ' . csrf_field() . '
+                                ' . method_field('DELETE') . '
+                                <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
+                            </form>';
+                        }
                         
                         $html .= '</div>';
                         
@@ -529,6 +625,7 @@ class JobFairController extends Controller
             // Cek apakah perusahaan sudah terdaftar di job fair ini
             $exists = EtamJobFairPerush::where('jobfair_id', $jobfairId)
                 ->where('user_id', $request->user_id)
+                ->where('deleted_at', NULL)
                 ->exists();
 
             if ($exists) {
@@ -549,6 +646,36 @@ class JobFairController extends Controller
             return redirect()->back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
     }
+
+    public function joinJobFair($jobfairId)
+    {
+        try {
+            $userId = Auth::id();
+            
+            // Cek apakah sudah terdaftar
+            $exists = EtamJobFairPerush::where('jobfair_id', $jobfairId)
+                ->where('user_id', $userId)
+                ->where('deleted_at', NULL)
+                ->exists();
+
+            if ($exists) {
+                return redirect()->back()->with('error', 'Anda sudah terdaftar di job fair ini!');
+            }
+
+            EtamJobFairPerush::create([
+                'jobfair_id' => $jobfairId,
+                'user_id' => $userId,
+                'status' => 0, // default pending
+                'created_by' => $userId,
+            ]);
+
+            return redirect()->back()
+                ->with('success', 'Berhasil mendaftar job fair! Menunggu persetujuan admin.');
+        } catch (\Exception $e) {
+            Log::error("Error joining job fair: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
+}
 
     /**
      * Get detail perusahaan
