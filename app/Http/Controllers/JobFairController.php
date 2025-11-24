@@ -8,7 +8,7 @@ use App\Models\EtamJobFairPerush;
 use App\Models\User;
 
 use App\Models\Lowongan;
-// use App\Models\Jabatan;
+use App\Models\Jabatan;
 use App\Models\Sektor;
 use App\Models\Pendidikan;
 use App\Models\Jurusan;
@@ -543,6 +543,10 @@ class JobFairController extends Controller
                         if ($user->roles[0]['name'] == 'penyedia-kerja'){
 
                             if($item->status == 1){
+
+                                $html .= '<form action="' . route('jobfair.lowongan', [$item->jobfair_id, $item->user_id]) . '" method="GET" style="display:inline;">
+                                        <button type="submit" class="btn btn-info btn-sm mb-1 w-100">📋 Lowongan</button>
+                                    </form>';
                                 
                                 $html .= '<button class="btn btn-danger btn-sm mb-1" onclick="event.preventDefault(); Swal.fire({
                                             icon: \'warning\',
@@ -565,6 +569,12 @@ class JobFairController extends Controller
                             }
                            
 
+                        }
+
+                        if($user->roles[0]['name'] == 'pencari-kerja'){
+                            $html .= '<form action="' . route('jobfair.lowongan', [$item->jobfair_id, $item->user_id]) . '" method="GET" style="display:inline;">
+                                        <button type="submit" class="btn btn-info btn-sm mb-1 w-100">📋 Lowongan</button>
+                                    </form>';
                         }
 
                         if ($user->roles[0]['name'] == 'admin-provinsi' || $user->roles[0]['name'] == 'super-admin' || $user->roles[0]['name'] == 'admin-kabkota' ){
@@ -902,6 +912,7 @@ class JobFairController extends Controller
     public function lowongan($jobfairId, $userId, Request $request)
     {
         try {
+            $user = Auth::user();
             $jobFair = EtamJobFair::findOrFail($jobfairId);
             $perusahaan = User::findOrFail($userId);
             
@@ -912,23 +923,25 @@ class JobFairController extends Controller
 
             if ($request->ajax()) {
                 $lowongan = Lowongan::with([
-                    // 'jabatan:id,nama',
+                    'jabatan:id,nama',
                     'sektor:id,name',
                     'pendidikan:id,name',
                     'jurusan:id,nama',
                     'kabkota:id,name',
-                    'marital:id,name'
+                    'progress:kode,name'
+                    // 'marital:id,name'
                 ])
                 ->where('posted_by', $userId)
                 ->where('tipe_lowongan', 1) // Lowongan job fair
                 ->where('jobfair_id', $jobfairId)
+                ->whereNull('etam_lowongan.deleted_at') // Memastikan data tidak terhapus
                 ->select('*');
 
                 return DataTables::of($lowongan)
                     ->addIndexColumn()
-                    // ->addColumn('jabatan_nama', function ($item) {
-                    //     return $item->jabatan ? $item->jabatan->nama : '-';
-                    // })
+                    ->addColumn('jabatan_nama', function ($item) {
+                        return $item->jabatan ? $item->jabatan->nama : '-';
+                    })
                     ->addColumn('sektor_nama', function ($item) {
                         return $item->sektor ? $item->sektor->name : '-';
                     })
@@ -936,13 +949,7 @@ class JobFairController extends Controller
                         return $item->kabkota ? $item->kabkota->name : '-';
                     })
                     ->addColumn('status_badge', function ($item) {
-                        $badges = [
-                            0 => '<span class="badge bg-warning">Draft</span>',
-                            1 => '<span class="badge bg-success">Aktif</span>',
-                            2 => '<span class="badge bg-secondary">Tidak Aktif</span>',
-                            3 => '<span class="badge bg-danger">Ditolak</span>'
-                        ];
-                        return $badges[$item->progres] ?? '<span class="badge bg-secondary">Unknown</span>';
+                        return $item->status_id ? $item->progress->name : 'Menunggu';
                     })
                     ->editColumn('tanggal_start', function ($item) {
                         return $item->tanggal_start ? date('d M Y', strtotime($item->tanggal_start)) : '-';
@@ -950,22 +957,42 @@ class JobFairController extends Controller
                     ->editColumn('tanggal_end', function ($item) {
                         return $item->tanggal_end ? date('d M Y', strtotime($item->tanggal_end)) : '-';
                     })
-                    ->addColumn('options', function ($item) use ($jobfairId, $userId) {
-                        $html = '<div class="btn-group-vertical" role="group">';
+                    // ->addColumn('options', function ($item) use ($jobfairId, $userId) {
+                    //     $html = '<div class="btn-group-vertical" role="group">';
                         
-                        // Button Edit
-                        $html .= '<button class="btn btn-primary btn-sm mb-1" onclick="showEditLowonganModal(' . $item->id . ')">Edit</button>';
+                    //     // Button Edit
+                    //     $html .= '<button class="btn btn-primary btn-sm mb-1" onclick="showEditLowonganModal(' . $item->id . ')">Edit</button>';
                         
-                        // Button Delete
-                        $html .= '<form action="' . route('jobfair.lowongan.destroy', [$jobfairId, $userId, $item->id]) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin menghapus?\')">
-                            ' . csrf_field() . '
-                            ' . method_field('DELETE') . '
-                            <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
-                        </form>';
+                    //     // Button Delete
+                    //     $html .= '<form action="' . route('jobfair.lowongan.destroy', [$jobfairId, $userId, $item->id]) . '" method="POST" style="display:inline;" onsubmit="return confirm(\'Yakin ingin menghapus?\')">
+                    //         ' . csrf_field() . '
+                    //         ' . method_field('DELETE') . '
+                    //         <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
+                    //     </form>';
                         
-                        $html .= '</div>';
+                    //     $html .= '</div>';
+
+                   
+
+                    ->addColumn('options', function ($item) use ($jobfairId, $userId, $user) {
+                        // <button class="btn btn-primary btn-sm" onclick="showEditModal(' . $data->id . ')">Edit</button>
+                         if ($user->roles[0]['name'] == 'admin-provinsi' || $user->roles[0]['name'] == 'super-admin' || $user->roles[0]['name'] == 'admin-kabkota'  || $user->roles[0]['name'] == 'penyedia-kerja' ){
+                            return '
+                                <a href="' . route('lowongan.pelamar', encode_url($item->id)) . '" class="btn btn-info btn-sm">Lihat Pelamar</a>
+                                <a href="javascript:void(0)" onclick="showData(' . $item->id . ')" class="btn btn-warning btn-sm">Edit</a>
+                                <button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $item->id . ')">Delete</button>
+                            ';
+                        }
+
+                        if($user->roles[0]['name'] == 'pencari-kerja'){
+                           
+                                return '
+                                    <button class="btn btn-warning btn-sm" onclick="showEditModal(' . $item->id . ')">Lihat</button>
+                                ';
+
+                         }
                         
-                        return $html;
+          
                     })
                     ->rawColumns(['options', 'status_badge'])
                     ->make(true);
@@ -973,12 +1000,13 @@ class JobFairController extends Controller
 
             // Data untuk dropdown
             // $jabatans = Jabatan::where('is_deleted', 0)->orderBy('nama')->get();
+            $jabatans = getJabatan();
             $sektors = Sektor::orderBy('name')->get();
             $pendidikans = Pendidikan::orderBy('name')->get();
-            $kabkotas = Kabkota::orderBy('name')->get();
+            $kabkotas = getKabkota();
             // $maritals = Marital::orderBy('name')->get();
 
-            return view('backend.lowongan.lowongan', compact('jobFair', 'perusahaan', 'jobfairId', 'userId', 'sektors', 'pendidikans', 'kabkotas'));
+            return view('backend.lowongan.lowongan', compact('jobFair', 'perusahaan', 'jobfairId', 'userId', 'sektors', 'pendidikans', 'kabkotas', 'jabatans'));
         } catch (\Exception $e) {
             Log::error("Error loading lowongan page: " . $e->getMessage());
             return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
@@ -991,34 +1019,48 @@ class JobFairController extends Controller
     public function storeLowongan($jobfairId, $userId, Request $request)
     {
         try {
-            $validated = $request->validate([
-                'is_lowongan_disabilitas' => 'required|integer|in:0,1',
-                // 'jabatan_id' => 'required|exists:etam_jabatan,id',
+            // $validated = $request->validate([
+            //     'is_lowongan_disabilitas' => 'required|integer|in:0,1',
+            //     'jabatan_id' => 'required|exists:etam_jabatan,id',
+            //     'sektor_id' => 'required|exists:etam_sektor,id',
+            //     'pendidikan_id' => 'required|exists:etam_pendidikan,id',
+            //     'jurusan_id' => 'nullable|exists:etam_jurusan,id',
+            //     'tanggal_start' => 'required|date',
+            //     'tanggal_end' => 'required|date|after_or_equal:tanggal_start',
+            //     'judul_lowongan' => 'required|string|max:500',
+            //     'kabkota_id' => 'required|string|max:10',
+            //     'lokasi_penempatan_text' => 'nullable|string|max:255',
+            //     'kisaran_gaji' => 'nullable|numeric',
+            //     'kisaran_gaji_akhir' => 'nullable|numeric',
+            //     'jumlah_pria' => 'nullable|integer|min:0',
+            //     'jumlah_wanita' => 'nullable|integer|min:0',
+            //     'deskripsi' => 'nullable|string',
+            //     'marital_id' => 'required|exists:etam_marital,id',
+            // ]);
+
+            $validator = Validator::make($request->all(), [
+                'jobfair_id' => 'required|integer',
+                'is_lowongan_disabilitas' => 'required|integer',
+                'jabatan_id' => 'required|exists:etam_jabatan,id',
                 'sektor_id' => 'required|exists:etam_sektor,id',
                 'pendidikan_id' => 'required|exists:etam_pendidikan,id',
-                'jurusan_id' => 'nullable|exists:etam_jurusan,id',
                 'tanggal_start' => 'required|date',
                 'tanggal_end' => 'required|date|after_or_equal:tanggal_start',
-                'judul_lowongan' => 'required|string|max:500',
-                'kabkota_id' => 'required|string|max:10',
-                'lokasi_penempatan_text' => 'nullable|string|max:255',
-                'kisaran_gaji' => 'nullable|numeric',
-                'kisaran_gaji_akhir' => 'nullable|numeric',
+                'judul_lowongan' => 'required|string|max:255',
+                'kabkota_id' => 'required|integer',
+                'lokasi_penempatan_text' => 'required|string',
+                'kisaran_gaji' => 'required|integer',
+                'kisaran_gaji_akhir' => 'nullable|integer',
                 'jumlah_pria' => 'nullable|integer|min:0',
                 'jumlah_wanita' => 'nullable|integer|min:0',
-                'deskripsi' => 'nullable|string',
-                'marital_id' => 'required|exists:etam_marital,id',
+                'deskripsi' => 'required|string',
             ]);
 
-            Lowongan::create([
-                'user_id' => $userId,
+             Lowongan::create([
                 'jobfair_id' => $jobfairId,
                 'tipe_lowongan' => 1, // Lowongan job fair
-                'is_lowongan_disabilitas' => $request->is_lowongan_disabilitas,
-                // 'jabatan_id' => $request->jabatan_id,
+                'jabatan_id' => $request->jabatan_id,
                 'sektor_id' => $request->sektor_id,
-                'pendidikan_id' => $request->pendidikan_id,
-                'jurusan_id' => $request->jurusan_id,
                 'tanggal_start' => $request->tanggal_start,
                 'tanggal_end' => $request->tanggal_end,
                 'judul_lowongan' => $request->judul_lowongan,
@@ -1029,9 +1071,13 @@ class JobFairController extends Controller
                 'jumlah_pria' => $request->jumlah_pria ?? 0,
                 'jumlah_wanita' => $request->jumlah_wanita ?? 0,
                 'deskripsi' => $request->deskripsi,
+                'pendidikan_id' => $request->pendidikan_id,
+                'jurusan_id' => $request->jurusan_id,
                 'marital_id' => $request->marital_id,
-                'progres' => 1, // Aktif
-                'created_by' => Auth::id(),
+                'is_lowongan_disabilitas' => $request->is_lowongan_disabilitas,
+                'status_id' => 1,
+                'posted_by' => $userId,
+                'updated_by' => $userId,
             ]);
 
             return redirect()->route('jobfair.lowongan', [$jobfairId, $userId])
@@ -1074,36 +1120,32 @@ class JobFairController extends Controller
     {
         try {
             $lowongan = Lowongan::where('id', $id)
-                ->where('user_id', $userId)
+                ->where('posted_by', $userId)
                 ->where('jobfair_id', $jobfairId)
                 ->where('tipe_lowongan', 1)
                 ->firstOrFail();
 
-            $validated = $request->validate([
-                'is_lowongan_disabilitas' => 'required|integer|in:0,1',
-                // 'jabatan_id' => 'required|exists:etam_jabatan,id',
+           $validator = Validator::make($request->all(), [
+                'jobfair_id' => 'required|integer',
+                'is_lowongan_disabilitas' => 'required|integer',
+                'jabatan_id' => 'required|exists:etam_jabatan,id',
                 'sektor_id' => 'required|exists:etam_sektor,id',
                 'pendidikan_id' => 'required|exists:etam_pendidikan,id',
-                'jurusan_id' => 'nullable|exists:etam_jurusan,id',
                 'tanggal_start' => 'required|date',
                 'tanggal_end' => 'required|date|after_or_equal:tanggal_start',
-                'judul_lowongan' => 'required|string|max:500',
-                'kabkota_id' => 'required|string|max:10',
-                'lokasi_penempatan_text' => 'nullable|string|max:255',
-                'kisaran_gaji' => 'nullable|numeric',
-                'kisaran_gaji_akhir' => 'nullable|numeric',
+                'judul_lowongan' => 'required|string|max:255',
+                'kabkota_id' => 'required|integer',
+                'lokasi_penempatan_text' => 'required|string',
+                'kisaran_gaji' => 'required|integer',
+                'kisaran_gaji_akhir' => 'nullable|integer',
                 'jumlah_pria' => 'nullable|integer|min:0',
                 'jumlah_wanita' => 'nullable|integer|min:0',
-                'deskripsi' => 'nullable|string',
-                'marital_id' => 'required|exists:etam_marital,id',
+                'deskripsi' => 'required|string',
             ]);
 
             $lowongan->update([
-                'is_lowongan_disabilitas' => $request->is_lowongan_disabilitas,
-                // 'jabatan_id' => $request->jabatan_id,
+                'jabatan_id' => $request->jabatan_id,
                 'sektor_id' => $request->sektor_id,
-                'pendidikan_id' => $request->pendidikan_id,
-                'jurusan_id' => $request->jurusan_id,
                 'tanggal_start' => $request->tanggal_start,
                 'tanggal_end' => $request->tanggal_end,
                 'judul_lowongan' => $request->judul_lowongan,
@@ -1114,7 +1156,10 @@ class JobFairController extends Controller
                 'jumlah_pria' => $request->jumlah_pria ?? 0,
                 'jumlah_wanita' => $request->jumlah_wanita ?? 0,
                 'deskripsi' => $request->deskripsi,
+                'pendidikan_id' => $request->pendidikan_id,
+                'jurusan_id' => $request->jurusan_id,
                 'marital_id' => $request->marital_id,
+                'is_lowongan_disabilitas' => $request->is_lowongan_disabilitas,
                 'updated_by' => Auth::id(),
             ]);
 

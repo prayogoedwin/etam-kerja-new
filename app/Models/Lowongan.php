@@ -79,6 +79,27 @@ class Lowongan extends Model
                     ->whereNull('jobfair_id');
     }
 
+    public function jabatan()
+    {
+        return $this->belongsTo(Jabatan::class, 'jabatan_id', 'id');
+    }
+
+     public function progress()
+    {
+        return $this->belongsTo(Progress::class, 'status_id', 'kode');
+    }
+
+    public function sektor()
+    {
+        return $this->belongsTo(Sektor::class, 'sektor_id', 'id');
+    }
+
+    public function jurusan()
+    {
+        return $this->belongsTo(Jurusan::class, 'jurusan_id', 'id');
+    }
+
+
     public function scopeLowonganJobFair($query, $jobfairId = null)
     {
         $query = $query->where('tipe_lowongan', 1);

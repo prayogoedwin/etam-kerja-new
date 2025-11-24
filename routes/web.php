@@ -118,7 +118,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::get('jobfair/{jobfairId}/perusahaan/{userId}/lowongan', [JobFairController::class, 'lowongan'])->name('jobfair.lowongan');
     Route::post('jobfair/{jobfairId}/perusahaan/{userId}/lowongan', [JobFairController::class, 'storeLowongan'])->name('jobfair.lowongan.store');
     Route::get('jobfair/{jobfairId}/perusahaan/{userId}/lowongan/{id}', [JobFairController::class, 'showLowongan'])->name('jobfair.lowongan.show');
-    Route::put('jobfair/{jobfairId}/perusahaan/{userId}/lowongan/{id}', [JobFairController::class, 'updateLowongan'])->name('jobfair.lowongan.update');
+    Route::post('jobfair/{jobfairId}/perusahaan/{userId}/lowongan/{id}', [JobFairController::class, 'updateLowongan'])->name('jobfair.lowongan.update');
     Route::delete('jobfair/{jobfairId}/perusahaan/{userId}/lowongan/{id}', [JobFairController::class, 'destroyLowongan'])->name('jobfair.lowongan.destroy');
 
      // Helper Routes
