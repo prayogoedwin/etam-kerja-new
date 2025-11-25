@@ -28,6 +28,7 @@
     <link href="{{ asset('assets') }}/etam_fe/css/unit-test.css" rel="stylesheet">
     <link href="{{ asset('assets') }}/etam_fe/css/style.css" rel="stylesheet">
     <link href="{{ asset('assets') }}/etam_fe/style.css" rel="stylesheet">
+    <link href="{{ asset('assets') }}/etam_fe/custom_style.css" rel="stylesheet">
     <!-- ========== End Stylesheet ========== -->
 
 </head>

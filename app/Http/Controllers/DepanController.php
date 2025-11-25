@@ -32,7 +32,10 @@ class DepanController extends Controller
 
         // Query pencarian berdasarkan parameter
         $lowonganDisetujui15 = Lowongan::where('status_id', 1) // Lowongan yang disetujui
-            ->with('postedBy:id,name')
+            ->where('deleted_at', null)
+            ->where('tipe_lowongan', 0)
+            // ->with('postedBy:id,name')
+            ->with(['postedBy:id,name', 'postedBy.penyedia:user_id,name'])
             ->orderBy('tanggal_start', 'desc')
             ->limit(15)
             ->get();
@@ -96,6 +99,7 @@ class DepanController extends Controller
             ->when($lokasiId, function ($query, $lokasiId) {
                 return $query->where('kabkota_id', $lokasiId);
             })
+            ->with(['postedBy:id,name', 'postedBy.penyedia:user_id,name'])
             ->orderBy('tanggal_start', 'desc')
             ->paginate(9); // Pagination with 10 items per page
 

@@ -1,5 +1,4 @@
 @include('components.header')
-
 <!-- Start Breadcrumb
     ============================================= -->
 <div class="breadcrumb-area bg-theme shadow dark text-center text-light">
@@ -9,10 +8,10 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12 col-md-12">
-                <h1>Lowongan Kerja</h1>
+                <h1>Lowongan Kerja Disabilitas</h1>
                 <ul class="breadcrumb">
                     <li><a href="#"><i class="fas fa-home"></i> Beranda</a></li>
-                    <li>Lowongan Kerja</li>
+                    <li>Lowongan Kerja Disabilitas</li>
                 </ul>
             </div>
         </div>
@@ -56,7 +55,7 @@
                             <select id="kabkota_id" name="kabkota_id" class="form-control">
                                 <option value="">-- Pilih Lokasi --</option>
                                 @foreach (getKabkota() as $id => $lokasi)
-                                    <option value="{{ $id }}">{{ $lokasi->name }}</option>
+                                    <option value="{{ $lokasi->id }}">{{ $lokasi->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -77,47 +76,39 @@
             <div class="row" style="padding-top:50px">
 
                 @forelse ($lowonganDisetujui as $lowongan)
-                    <div class="col-xl-4 col-md-6 single-item mb-4">
-                        <div class="loker-card-modern">
-                            <div class="loker-logo-wrapper">
-                                <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png" 
-                                     alt="Logo Perusahaan">
-                            </div>
-                            
-                            <h3 class="loker-title-modern">
-                                <a href="{{ route('lowongan.show', ['id' => encode_url($lowongan->id)]) }}" 
-                                   style="color: inherit; text-decoration: none;">
-                                    {{ $lowongan->judul_lowongan }}
+                    <div class="col-xl-4 col-md-6 single-item">
+                        <div class="blog-style-one">
+                            <div class="thumb">
+                                <a href="#">
+                                    {{-- <img src="{{ asset('assets/nakerbisa_fe/img/800x600.png') }}" alt="Thumb"> --}}
+                                    <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
+                                        width="100px">
+
                                 </a>
-                            </h3>
-                            
-                            <span class="loker-company-modern">
-                                {{-- {{ $lowongan->postedBy->name ?? 'Perusahaan' }} --}}
-                                  {{ $lowongan->postedBy->penyedia->name ?? $lowongan->postedBy->name }}
-                            </span>
-                            
-                            <p class="loker-desc-modern">
-                                {{ \Illuminate\Support\Str::limit($lowongan->deskripsi ?? 'Deskripsi lowongan tidak tersedia.', 120, '...') }}
-                            </p>
-                            
-                            <div class="loker-meta-modern">
-                                <span class="loker-expired-modern">
-                                    <i class="fas fa-clock"></i>
-                                    Expired: {{ \Carbon\Carbon::parse($lowongan->tanggal_end)->format('d M Y') }}
-                                </span>
-                                <a href="{{ route('lowongan.show', ['id' => encode_url($lowongan->id)]) }}" 
-                                   class="loker-link-modern">
-                                    Lihat Detail <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="info">
+                                <div class="blog-meta">
+                                    <ul>
+                                        <li class="sub-title">Perusahaan</li>
+                                    </ul>
+                                    <ul>
+                                        <li>Expired in:
+                                            {{ \Carbon\Carbon::parse($lowongan->tanggal_end)->format('d F, Y') }}</li>
+                                    </ul>
+                                </div>
+                                <h3>
+                                    <a href="#">{{ $lowongan->judul_lowongan }}</a>
+                                </h3>
+                                <a href="{{ route('lowongan.show', ['id' => encode_url($lowongan->id)]) }}"
+                                    class="btn-simple">
+                                    <i class="fas fa-angle-right"></i> Read more
                                 </a>
                             </div>
                         </div>
                     </div>
                 @empty
                     <div class="col-12">
-                        <div style="text-align: center; padding: 60px 20px;">
-                            <i class="fas fa-search" style="font-size: 48px; color: #cbd5e0; margin-bottom: 16px;"></i>
-                            <p style="color: #718096; font-size: 16px;">Tidak ada lowongan yang sesuai dengan pencarian.</p>
-                        </div>
+                        <p class="text-center">Tidak ada lowongan yang sesuai dengan pencarian.</p>
                     </div>
                 @endforelse
             </div>

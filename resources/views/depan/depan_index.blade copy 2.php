@@ -32,21 +32,17 @@
 
 <!-- Start Services
     ============================================= -->
-
-
-<br/>
-<br/>
-<br/>
-
-<!-- Ganti bagian services-style-three-area dengan ini -->
 <div class="services-style-three-area half-bg-dark"
     style="background-image: url({{ asset('assets') }}/etam_fe/img/shape/52.png);">
+
 
     <div class="container">
         <div class="row">
             <div class="col-lg-8 offset-lg-2">
                 <div class="site-heading secondary text-center">
-                    <h2 class="title">Lowongan Kerja Terbaru</h2>
+
+                    <h2 class="title">Lowongan Kerja Tebaru</h2>
+                    <!-- <h4 class="sub-heading">A</h4> -->
                     <br />
                     <div class="devider"></div>
                 </div>
@@ -58,49 +54,53 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="services-carousel swiper">
+                    <!-- Additional required wrapper -->
                     <div class="swiper-wrapper">
                         @if ($lowonganDisetujui15->count())
                             @foreach ($lowonganDisetujui15 as $lindex => $lokerTerbaru)
+                                <!-- Single Item -->
                                 <div class="swiper-slide">
-                                    <div class="loker-card-modern">
-                                        <div class="loker-logo-wrapper">
-                                            <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png" 
-                                                 alt="Logo">
+                                    <div class="services-style-three">
+                                        <div class="info">
+                                            <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
+                                                width="100px">
+
+                                            <h3><a href="#">{{ $lokerTerbaru->judul_lowongan }}</a></h3>
+                                            <span class="sub-heading">{{ $lokerTerbaru->postedBy->name }} </span>
+                                            <p>
+
+                                            <p>
+                                                {{ \Illuminate\Support\Str::limit($lokerTerbaru->deskripsi, 100, '...') }}
+                                            </p>
+
+
+                                            </p>
+
                                         </div>
-                                        
-                                        <h3 class="loker-title-modern">
-                                            <a href="#" style="color: inherit; text-decoration: none;">
-                                                {{ $lokerTerbaru->judul_lowongan }}
-                                            </a>
-                                        </h3>
-                                        
-                                        <span class="loker-company-modern">
-                                            {{-- {{ $lokerTerbaru->postedBy->name }} --}}
-                                            {{ $lokerTerbaru->postedBy->penyedia->name ?? $lokerTerbaru->postedBy->name }}
-                                        </span>
-                                        
-                                        <p class="loker-desc-modern">
-                                            {{ \Illuminate\Support\Str::limit($lokerTerbaru->deskripsi, 120, '...') }}
-                                        </p>
-                                        
-                                        <span class="loker-badge">Lihat Detail</span>
                                     </div>
                                 </div>
+                                <!-- End Single Item -->
                             @endforeach
                         @else
                             <p>Belum ada lowongan yang tersedia.</p>
                         @endif
+
                     </div>
 
+                    <!-- Navigation -->
                     <div class="services-swiper-nav">
+                        <!-- Pagination -->
+
+
                         <div class="services-button-prev"></div>
                         <div class="services-button-next"></div>
                     </div>
+
+
                 </div>
                 <br />
-                <div style="text-align: center;">
-                    <a href="{{ url('/depan/lowongan-kerja') }}" style="text-align: center; color:#fff">Lihat Lowongan Lebih Banyak</a>
-                </div>
+                <div style="text-align: center;"><a href="#" style="text-align: center; color:#fff">Lihat
+                        Lowongan Lebih Banyak</a></div>
             </div>
         </div>
     </div>
