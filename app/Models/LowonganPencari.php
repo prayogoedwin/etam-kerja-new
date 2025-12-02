@@ -66,4 +66,9 @@ class LowonganPencari extends Model
         ->where('pencari_id', $userid)
         ->first();
     }
+
+    public function jobfair()
+    {
+        return $this->belongsTo(EtamJobFair::class, 'jobfair_id', 'id');
+    }
 }

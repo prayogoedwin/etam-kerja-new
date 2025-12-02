@@ -424,7 +424,7 @@
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <label for="">Disediakan untuk</label>
-                                    <select class="form-select" name="is_lowongan_disabilitas" id="is_lowongan_disabilitas"
+                                    <select class="form-select" name="is_lowongan_disabilitas" id="is_lowongan_disabilitas_e"
                                         style="width: 100%;" disabled>
                                         <option value="0">Umum</option>
                                         <option value="1">Disabilitas</option>
@@ -434,7 +434,7 @@
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <label for="jab">Jabatan</label>
-                                    <select class="form-control" name="jabatan_id" id="jabatan_id" disabled>
+                                    <select class="form-control" name="jabatan_id" id="jabatan_id_e" disabled>
                                         <option value="">Pilih Jabatan</option>
                                         @foreach ($jabatans as $jab)
                                             <option value="{{ $jab->id }}">{{ $jab->nama }}</option>
@@ -445,7 +445,7 @@
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <label for="jab">Sektor</label>
-                                    <select class="form-control" name="sektor_id" id="sektor_id" disabled>
+                                    <select class="form-control" name="sektor_id" id="sektor_id_e" disabled>
                                         <option value="">Pilih Sektor</option>
                                         @foreach ($sektors as $sekt)
                                             <option value="{{ $sekt->id }}">{{ $sekt->name }}</option>
@@ -458,24 +458,24 @@
                                 <div class="row">
                                     <div class="col-6">
                                         <label for="jab">Tanggal Mulai</label>
-                                        <input type="date" class="form-control" name="tanggal_start" id="tanggal_start">
+                                        <input type="date" class="form-control" name="tanggal_start" id="tanggal_start_e">
                                     </div>
                                     <div class="col-6">
                                         <label for="jab">Tanggal Selesai</label>
-                                        <input type="date" class="form-control" name="tanggal_end" id="tanggal_end">
+                                        <input type="date" class="form-control" name="tanggal_end" id="tanggal_end_e">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     {{-- <label class="floating-label" for="jdllow">Judul Lowongan</label> --}}
-                                    <textarea class="form-control" id="judul_lowongan" name="judul_lowongan" rows="3"></textarea>
+                                    <textarea class="form-control" id="judul_lowongan_e" name="judul_lowongan" rows="3"></textarea>
                                 </div>
                             </div>
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <label for="jab">Kabupaten / Kota</label>
-                                    <select class="form-control" name="kabkota_id" id="kabkota_id" disabled>
+                                    <select class="form-control" name="kabkota_id" id="kabkota_id_e" disabled>
                                         <option value="">Pilih Kabkota</option>
                                         @foreach ($kabkotas as $kabkot)
                                             <option value="{{ $kabkot->id }}">{{ $kabkot->name }}</option>
@@ -487,7 +487,7 @@
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         {{-- <label class="floating-label" for="pertanyaan">Lokasi Penempatan</label> --}}
-                                        <input class="form-control" type="text" id="lokasi_penempatan_text"
+                                        <input class="form-control" type="text" id="lokasi_penempatan_text_e"
                                             name="lokasi_penempatan_text" disabled>
                                     </div>
                                 </div>
@@ -496,13 +496,13 @@
                                 <div class="row">
                                     <div class="col-6">
                                         <label class="floating-label" for="jumpri">Kisaran Gaji Awal</label>
-                                        <input type="text" class="form-control" name="kisaran_gaji" id="kisaran_gaji"
+                                        <input type="text" class="form-control" name="kisaran_gaji" id="kisaran_gaji_e"
                                             disabled>
                                     </div>
                                     <div class="col-6">
                                         <label class="floating-label" for="jumwat">Kisaran Gaji Akhir</label>
                                         <input type="text" class="form-control" name="kisaran_gaji_akhir"
-                                            id="kisaran_gaji_akhir" disabled>
+                                            id="kisaran_gaji_akhir_e" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -510,12 +510,12 @@
                                 <div class="row">
                                     <div class="col-6">
                                         <label class="floating-label" for="jumpri">Jumlah Pria</label>
-                                        <input type="number" class="form-control" name="jumlah_pria" id="jumlah_pria"
+                                        <input type="number" class="form-control" name="jumlah_pria" id="jumlah_pria_e"
                                             disabled>
                                     </div>
                                     <div class="col-6">
                                         <label class="floating-label" for="jumwat">Jumlah Wanita</label>
-                                        <input type="number" class="form-control" name="jumlah_wanita"
+                                        <input type="number" class="form-control" name="jumlah_wanita_e"
                                             id="jumlah_wanita" disabled>
                                     </div>
                                 </div>
@@ -523,13 +523,13 @@
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     {{-- <label class="floating-label" for="desk">Deskripsi</label> --}}
-                                    <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"></textarea>
+                                    <textarea class="form-control" id="deskripsi_e" name="deskripsi" rows="3"></textarea>
                                 </div>
                             </div>
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <label for="pendid">Pendidikan</label>
-                                    <select class="form-control" name="pendidikan_id" id="pendidikan_id" disabled>
+                                    <select class="form-control" name="pendidikan_id" id="pendidikan_id_e" disabled>
                                         <option value="">Pilih Pendidikan</option>
                                         @foreach ($pendidikans as $pend)
                                             <option value="{{ $pend->id }}">{{ $pend->name }}</option>
@@ -975,69 +975,126 @@
     </script>
 
        <script>
+        // function showEditModal(id) {
+        //     var detailUrl = "{{ route('lowongan.pencari.detail', ':id') }}".replace(':id', id);
+        //     $.ajax({
+        //         url: detailUrl,
+        //         type: 'GET',
+        //         success: function(response) {
+        //             let dt = response.data;
+
+        //             // Isi data modal dengan data yang diperoleh
+        //             $('#editId').val(dt.id);
+        //             $('#is_lowongan_disabilitas').val(dt.is_lowongan_disabilitas).change();
+        //             $('#kabkota_id').val(dt.kabkota_id).change();
+        //             $('#jabatan_id').val(dt.jabatan_id).change();
+        //             $('#sektor_id').val(dt.sektor_id).change();
+        //             $('#tanggal_start').val(dt.tanggal_start);
+        //             $('#tanggal_end').val(dt.tanggal_end);
+
+
+        //             $('#judul_lowongan').val(dt.judul_lowongan);
+        //             $('#lokasi_penempatan_text').val(dt.lokasi_penempatan_text);
+        //             $('#jumlah_pria').val(dt.jumlah_pria);
+        //             $('#jumlah_wanita').val(dt.jumlah_wanita);
+        //             $('#kisaran_gaji').val(formatRupiah(dt.kisaran_gaji));
+        //             $('#kisaran_gaji_akhir').val(formatRupiah(dt.kisaran_gaji_akhir));
+
+        //             $('#deskripsi').val(dt.deskripsi);
+
+        //             $('#pendidikan_id').val(dt.pendidikan_id);
+        //             $('#status_perkawinan_id').val(dt.marital_id);
+
+
+        //             // $('#editPertanyaan').val(dt.name);
+        //             // $('#editJawaban').val(dt.description);
+        //             var stslmr = '';
+        //             var cekstslmr = dt.statuslamaran;
+        //             if (cekstslmr) {
+        //                 if (dt.statuslamaran.progres_id == 1) {
+        //                     stslmr = '<span class="badge rounded-pill bg-warning">Diperiksa</span>';
+        //                 } else if (dt.statuslamaran.progres_id == 2) {
+        //                     stslmr = '<span class="badge rounded-pill bg-warning">Panggilan</span>';
+        //                 } else if (dt.statuslamaran.progres_id == 3) {
+        //                     stslmr = '<span class="badge rounded-pill bg-success">Diterima</span>';
+        //                 } else if (dt.statuslamaran.progres_id == 4) {
+        //                     stslmr = '<span class="badge rounded-pill bg-warning">Belum Ditanggapi</span>';
+        //                 } else if (dt.statuslamaran.progres_id == 5) {
+        //                     stslmr = '<span class="badge rounded-pill bg-warning">Tidak Sesuai Kriteria</span>';
+        //                 }
+
+        //                 $('#kontenstatuslamaran').html(stslmr);
+        //                 $('#keterangan').val(dt.statuslamaran.keterangan);
+        //             } else {
+        //                 $('#kontenstatuslamaran').html('');
+        //                 $('#keterangan').val('');
+        //             }
+
+        //             // Tampilkan modal edit
+        //             $('#modal-lihat').modal('show');
+        //         },
+        //         error: function(xhr) {
+        //             alert('Error: ' + xhr.responseText);
+        //         }
+        //     });
+        // }
+
         function showEditModal(id) {
-            var detailUrl = "{{ route('lowongan.pencari.detail', ':id') }}".replace(':id', id);
-            $.ajax({
-                url: detailUrl,
-                type: 'GET',
-                success: function(response) {
-                    let dt = response.data;
-
-                    // Isi data modal dengan data yang diperoleh
-                    $('#editId').val(dt.id);
-                    $('#is_lowongan_disabilitas').val(dt.is_lowongan_disabilitas).change();
-                    $('#kabkota_id').val(dt.kabkota_id).change();
-                    $('#jabatan_id').val(dt.jabatan_id).change();
-                    $('#sektor_id').val(dt.sektor_id).change();
-                    $('#tanggal_start').val(dt.tanggal_start);
-                    $('#tanggal_end').val(dt.tanggal_end);
-
-
-                    $('#judul_lowongan').val(dt.judul_lowongan);
-                    $('#lokasi_penempatan_text').val(dt.lokasi_penempatan_text);
-                    $('#jumlah_pria').val(dt.jumlah_pria);
-                    $('#jumlah_wanita').val(dt.jumlah_wanita);
-                    $('#kisaran_gaji').val(formatRupiah(dt.kisaran_gaji));
-                    $('#kisaran_gaji_akhir').val(formatRupiah(dt.kisaran_gaji_akhir));
-
-                    $('#deskripsi').val(dt.deskripsi);
-
-                    $('#pendidikan_id').val(dt.pendidikan_id);
-                    $('#status_perkawinan_id').val(dt.marital_id);
-
-
-                    // $('#editPertanyaan').val(dt.name);
-                    // $('#editJawaban').val(dt.description);
-                    var stslmr = '';
-                    var cekstslmr = dt.statuslamaran;
-                    if (cekstslmr) {
-                        if (dt.statuslamaran.progres_id == 1) {
-                            stslmr = '<span class="badge rounded-pill bg-warning">Diperiksa</span>';
-                        } else if (dt.statuslamaran.progres_id == 2) {
-                            stslmr = '<span class="badge rounded-pill bg-warning">Panggilan</span>';
-                        } else if (dt.statuslamaran.progres_id == 3) {
-                            stslmr = '<span class="badge rounded-pill bg-success">Diterima</span>';
-                        } else if (dt.statuslamaran.progres_id == 4) {
-                            stslmr = '<span class="badge rounded-pill bg-warning">Belum Ditanggapi</span>';
-                        } else if (dt.statuslamaran.progres_id == 5) {
-                            stslmr = '<span class="badge rounded-pill bg-warning">Tidak Sesuai Kriteria</span>';
-                        }
-
-                        $('#kontenstatuslamaran').html(stslmr);
-                        $('#keterangan').val(dt.statuslamaran.keterangan);
-                    } else {
-                        $('#kontenstatuslamaran').html('');
-                        $('#keterangan').val('');
-                    }
-
-                    // Tampilkan modal edit
-                    $('#modal-lihat').modal('show');
-                },
-                error: function(xhr) {
-                    alert('Error: ' + xhr.responseText);
+        var detailUrl = "{{ route('lowongan.pencari.detail', ':id') }}".replace(':id', id);
+        
+        $.ajax({
+            url: detailUrl,
+            type: 'GET',
+            dataType: 'json', // tambahkan ini
+            success: function(response) {
+                console.log('Response:', response);
+                
+                if (!response.success) {
+                    alert('Gagal: ' + response.message);
+                    return;
                 }
-            });
-        }
+                
+                let dt = response.data;
+                console.log('Data:', dt);
+
+                // Isi form - sesuaikan nama field dengan database
+                $('#editId').val(dt.id);
+                $('#is_lowongan_disabilitas_e').val(dt.is_lowongan_disabilitas).change();
+                $('#kabkota_id_e').val(dt.kabkota_id).change();
+                $('#jabatan_id_e').val(dt.jabatan_id).change();
+                $('#sektor_id_e').val(dt.sektor_id).change();
+                $('#tanggal_start_e').val(dt.tanggal_start);
+                $('#tanggal_end_e').val(dt.tanggal_end);
+
+                // Cek nama field yang benar (judul atau judul_lowongan)
+                $('#judul_lowongan_e').val(dt.judul || dt.judul_lowongan);
+                $('#lokasi_penempatan_text_e').val(dt.lokasi_penempatan_text);
+                $('#jumlah_pria_e').val(dt.jumlah_pria);
+                $('#jumlah_wanita_e').val(dt.jumlah_wanita);
+                $('#kisaran_gaji_e').val(formatRupiah(dt.kisaran_gaji));
+                $('#kisaran_gaji_akhir_e').val(formatRupiah(dt.kisaran_gaji_akhir));
+                $('#deskripsi_e').val(dt.deskripsi);
+                $('#pendidikan_id_e').val(dt.pendidikan_id);
+
+                // Status lamaran
+                var stslmr = '';
+                if (dt.statuslamaran) {
+                    // ... kode status lamaran
+                } else {
+                    $('#kontenstatuslamaran').html('<span class="badge bg-secondary">Belum Melamar</span>');
+                    $('#keterangan').val('');
+                }
+
+                $('#modal-lihat').modal('show');
+            },
+            error: function(xhr, status, error) {
+                console.log('XHR:', xhr);
+                console.log('Status:', status);
+                console.log('Error:', error);
+                alert('Error: ' + (xhr.responseJSON?.message || xhr.responseText));
+            }
+        });
+    }
 
         function formatRupiah(angka) {
             if (angka === null || angka === undefined || angka === '') {

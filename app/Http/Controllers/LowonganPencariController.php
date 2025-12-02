@@ -69,7 +69,8 @@ class LowonganPencariController extends Controller
     public function show(string $id)
     {
         try {
-            $data = LowonganPencari::all()->findOrFail($id);
+            // $data = LowonganPencari::all()->findOrFail($id);
+            $data = LowonganPencari::findOrFail($id);
             $data->statuslamaran = $data->statuslamaran(auth()->user()->id);
 
             return response()->json(['success' => true, 'data' => $data]);
