@@ -548,12 +548,13 @@ class JobFairController extends Controller
                                         <button type="submit" class="btn btn-info btn-sm mb-1 w-100">📋 Lowongan</button>
                                     </form>';
                                 
-                                $html .= '<button class="btn btn-danger btn-sm mb-1" onclick="event.preventDefault(); Swal.fire({
-                                            icon: \'warning\',
-                                            title: \'Tidak Dapat Dibatalkan\',
-                                            text: \'Status sudah di-approve. Untuk pembatalan, silakan hubungi penyelenggara.\',
-                                            confirmButtonText: \'OK\'
-                                        });">Batalkan</button>';
+                               
+                                // $html .= '<button class="btn btn-danger btn-sm mb-1" onclick="event.preventDefault(); Swal.fire({
+                                //             icon: \'warning\',
+                                //             title: \'Tidak Dapat Dibatalkan\',
+                                //             text: \'Status sudah di-approve. Untuk pembatalan, silakan hubungi penyelenggara.\',
+                                //             confirmButtonText: \'OK\'
+                                //         });">Batalkan</button>';
 
                             }else  if($item->status == 2){
                                 
