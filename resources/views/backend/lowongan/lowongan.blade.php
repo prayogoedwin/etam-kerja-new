@@ -41,10 +41,12 @@
                                     <a href="{{ route('jobfair.perusahaan', $jobfairId) }}" class="btn btn-secondary btn-sm btn-round me-2">
                                         <i class="feather icon-arrow-left"></i> Kembali
                                     </a>
+                                    @if (Auth::user()->roles[0]['name'] != 'pencari-kerja')
                                     <button id="btnAdd" class="btn btn-success btn-sm btn-round has-ripple"
                                         data-bs-toggle="modal" data-bs-target="#modal-report"><i
                                             class="feather icon-plus"></i> Tambah Lowongan
                                     </button>
+                                    @endif
                                 </div>
                             </div>
                             <div class="table-responsive mt-3">
