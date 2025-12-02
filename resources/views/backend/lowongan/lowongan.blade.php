@@ -1122,7 +1122,7 @@
                         // Jika berhasil, reload DataTable
                         alert(response.message); // Menampilkan pesan
                         $('#simpletable').DataTable().ajax.reload(); // Reload data tabel
-                        $('#modal-edit').modal('hide');
+                        $('#modal-lihat').modal('hide');
                         // location.reload(); // Refresh halaman
                     },
                     error: function(xhr, status, error) {

@@ -716,7 +716,7 @@
 
                 // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
                 $.ajax({
-                    url: "{{ route('get-jurusan-bypendidikan', ':id') }}".replace(':id',
+                    url: "{{ route('get-jurusan-bypendidikan-jobfair', ':id') }}".replace(':id',
                         kd), // Panggil API
                     type: 'GET',
                     success: function(response) {
@@ -747,7 +747,7 @@
 
                 // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
                 $.ajax({
-                    url: "{{ route('get-jurusan-bypendidikan', ':id') }}".replace(':id',
+                    url: "{{ route('get-jurusan-bypendidikan-jobfair', ':id') }}".replace(':id',
                         kd), // Panggil API
                     type: 'GET',
                     success: function(response) {

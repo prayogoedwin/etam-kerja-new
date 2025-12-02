@@ -125,7 +125,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
      // Helper Routes
     Route::get('jobfair/get-all-pendidikan', [JobFairController::class, 'getAllPendidikan'])->name('jobfair.get-all-pendidikan');
-    Route::get('get-jurusan-bypendidikan/{id}', [JobFairController::class, 'getJurusanByPendidikan'])->name('get-jurusan-bypendidikan');
+    Route::get('get-jurusan-bypendidikan/{id}', [JobFairController::class, 'getJurusanByPendidikan'])->name('get-jurusan-bypendidikan-jobfair');
 
     Route::get('/api/get-penyedia-kerja', [JobFairController::class, 'getPenyediaKerjaList'])->name('api.penyedia-kerja');
 
