@@ -51,6 +51,8 @@ Route::get('/depan/lowongan-kerja-disabilitas', [DepanController::class, 'lowong
 Route::get('/depan/lowongan-detail/{id}', [DepanController::class, 'lowongan_show'])->name('lowongan.show');
 Route::get('/depan/infografis', [DepanController::class, 'infografis']);
 Route::get('/depan/galeri', [DepanController::class, 'galeri']);
+Route::get('/depan/jobfair', [DepanController::class, 'jobfair']);
+Route::get('/depan/jobfair/{id}', [DepanController::class, 'jobfair_show'])->name('jobfairfront.show');
 Route::get('/depan/berita', [DepanController::class, 'berita']);
 Route::get('/depan/berita/{id}', [DepanController::class, 'show'])->name('berita.show');
 Route::post('/depan/daftar-akun', [DepanController::class, 'daftar_akun'])->name('daftar-akun');

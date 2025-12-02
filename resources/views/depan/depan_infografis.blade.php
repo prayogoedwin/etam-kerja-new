@@ -37,7 +37,7 @@
                                         <div class="thumb">
                                             <!-- Menampilkan gambar dari path_file -->
                                             <img src="{{ asset('storage/' . $item->path_file) }}"
-                                                alt="{{ $item->name }}">
+                                                alt="{{ $item->name }}"  onerror="this.onerror=null; this.src='{{ asset('assets/etam_fe/images/default/grey.avif') }}'">
                                             <a href="{{ asset('storage/' . $item->path_file) }}"
                                                 class="item popup-gallery">
                                                 <i class="fas fa-plus"></i>

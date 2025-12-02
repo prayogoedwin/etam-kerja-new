@@ -8,10 +8,10 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12 col-md-12">
-                <h1>Berita & Informasi</h1>
+                <h1>Jobfair</h1>
                 <ul class="breadcrumb">
                     <li><a href="#"><i class="fas fa-home"></i> Beranda</a></li>
-                    <li>Berita & Informasi</li>
+                    <li>Jobfair</li>
                 </ul>
             </div>
         </div>
@@ -21,22 +21,22 @@
 
 <!-- Start Blog
     ============================================= -->
-<div class="home-blog-area default-padding">
+<div class="home-blog-area default-padding">a
 
     <div class="container">
         <div class="row">
-            @foreach ($beritas as $ki => $berita)
+            @foreach ($jobfair as $ki => $berita)
                 <div class="col-lg-6 mt-md-30 mt-xs-30">
                     <div class="blog-style-one solid mb-30">
                         <div class="thumb">
-                            <img src="{{ asset('storage') . '/' . $berita->cover }}"  onerror="this.onerror=null; this.src='{{ asset('assets/etam_fe/images/default/grey.avif') }}'" alt="ImageFound">
-                            <div class="tags"><a href="#">Berita</a></div>
+                            <img src="{{ asset('storage') . '/' . $berita->poster }}"  onerror="this.onerror=null; this.src='{{ asset('assets/etam_fe/images/default/grey.avif') }}'" alt="ImageFound">
+                            <div class="tags"><a href="#">JOBFAIR</a></div>
                             <div class="info">
                                 <div class="blog-meta">
                                     <ul>
                                         <li>
-                                            <a href="{{ route('berita.show', ['id' => encode_url($berita->id)]) }}"><i
-                                                    class="fas fa-user"></i> ADMIN ETAM KERKA</a>
+                                            <a href="{{ route('jobfairfront.show', ['id' => encode_url($berita->id)]) }}"><i
+                                                    class="fas fa-user"></i> >{{ $berita->nama_penyelenggara }}</a>
                                         </li>
                                         <li>
                                             {{ $berita->created_at->format('d F Y') }}
@@ -45,7 +45,7 @@
                                 </div>
                                 <h4>
                                     <a
-                                        href="{{ route('berita.show', ['id' => encode_url($berita->id)]) }}">{{ $berita->name }}</a>
+                                        href="{{ route('jobfairfront.show', ['id' => encode_url($berita->id)]) }}">{{ $berita->nama_job_fair }}</a>
                                 </h4>
                             </div>
                         </div>

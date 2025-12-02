@@ -64,8 +64,14 @@
                                 <div class="swiper-slide">
                                     <div class="loker-card-modern">
                                         <div class="loker-logo-wrapper">
-                                            <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png" 
-                                                 alt="Logo">
+                                            {{-- <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png" 
+                                                 alt="Logo"> --}}
+
+                                            <img src="{{ asset('assets/' . $lokerTerbaru->postedBy->penyedia->name) }}" 
+                                            alt="Logo"
+                                            onerror="this.onerror=null; this.src='{{ asset('assets/etam_fe/images/default/logo-perusahaan.png') }}'">
+
+                                                  
                                         </div>
                                         
                                         <h3 class="loker-title-modern">
@@ -79,9 +85,9 @@
                                             {{ $lokerTerbaru->postedBy->penyedia->name ?? $lokerTerbaru->postedBy->name }}
                                         </span>
                                         
-                                        <p class="loker-desc-modern">
+                                        {{-- <p class="loker-desc-modern">
                                             {{ \Illuminate\Support\Str::limit($lokerTerbaru->deskripsi, 120, '...') }}
-                                        </p>
+                                        </p> --}}
                                         
                                         <span class="loker-badge">Lihat Detail</span>
                                     </div>

@@ -80,8 +80,11 @@
                     <div class="col-xl-4 col-md-6 single-item mb-4">
                         <div class="loker-card-modern">
                             <div class="loker-logo-wrapper">
-                                <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png" 
-                                     alt="Logo Perusahaan">
+                                {{-- <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png" 
+                                     alt="Logo Perusahaan"> --}}
+                                 <img src="{{ asset('assets/' . $lowongan->postedBy->penyedia->name) }}" 
+                                            alt="Logo"
+                                            onerror="this.onerror=null; this.src='{{ asset('assets/etam_fe/images/default/logo-perusahaan.png') }}'">
                             </div>
                             
                             <h3 class="loker-title-modern">
@@ -96,18 +99,19 @@
                                   {{ $lowongan->postedBy->penyedia->name ?? $lowongan->postedBy->name }}
                             </span>
                             
-                            <p class="loker-desc-modern">
+                            {{-- <p class="loker-desc-modern">
                                 {{ \Illuminate\Support\Str::limit($lowongan->deskripsi ?? 'Deskripsi lowongan tidak tersedia.', 120, '...') }}
-                            </p>
+                            </p> --}}
                             
                             <div class="loker-meta-modern">
                                 <span class="loker-expired-modern">
                                     <i class="fas fa-clock"></i>
-                                    Expired: {{ \Carbon\Carbon::parse($lowongan->tanggal_end)->format('d M Y') }}
+                                    Exp: {{ \Carbon\Carbon::parse($lowongan->tanggal_end)->format('d M Y') }}
                                 </span>
                                 <a href="{{ route('lowongan.show', ['id' => encode_url($lowongan->id)]) }}" 
                                    class="loker-link-modern">
-                                    Lihat Detail <i class="fas fa-arrow-right"></i>
+                                    {{-- Lihat Detail <i class="fas fa-arrow-right"></i> --}}
+                                     <span class="loker-badge">Lihat Detail <i class="fas fa-arrow-right"></i></span>
                                 </a>
                             </div>
                         </div>

@@ -28,7 +28,7 @@
             <div class="col-lg-8">
                 <div class="single-post">
                     <div class="thumb">
-                        <img src="{{ asset('storage/' . $berita->cover) }}" alt="Image Not Found">
+                        <img src="{{ asset('storage/' . $berita->cover) }}"  onerror="this.onerror=null; this.src='{{ asset('assets/etam_fe/images/default/grey.avif') }}'">
                     </div>
                     <div class="info">
                         <h4>{{ $berita->name }}</h4>

@@ -159,6 +159,8 @@
 
                         <li><a href="{{ url('/depan/bkk') }}">BKK</a></li>
 
+                        <li><a href="{{ url('/depan/jobfair') }}">JobFair</a></li>
+
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Informasi</a>
                             <ul class="dropdown-menu">

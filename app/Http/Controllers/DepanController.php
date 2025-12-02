@@ -10,6 +10,7 @@ use App\Models\EtamInfografis;
 use App\Models\EtamBerita;
 use App\Models\EtamFaq;
 use App\Models\EtamGaleri;
+use App\Models\EtamJobfair;
 use App\Models\Lowongan;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
@@ -151,6 +152,34 @@ class DepanController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         return view('depan.depan_galeri', compact('galeris'));
+    }
+
+     public function jobfair()
+    {
+        $jobfair = EtamJobfair::whereNull('deleted_at')
+            ->where('status', 1)
+            ->where('status_verifikasi', 1)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+        return view('depan.depan_jobfair', compact('jobfair'));
+    }
+
+     public function jobfair_show($id)
+    {
+        $id = decode_url($id);
+        $berita = EtamJobfair::findOrFail($id);
+
+        // Query pencarian berdasarkan parameter
+        $lowongan = Lowongan::where('jobfair_id', $id) // Lowongan yang disetuju
+            ->where('status_id',1)
+            ->where('tipe_lowongan', 1)
+            ->where('deleted_at', null)
+            ->with(['postedBy:id,name', 'postedBy.penyedia:user_id,name'])
+            ->orderBy('tanggal_start', 'desc')
+            ->limit(100)
+            ->get();
+
+        return view('depan.depan_jobfair_detail', compact('berita', 'lowongan'));
     }
 
     public function berita()
