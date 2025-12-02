@@ -544,17 +544,19 @@ class JobFairController extends Controller
 
                             if($item->status == 1){
 
-                                $html .= '<form action="' . route('jobfair.lowongan', [$item->jobfair_id, $item->user_id]) . '" method="GET" style="display:inline;">
-                                        <button type="submit" class="btn btn-info btn-sm mb-1 w-100">📋 Lowongan</button>
-                                    </form>';
+                                if($item->user_id == $user->id){
+                                    $html .= '<form action="' . route('jobfair.lowongan', [$item->jobfair_id, $item->user_id]) . '" method="GET" style="display:inline;">
+                                            <button type="submit" class="btn btn-info btn-sm mb-1 w-100">📋 Lowongan</button>
+                                        </form>';
+                                    
                                 
-                               
-                                // $html .= '<button class="btn btn-danger btn-sm mb-1" onclick="event.preventDefault(); Swal.fire({
-                                //             icon: \'warning\',
-                                //             title: \'Tidak Dapat Dibatalkan\',
-                                //             text: \'Status sudah di-approve. Untuk pembatalan, silakan hubungi penyelenggara.\',
-                                //             confirmButtonText: \'OK\'
-                                //         });">Batalkan</button>';
+                                    $html .= '<button class="btn btn-danger btn-sm mb-1" onclick="event.preventDefault(); Swal.fire({
+                                                icon: \'warning\',
+                                                title: \'Tidak Dapat Dibatalkan\',
+                                                text: \'Status sudah di-approve. Untuk pembatalan, silakan hubungi penyelenggara.\',
+                                                confirmButtonText: \'OK\'
+                                            });">Batalkan</button>';
+                                }
 
                             }else  if($item->status == 2){
                                 
