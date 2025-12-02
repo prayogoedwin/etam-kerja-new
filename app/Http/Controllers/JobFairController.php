@@ -661,6 +661,12 @@ class JobFairController extends Controller
     {
         try {
             $userId = Auth::id();
+
+            $jobFair = EtamJobFair::findOrFail($jobfairId);
+
+            if($jobFair->tipe_partnership == 0){
+                 return redirect()->back()->with('error', 'Silahkan hubungi penyelenggara terlebih dahulu');
+            }
             
             // Cek apakah sudah terdaftar
             $exists = EtamJobFairPerush::where('jobfair_id', $jobfairId)
