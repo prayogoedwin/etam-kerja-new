@@ -100,10 +100,11 @@
                     </ul>
                 </li>
 
+                <li class="nav-item"><a href="{{ route('dashboard.pimpinan.index') }}" class="nav-link"
+                        target="_blank"><span class="pcoded-micon"><i class="fa fa-chart-bar"></i></span><span
+                            class="pcoded-mtext">Eksekutif</span></a></li>
+
             </ul>
-
-
-
 
         </div>
     </div>
