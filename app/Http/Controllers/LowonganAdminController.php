@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 
 class LowonganAdminController extends Controller
@@ -35,6 +36,7 @@ class LowonganAdminController extends Controller
                 'penyedia:id,user_id,name,id_kota' // Tambahkan relasi penyedia
             ])
             ->where('tipe_lowongan', 0) // lowongan umum, bukan bkk, bukan job fair
+            // ->whereIn('tipe_lowongan', [0, 2]) // Menyesuaikan dengan status yang diinginkan
             ->whereHas('progress', function ($query) {
                 // Memastikan 'progress' dengan 'modul' = 'lowongan' dan 'status_id' yang valid
                 $query->where('modul', 'lowongan')
@@ -72,6 +74,81 @@ class LowonganAdminController extends Controller
         $data['maritals'] = getMarital();
 
         return view('backend.lowonganadmin.index', $data);
+    }
+
+    public function indexbkk(Request $request)
+    {
+        if ($request->ajax()) {
+            $userId = Auth::id();
+            $userAdmin = UserAdmin::where('user_id', $userId)->first();
+
+            $lokers = LowonganAdmin::select(
+                    'etam_lowongan.id',
+                    'etam_lowongan.judul_lowongan',
+                    'etam_lowongan.tanggal_start',
+                    'etam_lowongan.tanggal_end',
+                    'etam_lowongan.deskripsi',
+                    'etam_lowongan.created_at',
+                    'users.name as nama_penyedia',
+                    'users.email as email_penyedia',
+                    'users.whatsapp as whatsapp_penyedia',
+                    'users_penyedia.name as nama_perusahaan',
+                    'users_penyedia.id_kota',
+                    'etam_progres.name as progress_name',
+                    'etam_progres.kode as kode_progress'
+                )
+                ->join('users', 'etam_lowongan.posted_by', '=', 'users.id')
+                ->join('users_penyedia', 'users.id', '=', 'users_penyedia.user_id')
+                ->join('etam_progres', 'etam_lowongan.status_id', '=', 'etam_progres.kode')
+                // ->join('users_bkk', 'users_bkk.user_id', '=', 'users.id')
+                ->where('etam_lowongan.tipe_lowongan', 2)
+                ->where('etam_progres.modul', 'lowongan');
+
+            // Filter untuk admin-kabkota dan admin-kabkota-officer
+            $userRole = Auth::user()->roles->first()?->name ?? null;
+            if (in_array($userRole, ['admin-kabkota', 'admin-kabkota-officer'])) {
+                $lokers->where('users_penyedia.id_kota', $userAdmin->kabkota_id);
+            }
+
+            // $lokers->toSql();
+            // echo json_encode($lokers->toSql());
+            // die();
+
+            return DataTables::of($lokers)
+                ->addIndexColumn()
+                ->addColumn('options', function ($loker) {
+                    return '
+                        <a href="' . route('lowongan.pelamar', encode_url($loker->id)) . '"
+                        class="btn btn-info btn-sm">
+                        Lihat Pelamar
+                        </a>
+                        <button class="btn btn-warning btn-sm"
+                                onclick="showEditModal(' . $loker->id . ')">
+                                Lihat
+                        </button>
+                    ';
+                })
+                ->addColumn('tanggal_periode', function ($loker) {
+                    $start = Carbon::parse($loker->tanggal_start)->format('d M Y');
+                    $end = Carbon::parse($loker->tanggal_end)->format('d M Y');
+                    return $start . ' - ' . $end;
+                })
+                ->editColumn('created_at', function ($loker) {
+                    return Carbon::parse($loker->created_at)->format('Y M d H:i:s');
+                })
+                ->rawColumns(['options'])
+                ->make(true);
+        }
+
+        $data = [
+            'jabatans' => getJabatan(),
+            'sektors' => getSektor(),
+            'kabkotas' => getKabkota(),
+            'pendidikans' => getPendidikan(),
+            'maritals' => getMarital()
+        ];
+
+        return view('backend.lowonganadminbkk.index', $data);
     }
 
     /**

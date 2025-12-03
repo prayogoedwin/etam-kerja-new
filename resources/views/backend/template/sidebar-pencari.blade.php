@@ -59,6 +59,19 @@
                     </a>
                 </li>
 
+                @php
+                    $is_alumni_bkk = getRowPencariById(Auth::user()->id)->is_alumni_bkk;
+                @endphp
+
+                @if ($is_alumni_bkk == '1')
+                    <li class="nav-item">
+                        <a href="{{ route('lowonganbkk.pencari.index') }}" class="nav-link ">
+                            <span class="pcoded-micon"><i class="feather icon-briefcase"></i></span>
+                            <span class="pcoded-mtext">Lowongan BKK</span>
+                        </a>
+                    </li>
+                @endif
+
                 <li class="nav-item"><a href="{{ route('jobfair.index') }}" class="nav-link "><span
                             class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
                             class="pcoded-mtext">Job Fair</span></a></li>

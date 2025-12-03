@@ -53,6 +53,7 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>Judul Lowongan</th>
+                                                <th>Tipe Lowongan</th>
                                                 <th>Tanggal Lamar</th>
                                                 <th>Progres</th>
                                                 <th>Keterangan</th>
@@ -109,6 +110,9 @@
                     },
                     {
                         data: 'judul_lowongan'
+                    },
+                    {
+                        data: 'tipe_lowongan'
                     },
                     {
                         data: 'created_at'

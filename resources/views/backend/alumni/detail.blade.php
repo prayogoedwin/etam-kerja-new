@@ -112,13 +112,22 @@
                                                 </div>
                                             @endif
                                         </div> --}}
-                                        <div class="form-group row">
+                                        {{-- <div class="form-group row">
                                             <div class="col-2">
                                                 <label for="">KTP</label>
                                             </div>
                                             <div class="col-10">
                                                 <input type="text" class="form-control" name="ktp" id="ktp"
                                                     value="{{ $profil->ktp }}" disabled>
+                                            </div>
+                                        </div> --}}
+                                        <div class="form-group row">
+                                            <div class="col-2">
+                                                <label for="">Email</label>
+                                            </div>
+                                            <div class="col-10">
+                                                <input type="text" class="form-control" name="email" id="email"
+                                                    value="{{ $profil->user->email }}" disabled>
                                             </div>
                                         </div>
                                         <div class="form-group row">

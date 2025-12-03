@@ -19,7 +19,8 @@ class HistoryLamaranPencariController extends Controller
                 'etam_lamaran.progres_id',
                 'etam_lamaran.keterangan',
                 'etam_lamaran.created_at',
-                'etam_progres.name as statuslamaran'
+                'etam_progres.name as statuslamaran',
+                'etam_lowongan.tipe_lowongan'
             )
             ->join('etam_lowongan', 'etam_lamaran.lowongan_id', '=', 'etam_lowongan.id') // Join tabel
             ->join('etam_progres', 'etam_lamaran.progres_id', '=', 'etam_progres.kode') // Join tabel
@@ -33,6 +34,17 @@ class HistoryLamaranPencariController extends Controller
                 ->editColumn('created_at', function ($history) {
                     return $history->created_at->format('Y M d H:i:s');
                 })
+                ->addColumn('tipe_lowongan', function ($history) {
+                    $tipe_lowongan = '-';
+                    if($history->tipe_lowongan == '0'){
+                        $tipe_lowongan = '<span class="badge rounded-pill bg-info">Umum</span>';
+                    } else if($history->tipe_lowongan == '1'){
+                        $tipe_lowongan = '<span class="badge rounded-pill bg-info">Job Fair</span>';;
+                    } else if($history->tipe_lowongan == '2'){
+                        $tipe_lowongan = '<span class="badge rounded-pill bg-info">BKK</span>';;
+                    }
+                    return $tipe_lowongan;
+                })
                 ->addColumn('progress', function ($history) {
                     $sts_lamar = '-';
                     if($history->progres_id == '1' || $history->progres_id == '2' || $history->progres_id == '4'){
@@ -44,7 +56,7 @@ class HistoryLamaranPencariController extends Controller
                     }
                     return $sts_lamar;
                 })
-                ->rawColumns(['progress'])  // Pastikan menambahkan ini untuk kolom options
+                ->rawColumns(['tipe_lowongan','progress'])  // Pastikan menambahkan ini untuk kolom options
                 ->make(true);
         }
 

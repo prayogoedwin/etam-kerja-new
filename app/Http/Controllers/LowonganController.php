@@ -33,7 +33,7 @@ class LowonganController extends Controller
             ->whereNull('etam_lowongan.deleted_at') // Memastikan data tidak terhapus
             ->where('etam_progres.modul', 'lowongan') // Kondisi where
             ->where('etam_lowongan.posted_by', auth()->user()->id) // Kondisi where
-            ->where('tipe_lowongan', 0) // lowongan umum, bukan bkk, bukan job fair
+            // ->where('tipe_lowongan', 0) // lowongan umum, bukan bkk, bukan job fair
             ->get();
 
             return DataTables::of($lokers)

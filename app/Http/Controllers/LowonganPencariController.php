@@ -47,6 +47,47 @@ class LowonganPencariController extends Controller
         return view('backend.lowonganpencari.index', $data);
     }
 
+    public function indexbkk(Request $request)
+    {
+        $userId = auth()->user()->id;
+        $bkkId = getRowPencariById($userId)->bkk_id;
+
+        if ($request->ajax()) {
+            $lokers = LowonganPencari::select(
+                'etam_lowongan.id',
+                'etam_lowongan.judul_lowongan',
+                'etam_lowongan.tanggal_start',
+                'etam_lowongan.tanggal_end',
+                'etam_lowongan.deskripsi'
+            )
+            ->join('users_penyedia', 'etam_lowongan.posted_by', '=', 'users_penyedia.user_id') // Join tabel
+            ->where('etam_lowongan.status_id', '1')
+            ->where('etam_lowongan.tipe_lowongan', 2) // lowongan bkk, bukan umum, bukan job fair
+            // ->where('deleted_at', null)
+            ->whereNull('etam_lowongan.deleted_at') // Memastikan data tidak terhapus
+            ->get();
+
+            return DataTables::of($lokers)
+                ->addIndexColumn()
+                ->addColumn('options', function ($loker) {
+
+                    return '
+                        <button class="btn btn-warning btn-sm" onclick="showEditModal(' . $loker->id . ')">Lihat</button>
+                    ';
+                })
+                ->rawColumns(['options'])  // Pastikan menambahkan ini untuk kolom options
+                ->make(true);
+        }
+
+        $data['jabatans'] = getJabatan();
+        $data['sektors'] = getSektor();
+        $data['kabkotas'] = getKabkota();
+        $data['pendidikans'] = getPendidikan();
+        $data['maritals'] = getMarital();
+
+        return view('backend.lowonganbkk.index', $data);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

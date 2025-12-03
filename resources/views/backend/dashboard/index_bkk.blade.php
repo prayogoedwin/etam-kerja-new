@@ -37,7 +37,7 @@
                                         <div class="row align-items-center">
                                             <div class="col-8">
                                                 <h4 class="text-c-yellow">0</h4>
-                                                <h6 class="text-muted m-b-0">Underconstruction</h6>
+                                                <h6 class="text-muted m-b-0">Alumni</h6>
                                             </div>
                                             <div class="col-4 text-end">
                                                 <i class="feather icon-bar-chart-2 f-28"></i>
@@ -47,7 +47,7 @@
                                     <div class="card-footer bg-c-yellow">
                                         <div class="row align-items-center">
                                             <div class="col-9">
-                                                <p class="text-white m-b-0">Underconstruction!</p>
+                                                <p class="text-white m-b-0">Total Alumni</p>
                                             </div>
                                             <div class="col-3 text-end">
                                                 <i class="feather icon-trending-up text-white f-16"></i>
@@ -63,7 +63,7 @@
                                         <div class="row align-items-center">
                                             <div class="col-8">
                                                 <h4 class="text-c-green">0</h4>
-                                                <h6 class="text-muted m-b-0">Underconstruction</h6>
+                                                <h6 class="text-muted m-b-0">BKK</h6>
                                             </div>
                                             <div class="col-4 text-end">
                                                 <i class="feather icon-file-text f-28"></i>
@@ -73,7 +73,7 @@
                                     <div class="card-footer bg-c-green">
                                         <div class="row align-items-center">
                                             <div class="col-9">
-                                                <p class="text-white m-b-0">Underconstruction!</p>
+                                                <p class="text-white m-b-0">Total BKK</p>
                                             </div>
                                             <div class="col-3 text-end">
                                                 <i class="feather icon-trending-up text-white f-16"></i>
@@ -89,7 +89,7 @@
                                         <div class="row align-items-center">
                                             <div class="col-8">
                                                 <h4 class="text-c-green">0</h4>
-                                                <h6 class="text-muted m-b-0">Underconstruction</h6>
+                                                <h6 class="text-muted m-b-0">Perusahaan</h6>
                                             </div>
                                             <div class="col-4 text-end">
                                                 <i class="feather icon-file-text f-28"></i>
@@ -99,7 +99,7 @@
                                     <div class="card-footer bg-c-red">
                                         <div class="row align-items-center">
                                             <div class="col-9">
-                                                <p class="text-white m-b-0">Underconstruction!</p>
+                                                <p class="text-white m-b-0">Total Perusahaan</p>
                                             </div>
                                             <div class="col-3 text-end">
                                                 <i class="feather icon-trending-up text-white f-16"></i>

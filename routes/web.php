@@ -230,6 +230,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::put('/lowongan/update/{id}', [LowonganAdminController::class, 'update'])->name('lowongan.admin.update');
 
         Route::get('/penempatan', [PenempatanController::class, 'index'])->name('penempatan.admin.index');
+
+        Route::get('/lowongan_bkk', [LowonganAdminController::class, 'indexbkk'])->name('lowonganbkk.admin.index');
     });
 
     Route::prefix('pencaris')->group(function () {
@@ -251,6 +253,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/ak1/print', [Ak1PencariController::class, 'printAk1'])->name('ak1.pencari.print');
 
         Route::get('/history_lamaran', [HistoryLamaranPencariController::class, 'index'])->name('historylamaran.pencari.index');
+
+        Route::get('/lowongan_bkk', [LowonganPencariController::class, 'indexbkk'])->name('lowonganbkk.pencari.index');
     });
 
     Route::prefix('bkks')->group(function () {
