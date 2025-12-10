@@ -35,8 +35,8 @@ class LowonganAdminController extends Controller
                 'progress', // Hanya panggil relasi tanpa filter di sini
                 'penyedia:id,user_id,name,id_kota' // Tambahkan relasi penyedia
             ])
-            ->where('tipe_lowongan', 0) // lowongan umum, bukan bkk, bukan job fair
-            // ->whereIn('tipe_lowongan', [0, 2]) // Menyesuaikan dengan status yang diinginkan
+            // ->where('tipe_lowongan', 0) // lowongan umum, bukan bkk, bukan job fair
+            ->whereIn('tipe_lowongan', [0, 3]) // lowongan umu, lowongan magang mandiri
             ->whereHas('progress', function ($query) {
                 // Memastikan 'progress' dengan 'modul' = 'lowongan' dan 'status_id' yang valid
                 $query->where('modul', 'lowongan')

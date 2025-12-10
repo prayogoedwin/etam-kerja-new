@@ -108,6 +108,35 @@ class DepanController extends Controller
         return view('depan.depan_lowongan_kerja', compact('lowonganDisetujui'));
     }
 
+    public function lowongan_magang(Request $request)
+    {
+        // Ambil parameter pencarian
+        $judulLowongan = $request->input('judul_lowongan');
+        $pendidikanId = $request->input('pendidikan_id');
+        $lokasiId = $request->input('kabkota_id');
+
+        // Query pencarian berdasarkan parameter
+        $lowonganDisetujui = Lowongan::where('status_id', 1) // Lowongan yang disetujui
+            ->where('is_lowongan_disabilitas', 0)
+            ->where('tipe_lowongan', 3)
+            ->where('deleted_at', null)
+            ->when($judulLowongan, function ($query, $judulLowongan) {
+                return $query->where('judul_lowongan', 'like', '%' . $judulLowongan . '%');
+            })
+            ->when($pendidikanId, function ($query, $pendidikanId) {
+                return $query->where('pendidikan_id', $pendidikanId);
+            })
+            ->when($lokasiId, function ($query, $lokasiId) {
+                return $query->where('kabkota_id', $lokasiId);
+            })
+            ->with(['postedBy:id,name', 'postedBy.penyedia:user_id,name'])
+            ->orderBy('tanggal_start', 'desc')
+            ->paginate(9); // Pagination with 10 items per page
+
+        // Kirim data hasil pencarian dan filter ke view
+        return view('depan.depan_lowongan_kerja', compact('lowonganDisetujui'));
+    }
+
 
     public function lowongan_kerja_disabilitas(Request $request)
     {
