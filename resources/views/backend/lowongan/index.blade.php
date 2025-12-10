@@ -226,6 +226,16 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="stskawin">Tipe Lowongan</label>
+                                        <select class="form-control" id="tipe_lowongan" name="tipe_lowongan" required>
+                                            <option selected>Pilih Tipe</option>
+                                            <option value="0">Kerja</option>
+                                            <option value="3">Magang</option>
+                                        </select>
+                                    </div>
+                                </div>
 
 
                                 <div class="col-sm-12">
@@ -391,6 +401,17 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="stskawin">Tipe Lowongan</label>
+                                        <select class="form-control" id="tipe_lowongan_edit" name="tipe_lowongan_edit"
+                                            required>
+                                            <option selected>Pilih Tipe</option>
+                                            <option value="0">Kerja</option>
+                                            <option value="3">Magang</option>
+                                        </select>
+                                    </div>
+                                </div>
 
 
                                 <div class="col-sm-12">
@@ -505,6 +526,7 @@
                         pendidikan_id: $('#pendidikan_id').val(),
                         jurusan_id: $('#jurusan_id').val(),
                         marital_id: $('#status_perkawinan_id').val(),
+                        tipe_lowongan: $('#tipe_lowongan').val(),
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
@@ -716,7 +738,7 @@
 
                 // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
                 $.ajax({
-                    url: "{{ route('get-jurusan-bypendidikan-jobfair', ':id') }}".replace(':id',
+                    url: "{{ route('get-jurusan-bypendidikan', ':id') }}".replace(':id',
                         kd), // Panggil API
                     type: 'GET',
                     success: function(response) {
@@ -747,7 +769,7 @@
 
                 // Panggil API untuk mendapatkan kecamatan berdasarkan kabkota_id
                 $.ajax({
-                    url: "{{ route('get-jurusan-bypendidikan-jobfair', ':id') }}".replace(':id',
+                    url: "{{ route('get-jurusan-bypendidikan', ':id') }}".replace(':id',
                         kd), // Panggil API
                     type: 'GET',
                     success: function(response) {
