@@ -405,10 +405,11 @@
                                     <div class="form-group">
                                         <label for="stskawin">Tipe Lowongan</label>
                                         <select class="form-control" id="tipe_lowongan_edit" name="tipe_lowongan_edit"
-                                            required>
+                                            disabled>
                                             <option selected>Pilih Tipe</option>
-                                            <option value="0">Kerja</option>
-                                            <option value="3">Magang</option>
+                                            @foreach ($tipe_low as $dt)
+                                                <option value="{{ $dt->kode }}">{{ $dt->name }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -584,6 +585,7 @@
                 var jumlah_wanita = $('#jumlah_wanita_edit').val();
                 var deskripsi = $('#deskripsi_edit').val();
                 var marital_id = $('#status_perkawinan_id_edit').val();
+                var tipe_lowongan = $('#tipe_lowongan_edit').val();
 
                 // Send the data to the update route
                 $.ajax({
@@ -606,7 +608,8 @@
                         jumlah_pria: jumlah_pria,
                         jumlah_wanita: jumlah_wanita,
                         deskripsi: deskripsi,
-                        marital_id: marital_id
+                        marital_id: marital_id,
+                        tipe_lowongan: tipe_lowongan
                     },
                     success: function(response) {
                         if (response.success) {
@@ -685,6 +688,7 @@
                         $('#jumlah_wanita_edit').val(dt.jumlah_wanita);
                         $('#deskripsi_edit').val(dt.deskripsi);
                         $('#status_perkawinan_id_edit').val(dt.marital_id).trigger('change');
+                        $('#tipe_lowongan_edit').val(dt.tipe_lowongan).trigger('change');
 
                         //set timeout
                         setTimeout(function() {

@@ -55,6 +55,7 @@ class LowonganController extends Controller
         $data['kabkotas'] = getKabkota();
         // $data['pendidikans'] = getPendidikan();
         $data['maritals'] = getMarital();
+        $data['tipe_low'] = getTipeLowongan();
 
         return view('backend.lowongan.index', $data);
     }
@@ -87,6 +88,7 @@ class LowonganController extends Controller
             'jumlah_pria' => 'required|integer',
             'jumlah_wanita' => 'required|integer',
             'deskripsi' => 'required|string',
+            'tipe_lowongan' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -113,6 +115,7 @@ class LowonganController extends Controller
                 'pendidikan_id' => $request->pendidikan_id,
                 'jurusan_id' => $request->jurusan_id,
                 'marital_id' => $request->marital_id,
+                'tipe_lowongan' => $request->tipe_lowongan,
                 'is_lowongan_disabilitas' => $request->is_lowongan_disabilitas,
                 'posted_by' => $userId,
                 'updated_by' => $userId,
@@ -208,6 +211,10 @@ class LowonganController extends Controller
                 'jumlah_pria' => $request->jumlah_pria,
                 'jumlah_wanita' => $request->jumlah_wanita,
                 'deskripsi' => $request->deskripsi,
+                'pendidikan_id' => $request->pendidikan_id,
+                'jurusan_id' => $request->jurusan_id,
+                'marital_id' => $request->marital_id,
+                // 'tipe_lowongan' => $request->tipe_lowongan,
                 'status_id' => 0,
                 'acc_by' => null,
                 'acc_by_role' => null,

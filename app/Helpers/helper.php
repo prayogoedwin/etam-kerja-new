@@ -254,3 +254,8 @@ function getJenisDisabilitas(){
     ->whereNull('deleted_at')
     ->get();
 }
+
+function getTipeLowongan(){
+    return DB::table('etam_tipe_lowongan')
+    ->get();
+}
