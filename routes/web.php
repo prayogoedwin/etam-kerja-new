@@ -89,7 +89,10 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
     Route::get('/rekap31', [RekapController::class, 'ak3titik1'])->name('rekap.ak31');
     Route::get('/rekap32', [RekapController::class, 'ak3titik2'])->name('rekap.ak32');
+    Route::get('/rekap33', [RekapController::class, 'ak3titik3'])->name('rekap.ak33');
     Route::get('/rekap34', [RekapController::class, 'ak3titik4'])->name('rekap.ak34');
+    Route::get('/rekap35', [RekapController::class, 'ak3titik5'])->name('rekap.ak35');
+    Route::get('/rekap36', [RekapController::class, 'ak3titik6'])->name('rekap.ak36');
     Route::get('/rekap37', [RekapController::class, 'ak3titik7'])->name('rekap.ak37');
     Route::get('/rekap38', [RekapController::class, 'ak3titik8'])->name('rekap.ak38');
 
@@ -124,7 +127,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::delete('jobfair/{jobfairId}/perusahaan/{userId}/lowongan/{id}', [JobFairController::class, 'destroyLowongan'])->name('jobfair.lowongan.destroy');
 
      // Helper Routes
-    Route::get('jobfair/get-all-pendidikan', [JobFairController::class, 'getAllPendidikan'])->name('jobfair.get-all-pendidikan');
+    Route::get('api/jobfair/get-all-pendidikan', [JobFairController::class, 'getAllPendidikan'])->name('jobfair.get-all-pendidikan');
     Route::get('get-jurusan-bypendidikan/{id}', [JobFairController::class, 'getJurusanByPendidikan'])->name('get-jurusan-bypendidikan-jobfair');
 
     Route::get('/api/get-penyedia-kerja', [JobFairController::class, 'getPenyediaKerjaList'])->name('api.penyedia-kerja');

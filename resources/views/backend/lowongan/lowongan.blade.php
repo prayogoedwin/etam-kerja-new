@@ -13,7 +13,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Lowongan Job Fair - {{ $jobFair->nama_job_fair }}</h5>
+                                <h5 class="m-b-10">Lowongan Job Fair A - {{ $jobFair->nama_job_fair }}</h5>
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{{ route('jobfair.index') }}">Job Fair</a></li>
@@ -877,7 +877,8 @@
         function showData(id) {
 
             $.ajax({
-                url: '{{ route('get-all-pendidikan') }}', // Endpoint Laravel
+                //url: '{{ route('get-all-pendidikan') }}', // Endpoint Laravel
+                url: '{{ route("jobfair.get-all-pendidikan") }}',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {

@@ -94,7 +94,10 @@
                     <ul class="pcoded-submenu">
                         <li><a href="{{ route('rekap.ak31') }}">IPK 3.1</a></li>
                         <li><a href="{{ route('rekap.ak32') }}">IPK 3.2</a></li>
+                        <li><a href="{{ route('rekap.ak33') }}">IPK 3.3</a></li>
                         <li><a href="{{ route('rekap.ak34') }}">IPK 3.4</a></li>
+                        <li><a href="{{ route('rekap.ak35') }}">IPK 3.5</a></li>
+                        <li><a href="{{ route('rekap.ak36') }}">IPK 3.6</a></li>
                         <li><a href="{{ route('rekap.ak37') }}">IPK 3.7</a></li>
                         <li><a href="{{ route('rekap.ak38') }}">IPK 3.8</a></li>
                     </ul>

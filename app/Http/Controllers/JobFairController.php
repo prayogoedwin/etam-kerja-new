@@ -1233,8 +1233,7 @@ class JobFairController extends Controller
     public function getAllPendidikan()
     {
         try {
-            $pendidikan = Pendidikan::where('is_deleted', 0)
-                ->orderBy('name')
+            $pendidikan = Pendidikan::orderBy('name')
                 ->get(['id', 'name']);
 
             return response()->json($pendidikan);
