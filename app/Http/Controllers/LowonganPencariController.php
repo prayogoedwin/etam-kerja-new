@@ -21,9 +21,11 @@ class LowonganPencariController extends Controller
         if ($request->ajax()) {
             $lokers = LowonganPencari::select('id', 'judul_lowongan', 'tanggal_start', 'tanggal_end', 'deskripsi')
             ->where('status_id', '1')
-            ->where('tipe_lowongan', 0) // lowongan umum, bukan bkk, bukan job fair
+            // ->where('tipe_lowongan', 0) // lowongan umum, bukan bkk, bukan job fair
+            ->whereIn('tipe_lowongan', [0, 3]) // lowongan umu, lowongan magang mandiri
             // ->where('deleted_at', null)
             ->whereNull('etam_lowongan.deleted_at') // Memastikan data tidak terhapus
+            ->orderBy('id', 'desc')
             ->get();
 
             return DataTables::of($lokers)
