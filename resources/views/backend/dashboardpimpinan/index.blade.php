@@ -63,7 +63,7 @@
 <body>
     <div id="mainContent" style="display: none;">
         <div class="header">
-            ETAK KERJA <br /> Dashboard Kepemimpinan
+            ETAM KERJA <br /> Dashboard Kepemimpinan
         </div>
 
         <!-- Section 1: Jumlah Pencari Kerja -->

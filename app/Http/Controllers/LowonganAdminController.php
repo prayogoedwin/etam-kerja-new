@@ -44,7 +44,8 @@ class LowonganAdminController extends Controller
                           // Menambahkan check untuk nilai status_id yang valid
                           $query->select('status_id')->from('etam_lowongan');
                       });
-            });
+            })
+            ->orderBy('id', 'desc');
 
             // Filter untuk admin-kabkota dan admin-kabkota-officer
             $roles = Auth::user()->roles;
