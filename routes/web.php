@@ -34,6 +34,7 @@ use App\Http\Controllers\AlumniController;
 use App\Http\Controllers\JobFairController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\BkkController;
+use App\Http\Controllers\MagangDnController;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -132,6 +133,36 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::get('get-jurusan-bypendidikan/{id}', [JobFairController::class, 'getJurusanByPendidikan'])->name('get-jurusan-bypendidikan-jobfair');
 
     Route::get('/api/get-penyedia-kerja', [JobFairController::class, 'getPenyediaKerjaList'])->name('api.penyedia-kerja');
+
+    //Magang Dn Routes
+    Route::get('/magang_dn', [MagangDnController::class, 'index'])->name('magang_dn.index');
+    Route::post('/magang_dn', [MagangDnController::class, 'store'])->name('magang_dn.store');
+    Route::get('/magang_dn/{id}', [MagangDnController::class, 'show'])->name('magang_dn.show');
+    Route::put('/magang_dn/{id}', [MagangDnController::class, 'update'])->name('magang_dn.update');
+    Route::delete('/magang_dn/{id}', [MagangDnController::class, 'destroy'])->name('magang_dn.destroy');
+
+    // Additional Magang Dn Routes
+    Route::post('/magang_dn/{id}/verifikasi', [MagangDnController::class, 'verifikasi'])->name('magang_dn.verifikasi');
+    Route::post('/magang_dn/{id}/unverifikasi', [MagangDnController::class, 'unverifikasi'])->name('magang_dn.unverifikasi');
+    Route::post('/magang_dn/{id}/toggle-status', [MagangDnController::class, 'toggleStatus'])->name('magang_dn.toggle-status');
+    Route::get('/magang_dn-users', [MagangDnController::class, 'getUsers'])->name('magang_dn.users');
+    Route::get('/magang_dn-penyedia-kerja', [MagangDnController::class, 'getPenyediaKerja'])->name('magang_dn.penyedia-kerja');
+
+    // Routes untuk Perusahaan Magang Dn
+    Route::get('/magang_dn/{magang}/perusahaan', [MagangDnController::class, 'perusahaan'])->name('magang_dn.perusahaan');
+    Route::post('/magang_dn/{magang}/perusahaan', [MagangDnController::class, 'storePerusahaan'])->name('magang_dn.perusahaan.store');
+    Route::post('/magang_dn/{magang}/join', [MagangDnController::class, 'joinMagang'])->name('magang_dn.join'); //untuk perusahaan daftar sendiri
+    Route::get('/magang_dn/{magang}/perusahaan/{id}', [MagangDnController::class, 'showPerusahaan'])->name('magang_dn.perusahaan.show');
+    Route::put('/magang_dn/{magang}/perusahaan/{id}', [MagangDnController::class, 'updatePerusahaan'])->name('magang_dn.perusahaan.update');
+    Route::delete('/magang_dn/{magang}/perusahaan/{id}', [MagangDnController::class, 'destroyPerusahaan'])->name('magang_dn.perusahaan.destroy');
+    Route::post('/magang_dn/{magang}/perusahaan/{id}/change-status', [MagangDnController::class, 'changeStatusPerusahaan'])->name('magang_dn.perusahaan.change-status');
+
+    Route::get('magang_dn/{magangId}/perusahaan/{userId}/lowongan', [MagangDnController::class, 'lowongan'])->name('magang_dn.lowongan');
+    Route::post('magang_dn/{magangId}/perusahaan/{userId}/lowongan', [MagangDnController::class, 'storeLowongan'])->name('magang_dn.lowongan.store');
+    // Route::get('magang_dn/{magangId}/perusahaan/{userId}/lowongan/{id}', [MagangDnController::class, 'showLowongan'])->name('jobfair.lowongan.show');
+    Route::post('magang_dn/{magangId}/perusahaan/{userId}/lowongan/{id}', [MagangDnController::class, 'updateLowongan'])->name('magang_dn.lowongan.update');
+    // Route::delete('magang_dn/{magangId}/perusahaan/{userId}/lowongan/{id}', [MagangDnController::class, 'destroyLowongan'])->name('jobfair.lowongan.destroy');
+
 
     //route untuk admin
     Route::get('/dashboard', [BackController::class, 'index'])->name('dashboard');

@@ -42,6 +42,10 @@ class HistoryLamaranPencariController extends Controller
                         $tipe_lowongan = '<span class="badge rounded-pill bg-info">Job Fair</span>';;
                     } else if($history->tipe_lowongan == '2'){
                         $tipe_lowongan = '<span class="badge rounded-pill bg-info">BKK</span>';;
+                    } else if($history->tipe_lowongan == '3'){
+                        $tipe_lowongan = '<span class="badge rounded-pill bg-info">Magang Mandiri</span>';;
+                    } else if($history->tipe_lowongan == '4'){
+                        $tipe_lowongan = '<span class="badge rounded-pill bg-info">Magang Pemerintah</span>';;
                     }
                     return $tipe_lowongan;
                 })

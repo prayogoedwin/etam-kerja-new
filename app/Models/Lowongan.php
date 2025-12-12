@@ -37,7 +37,8 @@ class Lowongan extends Model
         'is_lowongan_ln',
         'is_lowongan_disabilitas',
         'tipe_lowongan',
-        'jobfair_id', 
+        'jobfair_id',
+        'magangpemerintah_id',
         'nama_petugas',
         'nip_petugas',
         'kompetensi',
@@ -103,12 +104,12 @@ class Lowongan extends Model
     public function scopeLowonganJobFair($query, $jobfairId = null)
     {
         $query = $query->where('tipe_lowongan', 1);
-        
+
         if ($jobfairId) {
             $query->where('jobfair_id', $jobfairId);
         }
-        
+
         return $query;
     }
-    
+
 }

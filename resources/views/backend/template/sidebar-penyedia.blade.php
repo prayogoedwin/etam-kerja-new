@@ -69,9 +69,15 @@
                         <span class="pcoded-mtext">BKK</span>
                     </a>
                 </li>
-                  <li class="nav-item"><a href="{{ route('jobfair.index') }}" class="nav-link "><span
+                <li class="nav-item"><a href="{{ route('jobfair.index') }}" class="nav-link "><span
                             class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
                             class="pcoded-mtext">Job Fair</span></a></li>
+                <li class="nav-item">
+                    <a href="{{ route('magang_dn.index') }}" class="nav-link ">
+                        <span class="pcoded-micon"><i class="feather icon-briefcase"></i></span>
+                        <span class="pcoded-mtext">Magang Pemerintah</span>
+                    </a>
+                </li>
 
                 <!-- Layouts -->
                 {{-- <li class="menu-item open">

@@ -74,6 +74,9 @@
                             class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
                             class="pcoded-mtext">Job Fair</span></a></li>
 
+                <li class="nav-item"><a href="{{ route('magang_dn.index') }}" class="nav-link "><span
+                            class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
+                            class="pcoded-mtext">Magang Pemerintah</span></a></li>
 
                 <li class="nav-item"><a href="{{ route('lowongan.admin.index') }}" class="nav-link "><span
                             class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
