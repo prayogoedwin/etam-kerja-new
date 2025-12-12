@@ -51,6 +51,7 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Perusahaan</th>
                                                 <th>Judul Lowongan</th>
                                                 <th>Tgl Mulai</th>
                                                 <th>Tgl Selesai</th>
@@ -265,6 +266,9 @@
                         data: 'DT_RowIndex',
                         orderable: false,
                         searchable: false
+                    },
+                    {
+                        data: 'nama_perusahaan'
                     },
                     {
                         data: 'judul_lowongan'
