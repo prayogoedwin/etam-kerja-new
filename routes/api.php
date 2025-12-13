@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\LowonganController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\DashboardEksekutifController;
+
 
 
 Route::get('/user', function (Request $request) {
@@ -12,6 +14,10 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/ping', fn () => ['pong' => true]);
 Route::get('/lowongan', [LowonganController::class, 'index']);
+
+Route::prefix('v1')->group(function () {
+    Route::get('/dashboard-eksekutif', [ApiDashboardEksekutifController::class, 'index']);
+});
 
 
 

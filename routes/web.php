@@ -36,6 +36,8 @@ use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\BkkController;
 use App\Http\Controllers\MagangDnController;
 
+use App\Http\Controllers\DashboardEksekutifController;
+
 // Route::get('/', function () {
 //     return view('depan.depan_index');
 // });
@@ -79,6 +81,9 @@ Route::get('/getpendidikans', function () {
 // Route::get('/captcha', function () {
 //     return response()->json(['captcha' => captcha_src()]);
 // });
+
+Route::get('/dashboard-eksekutif', [DashboardEksekutifController::class, 'index'])
+    ->name('dashboard.eksekutif');
 
 
 Route::get('/captcha', function () {
