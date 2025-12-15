@@ -37,6 +37,7 @@ class Lowongan extends Model
         'is_lowongan_ln',
         'is_lowongan_disabilitas',
         'tipe_lowongan',
+        'lingkup_lowongan',
         'jobfair_id',
         'magangpemerintah_id',
         'nama_petugas',
@@ -46,6 +47,15 @@ class Lowongan extends Model
     ];
 
     protected $dates = ['deleted_at'];
+
+    protected $casts = [
+        'lingkup_lowongan' => 'integer',
+    ];
+
+    public const LINGKUP_KABKOTA   = 0;
+    public const LINGKUP_PROVINSI  = 1;
+    public const LINGKUP_NASIONAL  = 2;
+    //Lowongan::where('lingkup_lowongan', Lowongan::LINGKUP_PROVINSI)->get();
 
     // Relasi ke model User
     public function userPenyedia()

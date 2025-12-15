@@ -222,6 +222,17 @@
                                     </select>
                                 </div>
                             </div>
+                            {{-- <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="stskawin">Lingkup Lowongan</label>
+                                    <select class="form-control" id="lingkup_lowongan" name="lingkup_lowongan" disabled>
+                                        <option selected>Pilih Lingkup</option>
+                                        @foreach ($lingkup_low as $dt)
+                                            <option value="{{ $dt['kode'] }}">{{ $dt['name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div> --}}
 
                             <hr>
                             <h5>Data Lamaran</h5>
@@ -327,6 +338,7 @@
                     $('#pendidikan_id').val(dt.pendidikan_id);
                     $('#status_perkawinan_id').val(dt.marital_id);
 
+                    $('#lingkup_lowongan').val(dt.lingkup_lowongan);
 
                     // $('#editPertanyaan').val(dt.name);
                     // $('#editJawaban').val(dt.description);

@@ -56,8 +56,23 @@ class LowonganController extends Controller
         // $data['pendidikans'] = getPendidikan();
         $data['maritals'] = getMarital();
         $data['tipe_low'] = getTipeLowongan();
+        $data['lingkup_low'] = [
+            [
+                "kode" => 0,
+                "name" => "Kabupaten/Kota"
+            ],
+            [
+                "kode" => 1,
+                "name" => "Provinsi"
+            ],
+            [
+                "kode" => 2,
+                "name" => "Nasional"
+            ]
+        ];
 
         return view('backend.lowongan.index', $data);
+        // echo json_encode($data);
     }
 
     /**

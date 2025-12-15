@@ -236,6 +236,18 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="stskawin">Lingkup Lowongan</label>
+                                        <select class="form-control" id="lingkup_lowongan" name="lingkup_lowongan"
+                                            required>
+                                            <option selected>Pilih Lingkup</option>
+                                            <option value="0">Kabupaten/Kota</option>
+                                            <option value="1">Provinsi</option>
+                                            <option value="2">Nasional</option>
+                                        </select>
+                                    </div>
+                                </div>
 
 
                                 <div class="col-sm-12">
@@ -413,6 +425,18 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="stskawin">Lingkup Lowongan</label>
+                                        <select class="form-control" id="lingkup_lowongan_edit"
+                                            name="lingkup_lowongan_edit">
+                                            <option selected>Pilih Lingkup</option>
+                                            @foreach ($lingkup_low as $dt)
+                                                <option value="{{ $dt['kode'] }}">{{ $dt['name'] }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
 
 
                                 <div class="col-sm-12">
@@ -528,6 +552,7 @@
                         jurusan_id: $('#jurusan_id').val(),
                         marital_id: $('#status_perkawinan_id').val(),
                         tipe_lowongan: $('#tipe_lowongan').val(),
+                        lingkup_lowongan: $('#lingkup_lowongan').val(),
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
@@ -586,6 +611,7 @@
                 var deskripsi = $('#deskripsi_edit').val();
                 var marital_id = $('#status_perkawinan_id_edit').val();
                 var tipe_lowongan = $('#tipe_lowongan_edit').val();
+                var lingkup_lowongan = $('#lingkup_lowongan_edit').val();
 
                 // Send the data to the update route
                 $.ajax({
@@ -689,6 +715,7 @@
                         $('#deskripsi_edit').val(dt.deskripsi);
                         $('#status_perkawinan_id_edit').val(dt.marital_id).trigger('change');
                         $('#tipe_lowongan_edit').val(dt.tipe_lowongan).trigger('change');
+                        $('#lingkup_lowongan_edit').val(dt.lingkup_lowongan).trigger('change');
 
                         //set timeout
                         setTimeout(function() {

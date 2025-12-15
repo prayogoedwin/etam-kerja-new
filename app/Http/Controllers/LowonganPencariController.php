@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\LowonganPencari;
 use App\Models\ProfilPencari;
+use App\Models\UserPencari;
 use Yajra\DataTables\Facades\DataTables;  // Mengimpor DataTables
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -19,12 +20,16 @@ class LowonganPencariController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
+            $userId = Auth::id();
+            $userPencari = UserPencari::where('user_id', $userId)->first();
+            $kabkotaUser = $userPencari->id_kota;
+
             $lokers = LowonganPencari::select(
                 'etam_lowongan.id',
                 'etam_lowongan.judul_lowongan',
                 'etam_lowongan.tanggal_start',
                 'etam_lowongan.tanggal_end',
-                'etam_lowongan.deskripsi',
+                'etam_lowongan.deskripsiX',
                 'users_penyedia.name as nama_perusahaan'
             )
             ->join('users_penyedia', 'users_penyedia.user_id', '=', 'etam_lowongan.posted_by') // Join tabel
@@ -33,6 +38,18 @@ class LowonganPencariController extends Controller
             ->whereIn('etam_lowongan.tipe_lowongan', [0, 3]) // lowongan umu, lowongan magang mandiri
             // ->where('deleted_at', null)
             ->whereNull('etam_lowongan.deleted_at') // Memastikan data tidak terhapus
+            // 🔥 LOGIKA LINGKUP LOWONGAN
+            ->where(function ($query) use ($kabkotaUser) {
+                $query
+                    // selain kabkota (provinsi / nasional) → tampilkan semua
+                    ->where('etam_lowongan.lingkup_lowongan', '!=', 0)
+
+                    // jika kabkota → harus sama dengan kabkota user
+                    ->orWhere(function ($q) use ($kabkotaUser) {
+                        $q->where('etam_lowongan.lingkup_lowongan', 0)
+                        ->where('etam_lowongan.kabkota_id', $kabkotaUser);
+                    });
+            })
             ->orderBy('etam_lowongan.id', 'desc')
             ->get();
 
@@ -53,6 +70,20 @@ class LowonganPencariController extends Controller
         $data['kabkotas'] = getKabkota();
         $data['pendidikans'] = getPendidikan();
         $data['maritals'] = getMarital();
+        $data['lingkup_low'] = [
+            [
+                "kode" => 0,
+                "name" => "Kabupaten/Kota"
+            ],
+            [
+                "kode" => 1,
+                "name" => "Provinsi"
+            ],
+            [
+                "kode" => 2,
+                "name" => "Nasional"
+            ]
+        ];
 
         return view('backend.lowonganpencari.index', $data);
     }

@@ -73,6 +73,20 @@ class LowonganAdminController extends Controller
         $data['kabkotas'] = getKabkota();
         $data['pendidikans'] = getPendidikan();
         $data['maritals'] = getMarital();
+        $data['lingkup_low'] = [
+            [
+                "kode" => 0,
+                "name" => "Kabupaten/Kota"
+            ],
+            [
+                "kode" => 1,
+                "name" => "Provinsi"
+            ],
+            [
+                "kode" => 2,
+                "name" => "Nasional"
+            ]
+        ];
 
         return view('backend.lowonganadmin.index', $data);
     }
