@@ -83,6 +83,16 @@ Route::get('/getpendidikans', function () {
 //     return response()->json(['captcha' => captcha_src()]);
 // });
 
+Route::middleware(['auth'])->group(function () {
+
+    // Notification routes
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/get', [App\Http\Controllers\NotificationController::class, 'getNotifications'])->name('notifications.get');
+    Route::post('/notifications/read/{id}', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::delete('/notifications/{id}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
+});
+
 
 
 
@@ -348,3 +358,4 @@ Route::get('/get-kecamatan', [BackController::class, 'getKecamatan']);
 //   });
 
 Route::get('ak1/cek/{unik_kode}', [Ak1Controller::class, 'viewAk1'])->name('ak1.view');
+

@@ -35,6 +35,7 @@
     <!-- Summernote CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.18/summernote.min.css" rel="stylesheet">
 
+   
 </head>
 
 <!-- [ Pre-loader ] start -->
@@ -70,8 +71,8 @@
                 </div>
             </li>
         </ul>
-        <ul class="navbar-nav ms-auto">
-            <li hidden>
+        <ul class="navbar-nav ms-auto" >
+            {{-- <li hidden>
                 <div class="dropdown">
                     <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown"><i
                             class="icon feather icon-bell"></i></a>
@@ -137,7 +138,33 @@
                             </li>
                         </ul>
                         <div class="noti-footer">
-                            <a href="#!">show all</a>
+                            <a href="{{ route('notifications.index') }}">lihat semua</a>
+                        </div>
+                    </div>
+                </div>
+            </li> --}}
+
+            <li>
+                <div class="dropdown" >
+                    <a class="dropdown-toggle" href="#" data-bs-toggle="dropdown" id="notificationDropdown" style="position: relative;">
+                        <span class="badge bg-danger notification-badge" id="notifCount">0</span>
+                        <i class="icon feather icon-bell"></i>
+                        
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end notification" style="width: 350px;">
+                        <div class="noti-head">
+                            <h6 class="d-inline-block m-b-0">Notifikasi</h6>
+                            <div class="float-end">
+                                <a href="#!" class="m-r-10" id="markAllRead">tandai dibaca</a>
+                            </div>
+                        </div>
+                        <ul class="noti-body" id="notificationList" style="max-height: 300px; overflow-y: auto;">
+                            <li class="notification text-center">
+                                <p class="m-b-0 text-muted">Memuat notifikasi...</p>
+                            </li>
+                        </ul>
+                        <div class="noti-footer">
+                            <a href="{{ route('notifications.index') ?? '#' }}" id="showAllNotif" target="BLANK">lihat semua</a>
                         </div>
                     </div>
                 </div>
@@ -236,3 +263,132 @@
 </header>
 
 <!-- [ Header ] end -->
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load notifikasi saat halaman ready
+    loadNotifications();
+
+    // Refresh setiap 30 detik
+    setInterval(loadNotifications, 30000);
+
+    // Mark all as read
+    document.getElementById('markAllRead')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        markAllAsRead();
+    });
+});
+
+function loadNotifications() {
+    fetch('{{ route("notifications.get") }}')
+        .then(response => response.json())
+        .then(data => {
+            updateNotificationBadge(data.unread_count);
+            renderNotifications(data.notifications);
+        })
+        .catch(error => console.error('Error loading notifications:', error));
+}
+
+function updateNotificationBadge(count) {
+    const badge = document.getElementById('notifCount');
+    if (count > 0) {
+        badge.textContent = count > 99 ? '99+' : count;
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function renderNotifications(notifications) {
+    const list = document.getElementById('notificationList');
+    
+    if (notifications.length === 0) {
+        list.innerHTML = `
+            <li class="notification text-center py-3">
+                <p class="m-b-0 text-muted">Tidak ada notifikasi</p>
+            </li>
+        `;
+        return;
+    }
+
+    let html = '';
+    notifications.forEach(notif => {
+        const isUnread = notif.is_open == 0;
+        const bgClass = isUnread ? 'background-color: #f0f7ff;' : '';
+        const timeAgo = formatTimeAgo(notif.created_at);
+        
+        html += `
+            <li class="notification" style="${bgClass} cursor: pointer; border-bottom: 1px solid #eee;" 
+                onclick="openNotification(${notif.id}, '${notif.url_redirection || '#'}')">
+                <div class="d-flex p-2">
+                    <div class="flex-shrink-0">
+                        <i class="feather icon-bell text-primary" style="font-size: 24px;"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <p class="m-b-0" style="font-size: 13px; ${isUnread ? 'font-weight: 600;' : ''}">
+                            ${truncateText(notif.info, 80)}
+                        </p>
+                        <small class="text-muted">
+                            <i class="feather icon-clock"></i> ${timeAgo}
+                        </small>
+                        ${isUnread ? '<span class="badge bg-primary ms-2" style="font-size: 9px;">Baru</span>' : ''}
+                    </div>
+                </div>
+            </li>
+        `;
+    });
+
+    list.innerHTML = html;
+}
+
+function openNotification(id, url) {
+    // Mark as read
+    fetch(`/notifications/read/${id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    }).then(() => {
+        // Redirect ke URL tujuan
+        if (url && url !== '#' && url !== 'null') {
+            window.location.href = url;
+        } else {
+            // Refresh notifikasi jika tidak ada URL
+            loadNotifications();
+        }
+    });
+}
+
+function markAllAsRead() {
+    fetch('{{ route("notifications.readAll") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    }).then(() => {
+        loadNotifications();
+    });
+}
+
+function formatTimeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+
+    if (seconds < 60) return 'Baru saja';
+    if (seconds < 3600) return Math.floor(seconds / 60) + ' menit lalu';
+    if (seconds < 86400) return Math.floor(seconds / 3600) + ' jam lalu';
+    if (seconds < 604800) return Math.floor(seconds / 86400) + ' hari lalu';
+    
+    return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function truncateText(text, maxLength) {
+    if (!text) return '';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+}
+</script>
