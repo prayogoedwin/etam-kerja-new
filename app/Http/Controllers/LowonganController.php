@@ -12,6 +12,7 @@ use Yajra\DataTables\Facades\DataTables;  // Mengimpor DataTables
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\Progress;
 
 class LowonganController extends Controller
 {
@@ -484,7 +485,7 @@ class LowonganController extends Controller
         ]);
     }
 
-    public function bulkupdatepelamar(Request $request){
+    public function bulkupdatepelamarTanpaNotif(Request $request){
         $ids = $request->input('ids');
         $action = $request->input('action');
         $keterangan = $request->input('keterangan');
@@ -507,7 +508,109 @@ class LowonganController extends Controller
             ]);
         }
 
+        // Kirim notifikasi ke setiap pencari kerja
+        foreach ($lamarans as $lamaran) {
+            $pencari = $lamaran->pencari; // relasi ke ProfilPencari
+            $user = $pencari->user ?? null; // relasi ke User
+            $lowongan = $lamaran->lowongan;
+
+            if (!$user) continue;
+
+            // Tentukan pesan berdasarkan action/progres
+            $info = "Status lamaran Anda untuk posisi \"{$lowongan->judul}\" telah diperbarui menjadi: {$namaProgres}";
+            
+            if ($keterangan) {
+                $info .= "\n\nKeterangan: {$keterangan}";
+            }
+
+            // Kirim notifikasi
+            add_notif(
+                from_user: auth()->id(),
+                to_user: $user->id,
+                table_target: 'lamaran',
+                id_target: $lamaran->id,
+                url_redirection: route('pencari.lamaran.detail', $lamaran->id, false), // sesuaikan route
+                is_open: 0,
+                is_email: 1,
+                is_whatsapp: 1,
+                info: $info,
+                created_at: now(),
+                email: $user->email,
+                no_wa: $user->no_hp ?? $pencari->no_hp, // sesuaikan field
+                subject: "Update Status Lamaran - {$lowongan->judul}"
+            );
+        }
+
         return response()->json(['message' => 'Status berhasil diperbarui']);
+    }
+
+    public function bulkupdatepelamar(Request $request)
+    {
+        $ids = $request->input('ids');
+        $action = $request->input('action');
+        $keterangan = $request->input('keterangan');
+
+        if (!$ids || !$action) {
+            return response()->json(['message' => 'Data tidak valid'], 400);
+        }
+
+        // Ambil data lamaran beserta relasi sebelum update
+        $lamarans = Lamaran::with(['user', 'profilPencari', 'lowongan'])
+            ->whereIn('id', $ids)
+            ->get();
+
+        // Update status dan keterangan
+        Lamaran::whereIn('id', $ids)->update([
+            'progres_id' => $action,
+            'keterangan' => $keterangan
+        ]);
+
+        // Ambil nama progres baru untuk pesan notifikasi
+        $progres = Progress::find($action);
+        $namaProgres = $progres ? $progres->name : 'Diperbarui';
+
+        // if $action == 3, update field is_diterima at table users_pencari
+        if ($action == 3) {
+            $user_ids = $lamarans->pluck('pencari_id');
+            ProfilPencari::whereIn('user_id', $user_ids)->update([
+                'is_diterima' => 1
+            ]);
+        }
+
+        // Kirim notifikasi ke setiap pencari kerja
+        foreach ($lamarans as $lamaran) {
+            $user = $lamaran->user;
+            $profil = $lamaran->profilPencari;
+            $lowongan = $lamaran->lowongan;
+
+            if (!$user) continue;
+
+            // Tentukan pesan berdasarkan action/progres
+            $info = "Status lamaran Anda untuk posisi \"{$lowongan->judul_lowongan}\" telah diperbarui menjadi: {$namaProgres}";
+            
+            if ($keterangan) {
+                $info .= "\nKeterangan: {$keterangan}";
+            }
+
+            // Kirim notifikasi
+            add_notif(
+                from_user: auth()->id(),
+                to_user: $lamaran->pencari_id,
+                table_target: 'etam_lamaran',
+                id_target: $lamaran->id,
+                url_redirection: route('historylamaran.pencari.index'),
+                is_open: 0,
+                is_email: 1,
+                is_whatsapp: 0,
+                info: $info,
+                created_at: now(),
+                email: $user->email,
+                no_wa: $user->whatsapp ?? null,
+                subject: "Update Status Lamaran - Etam Kerja"
+            );
+        }
+
+        return response()->json(['message' => 'Status berhasil diperbarui dan notifikasi terkirim']);
     }
 
     /**

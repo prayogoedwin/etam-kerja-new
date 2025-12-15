@@ -326,8 +326,14 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::post('/ubah-password', [BackController::class, 'ubahPassword'])->name('ubah-password');
 });
 
-Route::prefix('eksekutif')->group(function () {
-    Route::get('/dashboard', [DashboardEksekutifController::class, 'index'])->name('dashboard.eksekutif');
+// Route::prefix('eksekutif')->group(function () {
+//     Route::get('/dashboard', [DashboardEksekutifController::class, 'index'])->name('dashboard.eksekutif');
+//     Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');
+// });
+
+// Tambahkan middleware auth dan CheckUserRole pada prefix eksekutif
+Route::prefix('eksekutif')->middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardEksekutifController::class, 'index'])->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,eksekutif-provinsi')->name('dashboard.eksekutif');
     Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');
 });
 

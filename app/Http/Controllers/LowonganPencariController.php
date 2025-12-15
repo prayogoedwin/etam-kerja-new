@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\LowonganPencari;
 use App\Models\ProfilPencari;
 use App\Models\UserPencari;
+use App\Models\User;
 use Yajra\DataTables\Facades\DataTables;  // Mengimpor DataTables
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -252,6 +253,28 @@ class LowonganPencariController extends Controller
 
             // Commit transaksi jika sukses
             DB::commit();
+
+            $hr = User::find($dataLow['posted_by']);
+
+
+            $idencode = encode_url($id);
+        
+            // Kirim notifikasi ke HR
+            add_notif(
+                from_user: auth()->id(),
+                to_user: $hr->id,
+                table_target: 'etam_lowongan',
+                id_target: $dataLow['id'],
+                url_redirection: route('lowongan.pelamar', $idencode),
+                is_open: 0,
+                is_email: 0,
+                is_whatsapp: 0,
+                info: 'Cek Lebih Lengkap di Etam Kerja Lowongan: '. $dataLow['judul_lowongan'],
+                created_at: now(),
+                email: $hr->email,
+                no_wa: $hr->whatsapp,
+                subject: 'Lamaran Kerja Baru - Etam Kerja'
+            );
 
             return response()->json(['success' => true, 'message' => 'Berhasil melamar pekerjaan']);
         } catch (\Exception $e) {
