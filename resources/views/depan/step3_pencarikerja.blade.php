@@ -63,10 +63,7 @@
         <hr class="my-4">
 
             
-            <div id="wrap_ket_disabilitas" class="mb-3 d-none">
-                <label for="" class="form-label">Keterangan Disabilitas</label>
-                <input type="text" class="form-control" id="keterangan_disabilitas" name="keterangan_disabilitas">
-            </div>
+            
             <div class="mb-3">
                 <label for="nik" class="form-label">NIK</label>
                 <input type="text" class="form-control" id="nik" name="nik" required>
@@ -177,6 +174,10 @@
                     @endforeach
                 </select>
             </div>
+            <div id="wrap_ket_disabilitas" class="mb-3 d-none">
+                <label for="" class="form-label">Keterangan Disabilitas</label>
+                <input type="text" class="form-control" id="keterangan_disabilitas" name="keterangan_disabilitas">
+            </div>
 
             <div class="mb-3">
                 <label for="jabhar" class="form-label">Jabatan Harapan</label>
@@ -197,3 +198,6 @@
             <button type="submit" class="btn btn-success w-100 mt-3">Daftar</button>
         </form>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="{{ asset('js/ktp-ocr.js') }}"></script>
