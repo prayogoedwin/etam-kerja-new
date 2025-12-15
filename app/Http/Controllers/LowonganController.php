@@ -230,6 +230,7 @@ class LowonganController extends Controller
                 'jurusan_id' => $request->jurusan_id,
                 'marital_id' => $request->marital_id,
                 // 'tipe_lowongan' => $request->tipe_lowongan,
+                'lingkup_lowongan' => $request->lingkup_lowonga,
                 'status_id' => 0,
                 'acc_by' => null,
                 'acc_by_role' => null,

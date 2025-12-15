@@ -639,7 +639,8 @@
                         jumlah_wanita: jumlah_wanita,
                         deskripsi: deskripsi,
                         marital_id: marital_id,
-                        tipe_lowongan: tipe_lowongan
+                        tipe_lowongan: tipe_lowongan,
+                        lingkup_lowongan: lingkup_lowongan
                     },
                     success: function(response) {
                         if (response.success) {
