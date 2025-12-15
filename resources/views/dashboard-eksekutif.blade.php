@@ -421,8 +421,12 @@
             <h1>📊 Dashboard Eksekutif Ketenagakerjaan</h1>
             <div class="timestamp">
                 <span>Diperbarui:</span>
-                <strong>{{ $generated_at }}</strong>
+                <strong>{{ $generated_at }}</strong> | 
+                 <span><a href="{{ route('logout') }}" class="dropdown-item" style="color:#fff"><i
+                                        class="feather icon-lock"></i>
+                                    Logout</a></span>
             </div>
+            
         </div>
 
         <!-- 5 Cards Grid -->
