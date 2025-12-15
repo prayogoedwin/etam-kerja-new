@@ -140,7 +140,7 @@
                                 <div class="col-sm-12" id="kecamatanDiv" style="display: none;">
                                     <div class="form-group">
                                         <label for="kecamatan_id" class="form-label">Kecamatan</label>
-                                        <select id="kecamatan_id" name="kecamatan_id" class="form-control" required>
+                                        <select id="kecamatan_id" name="kecamatan_id" class="form-control" >
                                             <option value="">-- Pilih Kecamatan --</option>
                                         </select>
                                     </div>
@@ -272,28 +272,52 @@
             });
 
             function toggleKabkotaField() {
-                var selectedRole =  $('#userRole option:selected').text();
-                // var selectedRoleText = $('#userRole option:selected').text();
-                if (selectedRole == 'admin-kabkota' || selectedRole == 'admin-kabkota-officer'  || selectedRole == 'eksekutif-kabkota') {
-                    // Show the kabkota field and make it required
+                var selectedRole = $('#userRole option:selected').text();
+                
+                if (selectedRole == 'admin-kabkota' || selectedRole == 'admin-kabkota-officer' || selectedRole == 'eksekutif-kabkota') {
                     $('#kabkotaDiv').show();
                     $('#kabkota_id').prop('required', true);
 
-                    // Additional logic for admin-kabkota-officer
                     if (selectedRole === 'admin-kabkota-officer') {
-                        $('#kecamatanDiv').show(); // Show kecamatan field
-                        $('#kecamatan_id').prop('required', true); // Make kecamatan required
+                        $('#kecamatanDiv').show();
+                        $('#kecamatan_id').prop('required', true);
                     } else {
-                        $('#kecamatanDiv').hide(); // Hide kecamatan field
-                        $('#kecamatan_id').prop('required', false); // Remove required attribute
+                        $('#kecamatanDiv').hide();
+                        $('#kecamatan_id').prop('required', false).val(''); // Reset value juga
                     }
-
                 } else {
-                    // Hide the kabkota field and remove the required attribute
+                    // Hide dan hapus required untuk semua field lokasi
                     $('#kabkotaDiv').hide();
-                    $('#kabkota_id').prop('required', false);
+                    $('#kabkota_id').prop('required', false).val('');
+                    
+                    $('#kecamatanDiv').hide();
+                    $('#kecamatan_id').prop('required', false).val('');
                 }
             }
+
+            // function toggleKabkotaField() {
+            //     var selectedRole =  $('#userRole option:selected').text();
+            //     // var selectedRoleText = $('#userRole option:selected').text();
+            //     if (selectedRole == 'admin-kabkota' || selectedRole == 'admin-kabkota-officer'  || selectedRole == 'eksekutif-kabkota') {
+            //         // Show the kabkota field and make it required
+            //         $('#kabkotaDiv').show();
+            //         $('#kabkota_id').prop('required', true);
+
+            //         // Additional logic for admin-kabkota-officer
+            //         if (selectedRole === 'admin-kabkota-officer') {
+            //             $('#kecamatanDiv').show(); // Show kecamatan field
+            //             $('#kecamatan_id').prop('required', true); // Make kecamatan required
+            //         } else {
+            //             $('#kecamatanDiv').hide(); // Hide kecamatan field
+            //             $('#kecamatan_id').prop('required', false); // Remove required attribute
+            //         }
+
+            //     } else {
+            //         // Hide the kabkota field and remove the required attribute
+            //         $('#kabkotaDiv').hide();
+            //         $('#kabkota_id').prop('required', false);
+            //     }
+            // }
         });
     </script>
 
