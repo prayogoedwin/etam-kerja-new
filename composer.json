@@ -10,6 +10,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "mews/captcha": "^3.4",
+        "phpmailer/phpmailer": "^7.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.10",
         "yajra/laravel-datatables-oracle": "^11.1"
