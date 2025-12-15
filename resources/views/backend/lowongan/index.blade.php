@@ -219,7 +219,7 @@
                                         <label for="stskawin">Status Perkawinan</label>
                                         <select class="form-control" id="status_perkawinan_id"
                                             name="status_perkawinan_id" required>
-                                            <option selected>Pilih Status</option>
+                                            <option value="" selected disabled>Pilih Status</option>
                                             @foreach ($maritals as $marit)
                                                 <option value="{{ $marit->id }}">{{ $marit->name }}</option>
                                             @endforeach
@@ -531,6 +531,10 @@
                 // Clear previous error messages
                 $('#errorMessages').html('').addClass('d-none');
 
+                if (!validateForm()) {
+                    return;
+                }
+
                 $.ajax({
                     type: 'POST',
                     url: '{{ route('lowongan.add') }}', // Ganti dengan rute yang sesuai
@@ -655,6 +659,33 @@
                     }
                 });
             });
+
+            function validateForm() {
+                let requiredFields = [
+                    '#is_lowongan_disabilitas',
+                    '#jabatan_id',
+                    '#sektor_id',
+                    '#pendidikan_id',
+                    '#jurusan_id',
+                    '#tanggal_start',
+                    '#judul_lowongan',
+                    '#kabkota_id',
+                    '#status_perkawinan_id',
+                    '#tipe_lowongan',
+                    '#lingkup_lowongan'
+                ];
+
+                for (let i = 0; i < requiredFields.length; i++) {
+                    let el = $(requiredFields[i]);
+
+                    if (!el.val()) {
+                        el.focus();
+                        alert('Mohon lengkapi semua data yang wajib diisi.');
+                        return false;
+                    }
+                }
+                return true;
+            }
         });
     </script>
 
