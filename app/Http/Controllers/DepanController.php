@@ -107,6 +107,7 @@ class DepanController extends Controller
 
         // Kirim data hasil pencarian dan filter ke view
         return view('depan.depan_lowongan_kerja', compact('lowonganDisetujui'));
+        // echo json_encode($lowonganDisetujui);
     }
 
     public function lowongan_magang(Request $request)

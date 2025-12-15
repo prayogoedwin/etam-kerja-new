@@ -80,38 +80,52 @@
                     <div class="col-xl-4 col-md-6 single-item mb-4">
                         <div class="loker-card-modern">
                             <div class="loker-logo-wrapper">
-                                {{-- <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png" 
+                                {{-- <img src="{{ asset('assets') }}/etam_fe/images/default/logo-perusahaan.png"
                                      alt="Logo Perusahaan"> --}}
-                                 <img src="{{ asset('assets/' . $lowongan->postedBy->penyedia->name) }}" 
-                                            alt="Logo"
-                                            onerror="this.onerror=null; this.src='{{ asset('assets/etam_fe/images/default/logo-perusahaan.png') }}'">
+                                <img src="{{ asset('assets/' . $lowongan->postedBy->penyedia->name) }}" alt="Logo"
+                                    onerror="this.onerror=null; this.src='{{ asset('assets/etam_fe/images/default/logo-perusahaan.png') }}'">
                             </div>
-                            
+
                             <h3 class="loker-title-modern">
-                                <a href="{{ route('lowongan.show', ['id' => encode_url($lowongan->id)]) }}" 
-                                   style="color: inherit; text-decoration: none;">
+                                <a href="{{ route('lowongan.show', ['id' => encode_url($lowongan->id)]) }}"
+                                    style="color: inherit; text-decoration: none;">
                                     {{ $lowongan->judul_lowongan }}
                                 </a>
                             </h3>
-                            
+
                             <span class="loker-company-modern">
                                 {{-- {{ $lowongan->postedBy->name ?? 'Perusahaan' }} --}}
-                                  {{ $lowongan->postedBy->penyedia->name ?? $lowongan->postedBy->name }}
+                                {{ $lowongan->postedBy->penyedia->name ?? $lowongan->postedBy->name }}
                             </span>
-                            
+
+                            @if ($lowongan->tipe_lowongan == 0 || $lowongan->tipe_lowongan == 3)
+                                <span class="loker-badge">
+                                    <?php
+                                    if ($lowongan->lingkup_lowongan == '0') {
+                                        $textLingkup = 'Kabupaten/Kota';
+                                    } elseif ($lowongan->lingkup_lowongan == '1') {
+                                        $textLingkup = 'Provinsi';
+                                    } elseif ($lowongan->lingkup_lowongan == '2') {
+                                        $textLingkup = 'Nasional';
+                                    }
+                                    ?>
+                                    {{ $textLingkup }}
+                                </span>
+                            @endif
+
                             {{-- <p class="loker-desc-modern">
                                 {{ \Illuminate\Support\Str::limit($lowongan->deskripsi ?? 'Deskripsi lowongan tidak tersedia.', 120, '...') }}
                             </p> --}}
-                            
+
                             <div class="loker-meta-modern">
                                 <span class="loker-expired-modern">
                                     <i class="fas fa-clock"></i>
                                     Exp: {{ \Carbon\Carbon::parse($lowongan->tanggal_end)->format('d M Y') }}
                                 </span>
-                                <a href="{{ route('lowongan.show', ['id' => encode_url($lowongan->id)]) }}" 
-                                   class="loker-link-modern">
+                                <a href="{{ route('lowongan.show', ['id' => encode_url($lowongan->id)]) }}"
+                                    class="loker-link-modern">
                                     {{-- Lihat Detail <i class="fas fa-arrow-right"></i> --}}
-                                     <span class="loker-badge">Lihat Detail <i class="fas fa-arrow-right"></i></span>
+                                    <span class="loker-badge">Lihat Detail <i class="fas fa-arrow-right"></i></span>
                                 </a>
                             </div>
                         </div>
@@ -120,7 +134,8 @@
                     <div class="col-12">
                         <div style="text-align: center; padding: 60px 20px;">
                             <i class="fas fa-search" style="font-size: 48px; color: #cbd5e0; margin-bottom: 16px;"></i>
-                            <p style="color: #718096; font-size: 16px;">Tidak ada lowongan yang sesuai dengan pencarian.</p>
+                            <p style="color: #718096; font-size: 16px;">Tidak ada lowongan yang sesuai dengan pencarian.
+                            </p>
                         </div>
                     </div>
                 @endforelse
