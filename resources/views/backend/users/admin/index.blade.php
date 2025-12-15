@@ -274,7 +274,7 @@
             function toggleKabkotaField() {
                 var selectedRole =  $('#userRole option:selected').text();
                 // var selectedRoleText = $('#userRole option:selected').text();
-                if (selectedRole == 'admin-kabkota' || selectedRole == 'admin-kabkota-officer') {
+                if (selectedRole == 'admin-kabkota' || selectedRole == 'admin-kabkota-officer'  || selectedRole == 'eksekutif-kabkota') {
                     // Show the kabkota field and make it required
                     $('#kabkotaDiv').show();
                     $('#kabkota_id').prop('required', true);

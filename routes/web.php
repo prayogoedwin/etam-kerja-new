@@ -83,8 +83,7 @@ Route::get('/getpendidikans', function () {
 //     return response()->json(['captcha' => captcha_src()]);
 // });
 
-Route::get('/dashboard-eksekutif', [DashboardEksekutifController::class, 'index'])
-    ->name('dashboard.eksekutif');
+
 
 
 Route::get('/captcha', function () {
@@ -328,6 +327,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 });
 
 Route::prefix('eksekutif')->group(function () {
+    Route::get('/dashboard', [DashboardEksekutifController::class, 'index'])->name('dashboard.eksekutif');
     Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');
 });
 

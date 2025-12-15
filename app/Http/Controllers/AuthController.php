@@ -22,7 +22,17 @@ class AuthController extends Controller
 
         // Jika validasi captcha dan kredensial login berhasil
         if (Auth::attempt(['email' => $request->username, 'password' => $request->password])) {
-            return redirect()->route('dashboard'); // Ganti dengan rute yang sesuai
+            // return redirect()->route('dashboard'); // Ganti dengan rute yang sesuai
+
+            $user = Auth::user();
+        
+            // Redirect berdasarkan role
+            return match ($user->roles[0]['name']) {
+                'eksekutif-provinsi' => redirect()->route('dashboard.eksekutif'),
+                'eksekutif-kabkota' => redirect()->route('dashboard.eksekutif'),
+                default => redirect()->route('dashboard'),
+            };
+
         }
 
         return back()->withErrors(['login_error' => 'Invalid credentials or captcha']);
