@@ -70,6 +70,16 @@
                     </ul>
                 </li>
 
+                <li class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-user-minus"></i></span><span class="pcoded-mtext">Data
+                            Unfinish</span></a>
+                    <ul class="pcoded-submenu">
+                        <li><a href="{{ route('datapencariunfinish.index') }}">Pencari Kerja</a></li>
+                        {{-- <li><a href="{{ route('datapenyedia.index') }}">Pemberi Kerja</a></li> --}}
+                    </ul>
+                </li>
+
                 <li class="nav-item"><a href="{{ route('jobfair.index') }}" class="nav-link "><span
                             class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
                             class="pcoded-mtext">Job Fair</span></a></li>

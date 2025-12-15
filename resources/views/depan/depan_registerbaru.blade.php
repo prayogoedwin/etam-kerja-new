@@ -109,7 +109,8 @@
             <div class="mb-3">
                 <h3>Lanjutkan Pendaftaran Sekarang!</h3>
                 <label for="pin" hidden class="form-label">OTP</label>
-                <input type="hidden" class="form-control" id="otpwa" name="otpwa" maxlength="6" required value="123456">
+                <input type="hidden" class="form-control" id="otpwa" name="otpwa" maxlength="6" required
+                    value="123456">
                 <input type="hidden" id="email_registered" name="email_registered">
                 <input type="hidden" id="_token2" name="_token2" value="{{ csrf_token() }}">
             </div>
@@ -261,6 +262,15 @@
                             text: msg,
                             icon: 'warning'
                         });
+                    } else if (sts == 6) {
+                        Swal.fire({
+                            title: 'Ooppss',
+                            text: msg,
+                            icon: 'warning'
+                        });
+                        if (currentStep < 3) {
+                            showStep(3);
+                        }
                     } else {
                         Swal.fire({
                             title: 'Berhasil',

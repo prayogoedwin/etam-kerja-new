@@ -155,6 +155,8 @@
                                 <li><a href="{{ url('/depan/lowongan-kerja-disabilitas') }}">Lowongan Disabilitas</a>
                                 </li>
                                 <li><a href="{{ url('/depan/lowongan-magang') }}">Magang</a></li>
+                                <li><a href="{{ url('/depan/lowongan-magang-pemerintah') }}">Magang Pemerintah</a>
+                                </li>
                             </ul>
                         </li>
 

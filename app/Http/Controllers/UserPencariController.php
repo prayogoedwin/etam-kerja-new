@@ -169,6 +169,93 @@ class UserPencariController extends Controller
         return view('backend.data.pencari.index');
     }
 
+    public function data_unfinish(Request $request){
+        if ($request->ajax()) {
+            // Ambil user admin jika diperlukan
+            $userId = Auth::id();
+            $userAdmin = UserAdmin::where('user_id', $userId)->first();
+
+            $pencaris = User::select(
+                'users.id',
+                'users.email',
+                'users.whatsapp',
+                'users.created_at',
+                'users_pencari.ktp' // Tambahkan kolom ktp untuk digunakan di options
+            )
+            ->join('users_pencari', 'users.id', '=', 'users_pencari.user_id')
+            ->whereColumn('users.id', 'users_pencari.ktp') // Perbaikan: whereColumn bukan where
+            ->whereNull('users.deleted_at'); // Tambahkan kondisi soft delete jika ada
+
+            // // Filter untuk admin-kabkota role
+            // $userRole = Auth::user()->roles->first()->name ?? null;
+            // if (in_array($userRole, ['admin-kabkota', 'admin-kabkota-officer']) && $userAdmin) {
+            //     // Perbaikan: Asumsi ada kolom id_kota di users_pencari
+            //     $pencaris->where('users_pencari.id_kota', $userAdmin->kabkota_id);
+            // }
+
+            // Filter pencarian server-side untuk DataTables
+            if (!empty($request->search['value'])) {
+                $searchValue = $request->search['value'];
+                $pencaris->where(function($query) use ($searchValue) {
+                    $query->where('users.email', 'like', "%{$searchValue}%")
+                          ->orWhere('users.whatsapp', 'like', "%{$searchValue}%")
+                          ->orWhere('users_pencari.ktp', 'like', "%{$searchValue}%");
+                });
+            }
+
+            // Untuk debugging query (hapus setelah fix)
+            // \Log::info($pencaris->toSql());
+            // \Log::info($pencaris->getBindings());
+            // echo json_encode($pencaris->toSql());
+            // die();
+
+            return DataTables::of($pencaris)
+                ->addIndexColumn()
+                ->editColumn('created_at', function ($pencari) {
+                    // Pastikan created_at adalah Carbon instance
+                    return $pencari->created_at ? $pencari->created_at->format('d M Y H:i:s') : '-';
+                })
+                ->addColumn('options', function ($pencari) {
+                    // Pastikan ktp tersedia
+                    // $ktp = $pencari->ktp ?? $pencari->id;
+                    // return '
+                    //     <button class="btn btn-primary btn-sm"
+                    //         onclick="window.location.href=\'' . url('dapur/ak1/existing') . '?ktp=' . $ktp . '\'">
+                    //         Edit
+                    //     </button>
+                    // ';
+
+                    return '<input type="checkbox" class="pelamar-checkbox" value="' . $pencari->id . '">';
+                })
+                ->rawColumns(['options'])
+                ->make(true);
+        }
+
+        // echo json_encode($pencaris);
+
+        return view('backend.data.pencari.unfinish');
+    }
+
+    public function bulk_deletepencariunfinish(Request $request){
+        $ids = $request->input('ids');
+
+        if (!$ids) {
+            return response()->json(['message' => 'Data tidak valid'], 400);
+        }
+
+        // Cari admin berdasarkan ID
+        UserPencari::whereIn('user_id', $ids)->update([
+            'deleted_at' => date('Y-m-h H:i:s')
+        ]);
+
+        $user = User::whereIn('id', $ids)->update([
+            'is_deleted' => 1,
+            'deleted_at' => date('Y-m-h H:i:s')
+        ]);
+
+        return response()->json(['message' => 'Berhasil hapus data']);
+    }
+
     public function exportCsv(Request $request)
     {
         try {

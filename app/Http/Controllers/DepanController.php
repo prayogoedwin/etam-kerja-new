@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class DepanController extends Controller
 {
@@ -137,6 +138,34 @@ class DepanController extends Controller
         return view('depan.depan_lowongan_kerja', compact('lowonganDisetujui'));
     }
 
+    public function lowongan_magang_pemerintah(Request $request)
+    {
+        // Ambil parameter pencarian
+        $judulLowongan = $request->input('judul_lowongan');
+        $pendidikanId = $request->input('pendidikan_id');
+        $lokasiId = $request->input('kabkota_id');
+
+        // Query pencarian berdasarkan parameter
+        $lowonganDisetujui = Lowongan::where('status_id', 1) // Lowongan yang disetujui
+            ->where('is_lowongan_disabilitas', 0)
+            ->where('tipe_lowongan', 4)
+            ->where('deleted_at', null)
+            ->when($judulLowongan, function ($query, $judulLowongan) {
+                return $query->where('judul_lowongan', 'like', '%' . $judulLowongan . '%');
+            })
+            ->when($pendidikanId, function ($query, $pendidikanId) {
+                return $query->where('pendidikan_id', $pendidikanId);
+            })
+            ->when($lokasiId, function ($query, $lokasiId) {
+                return $query->where('kabkota_id', $lokasiId);
+            })
+            ->with(['postedBy:id,name', 'postedBy.penyedia:user_id,name'])
+            ->orderBy('tanggal_start', 'desc')
+            ->paginate(9); // Pagination with 10 items per page
+
+        // Kirim data hasil pencarian dan filter ke view
+        return view('depan.depan_lowongan_kerja', compact('lowonganDisetujui'));
+    }
 
     public function lowongan_kerja_disabilitas(Request $request)
     {
@@ -183,7 +212,7 @@ class DepanController extends Controller
         return view('depan.depan_galeri', compact('galeris'));
     }
 
-     public function jobfair()
+    public function jobfair()
     {
         $jobfair = EtamJobfair::whereNull('deleted_at')
             ->where('status', 1)
@@ -193,7 +222,7 @@ class DepanController extends Controller
         return view('depan.depan_jobfair', compact('jobfair'));
     }
 
-     public function jobfair_show($id)
+    public function jobfair_show($id)
     {
         $id = decode_url($id);
         $berita = EtamJobfair::findOrFail($id);
@@ -305,6 +334,122 @@ class DepanController extends Controller
         //     'wa' => $request->wa,
         // ]);
 
+        //start handling unfinish register (pencaker, penyedia, bkk)
+        $role = Role::where('name', $request->role)->first();
+        if($role->table_name == 'users_pencari'){
+            $sql = "
+                SELECT *
+                FROM users
+                WHERE email = ?
+                AND is_finished = '0'
+                LIMIT 1
+            ";
+            $unfinish = DB::selectOne($sql, [$request->email]);
+            if($unfinish){
+                $unfinish_id = $unfinish->id;
+
+                $sqlcek =
+                "SELECT *
+                FROM users_pencari
+                WHERE user_id = ?
+                AND ktp = ?";
+
+                $cekPencari = DB::selectOne($sqlcek, [$unfinish_id, $unfinish_id]);
+                if($cekPencari){
+                    session(['email_registered' => $request->email]);
+                    session(['user_id_registered' => $unfinish_id]);
+
+                    User::where('id', $unfinish_id)
+                    ->update([
+                        'password' => Hash::make($request->password)
+                    ]);
+
+                    return response()->json([
+                        'status' => 6,
+                        'message' => 'Proses registrasi akun pencari kerja anda belum selesai, silahkan lanjutkan pengisian profil'
+                    ]);
+                }
+            }
+        }
+
+        if($role->table_name == 'users_penyedia'){
+            $sql = "
+                SELECT *
+                FROM users
+                WHERE email = ?
+                AND is_finished = '0'
+                LIMIT 1
+            ";
+            $unfinish = DB::selectOne($sql, [$request->email]);
+            if($unfinish){
+                $unfinish_id = $unfinish->id;
+
+                $sqlcek =
+                "SELECT *
+                FROM users_penyedia
+                WHERE user_id = ?
+                AND name = ?";
+
+                $cekPenyedia = DB::selectOne($sqlcek, [$unfinish_id, $unfinish_id]);
+                if($cekPenyedia){
+                    session(['email_registered' => $request->email]);
+                    session(['user_id_registered' => $unfinish_id]);
+
+                    User::where('id', $unfinish_id)
+                    ->update([
+                        'password' => Hash::make($request->password)
+                    ]);
+
+                    return response()->json([
+                        'status' => 6,
+                        'message' => 'Proses registrasi akun perusahaan anda belum selesai, silahkan lanjutkan pengisian profil'
+                    ]);
+                }
+            }
+        }
+
+        if($role->table_name == 'users_bkk'){
+            $sql = "
+                SELECT *
+                FROM users
+                WHERE email = ?
+                AND is_finished = '0'
+                LIMIT 1
+            ";
+            $unfinish = DB::selectOne($sql, [$request->email]);
+            if($unfinish){
+                $unfinish_id = $unfinish->id;
+
+                $sqlcek =
+                "SELECT *
+                FROM users_bkk
+                WHERE user_id = ?
+                AND name = ?";
+
+                $cekBkk = DB::selectOne($sqlcek, [$unfinish_id, $unfinish_id]);
+                if($cekBkk){
+                    session(['email_registered' => $request->email]);
+                    session(['user_id_registered' => $unfinish_id]);
+
+                    User::where('id', $unfinish_id)
+                    ->update([
+                        'password' => Hash::make($request->password)
+                    ]);
+
+                    return response()->json([
+                        'status' => 6,
+                        'message' => 'Proses registrasi akun perusahaan anda belum selesai, silahkan lanjutkan pengisian profil'
+                    ]);
+                }
+            }
+        }
+        //end handling unfinish register (pencaker, penyedia, bkk)
+
+
+        // $unfinish = User::where('email', $request->email)
+        //     ->where('is_finished', 0)
+        //     ->first();
+
         $userEmail = User::where('email', $request->email)->first();
         if ($userEmail) {
             return response()->json([
@@ -323,8 +468,6 @@ class DepanController extends Controller
                 'message' => 'Nomor whatsapp sudah pernah terdaftar'
             ]);
         }
-
-        $role = Role::where('name', $request->role)->first();
 
         //create users
         $user = User::create([
@@ -584,6 +727,11 @@ class DepanController extends Controller
                 'medsos' => $request->medsos
             ]);
 
+            User::where('id', $user->id)
+            ->update([
+                'is_finished' => 1
+            ]);
+
             DB::commit();
 
             return redirect()->to('login')->with('success', 'Berhasil membuat akun silahkan login');
@@ -649,6 +797,11 @@ class DepanController extends Controller
                 // 'deleted_at',
             ]);
 
+            User::where('id', $user->id)
+            ->update([
+                'is_finished' => 1
+            ]);
+
             DB::commit();
 
             return redirect()->to('login')->with('success', 'Berhasil membuat akun perusahaan silahkan login');
@@ -701,6 +854,11 @@ class DepanController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
                 // 'updated_at',
                 // 'deleted_at',
+            ]);
+
+            User::where('id', $user->id)
+            ->update([
+                'is_finished' => 1
             ]);
 
             DB::commit();
