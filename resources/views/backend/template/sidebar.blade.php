@@ -76,7 +76,7 @@
                             Unfinish</span></a>
                     <ul class="pcoded-submenu">
                         <li><a href="{{ route('datapencariunfinish.index') }}">Pencari Kerja</a></li>
-                        {{-- <li><a href="{{ route('datapenyedia.index') }}">Pemberi Kerja</a></li> --}}
+                        <li><a href="{{ route('datapenyediaunfinish.index') }}">Pemberi Kerja</a></li>
                     </ul>
                 </li>
 

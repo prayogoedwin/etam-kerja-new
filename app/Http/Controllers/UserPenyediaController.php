@@ -138,6 +138,78 @@ class UserPenyediaController extends Controller
         return view('backend.data.penyedia.index');
     }
 
+    public function data_unfinish(Request $request){
+        if ($request->ajax()) {
+            // Ambil user admin jika diperlukan
+            $userId = Auth::id();
+            $userAdmin = UserAdmin::where('user_id', $userId)->first();
+
+            $penyedias = User::select(
+                'users.id',
+                'users.email',
+                'users.whatsapp',
+                'users.created_at',
+                'users_penyedia.name' // Tambahkan kolom ktp untuk digunakan di options
+            )
+            ->join('users_penyedia', 'users.id', '=', 'users_penyedia.user_id')
+            ->whereColumn('users.id', 'users_penyedia.name') // Perbaikan: whereColumn bukan where
+            ->whereNull('users.deleted_at'); // Tambahkan kondisi soft delete jika ada
+
+            // Filter pencarian server-side untuk DataTables
+            if (!empty($request->search['value'])) {
+                $searchValue = $request->search['value'];
+                $penyedias->where(function($query) use ($searchValue) {
+                    $query->where('users.email', 'like', "%{$searchValue}%")
+                          ->orWhere('users.whatsapp', 'like', "%{$searchValue}%")
+                          ->orWhere('users_penyedia.name', 'like', "%{$searchValue}%");
+                });
+            }
+
+            // Untuk debugging query (hapus setelah fix)
+            // \Log::info($penyedias->toSql());
+            // \Log::info($penyedias->getBindings());
+            // echo json_encode($penyedias->toSql());
+            // die();
+
+            return DataTables::of($penyedias)
+                ->addIndexColumn()
+                ->editColumn('created_at', function ($penyedia) {
+                    // Pastikan created_at adalah Carbon instance
+                    return $penyedia->created_at ? $penyedia->created_at->format('d M Y H:i:s') : '-';
+                })
+                ->addColumn('options', function ($penyedia) {
+
+                    return '<input type="checkbox" class="pelamar-checkbox" value="' . $penyedia->id . '">';
+                })
+                ->rawColumns(['options'])
+                ->make(true);
+        }
+
+        // echo json_encode($penyedias);
+
+        return view('backend.data.penyedia.unfinish');
+    }
+
+    public function bulk_deletepenyediaunfinish(Request $request){
+        $ids = $request->input('ids');
+
+        if (!$ids) {
+            return response()->json(['message' => 'Data tidak valid'], 400);
+        }
+
+        // Cari admin berdasarkan ID
+        UserPenyedia::whereIn('user_id', $ids)->update([
+            'deleted_at' => date('Y-m-h H:i:s')
+        ]);
+
+        $user = User::whereIn('id', $ids)->update([
+            'is_deleted' => 1,
+            'deleted_at' => date('Y-m-h H:i:s')
+        ]);
+
+        return response()->json(['message' => 'Berhasil hapus data']);
+    }
+
     public function exportCsv(Request $request)
     {
         try {

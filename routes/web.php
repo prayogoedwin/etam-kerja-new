@@ -52,6 +52,7 @@ Route::get('/depan/register', [DepanController::class, 'register']);
 Route::get('depan/lowongan-kerja', [DepanController::class, 'lowongan_kerja'])->name('depan.lowongan-kerja');
 Route::get('/depan/lowongan-kerja-disabilitas', [DepanController::class, 'lowongan_kerja_disabilitas']);
 Route::get('depan/lowongan-magang', [DepanController::class, 'lowongan_magang'])->name('depan.lowongan-magang');
+Route::get('depan/lowongan-magang-pemerintah', [DepanController::class, 'lowongan_magang_pemerintah'])->name('depan.lowongan-magang-pemerintah');
 Route::get('/depan/lowongan-detail/{id}', [DepanController::class, 'lowongan_show'])->name('lowongan.show');
 Route::get('/depan/infografis', [DepanController::class, 'infografis']);
 Route::get('/depan/galeri', [DepanController::class, 'galeri']);
@@ -225,8 +226,14 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/pencari', [UserPencariController::class, 'data'])->name('datapencari.index');
         Route::get('/datapencari/export-csv', [UserPencariController::class, 'exportCsv'])->name('datapencari.exportCsv');
 
+        Route::get('/pencari-unfinish', [UserPencariController::class, 'data_unfinish'])->name('datapencariunfinish.index');
+        Route::post('/pencari-unfinish/bulk_deletepencari', [UserPencariController::class, 'bulk_deletepencariunfinish'])->name('bulkdelete.pencariunfinish');
+
         Route::get('/penyedia', [UserPenyediaController::class, 'data'])->name('datapenyedia.index');
         Route::get('/datapenyedia/export-csv', [UserPenyediaController::class, 'exportCsv'])->name('datapenyedia.exportCsv');
+
+        Route::get('/penyedia-unfinish', [UserPenyediaController::class, 'data_unfinish'])->name('datapenyediaunfinish.index');
+        Route::post('/penyedia-unfinish/bulk_deletepenyedia', [UserPenyediaController::class, 'bulk_deletepenyediaunfinish'])->name('bulkdelete.penyediaunfinish');
     });
 
     Route::prefix('penyedias')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer,penyedia-kerja')->group(function () {
