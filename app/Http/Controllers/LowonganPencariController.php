@@ -29,7 +29,7 @@ class LowonganPencariController extends Controller
                 'etam_lowongan.judul_lowongan',
                 'etam_lowongan.tanggal_start',
                 'etam_lowongan.tanggal_end',
-                'etam_lowongan.deskripsiX',
+                'etam_lowongan.deskripsi',
                 'users_penyedia.name as nama_perusahaan'
             )
             ->join('users_penyedia', 'users_penyedia.user_id', '=', 'etam_lowongan.posted_by') // Join tabel
