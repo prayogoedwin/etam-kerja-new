@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Rules\RecaptchaV3;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -18,6 +19,7 @@ class AuthController extends Controller
             'username' => 'required|string',
             'password' => 'required|string',
             'captcha' => 'required|captcha', // Validasi captcha
+            'recaptcha_token' => ['required', new RecaptchaV3(0.5)],  // v3
         ]);
 
         // Jika validasi captcha dan kredensial login berhasil

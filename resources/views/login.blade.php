@@ -66,6 +66,8 @@
             color: #555;
         }
     </style>
+
+    <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
 </head>
 
 <body>
@@ -84,8 +86,9 @@
 
         </div>
         <h2 class="text-center mb-4">Login</h2>
-        <form action="{{ route('login.action') }}" method="POST">
+        <form action="{{ route('login.action') }}" method="POST" id="loginForm">
             @csrf <!-- Laravel CSRF token for security -->
+            <input type="hidden" name="recaptcha_token" id="recaptcha_token">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" required>
@@ -125,7 +128,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function refreshCaptcha() {
-            location.reload(); // Fungsi untuk menyegarkan halaman
+            // location.reload();
+             $('#captchaImage').attr('src', '{{ captcha_src() }}' + '?' + Date.now());
         }
     </script>
 
@@ -137,6 +141,32 @@
             });
         });
     </script>
+
+    <script>
+        const RECAPTCHA_SITE_KEY = '{{ config('services.recaptcha.site_key') }}';
+        
+        $('#loginForm').on('submit', function(e) {
+            e.preventDefault();
+            let form = this;
+            
+            console.log('Form submit triggered'); // debug 1
+            
+            grecaptcha.ready(function() {
+                console.log('grecaptcha ready'); // debug 2
+                
+                grecaptcha.execute(RECAPTCHA_SITE_KEY, {action: 'login'}).then(function(token) {
+                    console.log('Token generated:', token); // debug 3 - ini yang penting
+                    $('#recaptcha_token').val(token);
+                    console.log('Hidden input value:', $('#recaptcha_token').val()); // debug 4
+                    form.submit();
+                }).catch(function(err) {
+                    console.error('reCAPTCHA error:', err);
+                });
+            });
+        });
+    </script>
+
 </body>
+
 
 </html>
