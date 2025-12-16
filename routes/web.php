@@ -35,6 +35,7 @@ use App\Http\Controllers\JobFairController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\BkkController;
 use App\Http\Controllers\MagangDnController;
+use App\Http\Controllers\Dokumentasi;
 
 use App\Http\Controllers\DashboardEksekutifController;
 
@@ -358,4 +359,12 @@ Route::get('/get-kecamatan', [BackController::class, 'getKecamatan']);
 //   });
 
 Route::get('ak1/cek/{unik_kode}', [Ak1Controller::class, 'viewAk1'])->name('ak1.view');
+
+Route::get('/docs', [Dokumentasi::class, 'index'])->name('docs.index');
+Route::prefix('docs')->group(function () { 
+    Route::get('/penempatan-kerja', [Dokumentasi::class, 'penempatan_kerja'])->name('docs.penempatan');
+    Route::get('/magang-pemerintah', [Dokumentasi::class, 'magang_pemerintah'])->name('docs.magang.pemerintah');
+    Route::get('/magang-mandiri', [Dokumentasi::class, 'magang_mandiri'])->name('docs.magang.mandiri');
+    Route::get('/jobfair', [Dokumentasi::class, 'job_fair'])->name('docs.job.fair');
+});
 

@@ -2,256 +2,226 @@
 
 @section('content')
 
-    <body class="box-layout container background-green">
-        <!-- [ Main Content ] start -->
-        <div class="pcoded-main-container">
-            <div class="pcoded-content">
+<body class="box-layout container background-green">
+    <div class="pcoded-main-container">
+        <div class="pcoded-content">
 
-
-                <!-- [ breadcrumb ] start -->
-                <div class="page-header">
-                    <div class="page-block">
-                        <div class="row align-items-center">
-                            <div class="col-md-12">
-                                <div class="page-header-title">
-                                    <h5 class="m-b-10">Rekap</h5>
-                                </div>
-                                {{-- <ul class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
-                                    <li class="breadcrumb-item"><a href="#!">Hospital</a></li>
-                                    <li class="breadcrumb-item"><a href="#!">Department</a></li>
-                                </ul> --}}
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Rekap IPK III/6</h5>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- [ breadcrumb ] end -->
+            </div>
+            <!-- [ breadcrumb ] end -->
 
+            <!-- [ Main Content ] start -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-body">
 
-                <!-- [ Main Content ] start -->
-                <div class="row">
-
-
-                    <!-- customar project  start -->
-                    <div class="col-xl-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row align-items-center m-l-0">
-                                    <div class="col-sm-12">
-                                        <h5>IPK-lll/6: LOWONGAN KERJA TERDAFTAR, DITEMPATKAN DAN DIHAPUSKAN MENURUT SEKTOR LAPANGAN USAHA (DESEMBER 2024)</h5>
+                            <!-- Filter Form -->
+                            <form method="GET" action="{{ route('rekap.ak36') }}" class="mb-4 no-print">
+                                <div class="row align-items-end">
+                                    <div class="col-md-3">
+                                        <label for="triwulan" class="form-label">Triwulan</label>
+                                        <select name="triwulan" id="triwulan" class="form-control">
+                                            <option value="1" {{ $triwulan == 1 ? 'selected' : '' }}>Triwulan I (Jan - Mar)</option>
+                                            <option value="2" {{ $triwulan == 2 ? 'selected' : '' }}>Triwulan II (Apr - Jun)</option>
+                                            <option value="3" {{ $triwulan == 3 ? 'selected' : '' }}>Triwulan III (Jul - Sep)</option>
+                                            <option value="4" {{ $triwulan == 4 ? 'selected' : '' }}>Triwulan IV (Okt - Des)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="tahun" class="form-label">Tahun</label>
+                                        <select name="tahun" id="tahun" class="form-control">
+                                            @for($y = date('Y'); $y >= 2020; $y--)
+                                                <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>{{ $y }}</option>
+                                            @endfor
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            <i class="feather icon-filter"></i> Filter
+                                        </button>
+                                        <a href="{{ route('rekap.ak36') }}" class="btn btn-secondary btn-sm">
+                                            <i class="feather icon-refresh-cw"></i> Reset
+                                        </a>
+                                        <button type="button" class="btn btn-success btn-sm" onclick="window.print()">
+                                            <i class="feather icon-printer"></i> Print
+                                        </button>
+                                        <button type="button" class="btn btn-info btn-sm" onclick="exportToExcel()">
+                                            <i class="feather icon-download"></i> Excel
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="table-responsive">
+                            </form>
 
-                                    <table class="table table-bordered">
-                                        
-                                            <thead>
-                                                <tr class="header-title">
-                                                    <th rowspan="3" class="col-kode">Kode</th>
-                                                    <th rowspan="3" class="col-uraian">Uraian Jenis Sektor Lapangan Usaha</th>
-                                                    <th colspan="2">Sisa akhir Triwulan Lalu</th>
-                                                    <th colspan="2">Lowongan Terdaftar Triwulan ini</th>
-                                                    <th colspan="2">Lowongan Dipenuhi Triwulan ini</th>
-                                                    <th colspan="2">Dihapuskan pada Triwulan ini</th>
-                                                    <th colspan="2">Sisa Lowongan akhir Triwulan ini</th>
-                                                </tr>
-                                                <tr class="header-title">
-                                                    <th>L</th>
-                                                    <th>W</th>
-                                                    <th>L</th>
-                                                    <th>W</th>
-                                                    <th>L</th>
-                                                    <th>W</th>
-                                                    <th>L</th>
-                                                    <th>W</th>
-                                                    <th>L</th>
-                                                    <th>W</th>
-                                                </tr>
-                                                <tr class="header-sub">
-                                                    <th>(1)</th>
-                                                    <th>(2)</th>
-                                                    <th>(3)</th>
-                                                    <th>(4)</th>
-                                                    <th>(5)</th>
-                                                    <th>(6)</th>
-                                                    <th>(7)</th>
-                                                    <th>(8)</th>
-                                                    <th>(9)</th>
-                                                    <th>(10)</th>
-                                                    <th>(11)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <!-- Sektor A: Pertanian, Kehutanan dan Perikanan -->
-                                                <tr class="row-group">
-                                                    <td>A</td>
-                                                    <td class="col-uraian">PERTANIAN, KEHUTANAN DAN PERIKANAN</td>
-                                                    <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>011</td>
-                                                    <td class="col-uraian">PERTANIAN TANAMAN SEMUSIM</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>012</td>
-                                                    <td class="col-uraian">PERTANIAN TANAMAN TAHUNAN</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>013</td>
-                                                    <td class="col-uraian">PERTANIAN TANAMAN HIAS DAN PENGEMBANGBIAKAN TANAMAN</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>014</td>
-                                                    <td class="col-uraian">PETERNAKAN</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>016</td>
-                                                    <td class="col-uraian">JASA PENUNJANG PERTANIAN DAN PASCA PANEN</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>017</td>
-                                                    <td class="col-uraian">PERBURUAN, PENANGKAPAN DAN PENANGKARAN SATWA LIAR</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>021</td>
-                                                    <td class="col-uraian">PENGUSAHAAN HUTAN</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>022</td>
-                                                    <td class="col-uraian">PENEBANGAN DAN PEMUNGUTAN KAYU</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>023</td>
-                                                    <td class="col-uraian">PEMUNGUTAN HASIL HUTAN BUKAN KAYU</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>024</td>
-                                                    <td class="col-uraian">JASA PENUNJANG KEHUTANAN</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>031</td>
-                                                    <td class="col-uraian">PERIKANAN TANGKAP</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>032</td>
-                                                    <td class="col-uraian">PERIKANAN BUDIDAYA</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-
-                                                <!-- Sektor B: Pertambangan dan Penggalian -->
-                                                <tr class="row-group">
-                                                    <td>B</td>
-                                                    <td class="col-uraian">PERTAMBANGAN DAN PENGGALIAN</td>
-                                                    <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>051</td>
-                                                    <td class="col-uraian">PERTAMBANGAN BATU BARA</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>052</td>
-                                                    <td class="col-uraian">PERTAMBANGAN LIGNIT</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>061</td>
-                                                    <td class="col-uraian">PERTAMBANGAN MINYAK BUMI</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>062</td>
-                                                    <td class="col-uraian">PERTAMBANGAN GAS ALAM DAN PANAS BUMI</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>071</td>
-                                                    <td class="col-uraian">PERTAMBANGAN PASIR BESI DAN BIJIH BESI</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>072</td>
-                                                    <td class="col-uraian">PERTAMBANGAN BIJIH LOGAM YANG TIDAK MENGANDUNG BESI, TIDAK TERMASUK BIJIH LOGAM MULIA</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>073</td>
-                                                    <td class="col-uraian">PERTAMBANGAN BIJIH LOGAM MULIA</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>081</td>
-                                                    <td class="col-uraian">PENGGALIAN BATU, PASIR DAN TANAH LIAT</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>089</td>
-                                                    <td class="col-uraian">PERTAMBANGAN DAN PENGGALIAN LAINNYA YTDL</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>091</td>
-                                                    <td class="col-uraian">JASA PERTAMBANGAN MINYAK BUMI DAN GAS ALAM</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>099</td>
-                                                    <td class="col-uraian">JASA PERTAMBANGAN DAN PENGGALIAN LAINNYA</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-
-                                                <!-- Sektor C: Industri Pengolahan -->
-                                                <tr class="row-group">
-                                                    <td>C</td>
-                                                    <td class="col-uraian">INDUSTRI PENGOLAHAN</td>
-                                                    <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>101</td>
-                                                    <td class="col-uraian">INDUSTRI PENGOLAHAN DAN PENGAWETAN DAGING</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                                <tr>
-                                                    <td>102</td>
-                                                    <td class="col-uraian">INDUSTRI PENGOLAHAN DAN PENGAWETAN IKAN DAN BIOTA AIR</td>
-                                                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                                                </tr>
-                                            </tbody>
-
-                                    </table>
-
-
-
-
-
+                            <!-- Report Title -->
+                            <div class="row align-items-center m-l-0 mb-3">
+                                <div class="col-sm-12 text-center">
+                                    <h5>IPK III/6: LOWONGAN KERJA TERDAFTAR, DIPENUHI DAN DIHAPUSKAN MENURUT SEKTOR LAPANGAN USAHA</h5>
+                                    <h6>({{ strtoupper($namaTriwulan) }} {{ $tahun }})</h6>
                                 </div>
                             </div>
+
+                            <!-- Table -->
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="tableIPK36">
+                                    <thead class="text-center">
+                                        <tr>
+                                            <th rowspan="2" style="vertical-align: middle; width: 80px;">Kode</th>
+                                            <th rowspan="2" style="vertical-align: middle;">Uraian Jenis Sektor Lapangan Usaha</th>
+                                            <th colspan="2">Sisa Akhir<br><small>Triwulan Lalu</small></th>
+                                            <th colspan="2">Lowongan Terdaftar<br><small>Triwulan Ini</small></th>
+                                            <th colspan="2">Lowongan Dipenuhi<br><small>Triwulan Ini</small></th>
+                                            <th colspan="2">Dihapuskan<br><small>Triwulan Ini</small></th>
+                                            <th colspan="2">Sisa Lowongan<br><small>Akhir Triwulan Ini</small></th>
+                                        </tr>
+                                        <tr>
+                                            <th>L</th>
+                                            <th>W</th>
+                                            <th>L</th>
+                                            <th>W</th>
+                                            <th>L</th>
+                                            <th>W</th>
+                                            <th>L</th>
+                                            <th>W</th>
+                                            <th>L</th>
+                                            <th>W</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Nomor Kolom -->
+                                        <tr class="text-center table-secondary">
+                                            <td>(1)</td>
+                                            <td>(2)</td>
+                                            <td>(3)</td>
+                                            <td>(4)</td>
+                                            <td>(5)</td>
+                                            <td>(6)</td>
+                                            <td>(7)</td>
+                                            <td>(8)</td>
+                                            <td>(9)</td>
+                                            <td>(10)</td>
+                                            <td>(11)</td>
+                                            <td>(12)</td>
+                                        </tr>
+
+                                        <!-- Data per Sektor -->
+                                        @foreach($sektors as $id => $data)
+                                        <tr>
+                                            <td class="text-center">{{ $data['kode'] }}</td>
+                                            <td>{{ $data['nama'] }}</td>
+                                            <td class="text-center">{{ $data['sisa_triwulan_lalu']['L'] ?: '' }}</td>
+                                            <td class="text-center">{{ $data['sisa_triwulan_lalu']['W'] ?: '' }}</td>
+                                            <td class="text-center">{{ $data['terdaftar']['L'] ?: '' }}</td>
+                                            <td class="text-center">{{ $data['terdaftar']['W'] ?: '' }}</td>
+                                            <td class="text-center">{{ $data['dipenuhi']['L'] ?: '' }}</td>
+                                            <td class="text-center">{{ $data['dipenuhi']['W'] ?: '' }}</td>
+                                            <td class="text-center">{{ $data['dihapus']['L'] ?: '' }}</td>
+                                            <td class="text-center">{{ $data['dihapus']['W'] ?: '' }}</td>
+                                            <td class="text-center">{{ $data['sisa_triwulan_ini']['L'] ?: '' }}</td>
+                                            <td class="text-center">{{ $data['sisa_triwulan_ini']['W'] ?: '' }}</td>
+                                        </tr>
+                                        @endforeach
+
+                                        <!-- Jumlah Total -->
+                                        <tr class="text-center table-primary fw-bold">
+                                            <td colspan="2"><strong>JUMLAH</strong></td>
+                                            <td>{{ $jumlah['sisa_triwulan_lalu']['L'] }}</td>
+                                            <td>{{ $jumlah['sisa_triwulan_lalu']['W'] }}</td>
+                                            <td>{{ $jumlah['terdaftar']['L'] }}</td>
+                                            <td>{{ $jumlah['terdaftar']['W'] }}</td>
+                                            <td>{{ $jumlah['dipenuhi']['L'] }}</td>
+                                            <td>{{ $jumlah['dipenuhi']['W'] }}</td>
+                                            <td>{{ $jumlah['dihapus']['L'] }}</td>
+                                            <td>{{ $jumlah['dihapus']['W'] }}</td>
+                                            <td>{{ $jumlah['sisa_triwulan_ini']['L'] }}</td>
+                                            <td>{{ $jumlah['sisa_triwulan_ini']['W'] }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
                         </div>
                     </div>
-                    <!-- customar project  end -->
-
-
                 </div>
-                <!-- [ Main Content ] end -->
-
-
             </div>
-        </div>
+            <!-- [ Main Content ] end -->
 
-    </body>
+        </div>
+    </div>
+</body>
+
 @endsection
 
+@push('css')
+<style>
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+        .pcoded-header,
+        .pcoded-sidebar,
+        .page-header {
+            display: none !important;
+        }
+        .pcoded-main-container {
+            margin-left: 0 !important;
+        }
+        .card {
+            border: none !important;
+            box-shadow: none !important;
+        }
+        table {
+            font-size: 9pt;
+        }
+        th, td {
+            padding: 3px !important;
+        }
+    }
+    
+    .table th, .table td {
+        vertical-align: middle;
+    }
+</style>
+@endpush
 
 @push('js')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+function exportToExcel() {
+    var table = document.getElementById('tableIPK36');
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.table_to_sheet(table, { raw: true });
+    
+    // Set column widths
+    ws['!cols'] = [
+        {wch: 10},  // Kode
+        {wch: 50},  // Uraian Sektor
+        {wch: 6},   // Sisa L
+        {wch: 6},   // Sisa W
+        {wch: 6},   // Terdaftar L
+        {wch: 6},   // Terdaftar W
+        {wch: 6},   // Dipenuhi L
+        {wch: 6},   // Dipenuhi W
+        {wch: 6},   // Dihapus L
+        {wch: 6},   // Dihapus W
+        {wch: 6},   // Sisa Ini L
+        {wch: 6},   // Sisa Ini W
+    ];
+    
+    XLSX.utils.book_append_sheet(wb, ws, "IPK III-6");
+    
+    var filename = "IPK_III_6_Triwulan_{{ $triwulan }}_{{ $tahun }}.xlsx";
+    XLSX.writeFile(wb, filename);
+}
+</script>
 @endpush
