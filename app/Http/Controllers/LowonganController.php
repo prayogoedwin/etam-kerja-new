@@ -35,6 +35,7 @@ class LowonganController extends Controller
             ->where('etam_progres.modul', 'lowongan') // Kondisi where
             ->where('etam_lowongan.posted_by', auth()->user()->id) // Kondisi where
             // ->where('tipe_lowongan', 0) // lowongan umum, bukan bkk, bukan job fair
+            ->orderBy('etam_lowongan.id', 'desc')
             ->get();
 
             return DataTables::of($lokers)
@@ -518,7 +519,7 @@ class LowonganController extends Controller
 
             // Tentukan pesan berdasarkan action/progres
             $info = "Status lamaran Anda untuk posisi \"{$lowongan->judul}\" telah diperbarui menjadi: {$namaProgres}";
-            
+
             if ($keterangan) {
                 $info .= "\n\nKeterangan: {$keterangan}";
             }
@@ -587,7 +588,7 @@ class LowonganController extends Controller
 
             // Tentukan pesan berdasarkan action/progres
             $info = "Status lamaran Anda untuk posisi \"{$lowongan->judul_lowongan}\" telah diperbarui menjadi: {$namaProgres}";
-            
+
             if ($keterangan) {
                 $info .= "\nKeterangan: {$keterangan}";
             }
