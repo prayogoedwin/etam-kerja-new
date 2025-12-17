@@ -48,6 +48,8 @@ use App\Http\Controllers\DashboardEksekutifKabkotaController;
 
 Route::get('/', [DepanController::class, 'index'])->middleware(TrackVisitors::class);
 
+Route::get('/test-mail', [App\Http\Controllers\TestMailController::class, 'send']);
+
 
 Route::get('/depan/bkk', [DepanController::class, 'bkk']);
 Route::get('/depan/login', [DepanController::class, 'login']);
