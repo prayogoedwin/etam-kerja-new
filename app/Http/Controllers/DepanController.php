@@ -92,6 +92,7 @@ class DepanController extends Controller
         $lowonganDisetujui = Lowongan::where('status_id', 1) // Lowongan yang disetujui
             ->where('is_lowongan_disabilitas', 0)
             ->where('deleted_at', null)
+            ->where('tipe_lowongan', 0)
             ->when($judulLowongan, function ($query, $judulLowongan) {
                 return $query->where('judul_lowongan', 'like', '%' . $judulLowongan . '%');
             })
