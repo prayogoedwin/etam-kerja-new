@@ -117,9 +117,43 @@
                 </li>
 
                 {{-- <li class="nav-item"><a href="{{ route('dashboard.pimpinan.index') }}" class="nav-link" --}}
-                <li class="nav-item"><a href="{{ route('dashboard.eksekutif') }}" class="nav-link"
+                {{-- <li class="nav-item"><a href="{{ route('dashboard.eksekutif') }}" class="nav-link"
                         target="_blank"><span class="pcoded-micon"><i class="fa fa-chart-bar"></i></span><span
                             class="pcoded-mtext">Eksekutif</span></a></li>
+
+                <li class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-users"></i></span><span class="pcoded-mtext">Eksekutif</span></a>
+                    <ul class="pcoded-submenu">
+                        <li><a href="{{ route('') }}">KABUPATEN PASER</a></li>
+                        
+                    </ul>
+                </li> --}}
+
+                <li class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-bar-chart-2"></i></span>
+                        <span class="pcoded-mtext">Eksekutif</span>
+                    </a>
+                    <ul class="pcoded-submenu">
+                        <li><a href="{{ route('dashboard.eksekutif') }}">📊 Provinsi Kaltim</a></li>
+                        <li class="nav-item pcoded-hasmenu">
+                            <a href="#" class="nav-link">Per Kabupaten/Kota</a>
+                            <ul class="pcoded-submenu">
+                                <li><a href="{{ route('dashboard.eksekutif.kabkota', 6401) }}">Kabupaten Paser</a></li>
+                                <li><a href="{{ route('dashboard.eksekutif.kabkota', 6402) }}">Kabupaten Kutai Barat</a></li>
+                                <li><a href="{{ route('dashboard.eksekutif.kabkota', 6403) }}">Kabupaten Kutai Kartanegara</a></li>
+                                <li><a href="{{ route('dashboard.eksekutif.kabkota', 6404) }}">Kabupaten Kutai Timur</a></li>
+                                <li><a href="{{ route('dashboard.eksekutif.kabkota', 6405) }}">Kabupaten Berau</a></li>
+                                <li><a href="{{ route('dashboard.eksekutif.kabkota', 6409) }}">Kabupaten Penajam Paser Utara</a></li>
+                                <li><a href="{{ route('dashboard.eksekutif.kabkota', 6411) }}">Kabupaten Mahakam Hulu</a></li>
+                                <li><a href="{{ route('dashboard.eksekutif.kabkota', 6471) }}">Kota Balikpapan</a></li>
+                                <li><a href="{{ route('dashboard.eksekutif.kabkota', 6472) }}">Kota Samarinda</a></li>
+                                <li><a href="{{ route('dashboard.eksekutif.kabkota', 6474) }}">Kota Bontang</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
 
             </ul>
 

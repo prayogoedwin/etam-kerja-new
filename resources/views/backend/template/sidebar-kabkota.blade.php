@@ -118,7 +118,13 @@
                     </ul>
                 </li>
 
+                 <li class="nav-item"><a href="{{ route('dashboard.eksekutif.kabkota') }}" class="nav-link "><span
+                            class="pcoded-micon"><i class="fa fa-archive"></i></span><span
+                            class="pcoded-mtext">Eksekutif</span></a></li>
+
+
             </ul>
+   
 
         </div>
     </div>

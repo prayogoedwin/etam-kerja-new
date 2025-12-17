@@ -38,6 +38,8 @@ use App\Http\Controllers\MagangDnController;
 use App\Http\Controllers\Dokumentasi;
 
 use App\Http\Controllers\DashboardEksekutifController;
+use App\Http\Controllers\DashboardEksekutifKabkotaController;
+
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -348,6 +350,11 @@ Route::prefix('eksekutif')->middleware('auth')->group(function () {
     Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');
 });
 
+Route::prefix('eksekutif-kabkota')->middleware('auth')->group(function () {
+    Route::get('/dashboard/{kabkotaId?}', [DashboardEksekutifKabkotaController::class, 'index'])
+        ->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,eksekutif-provinsi,admin-kabkota,eksekutif-kabkota')
+        ->name('dashboard.eksekutif.kabkota');
+});
 
 Route::middleware('guest')->get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/act_login', [AuthController::class, 'login'])->name('login.action');
