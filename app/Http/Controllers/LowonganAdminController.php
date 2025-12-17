@@ -45,6 +45,7 @@ class LowonganAdminController extends Controller
                           $query->select('status_id')->from('etam_lowongan');
                       });
             })
+            ->orderBy('status_id',)
             ->orderBy('id', 'desc');
 
             // Filter untuk admin-kabkota dan admin-kabkota-officer

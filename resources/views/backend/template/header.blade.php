@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadNotifications();
 
     // Refresh setiap 30 detik
-    setInterval(loadNotifications, 30000);
+    setInterval(loadNotifications, 1800000);
 
     // Mark all as read
     document.getElementById('markAllRead')?.addEventListener('click', function(e) {

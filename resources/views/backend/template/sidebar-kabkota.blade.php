@@ -85,9 +85,37 @@
                     </ul>
                 </li>
 
-                <li class="nav-item"><a href="{{ route('lowongan.admin.index') }}" class="nav-link "><span
+                {{-- <li class="nav-item"><a href="{{ route('lowongan.admin.index') }}" class="nav-link "><span
                             class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span
-                            class="pcoded-mtext">Lowongan</span></a></li>
+                            class="pcoded-mtext">Lowongan</span></a></li> --}}
+
+                @php
+                    $pendingLowonganCount = 0;
+                    if (auth()->check()) {
+                        $query = \App\Models\Lowongan::whereNull('deleted_at')->where('status_id', 0)->whereIn('tipe_lowongan', [0, 3]);
+                        
+                        if (auth()->user()->hasRole('admin-kabkota')) {
+                            $kabkotaId = auth()->user()->admin?->kabkota_id;
+                            if ($kabkotaId) {
+                                $query->where('kabkota_id', $kabkotaId);
+                            }
+                        }
+                        
+                        $pendingLowonganCount = $query->count();
+                    }
+                @endphp
+
+                <li class="nav-item">
+                    <a href="{{ route('lowongan.admin.index') }}" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-briefcase"></i></span>
+                        <span class="pcoded-mtext">Lowongan</span>
+                        @if($pendingLowonganCount > 0)
+                            <span style="background-color: #dc3545; color: #fff; font-size: 10px; min-width: 18px; height: 18px; line-height: 18px; text-align: center; border-radius: 50%; margin-left: 8px; padding: 0 5px; display: inline-block;">
+                                {{ $pendingLowonganCount > 99 ? '99+' : $pendingLowonganCount }}
+                            </span>
+                        @endif
+                    </a>
+                </li>
 
                 <li class="nav-item"><a href="{{ route('lowonganbkk.admin.index') }}" class="nav-link "><span
                             class="pcoded-micon"><i class="feather icon-briefcase"></i></span><span

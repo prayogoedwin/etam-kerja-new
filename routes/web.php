@@ -109,6 +109,8 @@ Route::get('/captcha', function () {
 
 Route::prefix('dapur')->middleware('auth')->group(function () {
 
+    Route::get('/lowongan/pending-count', [NotificationController::class, 'getPendingLowonganCount'])->name('lowongan.pending.count')->middleware('auth');
+
     Route::get('/rekap31', [RekapController::class, 'ak3titik1'])->name('rekap.ak31');
     Route::get('/rekap32', [RekapController::class, 'ak3titik2'])->name('rekap.ak32');
     Route::get('/rekap33', [RekapController::class, 'ak3titik3'])->name('rekap.ak33');
@@ -269,6 +271,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/bkk', [BkkPenyediaController::class, 'index'])->name('bkk.penyedia.index');
         Route::get('/pencari_diterima', [DiterimaPencariController::class, 'index'])->name('pencari_diterima.index');
     });
+   
 
 
     Route::prefix('ak1')->group(function () {
