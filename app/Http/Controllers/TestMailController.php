@@ -11,7 +11,7 @@ class TestMailController extends Controller
     {
         try {
             Mail::raw('Test email dari Etam Kerja - SMTP berhasil!', function ($message) {
-                $message->to('edwin@ezrapratama.co.id') // ganti dengan email tujuan
+                $message->to('prayogo.edwin@gmail.com') // ganti dengan email tujuan
                         ->subject('Test SMTP Laravel');
             });
 
