@@ -170,7 +170,7 @@
                                 <li><a href="{{ url('/depan/infografis') }}">Infografis</a></li>
                                 <li><a href="{{ url('/depan/galeri') }}">Galeri</a></li>
                                 <li><a href="{{ url('/depan/berita') }}">Berita</a></li>
-                                <li><a href="{{ url('/docs') }}">Dokumetasi Alur</a></li>
+                                <li><a href="{{ url('/docs') }}">Dokumentasi Alur</a></li>
                             </ul>
                         </li>
 
