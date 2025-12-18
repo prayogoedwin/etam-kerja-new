@@ -102,15 +102,16 @@
                                 <span class="loker-badge">
                                     <?php
                                     if ($lowongan->lingkup_lowongan == '0') {
-                                        $textLingkup = 'Kabupaten/Kota';
+                                        $textLingkup = ucwords($lowongan->kabkota->name);
                                     } elseif ($lowongan->lingkup_lowongan == '1') {
-                                        $textLingkup = 'Provinsi';
+                                        $textLingkup = 'PROVINSI';
                                     } elseif ($lowongan->lingkup_lowongan == '2') {
-                                        $textLingkup = 'Nasional';
+                                        $textLingkup = 'NASIONAL';
                                     }
                                     ?>
-                                    {{ $textLingkup }}
+                                    {{ $textLingkup }} 
                                 </span>
+                                
                             @endif
 
                             {{-- <p class="loker-desc-modern">
