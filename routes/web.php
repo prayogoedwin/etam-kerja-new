@@ -355,6 +355,8 @@ Route::prefix('eksekutif')->middleware('auth')->group(function () {
     Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');
 });
 
+// Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');
+
 Route::prefix('eksekutif-kabkota')->middleware('auth')->group(function () {
     Route::get('/dashboard/{kabkotaId?}', [DashboardEksekutifKabkotaController::class, 'index'])
         ->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,eksekutif-provinsi,admin-kabkota,eksekutif-kabkota')

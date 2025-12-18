@@ -19,14 +19,14 @@ Route::prefix('v1')->group(function () {
     Route::get('/dashboard-eksekutif', [ApiDashboardEksekutifController::class, 'index']);
 });
 
-// Route::get('/dashboard/pencari', [DashboardController::class, 'pencari']);
-// Route::get('/dashboard/lamaran', [DashboardController::class, 'prosesLamaran']);
-// Route::get('/dashboard/perusahaan', [DashboardController::class, 'perusahaan']);
-// Route::get('/dashboard/lowongan', [DashboardController::class, 'lowongan']);
-// Route::get('/dashboard/penempatan', [DashboardController::class, 'penempatan']);
-// Route::get('/dashboard/top_pendidikan', [DashboardController::class, 'topPendidikan']);
-// Route::get('/dashboard/top_jurusan', [DashboardController::class, 'topJurusan']);
-// Route::get('/dashboard/top_sektor', [DashboardController::class, 'topSektor']);
+Route::get('/dashboard/pencari', [DashboardController::class, 'pencari']);
+Route::get('/dashboard/lamaran', [DashboardController::class, 'prosesLamaran']);
+Route::get('/dashboard/perusahaan', [DashboardController::class, 'perusahaan']);
+Route::get('/dashboard/lowongan', [DashboardController::class, 'lowongan']);
+Route::get('/dashboard/penempatan', [DashboardController::class, 'penempatan']);
+Route::get('/dashboard/top_pendidikan', [DashboardController::class, 'topPendidikan']);
+Route::get('/dashboard/top_jurusan', [DashboardController::class, 'topJurusan']);
+Route::get('/dashboard/top_sektor', [DashboardController::class, 'topSektor']);
 
 
 
