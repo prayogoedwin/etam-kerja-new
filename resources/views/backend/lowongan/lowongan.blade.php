@@ -620,7 +620,8 @@
         $('#simpletable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route("jobfair.lowongan", [$jobfairId, $userId]) }}',
+            // ajax: '{{ route("jobfair.lowongan", [$jobfairId, $userId]) }}',
+            ajax: '{{ url()->current() }}', 
             autoWidth: false,
             columns: [{
                     data: 'DT_RowIndex',

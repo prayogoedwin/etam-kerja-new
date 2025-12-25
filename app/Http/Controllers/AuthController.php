@@ -15,12 +15,35 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+
+        // dd([
+        // 'input' => $request->captcha,
+        // 'session' => session('captcha'),
+        // 'match' => captcha_check($request->captcha)
+        // ]);
+
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
             'captcha' => 'required|captcha', // Validasi captcha
-            'recaptcha_token' => ['required', new RecaptchaV3(0.5)],  // v3
+            // 'captcha' => ['required', function ($attribute, $value, $fail) {
+            // if (!captcha_check($value)) {
+            //     $fail('Captcha tidak valid.');
+            // }
+            // 'recaptcha_token' => ['required', new RecaptchaV3(0.5)],  // v3
         ]);
+
+        // Debug auth attempt
+        // $user = \App\Models\User::where('email', $request->username)->first();
+        
+        // dd([
+        //     'input_username' => $request->username,
+        //     'input_password' => $request->password,
+        //     'user_found' => $user ? true : false,
+        //     'user_email' => $user?->email,
+        //     'user_password_hash' => $user?->password,
+        //     'password_check' => $user ? \Hash::check($request->password, $user->password) : false,
+        // ]);
 
         // Jika validasi captcha dan kredensial login berhasil
         if (Auth::attempt(['email' => $request->username, 'password' => $request->password])) {

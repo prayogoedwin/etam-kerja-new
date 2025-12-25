@@ -260,7 +260,8 @@ $(document).ready(function() {
         processing: true,
         serverSide: true,
         ajax: {
-            url: '{{ route('jobfair.perusahaan', $jobFair->id) }}',
+            // url: '{{ route('jobfair.perusahaan', $jobFair->id) }}',
+            url: '{{ url()->current() }}', 
             type: 'GET',
             error: function(xhr, error, thrown) {
                 console.log('DataTable Error:', xhr.responseText);

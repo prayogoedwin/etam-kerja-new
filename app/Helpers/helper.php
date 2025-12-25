@@ -146,6 +146,13 @@ function encode_url($url){
 }
 
 function decode_url($url){
+
+    $url = strtr($url, array(
+        '.' => '+',
+        '-' => '=',
+        '~' => '/'
+    ));
+    
     $a = base64_decode($url);
     $hitung = strlen($a);
     $x = $hitung - 60;

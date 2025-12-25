@@ -13,6 +13,7 @@ use App\Models\Sektor;
 use App\Models\Pendidikan;
 use App\Models\Jurusan;
 use App\Models\Kabkota;
+// use App\Helpers\helper;
 // use App\Models\Marital;
 
 use Yajra\DataTables\Facades\DataTables;
@@ -109,7 +110,7 @@ class JobFairController extends Controller
                         // Button Detail
                         $html .= '<button class="btn btn-info btn-sm mb-1" onclick="showDetailModal(' . $jobFair->id . ')">Detail</button>';
                         $html .= '
-                        <form action="' . route('jobfair.perusahaan', $jobFair->id) . '" method="GET" style="display:inline;">
+                        <form action="' . route('jobfair.perusahaan', short_encode_url($jobFair->id)) . '" method="GET" style="display:inline;">
                             <button type="submit" class="btn btn-primary btn-sm mb-1 w-100">🏢 Lihat Perusahaan</button>
                         </form>
                         ';
@@ -121,7 +122,7 @@ class JobFairController extends Controller
                         // Button Detail
                         $html .= '<button class="btn btn-info btn-sm mb-1" onclick="showDetailModal(' . $jobFair->id . ')">Detail</button>';
                         $html .= '
-                        <form action="' . route('jobfair.perusahaan', $jobFair->id) . '" method="GET" style="display:inline;">
+                        <form action="' . route('jobfair.perusahaan', short_encode_url($jobFair->id)) . '" method="GET" style="display:inline;">
                             <button type="submit" class="btn btn-primary btn-sm mb-1 w-100">🏢 Lihat Keikutsertaan</button>
                         </form>
                         ';
@@ -159,7 +160,7 @@ class JobFairController extends Controller
                         }
 
                         $html .= '
-                            <form action="' . route('jobfair.perusahaan', $jobFair->id) . '" method="GET" style="display:inline;">
+                            <form action="' . route('jobfair.perusahaan', short_encode_url($jobFair->id)) . '" method="GET" style="display:inline;">
                                 <button type="submit" class="btn btn-primary btn-sm mb-1 w-100">🏢 Lihat Perusahaan</button>
                             </form>
                         ';
@@ -179,7 +180,7 @@ class JobFairController extends Controller
                         // Button Detail
                         $html .= '<button class="btn btn-info btn-sm mb-1" onclick="showDetailModal(' . $jobFair->id . ')">Detail</button>';
                         $html .= '
-                        <form action="' . route('jobfair.perusahaan', $jobFair->id) . '" method="GET" style="display:inline;">
+                        <form action="' . route('jobfair.perusahaan', short_encode_url($jobFair->id)) . '" method="GET" style="display:inline;">
                             <button type="submit" class="btn btn-primary btn-sm mb-1 w-100">🏢 Lihat Perusahaan</button>
                         </form>
                         ';
@@ -511,7 +512,11 @@ class JobFairController extends Controller
         try {
 
             $user = Auth::user();
+            // Log::info('Raw jobfairId: ' . $jobfairId);
+            $jobfairId =  (int) short_decode_url($jobfairId);
             $jobFair = EtamJobFair::findOrFail($jobfairId);
+
+            // dd($jobfairId);
 
             if ($request->ajax()) {
 
@@ -545,7 +550,7 @@ class JobFairController extends Controller
                             if($item->status == 1){
 
                                 if($item->user_id == $user->id){
-                                    $html .= '<form action="' . route('jobfair.lowongan', [$item->jobfair_id, $item->user_id]) . '" method="GET" style="display:inline;">
+                                    $html .= '<form action="' . route('jobfair.lowongan', [short_encode_url($item->jobfair_id), short_encode_url($item->user_id)]) . '" method="GET" style="display:inline;">
                                             <button type="submit" class="btn btn-info btn-sm mb-1 w-100">📋 Lowongan</button>
                                         </form>';
                                     
@@ -575,7 +580,7 @@ class JobFairController extends Controller
                         }
 
                         if($user->roles[0]['name'] == 'pencari-kerja'){
-                            $html .= '<form action="' . route('jobfair.lowongan', [$item->jobfair_id, $item->user_id]) . '" method="GET" style="display:inline;">
+                            $html .= '<form action="' . route('jobfair.lowongan', [short_encode_url($item->jobfair_id), short_encode_url($item->user_id)]) . '" method="GET" style="display:inline;">
                                         <button type="submit" class="btn btn-info btn-sm mb-1 w-100">📋 Lowongan</button>
                                     </form>';
                         }
@@ -597,7 +602,7 @@ class JobFairController extends Controller
                                 $html .= '<button class="btn btn-success btn-sm mb-1" onclick="changeStatus(' . $item->id . ', 1)">Approve</button>';
                             }
 
-                            $html .= '<form action="' . route('jobfair.lowongan', [$item->jobfair_id, $item->user_id]) . '" method="GET" style="display:inline;">
+                            $html .= '<form action="' . route('jobfair.lowongan', [short_encode_url($item->jobfair_id), (short_encode_url($item->user_id))]) . '" method="GET" style="display:inline;">
                                         <button type="submit" class="btn btn-info btn-sm mb-1 w-100">📋 Lowongan</button>
                                     </form>';
                             
@@ -922,6 +927,10 @@ class JobFairController extends Controller
     {
         try {
             $user = Auth::user();
+
+            $jobfairId =  (int) short_decode_url($jobfairId);
+            $userId =  (int) short_decode_url($userId);
+
             $jobFair = EtamJobFair::findOrFail($jobfairId);
             $perusahaan = User::findOrFail($userId);
             
