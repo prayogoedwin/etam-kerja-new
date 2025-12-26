@@ -30,7 +30,7 @@ class BackController extends Controller
         $penyedia = UserPenyedia::where('created_at', now());
         $bkk = UserBkk::where('created_at', now());
 
-        if (Auth::user()->roles[0]['name'] == 'super-admin') {
+        if (Auth::user()->roles[0]['name'] == 'super-admin' || Auth::user()->roles[0]['name'] == 'admin-provinsi') {
             $lowonganPending = $lowonganPending->count();
             $lamaranBelumProses = $lamaranBelumProses->count();
             $ak1 = $ak1->count();

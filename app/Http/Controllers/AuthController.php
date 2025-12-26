@@ -50,6 +50,7 @@ class AuthController extends Controller
             // return redirect()->route('dashboard'); // Ganti dengan rute yang sesuai
 
             $user = Auth::user();
+            
         
             // Redirect berdasarkan role
             return match ($user->roles[0]['name']) {
