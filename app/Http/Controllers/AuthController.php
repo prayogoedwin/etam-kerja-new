@@ -30,7 +30,7 @@ class AuthController extends Controller
             // if (!captcha_check($value)) {
             //     $fail('Captcha tidak valid.');
             // }
-            // 'recaptcha_token' => ['required', new RecaptchaV3(0.5)],  // v3
+            'recaptcha_token' => ['required', new RecaptchaV3(0.5)],  // v3
         ]);
 
         // Debug auth attempt
