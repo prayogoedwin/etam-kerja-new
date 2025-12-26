@@ -371,11 +371,19 @@ if (!function_exists('send_email')) {
             $mail->isSMTP();
             $mail->Host       = config('mail.mailers.smtp.host', 'mail.ezrapratama.co.id');
             $mail->SMTPAuth   = true;
-            $mail->Username   = config('mail.mailers.smtp.username', 'test-etamkerja@ezrapratama.co.id');
-            $mail->Password   = config('mail.mailers.smtp.password', 'test-etamkerja');
+            $mail->Username   = config('mail.mailers.smtp.username');
+            $mail->Password   = config('mail.mailers.smtp.password');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; // SSL
             $mail->Port       = config('mail.mailers.smtp.port', 465);
             $mail->CharSet    = 'UTF-8';
+
+            $mail->SMTPOptions = [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true
+                ]
+            ];
 
             // Recipients
             $mail->setFrom(
