@@ -36,6 +36,7 @@ use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\BkkController;
 use App\Http\Controllers\MagangDnController;
 use App\Http\Controllers\Dokumentasi;
+use App\Http\Controllers\BkkAdminController;
 
 use App\Http\Controllers\DashboardEksekutifController;
 use App\Http\Controllers\DashboardEksekutifKabkotaController;
@@ -250,6 +251,10 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
         Route::get('/penyedia-unfinish', [UserPenyediaController::class, 'data_unfinish'])->name('datapenyediaunfinish.index');
         Route::post('/penyedia-unfinish/bulk_deletepenyedia', [UserPenyediaController::class, 'bulk_deletepenyediaunfinish'])->name('bulkdelete.penyediaunfinish');
+
+        Route::get('/bkk', [BkkAdminController::class, 'index'])->name('bkk.admin.index');
+        Route::get('/bkk/export-csv', [BkkAdminController::class, 'exportCsv'])->name('databkk.exportCsv');
+        Route::get('/bkk/alumni/{id}', [BkkAdminController::class, 'data_alumni'])->name('bkk.adminalumni.index');
     });
 
     Route::prefix('penyedias')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer,penyedia-kerja')->group(function () {
@@ -271,7 +276,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/bkk', [BkkPenyediaController::class, 'index'])->name('bkk.penyedia.index');
         Route::get('/pencari_diterima', [DiterimaPencariController::class, 'index'])->name('pencari_diterima.index');
     });
-   
+
 
 
     Route::prefix('ak1')->group(function () {
@@ -375,7 +380,7 @@ Route::get('/get-kecamatan', [BackController::class, 'getKecamatan']);
 Route::get('ak1/cek/{unik_kode}', [Ak1Controller::class, 'viewAk1'])->name('ak1.view');
 
 Route::get('/docs', [Dokumentasi::class, 'index'])->name('docs.index');
-Route::prefix('docs')->group(function () { 
+Route::prefix('docs')->group(function () {
     Route::get('/penempatan-kerja', [Dokumentasi::class, 'penempatan_kerja'])->name('docs.penempatan');
     Route::get('/magang-pemerintah', [Dokumentasi::class, 'magang_pemerintah'])->name('docs.magang.pemerintah');
     Route::get('/magang-mandiri', [Dokumentasi::class, 'magang_mandiri'])->name('docs.magang.mandiri');

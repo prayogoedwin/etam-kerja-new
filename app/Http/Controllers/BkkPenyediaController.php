@@ -18,13 +18,13 @@ class BkkPenyediaController extends Controller
 
             return DataTables::of($bkks)
                 ->addIndexColumn()
-                // ->addColumn('options', function ($bkk) {
-                //     return '
-                //         <a href="' . route('lowongan.pelamar', encode_url($loker->id)) . '" class="btn btn-info btn-sm">Lihat Pelamar</a>
-                //         <button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $loker->id . ')">Delete</button>
-                //     ';
-                // })
-                // ->rawColumns(['options'])  // Pastikan menambahkan ini untuk kolom options
+                ->addColumn('options', function ($bkk) {
+                    //<button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $loker->id . ')">Delete</button>
+                    return '
+                        <a href="' . route('lowongan.pelamar', encode_url($bkk->id)) . '" class="btn btn-info btn-sm"><i class="fa fa-users"></i></a>
+                    ';
+                })
+                ->rawColumns(['options'])  // Pastikan menambahkan ini untuk kolom options
                 ->make(true);
         }
 

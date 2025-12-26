@@ -41,6 +41,9 @@
                                         <h5>Data</h5>
                                     </div>
                                     {{-- <div class="col-sm-6 text-end">
+                                        <a href="javascript:void(0);" id="downloadCsv" class="btn btn-success">Unduh CSV</a>
+                                    </div> --}}
+                                    {{-- <div class="col-sm-6 text-end">
                                         <button id="btnAdd" class="btn btn-success btn-sm btn-round has-ripple"
                                             data-bs-toggle="modal" data-bs-target="#modal-report"><i
                                                 class="feather icon-plus"></i> Add
@@ -54,6 +57,9 @@
                                                 <th>No</th>
                                                 <th>Nama BKK</th>
                                                 <th>Alamat</th>
+                                                <th>HP</th>
+                                                <th>Kontak</th>
+                                                <th>Jabatan</th>
                                                 <th>Website</th>
                                                 <th>Aksi</th>
                                             </tr>
@@ -97,10 +103,10 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            $('#simpletable').DataTable({
+            var table = $('#simpletable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('bkk.penyedia.index') }}',
+                ajax: '{{ route('bkk.admin.index') }}',
                 autoWidth: false, // Menonaktifkan auto-width
                 columns: [{
                         data: 'DT_RowIndex',
@@ -114,6 +120,15 @@
                         data: 'alamat'
                     },
                     {
+                        data: 'hp'
+                    },
+                    {
+                        data: 'contact_person'
+                    },
+                    {
+                        data: 'jabatan'
+                    },
+                    {
                         data: 'website'
                     },
                     {
@@ -122,6 +137,18 @@
                         searchable: false
                     },
                 ]
+            });
+
+            // Tombol untuk mengunduh CSV
+            $('#downloadCsv').on('click', function() {
+                // Pastikan table sudah terinisialisasi sebelum digunakan
+                var searchTerm = table.search(); // Ambil term pencarian dari DataTable
+
+                // Buat URL dengan parameter pencarian
+                var url = '{{ route('databkk.exportCsv') }}?search=' + searchTerm;
+
+                // Redirect ke URL ekspor CSV
+                window.location.href = url;
             });
         });
     </script>
