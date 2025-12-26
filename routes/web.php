@@ -190,7 +190,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     //route untuk admin
     Route::get('/dashboard', [BackController::class, 'index'])->name('dashboard');
     Route::get('/sample', [BackController::class, 'sample'])->name('sample');
-    Route::prefix('setting')->middleware(CheckUserRole::class . ':super-admin, admin-provinsi')->group(function () {
+    Route::prefix('setting')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi')->group(function () {
         Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
 
         Route::get('/faqs', [EtamFaqController::class, 'index'])->name('faq.index');
