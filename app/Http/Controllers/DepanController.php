@@ -10,7 +10,7 @@ use App\Models\EtamInfografis;
 use App\Models\EtamBerita;
 use App\Models\EtamFaq;
 use App\Models\EtamGaleri;
-use App\Models\EtamJobfair;
+use App\Models\EtamJobFair;
 use App\Models\Lowongan;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
@@ -216,7 +216,7 @@ class DepanController extends Controller
 
     public function jobfair()
     {
-        $jobfair = EtamJobfair::whereNull('deleted_at')
+        $jobfair = EtamJobFair::whereNull('deleted_at')
             ->where('status', 1)
             ->where('status_verifikasi', 1)
             ->orderBy('created_at', 'desc')
@@ -227,7 +227,7 @@ class DepanController extends Controller
     public function jobfair_show($id)
     {
         $id = decode_url($id);
-        $berita = EtamJobfair::findOrFail($id);
+        $berita = EtamJobFair::findOrFail($id);
 
         // Query pencarian berdasarkan parameter
         $lowongan = Lowongan::where('jobfair_id', $id) // Lowongan yang disetuju
