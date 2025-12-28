@@ -34,9 +34,12 @@ class BkkAdminController extends Controller
 
         if ($request->ajax()) {
 
-            $bkks = UserBkk::whereNull('deleted_at')
-                ->where('id_kota', $userIdKota) // 🔥 FILTER KOTA
-                ->get();
+            $userRole = Auth::user()->roles->first()->name ?? null;
+            $query = UserBkk::whereNull('deleted_at');
+            if (in_array($userRole, ['admin-kabkota', 'admin-kabkota-officer']) && $userAdmin) {
+                $query->where('id_kota', $userAdmin->kabkota_id);
+            }
+            $bkks = $query->get();
 
             return DataTables::of($bkks)
                 ->addIndexColumn()

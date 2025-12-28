@@ -61,6 +61,7 @@
                         @endif
                         <li><a href="{{ route('userpencari.index') }}">Pencari Kerja</a></li>
                         <li><a href="{{ route('userpenyedia.index') }}">Pemberi Kerja</a></li>
+                        <li><a href="{{ route('userbkk.index') }}">BKK</a></li>
                     </ul>
                 </li>
 
@@ -75,7 +76,7 @@
                     </ul>
                 </li>
 
-                <li class="nav-item pcoded-hasmenu">
+                <li class="nav-item pcoded-hasmenu" hidden>
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-users"></i></span><span class="pcoded-mtext">AK1</span></a>
                     <ul class="pcoded-submenu">

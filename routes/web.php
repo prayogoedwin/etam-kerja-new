@@ -37,6 +37,7 @@ use App\Http\Controllers\BkkController;
 use App\Http\Controllers\MagangDnController;
 use App\Http\Controllers\Dokumentasi;
 use App\Http\Controllers\BkkAdminController;
+use App\Http\Controllers\UserBkkController;
 
 use App\Http\Controllers\DashboardEksekutifController;
 use App\Http\Controllers\DashboardEksekutifKabkotaController;
@@ -235,6 +236,10 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/penyedia', [UserPenyediaController::class, 'index'])->name('userpenyedia.index');
         Route::delete('/penyedia/delete/{id}', [UserPenyediaController::class, 'softdelete'])->name('userpenyedia.softdelete');
         Route::put('/penyedia/reset/{id}', [UserPenyediaController::class, 'reset'])->name('userpenyedia.reset');
+
+        Route::get('/bkk', [UserBkkController::class, 'index'])->name('userbkk.index');
+        Route::put('/bkk/reset/{id}', [UserBkkController::class, 'reset'])->name('userbkk.reset');
+        Route::delete('/bkk/delete/{id}', [UserBkkController::class, 'softdelete'])->name('userbkk.softdelete');
     });
 
 
