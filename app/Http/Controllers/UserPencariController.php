@@ -163,7 +163,7 @@ class UserPencariController extends Controller
             ->rawColumns(['options']) // Pastikan menambahkan ini untuk kolom options
             ->make(true);
 
-
+            // return response()->json($pencaris);
         }
 
         return view('backend.data.pencari.index');

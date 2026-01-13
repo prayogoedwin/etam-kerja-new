@@ -77,7 +77,6 @@ class UserPenyediaController extends Controller
         $userAdmin = UserAdmin::where('user_id', $id)->first(); // Mencari data UserAdmin berdasarkan user_id
         if ($request->ajax()) {
 
-
             $penyedias = UserPenyedia::with([
                 'user:id,name,email,whatsapp',
                 'user.roles:id,name',
@@ -133,6 +132,8 @@ class UserPenyediaController extends Controller
             })
             ->rawColumns(['options']) // Pastikan menambahkan ini untuk kolom options
             ->make(true);
+
+            // return response()->json($penyedias);
         }
 
         return view('backend.data.penyedia.index');

@@ -111,7 +111,7 @@
                         searchable: false
                     },
                     {
-                        data: 'user.name'
+                        data: 'name'
                     },
                     {
                         data: 'user.email'
