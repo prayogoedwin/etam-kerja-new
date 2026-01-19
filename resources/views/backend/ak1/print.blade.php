@@ -484,17 +484,17 @@
                     <tbody>
                         <tr>
                             <td class="text-center">PERTAMA</td>
-                            <td>28-05-2025</td>
+                            <td>{{ $laporanTanggal['pertama'] }}</td>
                             <td></td>
                         </tr>
                         <tr>
                             <td class="text-center">KEDUA</td>
-                            <td>28-11-2025</td>
+                            <td>{{ $laporanTanggal['kedua'] }}</td>
                             <td></td>
                         </tr>
                         <tr>
                             <td class="text-center">KETIGA</td>
-                            <td>28-05-2026</td>
+                            <td>{{ $laporanTanggal['ketiga'] }}</td>
                             <td></td>
                         </tr>
                         <tr>

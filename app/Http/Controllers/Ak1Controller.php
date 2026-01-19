@@ -359,6 +359,8 @@ class Ak1Controller extends Controller
             $nakerAk1->save();
         }
 
+            
+
         $pendidikans = EtamPencariPendidikan::select(
             'etam_pencari_pendidikan.id',
             'etam_pendidikan.name as pendidikanteks',
@@ -377,9 +379,16 @@ class Ak1Controller extends Controller
         )
         ->where('etam_pencari_keahlian.user_id', $pencari->user_id)
         ->get();
+
+        $tanggalCetak = Carbon::parse($nakerAk1->tanggal_cetak);
+        $laporanTanggal = [
+            'pertama' => $tanggalCetak->copy()->addMonths(6)->format('d-m-Y'),
+            'kedua' => $tanggalCetak->copy()->addMonths(12)->format('d-m-Y'),
+            'ketiga' => $tanggalCetak->copy()->addMonths(18)->format('d-m-Y'),
+        ];
     
         // Mengembalikan tampilan untuk cetak AK1
-        return view('backend.ak1.print', compact('pencari', 'nakerAk1', 'pendidikans', 'keterampilans', 'admins'));
+        return view('backend.ak1.print', compact('pencari', 'nakerAk1', 'pendidikans', 'keterampilans', 'admins', 'laporanTanggal'));
     }
     
 
@@ -439,8 +448,15 @@ class Ak1Controller extends Controller
             $nakerAk1->save();
         }
 
+        $tanggalCetak = Carbon::parse($nakerAk1->tanggal_cetak);
+        $laporanTanggal = [
+            'pertama' => $tanggalCetak->copy()->addMonths(6)->format('d-m-Y'),
+            'kedua' => $tanggalCetak->copy()->addMonths(12)->format('d-m-Y'),
+            'ketiga' => $tanggalCetak->copy()->addMonths(18)->format('d-m-Y'),
+        ];
+
         // Mengembalikan tampilan untuk cetak AK1
-        return view('backend.ak1.print', compact('user', 'statusKerjas', 'pendidikan', 'keterampilan', 'pengalaman', 'nakerAk1'));
+        return view('backend.ak1.print', compact('user', 'statusKerjas', 'pendidikan', 'keterampilan', 'pengalaman', 'nakerAk1', 'laporanTanggal' ));
     }
 
 
