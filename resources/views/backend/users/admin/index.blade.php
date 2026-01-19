@@ -471,6 +471,8 @@
                     // Populate modal fields with retrieved data
                     $('#editAdminId').val(admin.id);
                     $('#editName').val(admin.user.name);
+                    $('#editJabatan').val(admin.jabatan);
+                    
                     $('#editEmail').val(admin.user.email);
                     $('#editWhatsapp').val(admin.user.whatsapp);
                     $('#editRole').val(admin.user.roles[0].id).prop('selected', true);
@@ -497,6 +499,7 @@
             var id = $('#editAdminId').val();
             var name = $('#editName').val();
             var email = $('#editEmail').val();
+             var jabatan = $('#editJabatan').val();
             var whatsapp = $('#editWhatsapp').val();
             var role_id = $('#editRole').val();
             var kabkota_id = $('#editkabkota_id').val();
@@ -514,6 +517,7 @@
                     name: name,
                     email: email,
                     whatsapp: whatsapp,
+                     jabatan: jabatan,
                     role_id: role_id,
                     kabkota_id: kabkota_id
                 },
