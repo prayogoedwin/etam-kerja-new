@@ -224,7 +224,7 @@
                                     </div>
                                 </div>
 
-                            <button type="submit" class="btn btn-primary" onclick="updateFaq()">Save Changes</button>
+                            <button type="submit" class="btn btn-primary" >Save Changes</button>
                         </form>
                     </div>
                 </div>

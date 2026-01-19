@@ -220,6 +220,10 @@ class AdminController extends Controller
                     $admin->kabkota_id = null; // Hapus kabkota jika role bukan 4
                 }
 
+                $admin->update([
+                        'jabatan' => $request->jabatan,
+                ]);
+
                 $admin->save();
 
                 return response()->json(['success' => true, 'message' => 'Update data berhasil.']);
