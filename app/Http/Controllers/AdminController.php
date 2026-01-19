@@ -156,7 +156,7 @@ class AdminController extends Controller
                         'user:id,name,email,whatsapp',
                         'user.roles:id,name'// Ambil data role terkait dengan kolom tertentu
                     ])
-                    ->select('id', 'user_id', 'province_id', 'kabkota_id', 'kecamatan_id', 'created_by', 'updated_by', 'is_deleted')
+                    ->select('id', 'user_id', 'province_id', 'kabkota_id', 'jabatan', 'kecamatan_id', 'created_by', 'updated_by', 'is_deleted')
                     ->findOrFail($id);
 
                 return response()->json(['success' => true, 'data' => $admin]);
