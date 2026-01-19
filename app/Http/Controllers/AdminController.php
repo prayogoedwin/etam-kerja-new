@@ -207,7 +207,7 @@ class AdminController extends Controller
                     'name' => $request->name,
                     'email' => $request->email,
                     'whatsapp' => $request->whatsapp,
-                    'jabatan' => $request->jabatan,
+            
                 ]);
 
                 // Perbarui role untuk user terkait
