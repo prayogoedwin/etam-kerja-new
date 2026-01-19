@@ -32,7 +32,7 @@ class AdminController extends Controller
                     ]) // Ambil data admin dengan user terkait 
                     ->whereNotNull('kabkota_id') // Kondisi whereNotNull
                     ->where('kabkota_id',  $userAdmin->kabkota_id) // Tambahkan kondisi where
-                    ->select('id', 'user_id', 'province_id', 'kabkota_id', 'kecamatan_id', 'created_by', 'updated_by', 'is_deleted'); 
+                    ->select('id', 'user_id',  'jabatan', 'province_id', 'kabkota_id', 'kecamatan_id', 'created_by', 'updated_by', 'is_deleted'); 
                     
                 }else if(Auth::user()->roles[0]['name'] == 'admin-provinsi' || Auth::user()->roles[0]['name'] == 'super-admin'){
 
@@ -40,7 +40,7 @@ class AdminController extends Controller
                         'user:id,name,email,whatsapp',
                         'user.roles:id,name'// Ambil data role terkait dengan kolom tertentu
                     ]) // Ambil data admin dengan user terkait 
-                    ->select('id', 'user_id', 'province_id', 'kabkota_id', 'kecamatan_id', 'created_by', 'updated_by', 'is_deleted'); 
+                    ->select('id', 'user_id', 'province_id', 'kabkota_id', 'kecamatan_id', 'jabatan',  'created_by', 'updated_by', 'is_deleted'); 
 
                 }
     
@@ -70,7 +70,7 @@ class AdminController extends Controller
                     })
 
                      ->addColumn('jabatan', function ($admin) {
-                        return $admin->jabatan ? $admin->user->jabatan : 'N/A';
+                        return $admin->jabatan;
                     })
                     ->addColumn('roles', function ($admin) {
                         // Menampilkan nama role
