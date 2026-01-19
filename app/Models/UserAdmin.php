@@ -18,6 +18,7 @@ class UserAdmin extends Model
         'province_id',
         'kabkota_id',
         'kecamatan_id',
+        'jabatan', // tambahkan ini
         'created_by',
         'updated_by',
         'deleted_by',

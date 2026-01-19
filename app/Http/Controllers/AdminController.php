@@ -68,6 +68,10 @@ class AdminController extends Controller
                     ->addColumn('whatsapp', function ($admin) {
                         return $admin->user ? $admin->user->whatsapp : 'N/A';
                     })
+
+                     ->addColumn('jabatan', function ($admin) {
+                        return $admin->jabatan ? $admin->user->jabatan : 'N/A';
+                    })
                     ->addColumn('roles', function ($admin) {
                         // Menampilkan nama role
                         if ($admin->user && $admin->user->roles->isNotEmpty()) {
@@ -136,6 +140,7 @@ class AdminController extends Controller
                 'province_id' => 64,
                 'kabkota_id' => $request->kabkota_id,
                 'kecamatan_id' => $request->kecamatan_id,
+                'jabatan' => $request->jabatan,
                 'created_by' => $userId,
                 'updated_by' => $userId
                 // Tambahkan kolom lainnya jika diperlukan
@@ -202,6 +207,7 @@ class AdminController extends Controller
                     'name' => $request->name,
                     'email' => $request->email,
                     'whatsapp' => $request->whatsapp,
+                    'jabatan' => $request->jabatan,
                 ]);
 
                 // Perbarui role untuk user terkait

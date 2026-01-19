@@ -57,6 +57,7 @@
                                                 <th>Role</th>
                                                 <th>Kabkota</th>
                                                 <th>Kecamatan</th>
+                                                <th>Jabatan</th>
                                                 <th>Options</th>
                                             </tr>
                                         </thead>
@@ -146,6 +147,14 @@
                                     </div>
                                 </div>
 
+                                 <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label class="floating-label" for="jabatan">Jabatan</label>
+                                        <input type="text" class="form-control" id="jabatan" name="jabatan"
+                                            placeholder="">
+                                    </div>
+                                </div>
+
                                 <div class="col-sm-12">
                                     {{-- <div class="form-group">
                                         <label class="floating-label" for="Description">Description</label>
@@ -206,6 +215,15 @@
                                 </div>
                             </div>
 
+
+                            <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label class="floating-label" for="editJabatan">Jabatan</label>
+                                        <input type="text" class="form-control" id="editJabatan" name="jabatan"
+                                            placeholder="">
+                                    </div>
+                                </div>
+
                             <button type="submit" class="btn btn-primary" onclick="updateFaq()">Save Changes</button>
                         </form>
                     </div>
@@ -247,6 +265,9 @@
                     },
                     {
                         data: 'kecamatan'
+                    },
+                     {
+                        data: 'jabatan'
                     },
 
                     
