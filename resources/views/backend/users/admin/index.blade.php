@@ -175,7 +175,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalEditLabel">Edit Admin</h5>
+                        <h5 class="modal-title" id="modalEditLabel">Edit Admin A</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -499,7 +499,7 @@
             var id = $('#editAdminId').val();
             var name = $('#editName').val();
             var email = $('#editEmail').val();
-             var jabatan = $('#editJabatan').val();
+            var jabatan = $('#editJabatan').val();
             var whatsapp = $('#editWhatsapp').val();
             var role_id = $('#editRole').val();
             var kabkota_id = $('#editkabkota_id').val();
@@ -517,7 +517,7 @@
                     name: name,
                     email: email,
                     whatsapp: whatsapp,
-                     jabatan: jabatan,
+                    jabatan: jabatan,
                     role_id: role_id,
                     kabkota_id: kabkota_id
                 },
