@@ -336,7 +336,7 @@
                         </ul>
                     </div>
                     <div class="__right">
-                        <h6 class="text-center">PETUGAS ANTAR KERJA</h6>
+                        <h6 class="text-center">{{ $admins->jabatan }}</h6>
                         <p><br /><br /><br /></p>
                         <p class="text-center" style="margin-bottom: 0px;"><span class="text-underline">
                                 {{ $admins->user->name }}</span>
