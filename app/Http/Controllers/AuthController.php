@@ -35,7 +35,7 @@ class AuthController extends Controller
 
         // Debug auth attempt
         // $user = \App\Models\User::where('email', $request->username)->first();
-        
+
         // dd([
         //     'input_username' => $request->username,
         //     'input_password' => $request->password,
@@ -50,12 +50,12 @@ class AuthController extends Controller
             // return redirect()->route('dashboard'); // Ganti dengan rute yang sesuai
 
             $user = Auth::user();
-            
-        
+
+
             // Redirect berdasarkan role
             return match ($user->roles[0]['name']) {
                 'eksekutif-provinsi' => redirect()->route('dashboard.eksekutif'),
-                'eksekutif-kabkota' => redirect()->route('dashboard.eksekutif'),
+                'eksekutif-kabkota' => redirect()->route('dashboard.eksekutif.kabkota'),
                 default => redirect()->route('dashboard'),
             };
 
