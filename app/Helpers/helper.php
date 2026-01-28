@@ -105,6 +105,12 @@ function getPendidikan(){
     ->get();
 }
 
+function getPendidikanById($id, $column = 'id'){
+    return DB::table('etam_pendidikan')
+    ->where($column, $id)
+    ->first();
+}
+
 function getMarital(){
     return DB::table('etam_marital')
     ->get();

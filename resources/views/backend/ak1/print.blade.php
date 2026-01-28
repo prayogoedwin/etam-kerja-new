@@ -314,7 +314,7 @@
                         @forelse ($pendidikans as $edu)
                             <li>{{ $edu->pendidikanteks ?? '-' }} - {{ $edu->jurusanteks ?? '-' }}</li>
                         @empty
-                            <li>-</li>
+                            <li>{{ getPendidikanById($pencari->id_pendidikan)?->name ?? '-' }} - ({{ $pencari->tahun_lulus }})</li>
                         @endforelse
                     </ul>
                 </ul>
