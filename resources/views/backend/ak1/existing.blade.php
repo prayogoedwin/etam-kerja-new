@@ -89,6 +89,23 @@
                                                                     disabled>
                                                             </div>
                                                         </div>
+
+                                                        <div class="col-6">
+                                                            <div class="form-group">
+                                                                <label for="email" class="form-label">Email</label>
+                                                                <input type="text" id="email" name="email"
+                                                                    class="form-control" value="{{ $user->user->email }}">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <div class="form-group">
+                                                                <label for="whatsapp" class="form-label">Whatsapp</label>
+                                                                <input type="text" id="whatsapp" name="whatsapp"
+                                                                    class="form-control" value="{{ $user->user->whatsapp }}"
+                                                                    disabled>
+                                                            </div>
+                                                        </div>
+
                                                         <div class="col-6">
                                                             <div class="form-group">
                                                                 <label for="tempat_lahir" class="form-label">Tempat
