@@ -94,7 +94,7 @@
                                                             <div class="form-group">
                                                                 <label for="email" class="form-label">Email</label>
                                                                 <input type="text" id="email" name="email"
-                                                                    class="form-control" value="{{ $user->user->email }}">
+                                                                    class="form-control" value="{{ $user->user->email }}" disabled>
                                                             </div>
                                                         </div>
                                                         <div class="col-6">
