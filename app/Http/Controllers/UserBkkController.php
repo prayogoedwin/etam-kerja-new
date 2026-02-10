@@ -32,9 +32,7 @@ class UserBkkController extends Controller
             ->when(
                 in_array($role, ['admin-kabkota', 'admin-kabkota-officer']) && $userAdmin,
                 fn ($q) => $q->where('id_kota', $userAdmin->kabkota_id)
-            )
-            ->get();
-
+            );
 
             // Tambahkan filter pencarian
             if (!empty($request->search['value'])) {

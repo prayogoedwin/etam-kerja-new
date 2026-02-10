@@ -440,7 +440,7 @@ class DepanController extends Controller
 
                     return response()->json([
                         'status' => 6,
-                        'message' => 'Proses registrasi akun perusahaan anda belum selesai, silahkan lanjutkan pengisian profil'
+                        'message' => 'Proses registrasi akun BKK anda belum selesai, silahkan lanjutkan pengisian profil'
                     ]);
                 }
             }

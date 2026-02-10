@@ -260,6 +260,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/bkk', [BkkAdminController::class, 'index'])->name('bkk.admin.index');
         Route::get('/bkk/export-csv', [BkkAdminController::class, 'exportCsv'])->name('databkk.exportCsv');
         Route::get('/bkk/alumni/{id}', [BkkAdminController::class, 'data_alumni'])->name('bkk.adminalumni.index');
+
+        Route::get('/bkk-unfinish', [BkkAdminController::class, 'data_unfinish'])->name('databkkunfinish.index');
+        Route::post('/bkk-unfinish/bulk_deletepenyedia', [BkkAdminController::class, 'bulk_deletebkkunfinish'])->name('bulkdelete.bkkunfinish');
     });
 
     Route::prefix('penyedias')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer,penyedia-kerja')->group(function () {

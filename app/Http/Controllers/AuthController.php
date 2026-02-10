@@ -50,7 +50,40 @@ class AuthController extends Controller
             // return redirect()->route('dashboard'); // Ganti dengan rute yang sesuai
 
             $user = Auth::user();
+            $userId = $user->id;
+            $role = $user->roles->first()?->name;
 
+            // ===== ROLE-BASED CHECK =====
+            switch ($role) {
+
+                case 'pencari-kerja':
+                    $exists = \App\Models\UserPencari::where('name', $userId)->exists();
+                    if ($exists) {
+                        Auth::logout();
+                        return back()->withErrors(['login_error' => 'Proses registrasi akun pencari kerja anda belum selesai, masuk ke menu daftar untuk menyelesaikan pendaftaran.']);
+                    }
+                    break;
+
+                case 'penyedia-kerja':
+                    $exists = \App\Models\UserPenyedia::where('name', $userId)->exists();
+                    if ($exists) {
+                        Auth::logout();
+                        return back()->withErrors(['login_error' => 'Proses registrasi akun perusahaan anda belum selesai, masuk ke menu daftar untuk menyelesaikan pendaftaran.']);
+                    }
+                    break;
+
+                case 'admin-bkk':
+                    $exists = \App\Models\UserBkk::where('name', $userId)->exists();
+                    if ($exists) {
+                        // $rl = encode_url('admin-bkk');
+                        // return redirect()
+                        // ->to('/depan/daftar?rl=' . $rl)
+                        // ->with('info', 'Akun BKK Anda sudah terdaftar. Silakan selesaikan proses pendaftaran.');
+                        Auth::logout();
+                        return back()->withErrors(['login_error' => 'Proses registrasi akun BKK anda belum selesai, masuk ke menu daftar untuk menyelesaikan pendaftaran.']);
+                    }
+                    break;
+            }
 
             // Redirect berdasarkan role
             return match ($user->roles[0]['name']) {

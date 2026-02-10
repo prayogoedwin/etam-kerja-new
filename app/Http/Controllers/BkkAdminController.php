@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\UserBkk;
+use App\Models\User;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
@@ -127,6 +128,78 @@ class BkkAdminController extends Controller
         }
 
         return view('backend.bkkadmin.alumniindex');
+    }
+
+    public function data_unfinish(Request $request){
+        if ($request->ajax()) {
+            // Ambil user admin jika diperlukan
+            $userId = Auth::id();
+            $userAdmin = UserAdmin::where('user_id', $userId)->first();
+
+            $bkks = User::select(
+                'users.id',
+                'users.email',
+                'users.whatsapp',
+                'users.created_at',
+                'users_bkk.name' // Tambahkan kolom ktp untuk digunakan di options
+            )
+            ->join('users_bkk', 'users.id', '=', 'users_bkk.user_id')
+            ->whereColumn('users.id', 'users_bkk.name') // Perbaikan: whereColumn bukan where
+            ->whereNull('users.deleted_at'); // Tambahkan kondisi soft delete jika ada
+
+            // Filter pencarian server-side untuk DataTables
+            if (!empty($request->search['value'])) {
+                $searchValue = $request->search['value'];
+                $bkks->where(function($query) use ($searchValue) {
+                    $query->where('users.email', 'like', "%{$searchValue}%")
+                          ->orWhere('users.whatsapp', 'like', "%{$searchValue}%")
+                          ->orWhere('users_bkk.name', 'like', "%{$searchValue}%");
+                });
+            }
+
+            // Untuk debugging query (hapus setelah fix)
+            // \Log::info($bkks->toSql());
+            // \Log::info($bkks->getBindings());
+            // echo json_encode($bkks->toSql());
+            // die();
+
+            return DataTables::of($bkks)
+                ->addIndexColumn()
+                ->editColumn('created_at', function ($penyedia) {
+                    // Pastikan created_at adalah Carbon instance
+                    return $penyedia->created_at ? $penyedia->created_at->format('d M Y H:i:s') : '-';
+                })
+                ->addColumn('options', function ($penyedia) {
+
+                    return '<input type="checkbox" class="pelamar-checkbox" value="' . $penyedia->id . '">';
+                })
+                ->rawColumns(['options'])
+                ->make(true);
+        }
+
+        // echo json_encode($bkks);
+
+        return view('backend.bkk.unfinish');
+    }
+
+    public function bulk_deletebkkunfinish(Request $request){
+        $ids = $request->input('ids');
+
+        if (!$ids) {
+            return response()->json(['message' => 'Data tidak valid'], 400);
+        }
+
+        // Cari admin berdasarkan ID
+        UserBkk::whereIn('user_id', $ids)->update([
+            'deleted_at' => date('Y-m-h H:i:s')
+        ]);
+
+        $user = User::whereIn('id', $ids)->update([
+            'is_deleted' => 1,
+            'deleted_at' => date('Y-m-h H:i:s')
+        ]);
+
+        return response()->json(['message' => 'Berhasil hapus data']);
     }
 
     /**

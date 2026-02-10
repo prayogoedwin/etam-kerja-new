@@ -73,7 +73,7 @@
 <body>
     <div class="container">
 
-        
+
         @if (session('success'))
             <div class="alert alert-success">
                 {{ session('success') }}
@@ -163,16 +163,16 @@
 
     <script>
         const RECAPTCHA_SITE_KEY = '{{ config('services.recaptcha.site_key') }}';
-        
+
         $('#loginForm').on('submit', function(e) {
             e.preventDefault();
             let form = this;
-            
+
             console.log('Form submit triggered'); // debug 1
-            
+
             grecaptcha.ready(function() {
                 console.log('grecaptcha ready'); // debug 2
-                
+
                 grecaptcha.execute(RECAPTCHA_SITE_KEY, {action: 'login'}).then(function(token) {
                     console.log('Token generated:', token); // debug 3 - ini yang penting
                     $('#recaptcha_token').val(token);
@@ -184,6 +184,16 @@
             });
         });
     </script>
+
+    @if (session('info'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (confirm("{{ session('info') }}")) {
+                // user klik OK → lanjut
+            }
+        });
+    </script>
+    @endif
 
 </body>
 
