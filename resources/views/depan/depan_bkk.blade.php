@@ -32,7 +32,7 @@
                 <div class="col-xl-12 col-lg-5 mt-md-120 mt-xs-50 services-sidebar">
                     <!-- Single Widget -->
                     <div class="single-widget services-list-widget">
-                        <h4 class="widget-title">Daftar BKK Terfadaftar Seluruh Provinsi Kalimantan Timur</h4>
+                        <h4 class="widget-title">Daftar BKK Seluruh Provinsi Kalimantan Timur</h4>
                         <div class="content">
                             <table class="table">
                                 <tr>
