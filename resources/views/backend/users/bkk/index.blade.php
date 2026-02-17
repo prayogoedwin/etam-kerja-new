@@ -175,8 +175,11 @@
                         orderable: false,
                         searchable: false
                     },
+                    // {
+                    //     data: 'user_name'
+                    // },
                     {
-                        data: 'user_name'
+                        data: 'bkk_name'
                     },
                     {
                         data: 'email'

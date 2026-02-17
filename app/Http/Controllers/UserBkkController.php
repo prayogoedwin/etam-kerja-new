@@ -28,7 +28,7 @@ class UserBkkController extends Controller
                 'user:id,name,email,whatsapp',
                 'user.roles:id,name'// Ambil data role terkait dengan kolom tertentu
             ]) // Ambil data admin dengan user terkait
-            ->select('id', 'user_id')
+            ->select('id', 'user_id', 'name')
             ->when(
                 in_array($role, ['admin-kabkota', 'admin-kabkota-officer']) && $userAdmin,
                 fn ($q) => $q->where('id_kota', $userAdmin->kabkota_id)
@@ -47,8 +47,11 @@ class UserBkkController extends Controller
 
             return DataTables::of($pencaris)
                 ->addIndexColumn()
-                ->addColumn('user_name', function ($pencari) {
-                    return $pencari->user ? $pencari->user->name : 'N/A';
+                // ->addColumn('user_name', function ($pencari) {
+                //     return $pencari->user ? $pencari->user->name : 'N/A';
+                // })
+                ->addColumn('bkk_name', function ($pencari) {
+                    return $pencari->name ?? 'N/A'; // ✅ ambil dari users_bkk
                 })
                 ->addColumn('email', function ($pencari) {
                     return $pencari->user ? $pencari->user->email : 'N/A';
