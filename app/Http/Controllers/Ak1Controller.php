@@ -38,7 +38,7 @@ class Ak1Controller extends Controller
 
     public function daftar_by_admin(Request $request)
     {
-       
+
         $rl = $request->input('rl'); // atau bisa juga menggunakan $request->query('rl')
         $decode_rl = decode_url($rl);
 
@@ -260,7 +260,7 @@ class Ak1Controller extends Controller
         //  dd($request->name);
         // die();
 
-       
+
 
         // Update data user
         $user->name = $request->name;
@@ -316,25 +316,37 @@ class Ak1Controller extends Controller
 
         $id = decode_url($id);
         $id_user = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
-        $admins = UserAdmin::with([
-            'user:id,name,email,whatsapp',
-            'kabkota:id,name,kantor,icon,alamat,telp,email,web'
-        ])
-        ->where('user_id', $id_user)->first();
 
         // Ambil data user dan relasinya
         $pencari = UserPencari::findOrFail($id);
+
+        $role = Auth::user()->roles->first()?->name;
+        if($role == 'super-admin'){
+             // 🔥 ambil admin berdasarkan wilayah pencari
+            $admins = UserAdmin::with([
+                'user:id,name,email,whatsapp',
+                'kabkota:id,name,kantor,icon,alamat,telp,email,web'
+            ])
+            ->where('kabkota_id', $pencari->id_kota) // ✅ inti perbaikan
+            ->first();
+        } else {
+            $admins = UserAdmin::with([
+                'user:id,name,email,whatsapp',
+                'kabkota:id,name,kantor,icon,alamat,telp,email,web'
+            ])
+            ->where('user_id', $id_user)->first();
+        }
 
         // Periksa apakah ada data AK1 yang masih berlaku
         $nakerAk1 = EtamAk1::where('id_user', $pencari->user_id)
             ->where('berlaku_hingga', '>', Carbon::now()) // Jika berlaku_hingga lebih besar dari sekarang
             ->first();
-    
+
         if (!$nakerAk1) {
             // Jika tidak ada, buat entri baru
             $uniqueCode = md5($id . Carbon::now()->toDateTimeString());
             $expiredDate = Carbon::now()->addMonths(6);
-    
+
             // Buat instance baru untuk entri baru
             $nakerAk1 = new EtamAk1();
             $nakerAk1->id_user = $pencari->user_id;
@@ -342,24 +354,24 @@ class Ak1Controller extends Controller
             $nakerAk1->berlaku_hingga = $expiredDate;
             $nakerAk1->status_cetak = '1'; // 1 = mandiri
             $nakerAk1->unik_kode = $uniqueCode;
-    
+
             // Tambahkan id_user yang mencetak
             $nakerAk1->dicetak_oleh = auth()->user()->id;
-    
+
             // Membuat QR Code
             $qrData = route('ak1.view', $nakerAk1->unik_kode);
             $qrCode = QrCode::size(200)->generate($qrData);
-    
+
             // Menyimpan QR Code ke dalam penyimpanan
             $qrPath = 'qrcodes/' . $uniqueCode . '.svg';
             Storage::disk('public')->put($qrPath, $qrCode); // Menyimpan QR Code di folder storage/app/public/qrcodes
             $nakerAk1->qr = $qrPath;
-    
+
             // Simpan entri baru
             $nakerAk1->save();
         }
 
-            
+
 
         $pendidikans = EtamPencariPendidikan::select(
             'etam_pencari_pendidikan.id',
@@ -386,11 +398,11 @@ class Ak1Controller extends Controller
             'kedua' => $tanggalCetak->copy()->addMonths(12)->format('d-m-Y'),
             'ketiga' => $tanggalCetak->copy()->addMonths(18)->format('d-m-Y'),
         ];
-    
+
         // Mengembalikan tampilan untuk cetak AK1
         return view('backend.ak1.print', compact('pencari', 'nakerAk1', 'pendidikans', 'keterampilans', 'admins', 'laporanTanggal'));
     }
-    
+
 
     public function printAk1TenagaKerja($id)
     {
