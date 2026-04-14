@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
+use App\Models\UserBkk;
 use App\Models\Lowongan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,7 @@ class DashboardEksekutifController extends Controller
             'lowongan' => $this->getLowonganStats(),
             'pendidikan' => $this->getTopPendidikan(),
             'jurusan' => $this->getTopJurusan(),
+            'bkk' => $this->getBkkStats(),
             'sektor' => $this->getTopSektor(),
             'sektor_perusahaan' => $this->getTopSektorPerusahaan(),
             'generated_at' => now()->format('d M Y H:i:s'),
@@ -204,6 +206,29 @@ class DashboardEksekutifController extends Controller
             ->orderByDesc('total')
             ->limit(5)
             ->get();
+    }
+
+    /**
+     * Get BKK statistics for province dashboard.
+     */
+    private function getBkkStats()
+    {
+        $baseQuery = UserBkk::whereNull('deleted_at');
+
+        $total = (clone $baseQuery)->count();
+
+        $topKabkota = (clone $baseQuery)
+            ->join('etam_kabkota', 'users_bkk.id_kota', '=', 'etam_kabkota.id')
+            ->select('etam_kabkota.name as nama', DB::raw('COUNT(*) as total'))
+            ->groupBy('etam_kabkota.id', 'etam_kabkota.name')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        return [
+            'total' => $total,
+            'top_kabkota' => $topKabkota,
+        ];
     }
 
     /**

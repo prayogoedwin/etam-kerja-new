@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
+use App\Models\UserBkk;
 use App\Models\Lowongan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -50,6 +51,7 @@ class DashboardEksekutifKabkotaController extends Controller
             'lowongan' => $this->getLowonganStats($kabkotaId),
             'pendidikan' => $this->getTopPendidikan($kabkotaId),
             'jurusan' => $this->getTopJurusan($kabkotaId),
+            'bkk' => $this->getBkkStats($kabkotaId),
             'sektor' => $this->getTopSektor($kabkotaId),
             'sektor_perusahaan' => $this->getTopSektorPerusahaan($kabkotaId),
             'generated_at' => now()->format('d M Y H:i:s'),
@@ -236,6 +238,20 @@ class DashboardEksekutifKabkotaController extends Controller
             ->orderByDesc('total')
             ->limit(5)
             ->get();
+    }
+
+    /**
+     * Get total BKK in the selected kab/kota.
+     */
+    private function getBkkStats($kabkotaId)
+    {
+        $total = UserBkk::whereNull('deleted_at')
+            ->where('id_kota', $kabkotaId)
+            ->count();
+
+        return [
+            'total' => $total,
+        ];
     }
 
     /**

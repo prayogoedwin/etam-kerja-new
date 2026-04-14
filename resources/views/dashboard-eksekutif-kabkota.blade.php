@@ -603,6 +603,16 @@
 
             <!-- Column 4: Lowongan + Sektor Lowongan -->
             <div class="card-column">
+                <div class="card card-penyedia">
+                    <div class="card-header">
+                        <div class="card-title">🏫 BKK {{ $nama_kabkota }}</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-number">{{ number_format($bkk['total']) }}</div>
+                        <div class="subtitle">Total Jumlah BKK pada kota tersebut</div>
+                    </div>
+                </div>
+
                 <div class="card card-lowongan">
                     <div class="card-header">
                         <div class="card-title">💼 Lowongan Aktif</div>

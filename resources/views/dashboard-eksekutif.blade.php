@@ -593,6 +593,32 @@
                         </ul>
                     </div>
                 </div>
+
+                <!-- Card: BKK Provinsi -->
+                <div class="card card-penyedia">
+                    <div class="card-header">
+                        <div class="card-title">🏫 BKK Provinsi</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-number">{{ number_format($bkk['total']) }}</div>
+                        <div class="subtitle">Total Jumlah BKK yang terdaftar</div>
+
+                        <div class="section-title">📍 5 Kab/Kota dengan BKK Paling Banyak</div>
+                        <div class="kota-list">
+                            @forelse($bkk['top_kabkota'] as $index => $kabkota)
+                            <div class="kota-item">
+                                <span class="kota-rank">#{{ $index + 1 }}</span>
+                                <span class="kota-name">{{ $kabkota->nama }}</span>
+                                <span class="kota-count">{{ number_format($kabkota->total) }}</span>
+                            </div>
+                            @empty
+                            <div class="kota-item">
+                                <span class="kota-name">Tidak ada data</span>
+                            </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Column 4: Lowongan + Sektor Lowongan -->
