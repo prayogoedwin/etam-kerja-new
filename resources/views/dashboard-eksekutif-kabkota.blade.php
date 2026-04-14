@@ -516,7 +516,7 @@
                                 <div class="stat-label">Total Diterima Kerja</div>
                             </div>
                         </div>
-                        <div class="stat-row">
+                        <div class="stat-row" style="display: none;">
                             <div class="stat-box highlight">
                                 <div class="stat-value">{{ number_format($pencari_diterima['total_ditempatkan']) }}</div>
                                 <div class="stat-label">Ditempatkan via Aplikasi</div>
