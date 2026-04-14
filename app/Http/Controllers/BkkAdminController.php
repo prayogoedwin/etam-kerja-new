@@ -209,4 +209,105 @@ class BkkAdminController extends Controller
     {
         //
     }
+
+    public function exportCsv(Request $request)
+    {
+        try {
+
+            $userId = Auth::user()->id;
+            $userRole = Auth::user()->roles->first()->name ?? null;
+
+            $userAdmin = UserAdmin::where('user_id', $userId)->first();
+
+            if (!$userAdmin) {
+                abort(403, 'Data admin tidak ditemukan.');
+            }
+
+            // Ambil search jika ada
+            $search = $request->get('search', '');
+
+            // 🔥 Query utama
+            $query = UserBkk::with([
+                    'user:id,name,email,whatsapp'
+                ])
+                ->whereNull('deleted_at');
+
+            // 🔥 Filter role
+            if (in_array($userRole, ['admin-kabkota', 'admin-kabkota-officer'])) {
+                $query->where('id_kota', $userAdmin->kabkota_id);
+            }
+
+            // 🔥 Filter search
+            if (!empty($search)) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('whatsapp', 'like', "%{$search}%");
+                    });
+                });
+            }
+
+            $bkks = $query->get();
+
+            // 🔥 Mapping data CSV
+            $csvData = [];
+            foreach ($bkks as $bkk) {
+                $csvData[] = [
+                    $bkk->name ?? '',
+                    $bkk->user->name ?? '',
+                    $bkk->user->email ?? '',
+                    '"' . ($bkk->user->whatsapp ?? '') . '"',
+                    $bkk->alamat ?? '',
+                    $bkk->telpon ?? '',
+                    $bkk->website ?? '',
+                    $bkk->contact_person ?? '',
+                    $bkk->jabatan ?? '',
+                    $bkk->created_at ?? '',
+                ];
+            }
+
+            // 🔥 Nama file
+            $dateTime = now()->format('Y-m-d_H-i-s');
+
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="data_bkk_' . $dateTime . '.csv"',
+            ];
+
+            // 🔥 Stream CSV
+            $callback = function () use ($csvData) {
+                $handle = fopen('php://output', 'w');
+
+                // Header kolom CSV
+                fputcsv($handle, [
+                    'Nama BKK',
+                    'Nama User',
+                    'Email',
+                    'Whatsapp',
+                    'Alamat',
+                    'Telpon',
+                    'Website',
+                    'Contact Person',
+                    'Jabatan',
+                    'Tanggal Daftar'
+                ], ';');
+
+                foreach ($csvData as $row) {
+                    fputcsv($handle, $row, ';');
+                }
+
+                fclose($handle);
+            };
+
+            return response()->stream($callback, 200, $headers);
+
+        } catch (\Exception $e) {
+            \Log::error("Export CSV BKK failed: " . $e->getMessage());
+            return response()->json([
+                'error' => 'Terjadi kesalahan saat export CSV.'
+            ], 500);
+        }
+    }
 }

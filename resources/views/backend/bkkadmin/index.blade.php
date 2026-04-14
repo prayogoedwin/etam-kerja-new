@@ -40,9 +40,9 @@
                                     <div class="col-sm-6">
                                         <h5>Data</h5>
                                     </div>
-                                    {{-- <div class="col-sm-6 text-end">
+                                    <div class="col-sm-6 text-end">
                                         <a href="javascript:void(0);" id="downloadCsv" class="btn btn-success">Unduh CSV</a>
-                                    </div> --}}
+                                    </div>
                                     {{-- <div class="col-sm-6 text-end">
                                         <button id="btnAdd" class="btn btn-success btn-sm btn-round has-ripple"
                                             data-bs-toggle="modal" data-bs-target="#modal-report"><i

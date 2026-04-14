@@ -99,6 +99,9 @@ class UserPencariController extends Controller
                 $pencaris->where('id_kota', $userAdmin->kabkota_id);
             }
 
+            //hanya pencari kerja umum
+            $pencaris->where('disabilitas', '!=', 1);
+
             // Tambahkan filter pencarian
             if (!empty($request->search['value'])) {
                 $searchValue = $request->search['value'];
@@ -167,6 +170,103 @@ class UserPencariController extends Controller
         }
 
         return view('backend.data.pencari.index');
+    }
+
+    public function dataDisabilitas(Request $request)
+    {
+
+        $id = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
+        $userAdmin = UserAdmin::where('user_id', $id)->first(); // Mencari data UserAdmin berdasarkan user_id
+
+        if ($request->ajax()) {
+            $pencaris = UserPencari::with([
+                'user:id,name,email,whatsapp',
+                'user.roles:id,name',
+                'provinsi:id,name',
+                'kabkota:id,name',
+                'kecamatan:id,name',
+                'pendidikan:id,name',
+                'jurusan:id,nama',
+                'agama:id,name'
+            ]);
+
+
+            //Filter for admin-kabkota role
+            if (Auth::user()->roles[0]['name'] === 'admin-kabkota' || Auth::user()->roles[0]['name'] === 'admin-kabkota-officer') {
+                $pencaris->where('id_kota', $userAdmin->kabkota_id);
+            }
+
+            //hanya pencari kerja disabilitas
+            $pencaris->where('disabilitas', '=', 1);
+
+            // Tambahkan filter pencarian
+            if (!empty($request->search['value'])) {
+                $searchValue = $request->search['value'];
+                $pencaris->where(function ($query) use ($searchValue) {
+                    // Filter berdasarkan user
+                    $query->whereHas('user', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%")
+                              ->orWhere('email', 'like', "%$searchValue%")
+                              ->orWhere('whatsapp', 'like', "%$searchValue%");
+                    })
+                    // Filter berdasarkan provinsi
+                    ->orWhereHas('provinsi', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%");
+                    })
+
+                    // Filter berdasarkan provinsi
+                    ->orWhereHas('kabkota', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%");
+                    })
+
+                     // Filter berdasarkan provinsi
+                     ->orWhereHas('kecamatan', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%");
+                    });
+                });
+            }
+
+
+            return DataTables::of($pencaris)
+            ->addIndexColumn()
+            ->editColumn('disabilitas', function ($pencari) {
+                $disbb = '-';
+                if($pencari->disabilitas == 1){
+                    $disbb = 'Ya';
+                }else{
+                    $disbb = 'Tidak';
+                }
+                return $disbb;
+            })
+            ->editColumn('created_at', function ($pencari) {
+                return $pencari->created_at->format('d M Y H:i:s');
+            })
+            ->editColumn('is_diterima', function ($pencari) {
+                $status = '-';
+                if($pencari->is_diterima == 0){
+                    $status = 'Belum Bekerja';
+                }else if($pencari->is_diterima == 1){
+                    $status = 'Sudah Bekerja (Sistem)';
+                }else if($pencari->is_diterima == 2){
+                    $status = 'Sudah Bekerja (Mandiri)';
+                }
+                return $status;
+            })
+            ->addColumn('options', function ($pencari) {
+                return '
+                    <button class="btn btn-primary btn-sm"
+                        onclick="window.location.href=\'' . url('dapur/ak1/existing') . '?ktp=' . $pencari->ktp . '\'">
+                        Edit
+                    </button>
+                ';
+            })
+            ->rawColumns(['options']) // Pastikan menambahkan ini untuk kolom options
+            ->make(true);
+
+            // return response()->json($pencaris);
+        }
+
+        return view('backend.data.pencari.indexdisabilitas');
     }
 
     public function data_unfinish(Request $request){
@@ -304,6 +404,8 @@ class UserPencariController extends Controller
                 $pencaris->where('id_kota', $userAdmin->kabkota_id);
             }
 
+            $pencaris->where('disabilitas','!=', 1);
+
             $pencaris = $pencaris->get(); // Eksekusi query
 
 
@@ -341,6 +443,124 @@ class UserPencariController extends Controller
             $headers = [
                 'Content-Type' => 'text/csv',
                 'Content-Disposition' => 'attachment; filename="data_pencari_' . $dateTime . '.csv"',
+            ];
+
+            // CSV callback to write the data to the output
+            $callback = function () use ($csvData) {
+                $handle = fopen('php://output', 'w');
+
+                // Add CSV headers
+                fputcsv($handle, [
+                    'Nama', 'Email', 'Whatsapp', 'NIK', 'Tempat Lahir', 'Tanggal Lahir',
+                    'Gender', 'Status Perkawinan', 'Agama', 'Provinsi', 'Kabkota', 'Kecamatan',
+                    'Alamat', 'Kodepos', 'Pendidikan Terakhir', 'Jurusan', 'Tahun Lulus',
+                    'Medsos', 'Status Kerja', 'Tanggal Daftar'
+                ]);
+
+                // Add data rows
+                foreach ($csvData as $row) {
+                    fputcsv($handle, $row, ';');  // Set separator to ':'
+                    // fputcsv($handle, $row); // Set separator to ','
+                }
+
+                fclose($handle);
+            };
+
+            // Return the response with the stream
+            return response()->stream($callback, 200, $headers);
+        } catch (\Exception $e) {
+            Log::error("Export CSV failed: " . $e->getMessage());
+            return response()->json(['error' => 'An error occurred while generating the CSV file.'], 500);
+        }
+    }
+
+    public function exportCsvDisabilitas(Request $request)
+    {
+        try {
+
+            $id = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
+            $userAdmin = UserAdmin::where('user_id', $id)->first(); // Mencari data UserAdmin berdasarkan user_id
+
+            // Get the search parameter if available
+            $search = $request->get('search', '');
+
+            // Query the database based on the search parameter
+            // $pencaris = UserPencari::with(['user', 'agama', 'provinsi', 'kabkota', 'kecamatan', 'pendidikan', 'jurusan'])
+            $pencaris = UserPencari::with([
+                'user:id,name,email,whatsapp',
+                'user.roles:id,name',
+                'provinsi:id,name',
+                'kabkota:id,name',
+                'kecamatan:id,name',
+                'pendidikan:id,name',
+                'jurusan:id,nama',
+                'agama:id,name'
+            ])
+            ->where(function ($query) use ($search) {  // Use $search here
+                // Filter berdasarkan user
+                $query->whereHas('user', function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%")
+                          ->orWhere('email', 'like', "%$search%")
+                          ->orWhere('whatsapp', 'like', "%$search%");
+                })
+                // Filter berdasarkan provinsi
+                ->orWhereHas('provinsi', function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%");
+                })
+                // Filter berdasarkan kabkota
+                ->orWhereHas('kabkota', function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%");
+                })
+                // Filter berdasarkan kecamatan
+                ->orWhereHas('kecamatan', function ($query) use ($search) {
+                    $query->where('name', 'like', "%$search%");
+                });
+            });
+
+             // Filter for admin-kabkota or admin-kabkota-officer roles
+             if (in_array(Auth::user()->roles[0]['name'], ['admin-kabkota', 'admin-kabkota-officer'])) {
+                $pencaris->where('id_kota', $userAdmin->kabkota_id);
+            }
+
+            $pencaris->where('disabilitas', 1);
+
+            $pencaris = $pencaris->get(); // Eksekusi query
+
+
+            // Prepare data to export
+            $csvData = [];
+            foreach ($pencaris as $pencari) {
+                $csvData[] = [
+                    $pencari->user->name ?? '',
+                    $pencari->user->email ?? '',
+                    '"' . ($pencari->user->whatsapp ?? '') . '"',  // Add quotes around the whatsapp
+                    '"' . ($pencari->ktp ?? '') . '"',  // Add quotes around the ktp
+                    $pencari->tempat_lahir ?? '',
+                    $pencari->tanggal_lahir ?? '',
+                    $pencari->gender ?? '',
+                    $pencari->id_status_perkawinan ?? '',
+                    $pencari->agama->name ?? '',
+                    $pencari->provinsi->name ?? '',
+                    $pencari->kabkota->name ?? '',
+                    $pencari->kecamatan->name ?? '',
+                    $pencari->alamat ?? '',
+                    $pencari->kodepos ?? '',
+                    $pencari->pendidikan->name ?? '',
+                    $pencari->jurusan->nama ?? '',
+                    $pencari->tahun_lulus ?? '',
+                    $pencari->medsos ?? '',
+                    $pencari->is_diterima ?? '',
+                    $pencari->created_at ?? '',
+                ];
+            }
+
+            // Get the current date and time in the desired format
+            $dateTime = now()->format('Y-m-d_H-i-s');
+
+            // Prepare headers for the CSV response with a dynamic filename
+            $headers = [
+                'Content-Type' => 'text/csv',
+                'Content-Disposition' => 'attachment; filename="data_pencari_disabilitas' . $dateTime . '.csv"',
             ];
 
             // CSV callback to write the data to the output
