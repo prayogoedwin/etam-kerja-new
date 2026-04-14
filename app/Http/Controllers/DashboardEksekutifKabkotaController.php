@@ -80,6 +80,27 @@ class DashboardEksekutifKabkotaController extends Controller
         $lakiLaki = $genderStats['L'] ?? $genderStats['Laki-laki'] ?? $genderStats['1'] ?? 0;
         $perempuan = $genderStats['P'] ?? $genderStats['Perempuan'] ?? $genderStats['2'] ?? 0;
 
+        $disabilitasTotal = (clone $baseQuery)
+            ->where('disabilitas', 1)
+            ->count();
+
+        $nonDisabilitasTotal = (clone $baseQuery)
+            ->where(function ($query) {
+                $query->whereNull('disabilitas')
+                    ->orWhere('disabilitas', '!=', 1);
+            })
+            ->count();
+
+        $disabilitasByGender = (clone $baseQuery)
+            ->where('disabilitas', 1)
+            ->select('gender', DB::raw('COUNT(*) as total'))
+            ->groupBy('gender')
+            ->pluck('total', 'gender')
+            ->toArray();
+
+        $disabilitasLakiLaki = $disabilitasByGender['L'] ?? $disabilitasByGender['Laki-laki'] ?? $disabilitasByGender['1'] ?? 0;
+        $disabilitasPerempuan = $disabilitasByGender['P'] ?? $disabilitasByGender['Perempuan'] ?? $disabilitasByGender['2'] ?? 0;
+
         // Top 5 Kecamatan (bukan Kota)
         $topKecamatan = (clone $baseQuery)
             ->whereNotNull('users_pencari.id_kecamatan')
@@ -94,6 +115,10 @@ class DashboardEksekutifKabkotaController extends Controller
             'total' => $total,
             'laki_laki' => $lakiLaki,
             'perempuan' => $perempuan,
+            'disabilitas_total' => $disabilitasTotal,
+            'non_disabilitas_total' => $nonDisabilitasTotal,
+            'disabilitas_laki_laki' => $disabilitasLakiLaki,
+            'disabilitas_perempuan' => $disabilitasPerempuan,
             'top_kecamatan' => $topKecamatan,
         ];
     }

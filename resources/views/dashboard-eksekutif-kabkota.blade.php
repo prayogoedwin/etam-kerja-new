@@ -465,6 +465,28 @@
                             </div>
                         </div>
 
+                        <div class="section-title">♿ Status Disabilitas</div>
+                        <div class="stat-row">
+                            <div class="stat-box">
+                                <div class="stat-value">{{ number_format($pencari['disabilitas_total']) }}</div>
+                                <div class="stat-label">Disabilitas = 1</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">{{ number_format($pencari['non_disabilitas_total']) }}</div>
+                                <div class="stat-label">Bukan Disabilitas 1</div>
+                            </div>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat-box">
+                                <div class="stat-value">{{ number_format($pencari['disabilitas_laki_laki']) }}</div>
+                                <div class="stat-label">Laki-laki Disabilitas</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value">{{ number_format($pencari['disabilitas_perempuan']) }}</div>
+                                <div class="stat-label">Perempuan Disabilitas</div>
+                            </div>
+                        </div>
+
                         <div class="section-title">📍 Top 5 Kecamatan</div>
                         <div class="kecamatan-list">
                             @forelse($pencari['top_kecamatan'] as $index => $kecamatan)
