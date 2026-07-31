@@ -172,6 +172,103 @@ class UserPencariController extends Controller
         return view('backend.data.pencari.index');
     }
 
+    public function dataExtambang(Request $request)
+    {
+
+        $id = Auth::user()->id; // Mendapatkan ID pengguna yang sedang login
+        $userAdmin = UserAdmin::where('user_id', $id)->first(); // Mencari data UserAdmin berdasarkan user_id
+
+        if ($request->ajax()) {
+            $pencaris = UserPencari::with([
+                'user:id,name,email,whatsapp',
+                'user.roles:id,name',
+                'provinsi:id,name',
+                'kabkota:id,name',
+                'kecamatan:id,name',
+                'pendidikan:id,name',
+                'jurusan:id,nama',
+                'agama:id,name'
+            ]);
+
+
+            //Filter for admin-kabkota role
+            if (Auth::user()->roles[0]['name'] === 'admin-kabkota' || Auth::user()->roles[0]['name'] === 'admin-kabkota-officer') {
+                $pencaris->where('id_kota', $userAdmin->kabkota_id);
+            }
+
+            //hanya pencari kerja disabilitas
+            $pencaris->where('ex_tambang', '=', 1);
+
+            // Tambahkan filter pencarian
+            if (!empty($request->search['value'])) {
+                $searchValue = $request->search['value'];
+                $pencaris->where(function ($query) use ($searchValue) {
+                    // Filter berdasarkan user
+                    $query->whereHas('user', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%")
+                              ->orWhere('email', 'like', "%$searchValue%")
+                              ->orWhere('whatsapp', 'like', "%$searchValue%");
+                    })
+                    // Filter berdasarkan provinsi
+                    ->orWhereHas('provinsi', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%");
+                    })
+
+                    // Filter berdasarkan provinsi
+                    ->orWhereHas('kabkota', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%");
+                    })
+
+                     // Filter berdasarkan provinsi
+                     ->orWhereHas('kecamatan', function ($query) use ($searchValue) {
+                        $query->where('name', 'like', "%$searchValue%");
+                    });
+                });
+            }
+
+
+            return DataTables::of($pencaris)
+            ->addIndexColumn()
+            ->editColumn('disabilitas', function ($pencari) {
+                $disbb = '-';
+                if($pencari->disabilitas == 1){
+                    $disbb = 'Ya';
+                }else{
+                    $disbb = 'Tidak';
+                }
+                return $disbb;
+            })
+            ->editColumn('created_at', function ($pencari) {
+                return $pencari->created_at->format('d M Y H:i:s');
+            })
+            ->editColumn('is_diterima', function ($pencari) {
+                $status = '-';
+                if($pencari->is_diterima == 0){
+                    $status = 'Belum Bekerja';
+                }else if($pencari->is_diterima == 1){
+                    $status = 'Sudah Bekerja (Sistem)';
+                }else if($pencari->is_diterima == 2){
+                    $status = 'Sudah Bekerja (Mandiri)';
+                }
+                return $status;
+            })
+            ->addColumn('options', function ($pencari) {
+                return '
+                    <button class="btn btn-primary btn-sm"
+                        onclick="window.location.href=\'' . url('dapur/ak1/existing') . '?ktp=' . $pencari->ktp . '\'">
+                        Edit
+                    </button>
+                ';
+            })
+            ->rawColumns(['options']) // Pastikan menambahkan ini untuk kolom options
+            ->make(true);
+
+            // return response()->json($pencaris);
+        }
+
+        return view('backend.data.pencari.indexextambang');
+    }
+
     public function dataDisabilitas(Request $request)
     {
 

@@ -187,6 +187,36 @@
                                 </div>
                             </div>
                         </div>
+
+                        @php
+                            $url_role = encode_url('pencari-kerja');
+                            $encExtbg = short_encode_url('1');
+                            $allurl = '/depan/daftar?rl=' . $url_role . '&ex_tbg=' . $encExtbg;
+
+                            // $url_role_perusahaan = encode_url('penyedia-kerja');
+                            // $allurl_perusahaan = '/depan/daftar?rl=' . $url_role_perusahaan . '&bkk=' . $encUserId;
+                        @endphp
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row col-12">
+                                    <div class="col-6">
+                                        <span>URL Register Pencari Kerja Ex Tambang</span>
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-primary"
+                                            onclick="copyToClipboard('{{ url($allurl) }}', this)">
+                                            <i class="feather icon-clipboard"></i>
+                                        </a>
+                                    </div>
+                                    {{-- <div class="col-6">
+                                        <span>URL Register Perusahaan</span>
+                                        <a href="javascript:void(0)" class="btn btn-sm btn-warning"
+                                            onclick="copyToClipboard('{{ url($allurl_perusahaan) }}', this)">
+                                            <i class="feather icon-clipboard"></i>
+                                        </a>
+                                    </div> --}}
+                                </div>
+
+                            </div>
+                        </div>
                         <!-- page statustic card end -->
                     </div>
                 </div>
@@ -196,3 +226,27 @@
         <!-- Button trigger modal -->
     </body>
 @endsection
+
+@push('js')
+    <script>
+        function copyToClipboard(text, el) {
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    const originalIcon = el.innerHTML;
+                    const originalClass = el.className;
+
+                    el.innerHTML = '<i class="feather icon-check"></i>';
+                    el.classList.remove('btn-primary', 'btn-warning');
+                    el.classList.add('btn-success');
+
+                    setTimeout(() => {
+                        el.innerHTML = originalIcon;
+                        el.className = originalClass;
+                    }, 1500);
+                })
+                .catch(() => {
+                    alert('Gagal menyalin URL');
+                });
+        }
+    </script>
+@endpush

@@ -693,6 +693,19 @@ class DepanController extends Controller
             $is_alumni_bkk = 1;
         }
 
+        $ex_tambang = '0';
+        $exTambangParam = $request->input('ex_tbg');
+        if(short_decode_url($exTambangParam) == '1') {
+            $ex_tambang = 1;
+        }
+
+        // echo json_encode([
+        //     'ex_tambang' => $ex_tambang,
+        //     'exTambangParam' => $exTambangParam,
+        //     'short_decode_urlExTambang' => short_decode_url($exTambangParam),
+        // ]);
+        // die();
+
         DB::beginTransaction();
         try {
             // create
@@ -726,7 +739,8 @@ class DepanController extends Controller
                 'posted_by' => $user->id,
                 'updated_at' => now(), // Update the timestamp
                 'is_diterima' => 0,
-                'medsos' => $request->medsos
+                'medsos' => $request->medsos,
+                'ex_tambang' => $ex_tambang
             ]);
 
             User::where('id', $user->id)

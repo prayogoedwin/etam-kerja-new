@@ -45,7 +45,8 @@ class UserPencari extends Model
         'updated_at',
         'deleted_at',
         'is_diterima',
-        'medsos'
+        'medsos',
+        'ex_tambang'
     ];
 
     protected $dates = ['deleted_at'];

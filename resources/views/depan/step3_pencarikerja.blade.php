@@ -13,6 +13,7 @@
         <form action="{{ route('akhir-daftar-akun') }}" method="post">
             @csrf
             <input type="hidden" name="bkk" id="bkk" value="{{ request('bkk') }}">
+            <input type="hidden" name="ex_tbg" id="ex_tbg" value="{{ request('ex_tbg') }}">
 
              {{-- KTP Upload Section --}}
             <div class="mb-4 p-3 border rounded bg-light" id="ktp-upload-area">
@@ -22,7 +23,7 @@
                 <p class="text-muted small mb-2">
                     Upload foto KTP untuk mengisi data secara otomatis. Foto tidak akan disimpan ke server.
                 </p>
-                
+
                 {{-- Pilihan: Upload atau Kamera --}}
                 <div class="d-flex gap-2 mb-3">
                     <label class="btn btn-outline-primary flex-fill" for="ktp-upload">
@@ -32,9 +33,9 @@
                         <i class="bi bi-camera-fill"></i> Buka Kamera
                     </button>
                 </div>
-                
+
                 <input type="file" class="d-none" id="ktp-upload" accept="image/*">
-                
+
                 {{-- Preview --}}
                 <div id="ktp-preview-wrapper" class="mt-3 text-center" style="display: none;">
                     <img id="ktp-preview" src="" alt="Preview KTP" class="img-fluid rounded" style="max-height: 200px;">
@@ -44,17 +45,17 @@
                         </button>
                     </div>
                 </div>
-                
+
                 {{-- Progress Bar --}}
                 <div id="ocr-progress-wrapper" class="mt-3" style="display: none;">
                     <p id="ocr-progress-text" class="small mb-1">Memproses: 0%</p>
                     <div class="progress" style="height: 20px;">
-                        <div id="ocr-progress-bar" 
-                            class="progress-bar progress-bar-striped progress-bar-animated" 
-                            role="progressbar" 
-                            style="width: 0%;" 
-                            aria-valuenow="0" 
-                            aria-valuemin="0" 
+                        <div id="ocr-progress-bar"
+                            class="progress-bar progress-bar-striped progress-bar-animated"
+                            role="progressbar"
+                            style="width: 0%;"
+                            aria-valuenow="0"
+                            aria-valuemin="0"
                             aria-valuemax="100">
                         </div>
                     </div>
@@ -62,8 +63,8 @@
             </div>
         <hr class="my-4">
 
-            
-            
+
+
             <div class="mb-3">
                 <label for="nik" class="form-label">NIK</label>
                 <input type="text" class="form-control" id="nik" name="nik" required>

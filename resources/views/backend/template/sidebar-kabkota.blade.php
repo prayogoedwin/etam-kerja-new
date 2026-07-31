@@ -72,6 +72,7 @@
                     <ul class="pcoded-submenu">
                         <li><a href="{{ route('datapencari.index') }}">Pencari Kerja</a></li>
                         <li><a href="{{ route('datapencaridisabilitas.index') }}">Pencari Kerja Disabilitas</a></li>
+                        <li><a href="{{ route('datapencariextambang.index') }}">Pencari Kerja ExTambang</a></li>
                         <li><a href="{{ route('datapenyedia.index') }}">Pemberi Kerja</a></li>
                         <li><a href="{{ route('bkk.admin.index') }}">BKK</a></li>
                     </ul>
