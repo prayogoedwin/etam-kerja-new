@@ -21,6 +21,7 @@ class DashboardEksekutifController extends Controller
             'success' => true,
             'data' => [
                 'pencari' => $this->getPencariStats(),
+                'ex_tambang' => $this->getExTambangStats(),
                 'pencari_diterima' => $this->getPencariDiterimaStats(),
                 'penyedia' => $this->getPenyediaStats(),
                 'lowongan' => $this->getLowonganStats(),
@@ -65,6 +66,33 @@ class DashboardEksekutifController extends Controller
             'laki_laki' => $lakiLaki,
             'perempuan' => $perempuan,
             'top_kota' => $topKota,
+        ];
+    }
+
+    /**
+     * Get pencari kerja ex-tambang statistics
+     */
+    private function getExTambangStats()
+    {
+        $baseQuery = UserPencari::whereNull('deleted_at')
+            ->where('is_diterima', 0)
+            ->where('ex_tambang', '1');
+
+        $total = (clone $baseQuery)->count();
+
+        $genderStats = (clone $baseQuery)
+            ->select('gender', DB::raw('COUNT(*) as total'))
+            ->groupBy('gender')
+            ->pluck('total', 'gender')
+            ->toArray();
+
+        $lakiLaki = $genderStats['L'] ?? $genderStats['Laki-laki'] ?? $genderStats['1'] ?? 0;
+        $perempuan = $genderStats['P'] ?? $genderStats['Perempuan'] ?? $genderStats['2'] ?? 0;
+
+        return [
+            'total' => $total,
+            'laki_laki' => $lakiLaki,
+            'perempuan' => $perempuan,
         ];
     }
 

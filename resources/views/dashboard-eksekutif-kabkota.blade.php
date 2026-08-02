@@ -132,6 +132,22 @@
             color: #4ade80;
         }
 
+        /* Card Ex-Tambang */
+        .card-ex-tambang {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(234, 88, 12, 0.05));
+            border-color: rgba(249, 115, 22, 0.3);
+        }
+
+        .card-ex-tambang .big-number {
+            color: #fb923c;
+        }
+
+        .card-ex-tambang .kebutuhan-row {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
         /* Card Penyedia */
         .card-penyedia {
             background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(2, 132, 199, 0.05));
@@ -406,6 +422,26 @@
             color: #fbbf24;
         }
 
+        /* Compact stat boxes (match kebutuhan-item size) */
+        .stat-row.compact {
+            gap: 10px;
+        }
+
+        .stat-row.compact .stat-box {
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        .stat-row.compact .stat-box .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .stat-row.compact .stat-box .stat-label {
+            font-size: 0.55rem;
+            margin-top: 2px;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .cards-grid {
@@ -466,17 +502,17 @@
                         </div>
 
                         <div class="section-title">♿ Status Disabilitas</div>
-                        <div class="stat-row">
+                        <div class="stat-row compact">
                             <div class="stat-box">
                                 <div class="stat-value">{{ number_format($pencari['disabilitas_total']) }}</div>
-                                <div class="stat-label">Disabilitas = 1</div>
+                                <div class="stat-label">Disabilitas</div>
                             </div>
                             <div class="stat-box">
                                 <div class="stat-value">{{ number_format($pencari['non_disabilitas_total']) }}</div>
-                                <div class="stat-label">Bukan Disabilitas 1</div>
+                                <div class="stat-label">Bukan Disabilitas</div>
                             </div>
                         </div>
-                        <div class="stat-row">
+                        <div class="stat-row compact">
                             <div class="stat-box">
                                 <div class="stat-value">{{ number_format($pencari['disabilitas_laki_laki']) }}</div>
                                 <div class="stat-label">Laki-laki Disabilitas</div>
@@ -487,7 +523,7 @@
                             </div>
                         </div>
 
-                        <div class="section-title">📍 Top 5 Kecamatan</div>
+                        <div class="section-title">📍 Top 3 Kecamatan</div>
                         <div class="kecamatan-list">
                             @forelse($pencari['top_kecamatan'] as $index => $kecamatan)
                             <div class="kecamatan-item">
@@ -500,6 +536,28 @@
                                 <span class="kecamatan-name">Tidak ada data</span>
                             </div>
                             @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card: Ex-Tambang -->
+                <div class="card card-ex-tambang">
+                    <div class="card-header">
+                        <div class="card-title">⛏️ Pencari Kerja Ex-Tambang</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="big-number">{{ number_format($ex_tambang['total']) }}</div>
+                        <div class="subtitle">Total pencari ex-tambang</div>
+
+                        <div class="kebutuhan-row">
+                            <div class="kebutuhan-item pria">
+                                <div class="k-value">{{ number_format($ex_tambang['laki_laki']) }}</div>
+                                <div class="k-label">Laki-laki</div>
+                            </div>
+                            <div class="kebutuhan-item wanita">
+                                <div class="k-value">{{ number_format($ex_tambang['perempuan']) }}</div>
+                                <div class="k-label">Perempuan</div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -46,6 +46,7 @@ class DashboardEksekutifKabkotaController extends Controller
             'kabkota_id' => $kabkotaId,
             'nama_kabkota' => $namaKabkota,
             'pencari' => $this->getPencariStats($kabkotaId),
+            'ex_tambang' => $this->getExTambangStats($kabkotaId),
             'pencari_diterima' => $this->getPencariDiterimaStats($kabkotaId),
             'penyedia' => $this->getPenyediaStats($kabkotaId),
             'lowongan' => $this->getLowonganStats($kabkotaId),
@@ -101,14 +102,14 @@ class DashboardEksekutifKabkotaController extends Controller
         $disabilitasLakiLaki = $disabilitasByGender['L'] ?? $disabilitasByGender['Laki-laki'] ?? $disabilitasByGender['1'] ?? 0;
         $disabilitasPerempuan = $disabilitasByGender['P'] ?? $disabilitasByGender['Perempuan'] ?? $disabilitasByGender['2'] ?? 0;
 
-        // Top 5 Kecamatan (bukan Kota)
+        // Top 3 Kecamatan (bukan Kota)
         $topKecamatan = (clone $baseQuery)
             ->whereNotNull('users_pencari.id_kecamatan')
             ->join('etam_kecamatan', 'users_pencari.id_kecamatan', '=', 'etam_kecamatan.id')
             ->select('etam_kecamatan.name as nama', DB::raw('COUNT(*) as total'))
             ->groupBy('etam_kecamatan.id', 'etam_kecamatan.name')
             ->orderByDesc('total')
-            ->limit(5)
+            ->limit(3)
             ->get();
 
         return [
@@ -120,6 +121,34 @@ class DashboardEksekutifKabkotaController extends Controller
             'disabilitas_laki_laki' => $disabilitasLakiLaki,
             'disabilitas_perempuan' => $disabilitasPerempuan,
             'top_kecamatan' => $topKecamatan,
+        ];
+    }
+
+    /**
+     * Get pencari kerja ex-tambang statistics - filtered by kabkota
+     */
+    private function getExTambangStats($kabkotaId)
+    {
+        $baseQuery = UserPencari::whereNull('deleted_at')
+            ->where('is_diterima', 0)
+            ->where('id_kota', $kabkotaId)
+            ->where('ex_tambang', '1');
+
+        $total = (clone $baseQuery)->count();
+
+        $genderStats = (clone $baseQuery)
+            ->select('gender', DB::raw('COUNT(*) as total'))
+            ->groupBy('gender')
+            ->pluck('total', 'gender')
+            ->toArray();
+
+        $lakiLaki = $genderStats['L'] ?? $genderStats['Laki-laki'] ?? $genderStats['1'] ?? 0;
+        $perempuan = $genderStats['P'] ?? $genderStats['Perempuan'] ?? $genderStats['2'] ?? 0;
+
+        return [
+            'total' => $total,
+            'laki_laki' => $lakiLaki,
+            'perempuan' => $perempuan,
         ];
     }
 
