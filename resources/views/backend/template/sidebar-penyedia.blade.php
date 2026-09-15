@@ -79,6 +79,15 @@
                     </a>
                 </li>
 
+                <li class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-layers"></i></span><span class="pcoded-mtext">Layanan HI</span></a>
+                    <ul class="pcoded-submenu">
+                        <li><a href="{{ route('hi.pp.penyedia.index') }}">Peraturan Perusahaan</a></li>
+                        <li><a href="#">Coming Soon</a></li>
+                    </ul>
+                </li>
+
                 <!-- Layouts -->
                 {{-- <li class="menu-item open">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
