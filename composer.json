@@ -13,6 +13,7 @@
         "phpmailer/phpmailer": "^7.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.10",
+        "voku/portable-ascii": "^2.1.1",
         "yajra/laravel-datatables-oracle": "^11.1"
     },
     "require-dev": {
