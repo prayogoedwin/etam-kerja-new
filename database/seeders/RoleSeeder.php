@@ -30,7 +30,7 @@ class RoleSeeder extends Seeder
             ['id' => 10,'name' => 'eksekutif-kabkota', 'table_name' => '-'],
             ['id' => 11,'name' => 'sekretaris', 'table_name' => null],
             ['id' => 12,'name' => 'kepala-bidang', 'table_name' => null],
-            ['id' => 13,'name' => 'kepala-sub-bidang', 'table_name' => null],
+            ['id' => 13     ,'name' => 'kepala-sub-bidang', 'table_name' => null],
             ['id' => 14,'name' => 'kepala-sub-bagian', 'table_name' => null],
             ['id' => 15,'name' => 'kepala-seksi', 'table_name' => null],
             ['id' => 16,'name' => 'kepala-balai', 'table_name' => null],
@@ -41,6 +41,7 @@ class RoleSeeder extends Seeder
         foreach ($roles as $item) {
             $role = Role::firstOrCreate(
                 [
+                    'id' => $item['id'],
                     'name' => $item['name'],
                     'guard_name' => 'web',
                 ]
