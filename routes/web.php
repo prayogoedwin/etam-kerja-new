@@ -8,6 +8,7 @@ use App\Http\Controllers\DepanController;
 use App\Http\Controllers\BackController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\StrukturController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserPencariController;
 use App\Http\Controllers\LowonganController;
@@ -193,6 +194,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::get('/sample', [BackController::class, 'sample'])->name('sample');
     Route::prefix('setting')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi')->group(function () {
         Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+        Route::get('/struktur', [StrukturController::class, 'index'])->name('struktur.index');
 
         Route::get('/faqs', [EtamFaqController::class, 'index'])->name('faq.index');
         Route::post('/faq/add', [EtamFaqController::class, 'store'])->name('faq.add');
@@ -223,6 +225,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::prefix('users')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
 
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+        Route::get('/struktur-by-lokasi', [AdminController::class, 'strukturByLokasi'])->name('admin.struktur-by-lokasi');
         Route::post('/admin/add', [AdminController::class, 'store'])->name('admin.add');
         Route::get('/admin/get/{id}', [AdminController::class, 'getAdmin'])->name('admin.detail');
         Route::put('/admin/update/{id}', [AdminController::class, 'update'])->name('admin.update');

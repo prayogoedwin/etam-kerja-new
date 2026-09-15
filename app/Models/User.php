@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'whatsapp',
+        'lokasi_kerja',
+        'kode_struktur',
         'password',
         'otp',
         'is_finished'

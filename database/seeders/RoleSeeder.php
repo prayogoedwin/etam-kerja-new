@@ -3,17 +3,20 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // Membuat permission jika belum ada
-        $permission = Permission::firstOrCreate(['name' => 'role-access']);
-        
-        // Membuat role jika belum ada dan memberi permission ke role
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        $permission = Permission::firstOrCreate([
+            'name' => 'role-access',
+            'guard_name' => 'web',
+        ]);
+
         $roles = [
             'super-admin',
             'admin-provinsi',
@@ -22,15 +25,25 @@ class RoleSeeder extends Seeder
             'penyedia-kerja',
             'admin-bkk',
             'admin-kabkota-officer',
+            'sekretaris',
+            'kepala-bidang',
+            'kepala-sub-bidang',
+            'kepala-sub-bagian',
+            'kepala-seksi',
+            'kepala-balai',
+            'admin-bidang',
+            'petugas-bidang',
         ];
 
         foreach ($roles as $roleName) {
-            // Membuat role baru jika belum ada
-            $role = Role::firstOrCreate(['name' => $roleName]);
+            $role = Role::firstOrCreate([
+                'name' => $roleName,
+                'guard_name' => 'web',
+            ]);
 
-            // Menambahkan permission ke role (sesuaikan permission jika perlu)
-            $role->givePermissionTo($permission);
+            if (! $role->hasPermissionTo($permission)) {
+                $role->givePermissionTo($permission);
+            }
         }
     }
 }
-

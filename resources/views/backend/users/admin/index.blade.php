@@ -55,6 +55,8 @@
                                                 <th>Email</th>
                                                 <th>Whatsapp</th>
                                                 <th>Role</th>
+                                                <th>Lokasi Kerja</th>
+                                                <th>Struktur</th>
                                                 <th>Kabkota</th>
                                                 <th>Kecamatan</th>
                                                 <th>Jabatan</th>
@@ -122,6 +124,30 @@
                                             @foreach ($roles as $role)
                                                 <option value="{{ $role->id }}">{{ $role->name }}</option>
                                             @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="lokasi_kerja" class="form-label">Lokasi Kerja</label>
+                                        <select class="form-control" id="lokasi_kerja" name="lokasi_kerja">
+                                            <option value="">-- Tidak diisi --</option>
+                                            @foreach ($lokasiKerja as $lokasi)
+                                                <option value="{{ $lokasi->kode_lokasi }}">
+                                                    {{ $lokasi->kode_lokasi }}
+                                                    ({{ (int) $lokasi->tipe === 2 ? 'Kabupaten/Kota' : 'Provinsi' }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label for="kode_struktur" class="form-label">Struktur</label>
+                                        <select class="form-control" id="kode_struktur" name="kode_struktur">
+                                            <option value="">-- Tidak diisi --</option>
                                         </select>
                                     </div>
                                 </div>
@@ -203,6 +229,26 @@
                                 </select>
                             </div>
 
+                            <div class="mb-3">
+                                <label for="editLokasiKerja" class="form-label">Lokasi Kerja</label>
+                                <select class="form-control" id="editLokasiKerja" name="lokasi_kerja">
+                                    <option value="">-- Tidak diisi --</option>
+                                    @foreach ($lokasiKerja as $lokasi)
+                                        <option value="{{ $lokasi->kode_lokasi }}">
+                                            {{ $lokasi->kode_lokasi }}
+                                            ({{ (int) $lokasi->tipe === 2 ? 'Kabupaten/Kota' : 'Provinsi' }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="editKodeStruktur" class="form-label">Struktur</label>
+                                <select class="form-control" id="editKodeStruktur" name="kode_struktur">
+                                    <option value="">-- Tidak diisi --</option>
+                                </select>
+                            </div>
+
                             <div class="col-sm-12" id="kabkotaDivE" style="display: none;">
                                 <div class="form-group">
                                     <label for="editkabkota_id" class="form-label">Kabupaten/Kota</label>
@@ -259,6 +305,12 @@
                     },
                     {
                         data: 'roles'
+                    },
+                    {
+                        data: 'lokasi_kerja'
+                    },
+                    {
+                        data: 'kode_struktur'
                     },
                     {
                         data: 'kabkota'
@@ -387,6 +439,49 @@
 
 
     <script>
+        function resetStrukturSelect(selectId) {
+            $(selectId).empty().append('<option value="">-- Tidak diisi --</option>');
+        }
+
+        function loadStrukturByLokasi(selectId, kodeLokasi, selectedKode) {
+            resetStrukturSelect(selectId);
+
+            if (!kodeLokasi) {
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route('admin.struktur-by-lokasi') }}',
+                type: 'GET',
+                data: { kode_lokasi: kodeLokasi },
+                success: function (response) {
+                    resetStrukturSelect(selectId);
+                    if (response.data && response.data.length > 0) {
+                        response.data.forEach(function (item) {
+                            $(selectId).append(
+                                `<option value="${item.kode_bidang}">${item.kode_bidang} - ${item.nama}</option>`
+                            );
+                        });
+                    }
+                    if (selectedKode) {
+                        $(selectId).val(selectedKode);
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $('#lokasi_kerja').change(function () {
+                loadStrukturByLokasi('#kode_struktur', $(this).val());
+            });
+
+            $('#editLokasiKerja').change(function () {
+                loadStrukturByLokasi('#editKodeStruktur', $(this).val());
+            });
+        });
+    </script>
+
+    <script>
         $(document).ready(function() {
             $('#registerForm').submit(function(e) {
                 e.preventDefault(); // Prevent form from submitting normally
@@ -399,6 +494,8 @@
                     email: $('#email').val(),
                     whatsapp: $('#whatsapp').val(),
                     role_id: $('#userRole').val(),
+                    lokasi_kerja: $('#lokasi_kerja').val(),
+                    kode_struktur: $('#kode_struktur').val(),
                     kabkota_id: $('#kabkota_id').val(),
                     kecamatan_id: $('#kecamatan_id').val(),
                     
@@ -475,6 +572,8 @@
                     
                     $('#editEmail').val(admin.user.email);
                     $('#editWhatsapp').val(admin.user.whatsapp);
+                    $('#editLokasiKerja').val(admin.user.lokasi_kerja || '');
+                    loadStrukturByLokasi('#editKodeStruktur', admin.user.lokasi_kerja || '', admin.user.kode_struktur || '');
                     $('#editRole').val(admin.user.roles[0].id).prop('selected', true);
                     $('#editkabkota_id').val(admin.kabkota_id || '').prop('selected', true);
 
@@ -502,6 +601,8 @@
             var jabatan = $('#editJabatan').val();
             var whatsapp = $('#editWhatsapp').val();
             var role_id = $('#editRole').val();
+            var lokasi_kerja = $('#editLokasiKerja').val();
+            var kode_struktur = $('#editKodeStruktur').val();
             var kabkota_id = $('#editkabkota_id').val();
             
 
@@ -519,6 +620,8 @@
                     whatsapp: whatsapp,
                     jabatan: jabatan,
                     role_id: role_id,
+                    lokasi_kerja: lokasi_kerja,
+                    kode_struktur: kode_struktur,
                     kabkota_id: kabkota_id
                 },
                 success: function(response) {

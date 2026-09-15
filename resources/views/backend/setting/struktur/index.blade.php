@@ -10,7 +10,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">Role</h5>
+                                    <h5 class="m-b-10">Struktur</h5>
                                 </div>
                             </div>
                         </div>
@@ -26,8 +26,11 @@
                                         <thead>
                                             <tr>
                                                 <th>No</th>
+                                                <th>Tipe</th>
+                                                <th>Kode Lokasi</th>
+                                                <th>Kode Bidang</th>
                                                 <th>Nama</th>
-                                                <th>Guard</th>
+                                                <th>Slug</th>
                                                 <th>Dibuat</th>
                                             </tr>
                                         </thead>
@@ -48,11 +51,14 @@
         $('#simpletable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route("roles.index") }}',
+            ajax: '{{ route("struktur.index") }}',
             columns: [
                 { data: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'name' },
-                { data: 'guard_name' },
+                { data: 'tipe_label' },
+                { data: 'kode_lokasi' },
+                { data: 'kode_bidang' },
+                { data: 'nama' },
+                { data: 'slug' },
                 { data: 'created_at_fmt', orderable: false, searchable: false },
             ]
         });

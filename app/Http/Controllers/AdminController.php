@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserAdmin;
+use App\Models\EtamStruktur;
 use Spatie\Permission\Models\Role;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
@@ -26,8 +27,8 @@ class AdminController extends Controller
 
                 if(Auth::user()->roles[0]['name'] == 'admin-kabkota'){
 
-                    $admins = UserAdmin::with([
-                        'user:id,name,email,whatsapp',
+                $admins = UserAdmin::with([
+                        'user:id,name,email,whatsapp,lokasi_kerja,kode_struktur',
                         'user.roles:id,name'// Ambil data role terkait dengan kolom tertentu
                     ]) // Ambil data admin dengan user terkait 
                     ->whereNotNull('kabkota_id') // Kondisi whereNotNull
@@ -37,7 +38,7 @@ class AdminController extends Controller
                 }else if(Auth::user()->roles[0]['name'] == 'admin-provinsi' || Auth::user()->roles[0]['name'] == 'super-admin'){
 
                     $admins = UserAdmin::with([
-                        'user:id,name,email,whatsapp',
+                        'user:id,name,email,whatsapp,lokasi_kerja,kode_struktur',
                         'user.roles:id,name'// Ambil data role terkait dengan kolom tertentu
                     ]) // Ambil data admin dengan user terkait 
                     ->select('id', 'user_id', 'province_id', 'kabkota_id', 'kecamatan_id', 'jabatan',  'created_by', 'updated_by', 'is_deleted'); 
@@ -72,6 +73,24 @@ class AdminController extends Controller
                      ->addColumn('jabatan', function ($admin) {
                         return $admin->jabatan;
                     })
+                    ->addColumn('lokasi_kerja', function ($admin) {
+                        return $admin->user && $admin->user->lokasi_kerja ? $admin->user->lokasi_kerja : '-';
+                    })
+                    ->addColumn('kode_struktur', function ($admin) {
+                        if (! $admin->user || ! $admin->user->kode_struktur) {
+                            return '-';
+                        }
+
+                        $struktur = EtamStruktur::where('kode_lokasi', $admin->user->lokasi_kerja)
+                            ->where('kode_bidang', $admin->user->kode_struktur)
+                            ->first();
+
+                        if ($struktur) {
+                            return $struktur->kode_bidang.' - '.$struktur->nama;
+                        }
+
+                        return $admin->user->kode_struktur;
+                    })
                     ->addColumn('roles', function ($admin) {
                         // Menampilkan nama role
                         if ($admin->user && $admin->user->roles->isNotEmpty()) {
@@ -101,7 +120,12 @@ class AdminController extends Controller
             // Ambil data roles untuk dikirim ke view
             // $roles = Role::select('id', 'name')->whereIn('name', ['super-admin', 'admin-provinsi', 'admin-kabkota-officer', 'admin-kabkota'])->get();
             $roles = Role::select('id', 'name')->whereNotIn('name', ['pencari-kerja', 'penyedia-kerja', 'admin-bkk'])->get();
-            return view('backend.users.admin.index',  compact('roles'));
+            $lokasiKerja = EtamStruktur::query()
+                ->select('kode_lokasi', 'tipe')
+                ->distinct()
+                ->orderBy('kode_lokasi')
+                ->get();
+            return view('backend.users.admin.index',  compact('roles', 'lokasiKerja'));
         }
 
         // Method untuk menyimpan data user baru
@@ -114,6 +138,8 @@ class AdminController extends Controller
                 'email' => 'required|email|unique:users,email',
                 'whatsapp' => 'required|string|unique:users|max:15',
                 'role_id' => 'required|exists:roles,id',
+                'lokasi_kerja' => 'nullable|string|max:10',
+                'kode_struktur' => 'nullable|string|max:20',
             ]);
     
             if ($validator->fails()) {
@@ -126,6 +152,8 @@ class AdminController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'whatsapp' => $request->whatsapp,
+                'lokasi_kerja' => $request->lokasi_kerja ?: null,
+                'kode_struktur' => $request->lokasi_kerja ? ($request->kode_struktur ?: null) : null,
                 'password' => bcrypt($request->email) // Set password default atau sesuai logika Anda
             ]);
     
@@ -153,7 +181,7 @@ class AdminController extends Controller
         {
             try {
                 $admin = UserAdmin::with([
-                        'user:id,name,email,whatsapp',
+                        'user:id,name,email,whatsapp,lokasi_kerja,kode_struktur',
                         'user.roles:id,name'// Ambil data role terkait dengan kolom tertentu
                     ])
                     ->select('id', 'user_id', 'province_id', 'kabkota_id', 'jabatan', 'kecamatan_id', 'created_by', 'updated_by', 'is_deleted')
@@ -207,7 +235,8 @@ class AdminController extends Controller
                     'name' => $request->name,
                     'email' => $request->email,
                     'whatsapp' => $request->whatsapp,
-            
+                    'lokasi_kerja' => $request->lokasi_kerja ?: null,
+                    'kode_struktur' => $request->lokasi_kerja ? ($request->kode_struktur ?: null) : null,
                 ]);
 
                 // Perbarui role untuk user terkait
@@ -276,6 +305,22 @@ class AdminController extends Controller
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
             }
+        }
+
+        public function strukturByLokasi(Request $request)
+        {
+            $kodeLokasi = $request->kode_lokasi;
+
+            if (! $kodeLokasi) {
+                return response()->json(['success' => true, 'data' => []]);
+            }
+
+            $data = EtamStruktur::query()
+                ->where('kode_lokasi', $kodeLokasi)
+                ->orderBy('kode_bidang')
+                ->get(['kode_bidang', 'nama']);
+
+            return response()->json(['success' => true, 'data' => $data]);
         }
 
    

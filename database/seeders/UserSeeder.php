@@ -1,29 +1,44 @@
 <?php
 
-// database/seeders/UserSeeder.php
-
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use App\Models\UserAdmin;
+use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        // Membuat Role Super Admin jika belum ada
-        $role = Role::firstOrCreate(['name' => 'super-admin']);
-
-        // Membuat User Super Admin
-        $user = User::create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@example.com',
-            'password' => bcrypt('password123'),  // Ganti dengan password yang lebih aman
+        $role = Role::firstOrCreate([
+            'name' => 'super-admin',
+            'guard_name' => 'web',
         ]);
 
-        // Memberikan Role Super Admin pada user
-        $user->assignRole('super-admin');
+        $user = User::firstOrCreate(
+            ['email' => 'superadmin@etamkerja.id'],
+            [
+                'name' => 'Super Admin',
+                'whatsapp' => '081234567890',
+                'password' => 'SuperAdmin123',
+                'is_finished' => 1,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        if (! $user->hasRole($role)) {
+            $user->assignRole($role);
+        }
+
+        UserAdmin::firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'province_id' => 64,
+                'jabatan' => 'Super Admin',
+                'created_by' => $user->id,
+                'updated_by' => $user->id,
+            ]
+        );
     }
 }
-
