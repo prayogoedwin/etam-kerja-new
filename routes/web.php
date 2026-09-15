@@ -294,6 +294,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         //HI
         //modul PP
         Route::get('/peraturan-perusahaan', [PenyediaPpController::class, 'index'])->name('hi.pp.penyedia.index');
+        Route::get('/peraturan-perusahaan/tambah', [PenyediaPpController::class, 'create'])->name('hi.pp.penyedia.tambah');
     });
 
 

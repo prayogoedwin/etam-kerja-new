@@ -41,19 +41,19 @@
 
                                     </div>
                                     <div class="col-sm-6 text-end">
-                                        <button class="btn btn-success btn-sm btn-round has-ripple" data-bs-toggle="modal" data-bs-target="#modal-report"><i class="feather icon-plus"></i> Add Data</button>
+                                        <a href="{{route('hi.pp.penyedia.tambah')}}" class="btn btn-success btn-sm"><i class="feather icon-plus"></i> Add Data</a>
                                     </div>
                                 </div>
                                 <div class="table-responsive">
                                     <table id="simpletable" class="table table-bordered table-striped mb-0">
                                         <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Jenis Ajuan</th>
-                                                <th>Verifikasi Admin</th>
-                                                <th>Verifikasi Kasi</th>
-                                                <th>Options</th>
-                                            </tr>
+                                            <th>No</th>
+                                            <th>Jenis Ajuan</th>
+                                            <th>Nomor</th>
+                                            <th>Tanggal</th>
+                                            <th>Status Admin</th>
+                                            <th>Status Kasi</th>
+                                            <th>Options</th>
                                         </thead>
 
                                     </table>
@@ -147,19 +147,16 @@
         $('#simpletable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: '{{ route('faq.index') }}',
+            ajax: '{{ route('hi.pp.penyedia.index') }}',
             autoWidth: false, // Menonaktifkan auto-width
             columns: [
-                { data: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'name' },
-                // { data: 'description' },
-                {
-                        data: 'description',
-                        render: function(data, type, row) {
-                            return data.length > 30 ? data.substring(0, 30) + '...' : data;
-                        }
-                    },
-                { data: 'options', orderable: false, searchable: false },
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'jenis_ajuan_nama', name: 'jenis_ajuan_nama' },
+                { data: 'nomor', name: 'nomor' },
+                { data: 'tanggal_fmt', name: 'tanggal_fmt' },
+                { data: 'status_admin', name: 'status_admin', orderable: false, searchable: false },
+                { data: 'status_kasi',  name: 'status_kasi',  orderable: false, searchable: false },
+                { data: 'options',      name: 'options',      orderable: false, searchable: false }
             ]
         });
     });
