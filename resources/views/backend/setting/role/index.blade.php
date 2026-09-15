@@ -27,6 +27,7 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>Nama</th>
+                                                <th>Table Name</th>
                                                 <th>Guard</th>
                                                 <th>Dibuat</th>
                                             </tr>
@@ -52,6 +53,7 @@
             columns: [
                 { data: 'DT_RowIndex', orderable: false, searchable: false },
                 { data: 'name' },
+                { data: 'table_name', defaultContent: '-' },
                 { data: 'guard_name' },
                 { data: 'created_at_fmt', orderable: false, searchable: false },
             ]
