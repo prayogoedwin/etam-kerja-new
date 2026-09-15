@@ -43,6 +43,7 @@ use App\Http\Controllers\UserBkkController;
 use App\Http\Controllers\DashboardEksekutifController;
 use App\Http\Controllers\DashboardEksekutifKabkotaController;
 
+use App\Http\Controllers\HI\PP\PenyediaPpController;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -289,6 +290,10 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::put('/profil/update/{id}', [ProfilPenyediaController::class, 'update'])->name('profil.penyedia.update');
         Route::get('/bkk', [BkkPenyediaController::class, 'index'])->name('bkk.penyedia.index');
         Route::get('/pencari_diterima', [DiterimaPencariController::class, 'index'])->name('pencari_diterima.index');
+
+        //HI
+        //modul PP
+        Route::get('/peraturan-perusahaan', [PenyediaPpController::class, 'index'])->name('hi.pp.penyedia.index');
     });
 
 
