@@ -12,6 +12,12 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             StrukturSeeder::class,
+            BlkSeeder::class,
+            AgamaSeeder::class,
+            ProgresSeeder::class,
+            JenisDisabilitasSeeder::class,
+            BkkKategoriSeeder::class,
+            MaritalSeeder::class,
         ]);
     }
 }

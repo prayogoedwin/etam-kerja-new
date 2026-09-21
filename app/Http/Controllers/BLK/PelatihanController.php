@@ -4,9 +4,15 @@ namespace App\Http\Controllers\BLK;
 
 use App\Http\Controllers\Controller;
 use App\Models\BLK\EtamBlk;
+use App\Models\BLK\EtamBlkForm;
 use App\Models\BLK\EtamBlkPelatihan;
 use App\Models\BLK\EtamBlkPelatihanFasilitas;
+use App\Models\BLK\EtamBlkPelatihanJawaban;
+use App\Models\BLK\EtamBlkPelatihanPeserta;
+use App\Models\BLK\EtamBlkPelatihanPesertaPerusahaan;
 use App\Models\BLK\EtamBlkPelatihanSyarat;
+use App\Models\UserPencari;
+use App\Models\UserPenyedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +42,9 @@ class PelatihanController extends Controller
                     'tanggal_pelaksanaan',
                     'tanggal_pelaksanaan_selesai',
                     'tipe_pelatihan',
-                    'status'
+                    'status',
+                    'wawancara_form_id',
+                    'pretest_form_id'
                 );
 
             if (in_array($role, ['pencari-kerja', 'penyedia-kerja'], true)) {
@@ -50,6 +58,8 @@ class PelatihanController extends Controller
                     $datas->whereIn('blk_id', $blkIds);
                 }
             }
+
+            [$pesertaMap, $pretestSubmitted, $pesertaStatus] = $this->pesertaPretestState($role);
 
             return DataTables::of($datas)
                 ->addIndexColumn()
@@ -65,14 +75,32 @@ class PelatihanController extends Controller
                 ->addColumn('periode_pelaksanaan', function (EtamBlkPelatihan $data) {
                     return $this->formatPeriode($data->tanggal_pelaksanaan, $data->tanggal_pelaksanaan_selesai);
                 })
-                ->addColumn('status_label', function (EtamBlkPelatihan $data) {
+                ->addColumn('status_label', function (EtamBlkPelatihan $data) use ($role, $pesertaStatus) {
+                    if (in_array($role, ['pencari-kerja', 'penyedia-kerja'], true)) {
+                        if (! isset($pesertaStatus[$data->id])) {
+                            return '<span class="badge bg-secondary">Belum daftar</span>';
+                        }
+
+                        return $this->pesertaStatusBadge((int) $pesertaStatus[$data->id]);
+                    }
+
                     return $this->statusBadge((int) $data->status);
                 })
-                ->addColumn('options', function (EtamBlkPelatihan $data) use ($role) {
+                ->addColumn('options', function (EtamBlkPelatihan $data) use ($role, $pesertaMap, $pretestSubmitted) {
                     if (in_array($role, ['pencari-kerja', 'penyedia-kerja'], true)) {
-                        $daftarUrl = route('blk.pelatihan.daftar', $data->id);
+                        $html = '<div class="d-flex flex-wrap gap-1">';
+                        if (isset($pesertaMap[$data->id])) {
+                            $html .= '<a href="'.route('blk.pelatihan.daftar', $data->id).'" class="btn btn-outline-primary btn-sm">Lihat Status</a>';
+                            if ($data->pretest_form_id) {
+                                $label = in_array((int) $data->id, $pretestSubmitted, true) ? 'Lihat Pretest' : 'Isi Pretest';
+                                $html .= '<a href="'.route('blk.pelatihan.pretest', $data->id).'" class="btn btn-primary btn-sm">'.$label.'</a>';
+                            }
+                        } else {
+                            $html .= '<a href="'.route('blk.pelatihan.daftar', $data->id).'" class="btn btn-success btn-sm">Daftar</a>';
+                        }
+                        $html .= '</div>';
 
-                        return '<a href="'.$daftarUrl.'" class="btn btn-success btn-sm">Daftar</a>';
+                        return $html;
                     }
 
                     $editUrl = route('blk.pelatihan.edit', $data->id);
@@ -101,10 +129,23 @@ class PelatihanController extends Controller
 
         $blkOptions = $this->blkOptions();
         $pelatihan = new EtamBlkPelatihan;
+        if ($this->isBlkStaffRole() && $blkOptions->count() === 1) {
+            $pelatihan->blk_id = $blkOptions->first()->id;
+        }
         $syarat = collect();
         $fasilitas = collect();
+        $isBlkStaff = $this->isBlkStaffRole();
+        [$wawancaraTemplates, $pretestTemplates] = $this->formTemplates();
 
-        return view('backend.blk.pelatihan.form', compact('blkOptions', 'pelatihan', 'syarat', 'fasilitas'));
+        return view('backend.blk.pelatihan.form', compact(
+            'blkOptions',
+            'pelatihan',
+            'syarat',
+            'fasilitas',
+            'isBlkStaff',
+            'wawancaraTemplates',
+            'pretestTemplates'
+        ));
     }
 
     public function store(Request $request)
@@ -118,7 +159,7 @@ class PelatihanController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        if (! $this->canAccessBlk((int) $request->blk_id)) {
+        if (! $this->canAccessBlk((int) $this->requestBlkId($request))) {
             return redirect()->back()->with('error', 'Anda tidak berhak menambah pelatihan untuk BLK ini')->withInput();
         }
 
@@ -156,8 +197,18 @@ class PelatihanController extends Controller
         $blkOptions = $this->blkOptions();
         $syarat = $pelatihan->syarat()->get();
         $fasilitas = $pelatihan->fasilitas()->get();
+        $isBlkStaff = $this->isBlkStaffRole();
+        [$wawancaraTemplates, $pretestTemplates] = $this->formTemplates();
 
-        return view('backend.blk.pelatihan.form', compact('blkOptions', 'pelatihan', 'syarat', 'fasilitas'));
+        return view('backend.blk.pelatihan.form', compact(
+            'blkOptions',
+            'pelatihan',
+            'syarat',
+            'fasilitas',
+            'isBlkStaff',
+            'wawancaraTemplates',
+            'pretestTemplates'
+        ));
     }
 
     public function update(Request $request, string $id)
@@ -176,7 +227,7 @@ class PelatihanController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        if (! $this->canAccessBlk((int) $request->blk_id)) {
+        if (! $this->canAccessBlk((int) $this->requestBlkId($request))) {
             return redirect()->back()->with('error', 'Anda tidak berhak mengubah pelatihan ke BLK ini')->withInput();
         }
 
@@ -240,6 +291,8 @@ class PelatihanController extends Controller
             'syarat.*' => 'nullable|string',
             'fasilitas' => 'nullable|array',
             'fasilitas.*' => 'nullable|string',
+            'wawancara_form_id' => 'nullable|integer',
+            'pretest_form_id' => 'nullable|integer',
         ]);
     }
 
@@ -247,7 +300,7 @@ class PelatihanController extends Controller
     {
         $pelatihan->fill([
             'pelatihan_untuk' => $request->pelatihan_untuk,
-            'blk_id' => $request->blk_id,
+            'blk_id' => $this->requestBlkId($request),
             'nama_pelatihan' => $request->nama_pelatihan,
             'sumber_pembiayaan' => $request->sumber_pembiayaan,
             'tanggal_pendaftaran' => $request->tanggal_pendaftaran,
@@ -258,6 +311,8 @@ class PelatihanController extends Controller
             'info_lokasi' => $request->info_lokasi,
             'status' => $request->status,
             'deskripsi' => $request->deskripsi,
+            'wawancara_form_id' => $this->resolveFormId($request, EtamBlkForm::JENIS_WAWANCARA),
+            'pretest_form_id' => $this->resolveFormId($request, EtamBlkForm::JENIS_PRETEST),
             'updated_by' => Auth::id(),
         ]);
 
@@ -320,6 +375,22 @@ class PelatihanController extends Controller
         return '<span class="badge bg-'.$color.'">'.$label.'</span>';
     }
 
+    private function pesertaStatusBadge(int $status): string
+    {
+        $map = [
+            0 => 'warning',
+            1 => 'info',
+            2 => 'success',
+            3 => 'danger',
+            4 => 'secondary',
+            5 => 'primary',
+        ];
+        $label = EtamBlkPelatihanPeserta::statusLabels()[$status] ?? '-';
+        $color = $map[$status] ?? 'secondary';
+
+        return '<span class="badge bg-'.$color.'">'.$label.'</span>';
+    }
+
     /**
      * @return \Illuminate\Support\Collection<int, EtamBlk>
      */
@@ -332,5 +403,114 @@ class PelatihanController extends Controller
         }
 
         return $query->get(['id', 'nama_lembaga']);
+    }
+
+    /**
+     * @return array{0: \Illuminate\Support\Collection<int, EtamBlkForm>, 1: \Illuminate\Support\Collection<int, EtamBlkForm>}
+     */
+    private function formTemplates(): array
+    {
+        $query = EtamBlkForm::query()->orderBy('nama');
+        $ids = $this->accessibleBlkIds();
+        if ($ids !== null) {
+            $query->whereIn('blk_id', $ids);
+        }
+
+        $all = $query->get(['id', 'blk_id', 'jenis', 'nama']);
+
+        return [
+            $all->where('jenis', EtamBlkForm::JENIS_WAWANCARA)->values(),
+            $all->where('jenis', EtamBlkForm::JENIS_PRETEST)->values(),
+        ];
+    }
+
+    private function resolveFormId(Request $request, string $jenis): ?int
+    {
+        $field = $jenis === EtamBlkForm::JENIS_PRETEST ? 'pretest_form_id' : 'wawancara_form_id';
+        $id = $request->input($field);
+        if (! $id) {
+            return null;
+        }
+
+        $form = EtamBlkForm::query()
+            ->where('id', $id)
+            ->where('jenis', $jenis)
+            ->where('blk_id', $this->requestBlkId($request))
+            ->first();
+
+        return $form ? (int) $form->id : null;
+    }
+
+    private function requestBlkId(Request $request): ?int
+    {
+        $id = $request->input('blk_id');
+        if (is_array($id)) {
+            $id = end($id);
+        }
+
+        return $id ? (int) $id : null;
+    }
+
+    /**
+     * @return array{0: array<int, int>, 1: array<int, int>, 2: array<int, int>}
+     */
+    private function pesertaPretestState(?string $role): array
+    {
+        if (! in_array($role, ['pencari-kerja', 'penyedia-kerja'], true)) {
+            return [[], [], []];
+        }
+
+        if ($role === 'pencari-kerja') {
+            $pencari = UserPencari::where('user_id', Auth::id())->first();
+            if (! $pencari) {
+                return [[], [], []];
+            }
+
+            $rows = EtamBlkPelatihanPeserta::query()
+                ->where('pencari_id', $pencari->id)
+                ->get(['id', 'blk_pelatihan_id', 'status_pendaftaran']);
+
+            return $this->mapPesertaState($rows, 'blk_peserta_id');
+        }
+
+        $penyedia = UserPenyedia::where('user_id', Auth::id())->first();
+        if (! $penyedia) {
+            return [[], [], []];
+        }
+
+        $rows = EtamBlkPelatihanPesertaPerusahaan::query()
+            ->where('perusahaan_id', $penyedia->id)
+            ->get(['id', 'blk_pelatihan_id', 'status_pendaftaran']);
+
+        return $this->mapPesertaState($rows, 'perusahaan_peserta_id');
+    }
+
+    /**
+     * @param  \Illuminate\Support\Collection<int, mixed>  $rows
+     * @return array{0: array<int, int>, 1: array<int, int>, 2: array<int, int>}
+     */
+    private function mapPesertaState($rows, string $jawabanKey): array
+    {
+        $pesertaMap = [];
+        $pesertaStatus = [];
+        foreach ($rows as $row) {
+            $pelatihanId = (int) $row->blk_pelatihan_id;
+            $pesertaMap[$pelatihanId] = (int) $row->id;
+            $pesertaStatus[$pelatihanId] = (int) $row->status_pendaftaran;
+        }
+
+        $pretestSubmitted = [];
+        if ($pesertaMap !== []) {
+            $pretestSubmitted = EtamBlkPelatihanJawaban::query()
+                ->where('jenis', EtamBlkForm::JENIS_PRETEST)
+                ->whereNotNull('submitted_at')
+                ->whereIn($jawabanKey, array_values($pesertaMap))
+                ->pluck('blk_pelatihan_id')
+                ->unique()
+                ->map(fn ($id) => (int) $id)
+                ->all();
+        }
+
+        return [$pesertaMap, $pretestSubmitted, $pesertaStatus];
     }
 }

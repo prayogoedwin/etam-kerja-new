@@ -10,7 +10,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">Pelatihan BLK</h5>
+                                    <h5 class="m-b-10">{{ $judul }} BLK</h5>
                                 </div>
                             </div>
                         </div>
@@ -36,26 +36,24 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="row align-items-center m-l-0">
-                                    <div class="col-sm-6"></div>
-                                    @if ($canManage)
-                                        <div class="col-sm-6 text-end">
-                                            <a href="{{ route('blk.pelatihan.create') }}"
-                                                class="btn btn-success btn-sm btn-round has-ripple"><i
-                                                    class="feather icon-plus"></i> Add Data</a>
-                                        </div>
-                                    @endif
+                                    <div class="col-sm-6">
+                                        <p class="text-muted mb-0">Template milik masing-masing balai. Hanya tampil untuk
+                                            user BLK yang sama.</p>
+                                    </div>
+                                    <div class="col-sm-6 text-end">
+                                        <a href="{{ route('blk.form.create', $jenis) }}"
+                                            class="btn btn-success btn-sm btn-round has-ripple"><i
+                                                class="feather icon-plus"></i> Buat Template</a>
+                                    </div>
                                 </div>
-                                <div class="table-responsive">
+                                <div class="table-responsive mt-3">
                                     <table id="simpletable" class="table table-bordered table-striped mb-0">
                                         <thead>
                                             <tr>
                                                 <th>No</th>
-                                                <th>Nama Pelatihan</th>
+                                                <th>Nama Template</th>
                                                 <th>BLK</th>
-                                                <th>Untuk</th>
-                                                <th>Pendaftaran</th>
-                                                <th>Pelaksanaan</th>
-                                                <th>{{ in_array($role, ['pencari-kerja', 'penyedia-kerja'], true) ? 'Status Pendaftaran' : 'Status' }}</th>
+                                                <th>Jumlah Soal</th>
                                                 <th>Options</th>
                                             </tr>
                                         </thead>
@@ -76,7 +74,7 @@
             $('#simpletable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('blk.pelatihan.index') }}',
+                ajax: '{{ route('blk.form.index', $jenis) }}',
                 autoWidth: false,
                 columns: [{
                         data: 'DT_RowIndex',
@@ -84,22 +82,14 @@
                         searchable: false
                     },
                     {
-                        data: 'nama_pelatihan'
+                        data: 'nama'
                     },
                     {
                         data: 'blk_nama'
                     },
                     {
-                        data: 'untuk_nama'
-                    },
-                    {
-                        data: 'periode_daftar'
-                    },
-                    {
-                        data: 'periode_pelaksanaan'
-                    },
-                    {
-                        data: 'status_label'
+                        data: 'jumlah_soal',
+                        searchable: false
                     },
                     {
                         data: 'options',
@@ -111,9 +101,9 @@
         });
 
         function confirmDelete(id) {
-            if (confirm('Yakin hapus data?')) {
+            if (confirm('Yakin hapus template ini?')) {
                 $.ajax({
-                    url: '{{ url('dapur/blk/pelatihan') }}/' + id,
+                    url: '{{ url('dapur/blk/' . $jenis) }}/' + id,
                     type: 'DELETE',
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content')

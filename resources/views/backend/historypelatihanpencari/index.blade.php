@@ -10,40 +10,21 @@
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">Pelatihan BLK</h5>
+                                    <h5 class="m-b-10">History Pelatihan Kerja</h5>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>Sukses!</strong> {{ session('success') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Error!</strong> {{ session('error') }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
                 <div class="row">
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-body">
                                 <div class="row align-items-center m-l-0">
-                                    <div class="col-sm-6"></div>
-                                    @if ($canManage)
-                                        <div class="col-sm-6 text-end">
-                                            <a href="{{ route('blk.pelatihan.create') }}"
-                                                class="btn btn-success btn-sm btn-round has-ripple"><i
-                                                    class="feather icon-plus"></i> Add Data</a>
-                                        </div>
-                                    @endif
+                                    <div class="col-sm-6">
+                                        <h5>Data</h5>
+                                    </div>
                                 </div>
                                 <div class="table-responsive">
                                     <table id="simpletable" class="table table-bordered table-striped mb-0">
@@ -52,11 +33,10 @@
                                                 <th>No</th>
                                                 <th>Nama Pelatihan</th>
                                                 <th>BLK</th>
-                                                <th>Untuk</th>
-                                                <th>Pendaftaran</th>
+                                                <th>Tanggal Daftar</th>
                                                 <th>Pelaksanaan</th>
-                                                <th>{{ in_array($role, ['pencari-kerja', 'penyedia-kerja'], true) ? 'Status Pendaftaran' : 'Status' }}</th>
-                                                <th>Options</th>
+                                                <th>Status</th>
+                                                <th>Aksi</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -76,7 +56,7 @@
             $('#simpletable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('blk.pelatihan.index') }}',
+                ajax: '{{ route('historypelatihan.pencari.index') }}',
                 autoWidth: false,
                 columns: [{
                         data: 'DT_RowIndex',
@@ -90,16 +70,17 @@
                         data: 'blk_nama'
                     },
                     {
-                        data: 'untuk_nama'
+                        data: 'created_at'
                     },
                     {
-                        data: 'periode_daftar'
+                        data: 'pelaksanaan',
+                        orderable: false,
+                        searchable: false
                     },
                     {
-                        data: 'periode_pelaksanaan'
-                    },
-                    {
-                        data: 'status_label'
+                        data: 'status',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'options',
@@ -109,21 +90,5 @@
                 ]
             });
         });
-
-        function confirmDelete(id) {
-            if (confirm('Yakin hapus data?')) {
-                $.ajax({
-                    url: '{{ url('dapur/blk/pelatihan') }}/' + id,
-                    type: 'DELETE',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        alert(response.message);
-                        $('#simpletable').DataTable().ajax.reload();
-                    }
-                });
-            }
-        }
     </script>
 @endpush

@@ -103,6 +103,16 @@ class EtamBlkPelatihan extends Model
         return $this->hasMany(EtamBlkPelatihanPesertaPerusahaan::class, 'blk_pelatihan_id', 'id');
     }
 
+    public function wawancaraForm(): BelongsTo
+    {
+        return $this->belongsTo(EtamBlkForm::class, 'wawancara_form_id', 'id');
+    }
+
+    public function pretestForm(): BelongsTo
+    {
+        return $this->belongsTo(EtamBlkForm::class, 'pretest_form_id', 'id');
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by', 'id');

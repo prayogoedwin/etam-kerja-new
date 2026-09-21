@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BLK\EtamBlk;
 use App\Models\BLK\UserBlk;
 use App\Models\User;
+use App\Models\UserAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,10 @@ class UserBlkController extends Controller
         }
 
         if ($request->ajax()) {
+            if ($this->isBlkBalaiAdmin()) {
+                return $this->indexBalaiStaff($request);
+            }
+
             $datas = UserBlk::query()
                 ->with([
                     'user:id,name,email,whatsapp',
@@ -84,14 +89,29 @@ class UserBlkController extends Controller
 
         $blkOptions = $this->blkOptions();
         $tipeAkun = UserBlk::tipeAkunLabels();
+        $createOnly = $this->isBlkBalaiAdmin();
+        $staffRoles = $this->balaiStaffCreateRoles();
+        $blkNama = EtamBlk::query()
+            ->where('kode_struktur', Auth::user()?->kode_struktur)
+            ->value('nama_lembaga');
 
-        return view('backend.blk.users.index', compact('blkOptions', 'tipeAkun'));
+        return view('backend.blk.users.index', compact(
+            'blkOptions',
+            'tipeAkun',
+            'createOnly',
+            'staffRoles',
+            'blkNama'
+        ));
     }
 
     public function store(Request $request)
     {
         if (! $this->canManageBlkUsers()) {
             abort(403);
+        }
+
+        if ($this->isBlkBalaiAdmin()) {
+            return $this->storeBalaiStaff($request);
         }
 
         $validator = Validator::make($request->all(), [
@@ -144,7 +164,7 @@ class UserBlkController extends Controller
 
     public function show(string $id)
     {
-        if (! $this->canManageBlkUsers()) {
+        if (! $this->canMutateBlkUsers()) {
             abort(403);
         }
 
@@ -159,7 +179,7 @@ class UserBlkController extends Controller
 
     public function update(Request $request, string $id)
     {
-        if (! $this->canManageBlkUsers()) {
+        if (! $this->canMutateBlkUsers()) {
             abort(403);
         }
 
@@ -199,7 +219,7 @@ class UserBlkController extends Controller
 
     public function destroy(string $id)
     {
-        if (! $this->canManageBlkUsers()) {
+        if (! $this->canMutateBlkUsers()) {
             abort(403);
         }
 
@@ -228,7 +248,7 @@ class UserBlkController extends Controller
 
     public function reset(string $id)
     {
-        if (! $this->canManageBlkUsers()) {
+        if (! $this->canMutateBlkUsers()) {
             abort(403);
         }
 
@@ -241,6 +261,109 @@ class UserBlkController extends Controller
 
             return response()->json(['success' => true, 'message' => 'Reset password berhasil']);
         } catch (\Throwable $e) {
+            return response()->json(['success' => false, 'message' => 'Error: '.$e->getMessage()]);
+        }
+    }
+
+    private function indexBalaiStaff(Request $request)
+    {
+        $kodeStruktur = Auth::user()?->kode_struktur;
+        $roleNames = array_keys($this->balaiStaffCreateRoles());
+        $roleLabels = $this->balaiStaffCreateRoles();
+        $blkNama = EtamBlk::query()
+            ->where('kode_struktur', $kodeStruktur)
+            ->value('nama_lembaga') ?? '-';
+
+        $datas = User::query()
+            ->select('id', 'name', 'email', 'whatsapp', 'kode_struktur')
+            ->where('kode_struktur', $kodeStruktur)
+            ->whereHas('roles', function ($query) use ($roleNames) {
+                $query->whereIn('name', $roleNames);
+            })
+            ->with('roles:id,name');
+
+        if (! empty($request->search['value'])) {
+            $searchValue = $request->search['value'];
+            $datas->where(function ($query) use ($searchValue) {
+                $query->where('name', 'like', "%{$searchValue}%")
+                    ->orWhere('email', 'like', "%{$searchValue}%")
+                    ->orWhere('whatsapp', 'like', "%{$searchValue}%");
+            });
+        }
+
+        return DataTables::of($datas)
+            ->addIndexColumn()
+            ->addColumn('user_name', function (User $data) {
+                return $data->name ?? 'N/A';
+            })
+            ->addColumn('email', function (User $data) {
+                return $data->email ?? 'N/A';
+            })
+            ->addColumn('whatsapp', function (User $data) {
+                return $data->whatsapp ?? 'N/A';
+            })
+            ->addColumn('blk_nama', function () use ($blkNama) {
+                return $blkNama;
+            })
+            ->addColumn('tipe_akun_nama', function (User $data) use ($roleLabels) {
+                $role = $data->roles->first()?->name;
+
+                return $roleLabels[$role] ?? $role ?? '-';
+            })
+            ->addColumn('options', function () {
+                return '-';
+            })
+            ->rawColumns(['options'])
+            ->make(true);
+    }
+
+    private function storeBalaiStaff(Request $request)
+    {
+        $allowedRoles = array_keys($this->balaiStaffCreateRoles());
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'whatsapp' => 'required|string|max:20|unique:users,whatsapp',
+            'role' => 'required|in:'.implode(',', $allowedRoles),
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()]);
+        }
+
+        $kodeStruktur = Auth::user()?->kode_struktur;
+        if (! $kodeStruktur) {
+            return response()->json(['success' => false, 'message' => 'Akun Anda belum terhubung ke struktur BLK']);
+        }
+
+        DB::beginTransaction();
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'whatsapp' => $request->whatsapp,
+                'kode_struktur' => $kodeStruktur,
+                'lokasi_kerja' => Auth::user()->lokasi_kerja,
+                'password' => bcrypt($request->email),
+                'is_finished' => 1,
+            ]);
+
+            $user->assignRole($request->role);
+
+            UserAdmin::create([
+                'user_id' => $user->id,
+                'province_id' => 64,
+                'created_by' => Auth::id(),
+                'updated_by' => Auth::id(),
+            ]);
+
+            DB::commit();
+
+            return response()->json(['success' => true, 'message' => 'User BLK berhasil ditambahkan']);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
             return response()->json(['success' => false, 'message' => 'Error: '.$e->getMessage()]);
         }
     }

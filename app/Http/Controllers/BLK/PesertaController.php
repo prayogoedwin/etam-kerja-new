@@ -6,10 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\BLK\EtamBlkPelatihan;
 use App\Models\BLK\EtamBlkPelatihanPeserta;
 use App\Models\BLK\EtamBlkPelatihanPesertaPerusahaan;
+use App\Models\Lamaran;
+use App\Models\Progress;
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
+use App\Services\Blk\BlkFormAnswerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -23,7 +27,7 @@ class PesertaController extends Controller
             abort(403);
         }
 
-        $pelatihan = EtamBlkPelatihan::findOrFail($pelatihanId);
+        $pelatihan = EtamBlkPelatihan::with(['wawancaraForm:id,nama', 'pretestForm:id,nama'])->findOrFail($pelatihanId);
         if (! $this->canAccessBlk((int) $pelatihan->blk_id)) {
             abort(403);
         }
@@ -42,8 +46,8 @@ class PesertaController extends Controller
                     ->addColumn('status_label', function (EtamBlkPelatihanPesertaPerusahaan $data) {
                         return $this->statusBadge((int) $data->status_pendaftaran);
                     })
-                    ->addColumn('options', function (EtamBlkPelatihanPesertaPerusahaan $data) {
-                        return '<button class="btn btn-warning btn-sm" onclick="showStatusModal('.$data->id.', '.$data->status_pendaftaran.', `'.e($data->alasan_status ?? '').'`)">Status</button>';
+                    ->addColumn('options', function (EtamBlkPelatihanPesertaPerusahaan $data) use ($pelatihan) {
+                        return $this->pesertaOptionButtons($pelatihan, $data);
                     })
                     ->rawColumns(['status_label', 'options'])
                     ->make(true);
@@ -61,8 +65,8 @@ class PesertaController extends Controller
                 ->addColumn('status_label', function (EtamBlkPelatihanPeserta $data) {
                     return $this->statusBadge((int) $data->status_pendaftaran);
                 })
-                ->addColumn('options', function (EtamBlkPelatihanPeserta $data) {
-                    return '<button class="btn btn-warning btn-sm" onclick="showStatusModal('.$data->id.', '.$data->status_pendaftaran.', `'.e($data->alasan_status ?? '').'`)">Status</button>';
+                ->addColumn('options', function (EtamBlkPelatihanPeserta $data) use ($pelatihan) {
+                    return $this->pesertaOptionButtons($pelatihan, $data);
                 })
                 ->rawColumns(['status_label', 'options'])
                 ->make(true);
@@ -108,6 +112,59 @@ class PesertaController extends Controller
         return response()->json(['success' => true, 'message' => 'Status peserta berhasil diupdate']);
     }
 
+    public function show(string $pelatihanId, string $pesertaId)
+    {
+        if (! $this->canCreatePelatihan()) {
+            abort(403);
+        }
+
+        $pelatihan = EtamBlkPelatihan::with('blk:id,nama_lembaga')->findOrFail($pelatihanId);
+        if (! $this->canAccessBlk((int) $pelatihan->blk_id)) {
+            abort(403);
+        }
+
+        $isPerusahaan = (int) $pelatihan->pelatihan_untuk === EtamBlkPelatihan::UNTUK_PENYEDIA;
+        if ($isPerusahaan) {
+            $peserta = EtamBlkPelatihanPesertaPerusahaan::where('blk_pelatihan_id', $pelatihan->id)->findOrFail($pesertaId);
+            $profil = $peserta->perusahaan_id
+                ? UserPenyedia::with(['user', 'provinsi', 'kabkota', 'kecamatan', 'sektor'])->find($peserta->perusahaan_id)
+                : null;
+            $riwayat = $this->riwayatPenyedia($peserta);
+            $riwayatLamaran = collect();
+        } else {
+            $peserta = EtamBlkPelatihanPeserta::where('blk_pelatihan_id', $pelatihan->id)->findOrFail($pesertaId);
+            $profil = $peserta->pencari_id
+                ? UserPencari::with(['user', 'provinsi', 'kabkota', 'kecamatan', 'pendidikan', 'jurusan', 'agama'])->find($peserta->pencari_id)
+                : null;
+            $riwayat = $this->riwayatPencari($peserta);
+            $riwayatLamaran = $this->riwayatLamaran($profil?->user_id);
+        }
+
+        $maritalName = null;
+        if (! $isPerusahaan) {
+            $kodeMarital = $peserta->id_status_perkawinan ?: ($profil->id_status_perkawinan ?? null);
+            $maritalName = $kodeMarital
+                ? DB::table('etam_marital')->where('id', $kodeMarital)->value('name')
+                : null;
+        }
+
+        $progresLamaran = Progress::query()
+            ->where('modul', 'lamaran')
+            ->pluck('name', 'kode')
+            ->all();
+
+        return view('backend.blk.pelatihan.peserta-profil', compact(
+            'pelatihan',
+            'peserta',
+            'profil',
+            'riwayat',
+            'riwayatLamaran',
+            'progresLamaran',
+            'isPerusahaan',
+            'maritalName'
+        ));
+    }
+
     public function formDaftar(string $id)
     {
         $pelatihan = EtamBlkPelatihan::with(['blk', 'syarat', 'fasilitas'])->findOrFail($id);
@@ -121,8 +178,13 @@ class PesertaController extends Controller
         }
 
         $already = $this->existingRegistration($pelatihan);
+        $pretestSubmitted = false;
+        if ($already && $pelatihan->pretest_form_id) {
+            $keys = app(BlkFormAnswerService::class)->participantKeys($pelatihan, (int) $already->id);
+            $pretestSubmitted = app(BlkFormAnswerService::class)->isSubmitted($pelatihan, 'pretest', $keys);
+        }
 
-        return view('backend.blk.pelatihan.daftar', compact('pelatihan', 'already', 'role'));
+        return view('backend.blk.pelatihan.daftar', compact('pelatihan', 'already', 'role', 'pretestSubmitted'));
     }
 
     public function daftar(Request $request, string $id)
@@ -185,7 +247,7 @@ class PesertaController extends Controller
             'updated_by' => Auth::id(),
         ]);
 
-        return redirect()->route('blk.pelatihan.index')->with('success', 'Pendaftaran pelatihan berhasil dikirim');
+        return $this->redirectAfterDaftar($pelatihan);
     }
 
     private function daftarPenyedia(EtamBlkPelatihan $pelatihan)
@@ -216,6 +278,17 @@ class PesertaController extends Controller
             'created_by' => Auth::id(),
             'updated_by' => Auth::id(),
         ]);
+
+        return $this->redirectAfterDaftar($pelatihan);
+    }
+
+    private function redirectAfterDaftar(EtamBlkPelatihan $pelatihan)
+    {
+        if ($pelatihan->pretest_form_id) {
+            return redirect()
+                ->route('blk.pelatihan.pretest', $pelatihan->id)
+                ->with('success', 'Pendaftaran berhasil. Silakan isi pretest.');
+        }
 
         return redirect()->route('blk.pelatihan.index')->with('success', 'Pendaftaran pelatihan berhasil dikirim');
     }
@@ -249,6 +322,72 @@ class PesertaController extends Controller
         return null;
     }
 
+    /**
+     * @return \Illuminate\Support\Collection<int, EtamBlkPelatihanPeserta>
+     */
+    private function riwayatPencari(EtamBlkPelatihanPeserta $peserta)
+    {
+        $query = EtamBlkPelatihanPeserta::query()->with(['pelatihan.blk:id,nama_lembaga']);
+
+        if ($peserta->pencari_id) {
+            $query->where('pencari_id', $peserta->pencari_id);
+        } elseif ($peserta->ktp) {
+            $query->where('ktp', $peserta->ktp);
+        } else {
+            $query->where('id', $peserta->id);
+        }
+
+        return $query->orderByDesc('created_at')->get();
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, EtamBlkPelatihanPesertaPerusahaan>
+     */
+    private function riwayatPenyedia(EtamBlkPelatihanPesertaPerusahaan $peserta)
+    {
+        $query = EtamBlkPelatihanPesertaPerusahaan::query()->with(['pelatihan.blk:id,nama_lembaga']);
+
+        if ($peserta->perusahaan_id) {
+            $query->where('perusahaan_id', $peserta->perusahaan_id);
+        } elseif ($peserta->nib) {
+            $query->where('nib', $peserta->nib);
+        } else {
+            $query->where('id', $peserta->id);
+        }
+
+        return $query->orderByDesc('created_at')->get();
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, Lamaran>
+     */
+    private function riwayatLamaran(?int $userId)
+    {
+        if (! $userId) {
+            return collect();
+        }
+
+        return Lamaran::query()
+            ->with(['lowongan.userPenyedia:id,user_id,name'])
+            ->where('pencari_id', $userId)
+            ->orderByDesc('created_at')
+            ->get();
+    }
+
+    /**
+     * @return array<int|string, string>
+     */
+    public static function tipeLowonganLabels(): array
+    {
+        return [
+            0 => 'Umum',
+            1 => 'Job Fair',
+            2 => 'BKK',
+            3 => 'Magang Mandiri',
+            4 => 'Magang Pemerintah',
+        ];
+    }
+
     private function statusBadge(int $status): string
     {
         $map = [
@@ -263,5 +402,24 @@ class PesertaController extends Controller
         $color = $map[$status] ?? 'secondary';
 
         return '<span class="badge bg-'.$color.'">'.$label.'</span>';
+    }
+
+    private function pesertaOptionButtons(EtamBlkPelatihan $pelatihan, EtamBlkPelatihanPeserta|EtamBlkPelatihanPesertaPerusahaan $data): string
+    {
+        $html = '<div class="d-flex flex-wrap gap-1">';
+        $html .= '<a href="'.route('blk.pelatihan.peserta.show', [$pelatihan->id, $data->id]).'" class="btn btn-secondary btn-sm">Profil</a>';
+        $html .= '<button class="btn btn-warning btn-sm" onclick="showStatusModal('.$data->id.', '.$data->status_pendaftaran.', `'.e($data->alasan_status ?? '').'`)">Status</button>';
+
+        if ($pelatihan->wawancara_form_id) {
+            $html .= '<a href="'.route('blk.pelatihan.peserta.wawancara', [$pelatihan->id, $data->id]).'" class="btn btn-success btn-sm">Isi Wawancara</a>';
+        }
+
+        if ($pelatihan->pretest_form_id) {
+            $html .= '<a href="'.route('blk.pelatihan.peserta.pretest', [$pelatihan->id, $data->id]).'" class="btn btn-info btn-sm">Lihat Pretest</a>';
+        }
+
+        $html .= '</div>';
+
+        return $html;
     }
 }

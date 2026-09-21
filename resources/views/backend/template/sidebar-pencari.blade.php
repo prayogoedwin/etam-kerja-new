@@ -91,6 +91,13 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('historypelatihan.pencari.index') }}" class="nav-link ">
+                        <span class="pcoded-micon"><i class="fa fa-hourglass-half"></i></span>
+                        <span class="pcoded-mtext">History Pelatihan Kerja</span>
+                    </a>
+                </li>
+
                 {{-- <li class="nav-item"><a href="etam.html" class="nav-link "><span class="pcoded-micon"><i class="feather icon-mail"></i></span><span class="pcoded-mtext">Lamaran Kerja</span></a></li> --}}
 
                 {{-- <li class="nav-item"><a href="{{ route('ak1.index') }}" class="nav-link "><span class="pcoded-micon"><i

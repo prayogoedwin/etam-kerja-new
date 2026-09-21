@@ -59,9 +59,32 @@
 
                                 @if ($already)
                                     <div class="alert alert-info">
-                                        Anda sudah terdaftar. Status:
-                                        {{ \App\Models\BLK\EtamBlkPelatihanPeserta::statusLabels()[(int) $already->status_pendaftaran] ?? '-' }}
+                                        <p class="mb-2">Anda sudah terdaftar pada pelatihan ini.</p>
+                                        <p class="mb-0">Status pendaftaran:
+                                            @php
+                                                $status = (int) $already->status_pendaftaran;
+                                                $statusMap = [
+                                                    0 => 'warning',
+                                                    1 => 'info',
+                                                    2 => 'success',
+                                                    3 => 'danger',
+                                                    4 => 'secondary',
+                                                    5 => 'primary',
+                                                ];
+                                            @endphp
+                                            <span class="badge bg-{{ $statusMap[$status] ?? 'secondary' }}">
+                                                {{ \App\Models\BLK\EtamBlkPelatihanPeserta::statusLabels()[$status] ?? '-' }}
+                                            </span>
+                                        </p>
+                                        @if ($already->alasan_status)
+                                            <p class="mt-2 mb-0">Catatan: {{ $already->alasan_status }}</p>
+                                        @endif
                                     </div>
+                                    @if ($pelatihan->pretest_form_id)
+                                        <a href="{{ route('blk.pelatihan.pretest', $pelatihan->id) }}"
+                                            class="btn btn-primary">{{ ! empty($pretestSubmitted) ? 'Lihat Pretest' : 'Isi Pretest' }}</a>
+                                    @endif
+                                    <a href="{{ route('blk.pelatihan.index') }}" class="btn btn-secondary">Kembali</a>
                                 @elseif ($pelatihan->isOpenForRegistration())
                                     <form action="{{ route('blk.pelatihan.daftar.store', $pelatihan->id) }}" method="POST">
                                         @csrf

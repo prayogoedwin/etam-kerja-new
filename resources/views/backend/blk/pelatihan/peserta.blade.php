@@ -22,12 +22,29 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="row align-items-center m-l-0 mb-3">
-                                    <div class="col-sm-6">
-                                        <p class="mb-0">Untuk:
+                                    <div class="col-sm-8">
+                                        <p class="mb-1">Untuk:
                                             {{ \App\Models\BLK\EtamBlkPelatihan::untukLabels()[(int) $pelatihan->pelatihan_untuk] ?? '-' }}
                                         </p>
+                                        <p class="mb-0">
+                                            Wawancara:
+                                            @if ($pelatihan->wawancara_form_id)
+                                                <span class="badge bg-success">{{ $pelatihan->wawancaraForm->nama ?? 'Terpasang' }}</span>
+                                                <span class="text-muted">— isi lewat tombol Isi Wawancara di baris peserta</span>
+                                            @else
+                                                <span class="badge bg-secondary">Belum dipilih</span>
+                                                <a href="{{ route('blk.pelatihan.edit', $pelatihan->id) }}">pilih template di edit pelatihan</a>
+                                            @endif
+                                            &nbsp;|&nbsp; Pretest:
+                                            @if ($pelatihan->pretest_form_id)
+                                                <span class="badge bg-info">{{ $pelatihan->pretestForm->nama ?? 'Terpasang' }}</span>
+                                                <span class="text-muted">— hasil peserta lewat tombol Lihat Pretest</span>
+                                            @else
+                                                <span class="badge bg-secondary">Tidak ada</span>
+                                            @endif
+                                        </p>
                                     </div>
-                                    <div class="col-sm-6 text-end">
+                                    <div class="col-sm-4 text-end">
                                         <a href="{{ route('blk.pelatihan.index') }}" class="btn btn-secondary btn-sm">Kembali</a>
                                     </div>
                                 </div>
@@ -115,7 +132,8 @@
                     {
                         data: 'options',
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        width: '280px'
                     },
                 ]
             });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\BLK;
 
 use App\Http\Controllers\Controller;
 use App\Models\BLK\EtamBlk;
+use App\Models\EtamStruktur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -22,7 +23,7 @@ class BlkController extends Controller
         if ($request->ajax()) {
             $datas = EtamBlk::query()
                 ->with(['kabkota:id,name'])
-                ->select('id', 'tipe_lembaga', 'nama_lembaga', 'email', 'whatsapp', 'telepon', 'website', 'kabkota_id', 'alamat_lengkap');
+                ->select('id', 'tipe_lembaga', 'nama_lembaga', 'email', 'whatsapp', 'telepon', 'website', 'kabkota_id', 'kode_struktur', 'alamat_lengkap');
 
             return DataTables::of($datas)
                 ->addIndexColumn()
@@ -31,6 +32,9 @@ class BlkController extends Controller
                 })
                 ->addColumn('kabkota_nama', function (EtamBlk $data) {
                     return $data->kabkota->name ?? '-';
+                })
+                ->addColumn('struktur_nama', function (EtamBlk $data) {
+                    return $this->strukturLabel($data->kode_struktur);
                 })
                 ->addColumn('options', function (EtamBlk $data) {
                     return '
@@ -43,8 +47,9 @@ class BlkController extends Controller
         }
 
         $kabkota = getKabkota();
+        $strukturs = $this->strukturOptions();
 
-        return view('backend.blk.lembaga.index', compact('kabkota'));
+        return view('backend.blk.lembaga.index', compact('kabkota', 'strukturs'));
     }
 
     public function store(Request $request)
@@ -62,6 +67,7 @@ class BlkController extends Controller
             'website' => 'nullable|string|max:255',
             'instagram' => 'nullable|string|max:255',
             'kabkota_id' => 'nullable|integer',
+            'kode_struktur' => 'nullable|string|max:20',
             'alamat_lengkap' => 'nullable|string',
         ]);
 
@@ -79,6 +85,7 @@ class BlkController extends Controller
             'instagram' => $request->instagram,
             'provinsi_id' => 64,
             'kabkota_id' => $request->kabkota_id ?: null,
+            'kode_struktur' => $request->kode_struktur ?: null,
             'alamat_lengkap' => $request->alamat_lengkap,
             'created_by' => Auth::id(),
             'updated_by' => Auth::id(),
@@ -113,6 +120,7 @@ class BlkController extends Controller
             'website' => 'nullable|string|max:255',
             'instagram' => 'nullable|string|max:255',
             'kabkota_id' => 'nullable|integer',
+            'kode_struktur' => 'nullable|string|max:20',
             'alamat_lengkap' => 'nullable|string',
         ]);
 
@@ -130,6 +138,7 @@ class BlkController extends Controller
             'website' => $request->website,
             'instagram' => $request->instagram,
             'kabkota_id' => $request->kabkota_id ?: null,
+            'kode_struktur' => $request->kode_struktur ?: null,
             'alamat_lengkap' => $request->alamat_lengkap,
             'updated_by' => Auth::id(),
         ]);
@@ -149,5 +158,32 @@ class BlkController extends Controller
         $data->delete();
 
         return response()->json(['success' => true, 'message' => 'Hapus data berhasil']);
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, EtamStruktur>
+     */
+    private function strukturOptions()
+    {
+        return EtamStruktur::query()
+            ->orderBy('kode_bidang')
+            ->get(['kode_bidang', 'nama']);
+    }
+
+    private function strukturLabel(?string $kodeStruktur): string
+    {
+        if (! $kodeStruktur) {
+            return '-';
+        }
+
+        $struktur = EtamStruktur::query()
+            ->where('kode_bidang', $kodeStruktur)
+            ->first();
+
+        if (! $struktur) {
+            return $kodeStruktur;
+        }
+
+        return $struktur->kode_bidang.' - '.$struktur->nama;
     }
 }

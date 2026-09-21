@@ -37,6 +37,7 @@
                                                 <th>Nama Lembaga</th>
                                                 <th>Tipe</th>
                                                 <th>Kab/Kota</th>
+                                                <th>Struktur/Balai</th>
                                                 <th>Email</th>
                                                 <th>Whatsapp</th>
                                                 <th>Options</th>
@@ -113,6 +114,18 @@
                                             <option value="">-- Pilih --</option>
                                             @foreach ($kabkota as $item)
                                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Struktur / Balai</label>
+                                        <select class="form-control" id="kode_struktur" name="kode_struktur">
+                                            <option value="">-- Pilih --</option>
+                                            @foreach ($strukturs as $item)
+                                                <option value="{{ $item->kode_bidang }}">{{ $item->kode_bidang }} -
+                                                    {{ $item->nama }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -200,6 +213,18 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Struktur / Balai</label>
+                                        <select class="form-control" id="edit_kode_struktur" name="kode_struktur">
+                                            <option value="">-- Pilih --</option>
+                                            @foreach ($strukturs as $item)
+                                                <option value="{{ $item->kode_bidang }}">{{ $item->kode_bidang }} -
+                                                    {{ $item->nama }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="form-label">Alamat Lengkap</label>
@@ -241,6 +266,9 @@
                         data: 'kabkota_nama'
                     },
                     {
+                        data: 'struktur_nama'
+                    },
+                    {
                         data: 'email'
                     },
                     {
@@ -268,6 +296,7 @@
                         website: $('#website').val(),
                         instagram: $('#instagram').val(),
                         kabkota_id: $('#kabkota_id').val(),
+                        kode_struktur: $('#kode_struktur').val(),
                         alamat_lengkap: $('#alamat_lengkap').val(),
                         _token: '{{ csrf_token() }}'
                     },
@@ -306,6 +335,7 @@
                         website: $('#edit_website').val(),
                         instagram: $('#edit_instagram').val(),
                         kabkota_id: $('#edit_kabkota_id').val(),
+                        kode_struktur: $('#edit_kode_struktur').val(),
                         alamat_lengkap: $('#edit_alamat_lengkap').val(),
                         _token: '{{ csrf_token() }}'
                     },
@@ -343,6 +373,7 @@
                     $('#edit_website').val(data.website);
                     $('#edit_instagram').val(data.instagram);
                     $('#edit_kabkota_id').val(data.kabkota_id);
+                    $('#edit_kode_struktur').val(data.kode_struktur);
                     $('#edit_alamat_lengkap').val(data.alamat_lengkap);
                     $('#modal-edit').modal('show');
                 }

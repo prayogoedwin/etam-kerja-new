@@ -10,7 +10,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">User BLK</h5>
+                                    <h5 class="m-b-10">{{ $createOnly ? 'Kelola User BLK' : 'User BLK' }}</h5>
                                 </div>
                             </div>
                         </div>
@@ -38,8 +38,10 @@
                                                 <th>Email</th>
                                                 <th>Whatsapp</th>
                                                 <th>BLK</th>
-                                                <th>Tipe Akun</th>
-                                                <th>Options</th>
+                                                <th>{{ $createOnly ? 'Peran' : 'Tipe Akun' }}</th>
+                                                @unless ($createOnly)
+                                                    <th>Options</th>
+                                                @endunless
                                             </tr>
                                         </thead>
                                     </table>
@@ -55,7 +57,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Tambah User BLK</h5>
+                        <h5 class="modal-title">{{ $createOnly ? 'Tambah Admin / Petugas BLK' : 'Tambah User BLK' }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -80,27 +82,46 @@
                                         <input type="text" class="form-control" id="whatsapp" name="whatsapp">
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label class="form-label">Tipe Akun</label>
-                                        <select class="form-control" id="tipe_akun" name="tipe_akun">
-                                            @foreach ($tipeAkun as $key => $label)
-                                                <option value="{{ $key }}" @selected($key == 3)>{{ $label }}</option>
-                                            @endforeach
-                                        </select>
+                                @if ($createOnly)
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Peran</label>
+                                            <select class="form-control" id="role" name="role">
+                                                @foreach ($staffRoles as $roleKey => $label)
+                                                    <option value="{{ $roleKey }}">{{ $label }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label class="form-label">BLK</label>
-                                        <select class="form-control" id="blk_id" name="blk_id">
-                                            <option value="0">-- Tidak diisi --</option>
-                                            @foreach ($blkOptions as $blk)
-                                                <option value="{{ $blk->id }}">{{ $blk->nama_lembaga }}</option>
-                                            @endforeach
-                                        </select>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">BLK</label>
+                                            <input type="text" class="form-control" value="{{ $blkNama }}" disabled>
+                                        </div>
                                     </div>
-                                </div>
+                                @else
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">Tipe Akun</label>
+                                            <select class="form-control" id="tipe_akun" name="tipe_akun">
+                                                @foreach ($tipeAkun as $key => $label)
+                                                    <option value="{{ $key }}" @selected($key == 3)>{{ $label }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label">BLK</label>
+                                            <select class="form-control" id="blk_id" name="blk_id">
+                                                <option value="0">-- Tidak diisi --</option>
+                                                @foreach ($blkOptions as $blk)
+                                                    <option value="{{ $blk->id }}">{{ $blk->nama_lembaga }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                @endif
                                 <div class="col-sm-12">
                                     <button class="btn btn-primary">Submit</button>
                                 </div>
@@ -111,6 +132,7 @@
             </div>
         </div>
 
+        @unless ($createOnly)
         <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -156,6 +178,7 @@
                 </div>
             </div>
         </div>
+        @endunless
     </body>
 @endsection
 
@@ -187,11 +210,13 @@
                     {
                         data: 'tipe_akun_nama'
                     },
+                    @unless ($createOnly)
                     {
                         data: 'options',
                         orderable: false,
                         searchable: false
                     },
+                    @endunless
                 ]
             });
 
@@ -204,8 +229,12 @@
                         name: $('#name').val(),
                         email: $('#email').val(),
                         whatsapp: $('#whatsapp').val(),
+                        @if ($createOnly)
+                        role: $('#role').val(),
+                        @else
                         tipe_akun: $('#tipe_akun').val(),
                         blk_id: $('#blk_id').val(),
+                        @endif
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
@@ -228,6 +257,7 @@
                 });
             });
 
+            @unless ($createOnly)
             $('#editForm').submit(function(e) {
                 e.preventDefault();
                 var id = $('#editId').val();
@@ -261,8 +291,10 @@
                     }
                 });
             });
+            @endunless
         });
 
+        @unless ($createOnly)
         function showEditModal(id) {
             $.get('{{ url('dapur/blk/users') }}/' + id, function(response) {
                 if (response.success) {
@@ -308,5 +340,6 @@
                 });
             }
         }
+        @endunless
     </script>
 @endpush

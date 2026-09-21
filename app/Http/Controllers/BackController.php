@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BLK\EtamBlk;
 use App\Models\BLK\EtamBlkPelatihan;
 use App\Models\BLK\EtamBlkPelatihanPeserta;
 use App\Models\BLK\EtamBlkPelatihanPesertaPerusahaan;
@@ -90,8 +91,21 @@ class BackController extends Controller
             return view('backend.dashboard.index_blk', compact('jumlahPelatihan', 'jumlahPeserta', 'jumlahPesertaPerusahaan'));
         }
 
+        if (in_array(Auth::user()->roles[0]['name'], ['kepala-balai', 'admin-balai', 'petugas-balai'], true)) {
+            $blkIds = EtamBlk::query()
+                ->where('kode_struktur', Auth::user()->kode_struktur)
+                ->pluck('id');
+            $pelatihanQuery = EtamBlkPelatihan::query()->whereIn('blk_id', $blkIds);
+            $jumlahPelatihan = (clone $pelatihanQuery)->count();
+            $pelatihanIds = (clone $pelatihanQuery)->pluck('id');
+            $jumlahPeserta = EtamBlkPelatihanPeserta::whereIn('blk_pelatihan_id', $pelatihanIds)->count();
+            $jumlahPesertaPerusahaan = EtamBlkPelatihanPesertaPerusahaan::whereIn('blk_pelatihan_id', $pelatihanIds)->count();
+
+            return view('backend.dashboard.index_blk', compact('jumlahPelatihan', 'jumlahPeserta', 'jumlahPesertaPerusahaan'));
+        }
+
         //bidang HI
-        if(Auth::user()->roles[0]['name'] == 'admin-bidang' && Auth::user()->kode_struktur == '41'){
+        if (Auth::user()->roles[0]['name'] == 'admin-bidang' && Auth::user()->kode_struktur == '41') {
             return view('backend.dashboard.index_bidanghi');
         }
     }

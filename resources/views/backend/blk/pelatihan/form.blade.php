@@ -44,6 +44,13 @@
                                         @method('PUT')
                                     @endif
 
+                                @if ($blkOptions->isEmpty())
+                                    <div class="alert alert-warning">
+                                        BLK untuk balai Anda belum terdaftar. Minta super admin mengisi
+                                        <strong>Daftar BLK</strong> lalu pilih Struktur/Balai yang sama dengan akun
+                                        ini.
+                                    </div>
+                                @endif
                                     <h6 class="mb-3">Informasi Pelatihan</h6>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
@@ -57,13 +64,18 @@
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label">BLK</label>
-                                            <select name="blk_id" class="form-control" required>
-                                                <option value="">-- Pilih BLK --</option>
+                                            <select name="blk_id" class="form-control" required @disabled(($isBlkStaff ?? false) && $blkOptions->count() === 1)>
+                                                @if ($blkOptions->count() !== 1)
+                                                    <option value="">-- Pilih BLK --</option>
+                                                @endif
                                                 @foreach ($blkOptions as $blk)
                                                     <option value="{{ $blk->id }}" @selected(old('blk_id', $pelatihan->blk_id) == $blk->id)>
                                                         {{ $blk->nama_lembaga }}</option>
                                                 @endforeach
                                             </select>
+                                            @if (($isBlkStaff ?? false) && $blkOptions->count() === 1)
+                                                <input type="hidden" name="blk_id" value="{{ $blkOptions->first()->id }}">
+                                            @endif
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label class="form-label">Nama Pelatihan</label>
@@ -129,6 +141,30 @@
                                         <div class="col-md-12 mb-3">
                                             <label class="form-label">Deskripsi</label>
                                             <textarea name="deskripsi" class="form-control" rows="4">{{ old('deskripsi', $pelatihan->deskripsi) }}</textarea>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Template Wawancara</label>
+                                            <select name="wawancara_form_id" id="wawancara_form_id" class="form-control">
+                                                <option value="">-- Tidak ada --</option>
+                                                @foreach ($wawancaraTemplates as $template)
+                                                    <option value="{{ $template->id }}" data-blk="{{ $template->blk_id }}"
+                                                        @selected(old('wawancara_form_id', $pelatihan->wawancara_form_id) == $template->id)>
+                                                        {{ $template->nama }}</option>
+                                                @endforeach
+                                            </select>
+                                            <small class="text-muted">Diisi admin saat wawancara peserta.</small>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Template Pretest</label>
+                                            <select name="pretest_form_id" id="pretest_form_id" class="form-control">
+                                                <option value="">-- Tidak ada --</option>
+                                                @foreach ($pretestTemplates as $template)
+                                                    <option value="{{ $template->id }}" data-blk="{{ $template->blk_id }}"
+                                                        @selected(old('pretest_form_id', $pelatihan->pretest_form_id) == $template->id)>
+                                                        {{ $template->nama }}</option>
+                                                @endforeach
+                                            </select>
+                                            <small class="text-muted">Jika dipilih, peserta mengisi sendiri setelah daftar.</small>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label class="form-label">Poster</label>
@@ -202,6 +238,24 @@
             $(document).on('click', '.btn-remove-row', function() {
                 $(this).closest('.input-group').remove();
             });
+
+            function filterTemplates() {
+                var blkId = String($('select[name="blk_id"]').val() || $('input[name="blk_id"]').val() || '');
+                $('#wawancara_form_id option, #pretest_form_id option').each(function() {
+                    var optBlk = $(this).attr('data-blk');
+                    if (!optBlk) {
+                        $(this).prop('disabled', false);
+                        return;
+                    }
+                    var match = !blkId || String(optBlk) === blkId;
+                    $(this).prop('disabled', !match);
+                    if (!match && this.selected) {
+                        this.selected = false;
+                    }
+                });
+            }
+            $('[name="blk_id"]').on('change', filterTemplates);
+            filterTemplates();
         });
     </script>
 @endpush

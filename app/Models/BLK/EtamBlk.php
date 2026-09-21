@@ -44,6 +44,11 @@ class EtamBlk extends Model
         return $this->hasMany(EtamBlkPelatihan::class, 'blk_id', 'id');
     }
 
+    public function forms(): HasMany
+    {
+        return $this->hasMany(EtamBlkForm::class, 'blk_id', 'id');
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by', 'id');

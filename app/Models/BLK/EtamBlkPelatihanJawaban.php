@@ -14,6 +14,10 @@ class EtamBlkPelatihanJawaban extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'submitted_at' => 'datetime',
+    ];
+
     public function pelatihan(): BelongsTo
     {
         return $this->belongsTo(EtamBlkPelatihan::class, 'blk_pelatihan_id', 'id');
@@ -27,5 +31,20 @@ class EtamBlkPelatihanJawaban extends Model
     public function peserta(): BelongsTo
     {
         return $this->belongsTo(EtamBlkPelatihanPeserta::class, 'blk_peserta_id', 'id');
+    }
+
+    public function pesertaPerusahaan(): BelongsTo
+    {
+        return $this->belongsTo(EtamBlkPelatihanPesertaPerusahaan::class, 'perusahaan_peserta_id', 'id');
+    }
+
+    public function form(): BelongsTo
+    {
+        return $this->belongsTo(EtamBlkForm::class, 'form_id', 'id');
+    }
+
+    public function formPertanyaan(): BelongsTo
+    {
+        return $this->belongsTo(EtamBlkFormPertanyaan::class, 'form_pertanyaan_id', 'id');
     }
 }

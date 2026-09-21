@@ -27,14 +27,29 @@
                         <span class="pcoded-mtext">Pelatihan BLK</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('blk.form.index', 'wawancara') }}" class="nav-link ">
+                        <span class="pcoded-micon"><i class="feather icon-message-square"></i></span>
+                        <span class="pcoded-mtext">Wawancara</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('blk.form.index', 'pretest') }}" class="nav-link ">
+                        <span class="pcoded-micon"><i class="feather icon-edit"></i></span>
+                        <span class="pcoded-mtext">Pretest</span>
+                    </a>
+                </li>
                 @php
+                    $roleName = Auth::user()->roles[0]['name'] ?? null;
                     $blkProfile = getRowBlkById(Auth::id());
+                    $canSeeUserBlk = $roleName === 'admin-balai'
+                        || ($blkProfile && in_array((int) $blkProfile->tipe_akun, [0, 1, 2, 3], true));
                 @endphp
-                @if ($blkProfile && in_array((int) $blkProfile->tipe_akun, [0, 1, 2, 3], true))
+                @if ($canSeeUserBlk)
                     <li class="nav-item">
                         <a href="{{ route('blk.users.index') }}" class="nav-link ">
                             <span class="pcoded-micon"><i class="feather icon-users"></i></span>
-                            <span class="pcoded-mtext">User BLK</span>
+                            <span class="pcoded-mtext">{{ $roleName === 'admin-balai' ? 'Kelola User BLK' : 'User BLK' }}</span>
                         </a>
                     </li>
                 @endif

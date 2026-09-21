@@ -1,65 +1,62 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\CheckUserRole;
-
-use App\Captcha\SimpleCaptcha; // Replace with your actual namespace
-use App\Http\Controllers\DepanController;
-use App\Http\Controllers\BackController;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\StrukturController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\UserPencariController;
-use App\Http\Controllers\LowonganController;
-use App\Http\Controllers\LowonganAdminController;
-use App\Http\Controllers\LowonganPencariController;
-use App\Http\Controllers\EtamFaqController;
-use App\Http\Controllers\EtamInfografisController;
-use App\Http\Controllers\EtamGaleriController;
-use App\Http\Controllers\EtamBeritaController;
-use App\Http\Controllers\Ak1PencariController;
-use App\Http\Controllers\UserPenyediaController;
-use App\Http\Controllers\ProfilPenyediaController;
-use App\Http\Controllers\ProfilPencariController;
-use App\Http\Controllers\ProfilBkkController;
-use App\Http\Controllers\BkkPenyediaController;
-use App\Http\Controllers\HistoryLamaranPencariController;
 use App\Http\Controllers\Ak1Controller;
-use App\Http\Controllers\DiterimaPencariController;
-use App\Http\Controllers\PenempatanController;
-use App\Http\Controllers\RekapController;
-use App\Http\Middleware\TrackVisitors;
-use App\Http\Controllers\DashboardPimpinanController;
+// Replace with your actual namespace
+use App\Http\Controllers\Ak1PencariController;
 use App\Http\Controllers\AlumniController;
-use App\Http\Controllers\JobFairController;
-use App\Http\Controllers\PerusahaanController;
-use App\Http\Controllers\BkkController;
-use App\Http\Controllers\MagangDnController;
-use App\Http\Controllers\Dokumentasi;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BackController;
 use App\Http\Controllers\BkkAdminController;
-use App\Http\Controllers\UserBkkController;
-
-use App\Http\Controllers\DashboardEksekutifController;
-use App\Http\Controllers\DashboardEksekutifKabkotaController;
-
-use App\Http\Controllers\HI\PP\PenyediaPpController;
-use App\Http\Controllers\HI\PP\AdmBidangPpController;
-
+use App\Http\Controllers\BkkController;
+use App\Http\Controllers\BkkPenyediaController;
 use App\Http\Controllers\BLK\BlkController;
-use App\Http\Controllers\BLK\UserBlkController;
+use App\Http\Controllers\BLK\FormTemplateController;
 use App\Http\Controllers\BLK\PelatihanController;
 use App\Http\Controllers\BLK\PesertaController;
+use App\Http\Controllers\BLK\PesertaFormController;
+use App\Http\Controllers\BLK\UserBlkController;
+use App\Http\Controllers\DashboardEksekutifController;
+use App\Http\Controllers\DashboardEksekutifKabkotaController;
+use App\Http\Controllers\DashboardPimpinanController;
+use App\Http\Controllers\DepanController;
+use App\Http\Controllers\DiterimaPencariController;
+use App\Http\Controllers\Dokumentasi;
+use App\Http\Controllers\EtamBeritaController;
+use App\Http\Controllers\EtamFaqController;
+use App\Http\Controllers\EtamGaleriController;
+use App\Http\Controllers\EtamInfografisController;
+use App\Http\Controllers\HI\PP\AdmBidangPpController;
+use App\Http\Controllers\HI\PP\PenyediaPpController;
+use App\Http\Controllers\HistoryLamaranPencariController;
+use App\Http\Controllers\HistoryPelatihanPencariController;
+use App\Http\Controllers\JobFairController;
+use App\Http\Controllers\LowonganAdminController;
+use App\Http\Controllers\LowonganController;
+use App\Http\Controllers\LowonganPencariController;
+use App\Http\Controllers\MagangDnController;
+use App\Http\Controllers\PenempatanController;
+use App\Http\Controllers\PerusahaanController;
+use App\Http\Controllers\ProfilBkkController;
+use App\Http\Controllers\ProfilPencariController;
+use App\Http\Controllers\ProfilPenyediaController;
+use App\Http\Controllers\RekapController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\StrukturController;
+use App\Http\Controllers\UserBkkController;
+use App\Http\Controllers\UserPencariController;
+use App\Http\Controllers\UserPenyediaController;
+use App\Http\Middleware\CheckUserRole;
+use App\Http\Middleware\TrackVisitors;
+use Illuminate\Support\Facades\Route;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
 // });
 
-
 Route::get('/', [DepanController::class, 'index'])->middleware(TrackVisitors::class);
 
 Route::get('/test-mail', [App\Http\Controllers\TestMailController::class, 'send']);
-
 
 Route::get('/depan/bkk', [DepanController::class, 'bkk']);
 Route::get('/depan/login', [DepanController::class, 'login']);
@@ -88,11 +85,9 @@ Route::post('/depan/akhir_daftar-akun-bkk', [DepanController::class, 'akhir_daft
 Route::get('/depan/getkabkotabyid/{prov_id}', [DepanController::class, 'getKabkotaByProv'])->name('get-kabkota-byprov');
 Route::get('/getpendidikans', function () {
     $pendidikan = getPendidikan(); // Panggil fungsi helper
+
     return response()->json($pendidikan); // Kembalikan data sebagai JSON
 })->name('get-all-pendidikan');
-
-
-
 
 // Route::get('/captcha', function () {
 //     return response()->json(['captcha' => captcha_src()]);
@@ -108,12 +103,10 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/notifications/{id}', [App\Http\Controllers\NotificationController::class, 'destroy'])->name('notifications.destroy');
 });
 
-
-
-
 Route::get('/captcha', function () {
     // Menghasilkan gambar CAPTCHA baru
     $captcha = captcha_src(); // Mendapatkan URL gambar CAPTCHA
+
     return response()->json(['captcha' => $captcha]); // Mengembalikan URL gambar sebagai JSON
 });
 
@@ -160,7 +153,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::post('jobfair/{jobfairId}/perusahaan/{userId}/lowongan/{id}', [JobFairController::class, 'updateLowongan'])->name('jobfair.lowongan.update');
     Route::delete('jobfair/{jobfairId}/perusahaan/{userId}/lowongan/{id}', [JobFairController::class, 'destroyLowongan'])->name('jobfair.lowongan.destroy');
 
-     // Helper Routes
+    // Helper Routes
     Route::get('api/jobfair/get-all-pendidikan', [JobFairController::class, 'getAllPendidikan'])->name('jobfair.get-all-pendidikan');
     Route::get('get-jurusan-bypendidikan/{id}', [JobFairController::class, 'getJurusanByPendidikan'])->name('get-jurusan-bypendidikan-jobfair');
 
@@ -195,11 +188,10 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::post('magang_dn/{magangId}/perusahaan/{userId}/lowongan/{id}', [MagangDnController::class, 'updateLowongan'])->name('magang_dn.lowongan.update');
     // Route::delete('magang_dn/{magangId}/perusahaan/{userId}/lowongan/{id}', [MagangDnController::class, 'destroyLowongan'])->name('jobfair.lowongan.destroy');
 
-
     //route untuk admin
     Route::get('/dashboard', [BackController::class, 'index'])->name('dashboard');
     Route::get('/sample', [BackController::class, 'sample'])->name('sample');
-    Route::prefix('setting')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi')->group(function () {
+    Route::prefix('setting')->middleware(CheckUserRole::class.':super-admin,admin-provinsi')->group(function () {
         Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
         Route::get('/struktur', [StrukturController::class, 'index'])->name('struktur.index');
 
@@ -229,7 +221,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     });
 
     // Route::prefix('users')->group(function () {
-    Route::prefix('users')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
+    Route::prefix('users')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
 
         Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
         Route::get('/struktur-by-lokasi', [AdminController::class, 'strukturByLokasi'])->name('admin.struktur-by-lokasi');
@@ -252,8 +244,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::delete('/bkk/delete/{id}', [UserBkkController::class, 'softdelete'])->name('userbkk.softdelete');
     });
 
-
-    Route::prefix('datas')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
+    Route::prefix('datas')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
 
         Route::get('/pencari', [UserPencariController::class, 'data'])->name('datapencari.index');
         Route::get('/pencari-extambang', [UserPencariController::class, 'dataExtambang'])->name('datapencariextambang.index'); //ex tambang
@@ -278,7 +269,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::post('/bkk-unfinish/bulk_deletepenyedia', [BkkAdminController::class, 'bulk_deletebkkunfinish'])->name('bulkdelete.bkkunfinish');
     });
 
-    Route::prefix('penyedias')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer,penyedia-kerja')->group(function () {
+    Route::prefix('penyedias')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer,penyedia-kerja')->group(function () {
         Route::get('/lowongan', [LowonganController::class, 'index'])->name('lowongan.index');
         Route::post('/lowongan/add', [LowonganController::class, 'store'])->name('lowongan.add');
         Route::get('/lowongan/detail/{id}', [LowonganController::class, 'show'])->name('lowongan.detail');
@@ -308,17 +299,17 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         // Route::delete('/peraturan-perusahaan/destroy/{id}', [PenyediaPpController::class, 'destroy'])->name('hi.pp.penyedia.destroy');
 
         Route::prefix('peraturan-perusahaan')->name('hi.pp.penyedia.')->group(function () {
-            Route::get('/',        [PenyediaPpController::class, 'index'])->name('index');
-            Route::get('/tambah',  [PenyediaPpController::class, 'create'])->name('tambah');
-            Route::post('/store',  [PenyediaPpController::class, 'store'])->name('store');
-            Route::get('/edit/{id}',   [PenyediaPpController::class, 'editForm'])->name('edit');
+            Route::get('/', [PenyediaPpController::class, 'index'])->name('index');
+            Route::get('/tambah', [PenyediaPpController::class, 'create'])->name('tambah');
+            Route::post('/store', [PenyediaPpController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [PenyediaPpController::class, 'editForm'])->name('edit');
             Route::post('/update/{id}', [PenyediaPpController::class, 'update'])->name('update');
             Route::delete('/destroy/{id}', [PenyediaPpController::class, 'destroy'])->name('destroy');
         });
     });
 
     Route::prefix('bidang-hi')->group(function () {
-        Route::middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-bidang')->group(function () {
+        Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-bidang')->group(function () {
             Route::get('/data-pp', [AdmBidangPpController::class, 'index'])->name('hi.pp.admbidang.index');
             Route::get('/data-pp/detail/{id}', [AdmBidangPpController::class, 'detail'])->name('hi.pp.admbidang.detail');
             Route::get('/data-pp/verifikasi/{id}',  [AdmBidangPpController::class, 'formVerifikasi'])->name('hi.pp.admbidang.verifikasi');
@@ -327,7 +318,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     });
 
     Route::prefix('blk')->group(function () {
-        Route::middleware(CheckUserRole::class . ':super-admin,admin-provinsi')->group(function () {
+        Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi')->group(function () {
             Route::get('/lembaga', [BlkController::class, 'index'])->name('blk.lembaga.index');
             Route::post('/lembaga', [BlkController::class, 'store'])->name('blk.lembaga.store');
             Route::get('/lembaga/{id}', [BlkController::class, 'show'])->name('blk.lembaga.show');
@@ -335,13 +326,27 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::delete('/lembaga/{id}', [BlkController::class, 'destroy'])->name('blk.lembaga.destroy');
         });
 
-        Route::middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-blk')->group(function () {
+        Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-blk,admin-balai')->group(function () {
             Route::get('/users', [UserBlkController::class, 'index'])->name('blk.users.index');
             Route::post('/users', [UserBlkController::class, 'store'])->name('blk.users.store');
+        });
+
+        Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-blk')->group(function () {
             Route::get('/users/{id}', [UserBlkController::class, 'show'])->name('blk.users.show');
             Route::put('/users/{id}', [UserBlkController::class, 'update'])->name('blk.users.update');
             Route::delete('/users/{id}', [UserBlkController::class, 'destroy'])->name('blk.users.destroy');
             Route::put('/users/{id}/reset', [UserBlkController::class, 'reset'])->name('blk.users.reset');
+        });
+
+        Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-blk,kepala-balai,admin-balai,petugas-balai')->group(function () {
+            Route::prefix('{jenis}')->whereIn('jenis', ['wawancara', 'pretest'])->group(function () {
+                Route::get('/', [FormTemplateController::class, 'index'])->name('blk.form.index');
+                Route::get('/create', [FormTemplateController::class, 'create'])->name('blk.form.create');
+                Route::post('/', [FormTemplateController::class, 'store'])->name('blk.form.store');
+                Route::get('/{id}/edit', [FormTemplateController::class, 'edit'])->name('blk.form.edit');
+                Route::put('/{id}', [FormTemplateController::class, 'update'])->name('blk.form.update');
+                Route::delete('/{id}', [FormTemplateController::class, 'destroy'])->name('blk.form.destroy');
+            });
 
             Route::get('/pelatihan/create', [PelatihanController::class, 'create'])->name('blk.pelatihan.create');
             Route::post('/pelatihan', [PelatihanController::class, 'store'])->name('blk.pelatihan.store');
@@ -349,12 +354,18 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::put('/pelatihan/{id}', [PelatihanController::class, 'update'])->name('blk.pelatihan.update');
             Route::delete('/pelatihan/{id}', [PelatihanController::class, 'destroy'])->name('blk.pelatihan.destroy');
             Route::get('/pelatihan/{id}/peserta', [PesertaController::class, 'index'])->name('blk.pelatihan.peserta');
+            Route::get('/pelatihan/{id}/peserta/{pesertaId}', [PesertaController::class, 'show'])->name('blk.pelatihan.peserta.show');
             Route::put('/pelatihan/{id}/peserta/{pesertaId}/status', [PesertaController::class, 'updateStatus'])->name('blk.pelatihan.peserta.status');
+            Route::get('/pelatihan/{id}/peserta/{pesertaId}/wawancara', [PesertaFormController::class, 'wawancara'])->name('blk.pelatihan.peserta.wawancara');
+            Route::post('/pelatihan/{id}/peserta/{pesertaId}/wawancara', [PesertaFormController::class, 'storeWawancara'])->name('blk.pelatihan.peserta.wawancara.store');
+            Route::get('/pelatihan/{id}/peserta/{pesertaId}/pretest', [PesertaFormController::class, 'lihatPretest'])->name('blk.pelatihan.peserta.pretest');
         });
 
         Route::get('/pelatihan', [PelatihanController::class, 'index'])->name('blk.pelatihan.index');
         Route::get('/pelatihan/{id}/daftar', [PesertaController::class, 'formDaftar'])->name('blk.pelatihan.daftar');
         Route::post('/pelatihan/{id}/daftar', [PesertaController::class, 'daftar'])->name('blk.pelatihan.daftar.store');
+        Route::get('/pelatihan/{id}/pretest', [PesertaFormController::class, 'pretest'])->name('blk.pelatihan.pretest');
+        Route::post('/pelatihan/{id}/pretest', [PesertaFormController::class, 'storePretest'])->name('blk.pelatihan.pretest.store');
     });
 
     Route::prefix('ak1')->group(function () {
@@ -371,7 +382,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::put('/update/{id}', [Ak1Controller::class, 'updateUser'])->name('ak1.update');
     });
 
-    Route::prefix('admins')->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
+    Route::prefix('admins')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
         Route::get('/lowongan', [LowonganAdminController::class, 'index'])->name('lowongan.admin.index');
         Route::get('/lowongan/get/{id}', [LowonganAdminController::class, 'show'])->name('lowongan.admin.detail');
         Route::put('/lowongan/update/{id}', [LowonganAdminController::class, 'update'])->name('lowongan.admin.update');
@@ -400,6 +411,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/ak1/print', [Ak1PencariController::class, 'printAk1'])->name('ak1.pencari.print');
 
         Route::get('/history_lamaran', [HistoryLamaranPencariController::class, 'index'])->name('historylamaran.pencari.index');
+        Route::get('/history_pelatihan', [HistoryPelatihanPencariController::class, 'index'])->name('historypelatihan.pencari.index');
 
         Route::get('/lowongan_bkk', [LowonganPencariController::class, 'indexbkk'])->name('lowonganbkk.pencari.index');
     });
@@ -434,7 +446,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
 // Tambahkan middleware auth dan CheckUserRole pada prefix eksekutif
 Route::prefix('eksekutif')->middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardEksekutifController::class, 'index'])->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,eksekutif-provinsi')->name('dashboard.eksekutif');
+    Route::get('/dashboard', [DashboardEksekutifController::class, 'index'])->middleware(CheckUserRole::class.':super-admin,admin-provinsi,eksekutif-provinsi')->name('dashboard.eksekutif');
     Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');
 });
 
@@ -442,7 +454,7 @@ Route::prefix('eksekutif')->middleware('auth')->group(function () {
 
 Route::prefix('eksekutif-kabkota')->middleware('auth')->group(function () {
     Route::get('/dashboard/{kabkotaId?}', [DashboardEksekutifKabkotaController::class, 'index'])
-        ->middleware(CheckUserRole::class . ':super-admin,admin-provinsi,eksekutif-provinsi,admin-kabkota,eksekutif-kabkota')
+        ->middleware(CheckUserRole::class.':super-admin,admin-provinsi,eksekutif-provinsi,admin-kabkota,eksekutif-kabkota')
         ->name('dashboard.eksekutif.kabkota');
 });
 
@@ -464,4 +476,3 @@ Route::prefix('docs')->group(function () {
     Route::get('/magang-mandiri', [Dokumentasi::class, 'magang_mandiri'])->name('docs.magang.mandiri');
     Route::get('/jobfair', [Dokumentasi::class, 'job_fair'])->name('docs.job.fair');
 });
-

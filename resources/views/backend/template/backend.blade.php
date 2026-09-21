@@ -25,7 +25,7 @@
     @include('backend.template.sidebar-bkk')
 @endif
 
-@if (Auth::user()->roles[0]['name'] == 'admin-blk')
+@if (in_array(Auth::user()->roles[0]['name'], ['admin-blk', 'kepala-balai', 'admin-balai', 'petugas-balai']))
     @include('backend.template.sidebar-blk')
 @endif
 
