@@ -298,8 +298,21 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         //HI
         //modul PP
 
-        Route::get('/peraturan-perusahaan', [PenyediaPpController::class, 'index'])->name('hi.pp.penyedia.index');
-        Route::get('/peraturan-perusahaan/tambah', [PenyediaPpController::class, 'create'])->name('hi.pp.penyedia.tambah');
+        // Route::get('/peraturan-perusahaan', [PenyediaPpController::class, 'index'])->name('hi.pp.penyedia.index');
+        // Route::get('/peraturan-perusahaan/tambah', [PenyediaPpController::class, 'create'])->name('hi.pp.penyedia.tambah');
+        // Route::post('/peraturan-perusahaan/store', [PenyediaPpController::class, 'store'])->name('hi.pp.penyedia.store');
+        // Route::get('/peraturan-perusahaan/edit/{id}',   [PenyediaPpController::class, 'edit'])->name('hi.pp.penyedia.edit');
+        // Route::post('/peraturan-perusahaan/update/{id}', [PenyediaPpController::class, 'update'])->name('hi.pp.penyedia.update');
+        // Route::delete('/peraturan-perusahaan/destroy/{id}', [PenyediaPpController::class, 'destroy'])->name('hi.pp.penyedia.destroy');
+
+        Route::prefix('peraturan-perusahaan')->name('hi.pp.penyedia.')->group(function () {
+            Route::get('/',        [PenyediaPpController::class, 'index'])->name('index');
+            Route::get('/tambah',  [PenyediaPpController::class, 'create'])->name('tambah');
+            Route::post('/store',  [PenyediaPpController::class, 'store'])->name('store');
+            Route::get('/edit/{id}',   [PenyediaPpController::class, 'editForm'])->name('edit');
+            Route::post('/update/{id}', [PenyediaPpController::class, 'update'])->name('update');
+            Route::delete('/destroy/{id}', [PenyediaPpController::class, 'destroy'])->name('destroy');
+        });
     });
 
     Route::prefix('blk')->group(function () {
