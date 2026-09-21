@@ -29,7 +29,9 @@ class PenyediaPpController extends Controller
                 'verifikasi_admin',
                 'verifikasi_kasi',
                 'created_at'
-            )->with(['jenisAjuan:id,nama']);
+            )
+            ->with(['jenisAjuan:id,nama'])
+            ->where('created_by', auth()->id());
 
             return DataTables::of($datas)
                 ->addIndexColumn()

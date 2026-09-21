@@ -320,6 +320,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::prefix('bidang-hi')->group(function () {
         Route::middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-bidang')->group(function () {
             Route::get('/data-pp', [AdmBidangPpController::class, 'index'])->name('hi.pp.admbidang.index');
+            Route::get('/data-pp/detail/{id}', [AdmBidangPpController::class, 'detail'])->name('hi.pp.admbidang.detail');
+            Route::get('/data-pp/verifikasi/{id}',  [AdmBidangPpController::class, 'formVerifikasi'])->name('hi.pp.admbidang.verifikasi');
+            Route::post('/data-pp/verifikasi/{id}', [AdmBidangPpController::class, 'submitVerifikasi'])->name('hi.pp.admbidang.verifikasi.submit');
         });
     });
 

@@ -77,23 +77,23 @@
 
 @push('js')
 <script>
-    // $(document).ready(function() {
-    //     $('#simpletable').DataTable({
-    //         processing: true,
-    //         serverSide: true,
-    //         ajax: '{{ route('hi.pp.penyedia.index') }}',
-    //         autoWidth: false, // Menonaktifkan auto-width
-    //         columns: [
-    //             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-    //             { data: 'jenis_ajuan_nama', name: 'jenis_ajuan_nama' },
-    //             { data: 'nomor', name: 'nomor' },
-    //             { data: 'tanggal_fmt', name: 'tanggal_fmt' },
-    //             { data: 'status_admin', name: 'status_admin', orderable: false, searchable: false },
-    //             { data: 'status_kasi',  name: 'status_kasi',  orderable: false, searchable: false },
-    //             { data: 'options',      name: 'options',      orderable: false, searchable: false }
-    //         ]
-    //     });
-    // });
+    $(document).ready(function() {
+        $('#simpletable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{{ route('hi.pp.admbidang.index') }}',
+            autoWidth: false, // Menonaktifkan auto-width
+            columns: [
+                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
+                { data: 'jenis_ajuan_nama', name: 'jenis_ajuan_nama' },
+                { data: 'nomor', name: 'nomor' },
+                { data: 'tanggal_fmt', name: 'tanggal_fmt' },
+                { data: 'status_admin', name: 'status_admin', orderable: false, searchable: false },
+                { data: 'status_kasi',  name: 'status_kasi',  orderable: false, searchable: false },
+                { data: 'options',      name: 'options',      orderable: false, searchable: false }
+            ]
+        });
+    });
 </script>
 
 <script>
