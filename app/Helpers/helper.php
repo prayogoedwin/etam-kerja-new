@@ -82,6 +82,12 @@ function getRowBkkById($user_id){
     ->first();
 }
 
+function getRowBlkById($user_id){
+    return DB::table('users_blk')
+        ->where('user_id', $user_id)
+        ->first();
+}
+
 function getProvinsiKaltim(){
     return DB::table('etam_provinsi')
     ->where('id', 64) // KALTIM

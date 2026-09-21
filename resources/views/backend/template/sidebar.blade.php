@@ -104,6 +104,7 @@
                         <li><a href="{{ route('userpencari.index') }}">Pencari Kerja</a></li>
                         <li><a href="{{ route('userpenyedia.index') }}">Pemberi Kerja</a></li>
                         <li><a href="{{ route('userbkk.index') }}">BKK</a></li>
+                        <li><a href="{{ route('blk.users.index') }}">BLK</a></li>
                     </ul>
                 </li>
 
@@ -180,6 +181,15 @@
                 <li class="nav-item"><a href="{{ route('penempatan.admin.index') }}" class="nav-link "><span
                             class="pcoded-micon"><i class="fa fa-archive"></i></span><span
                             class="pcoded-mtext">Penempatan</span></a></li>
+
+                <li class="nav-item pcoded-hasmenu">
+                    <a href="#" class="nav-link "><span class="pcoded-micon"><i
+                                class="feather icon-book"></i></span><span class="pcoded-mtext">BLK</span></a>
+                    <ul class="pcoded-submenu">
+                        <li><a href="{{ route('blk.lembaga.index') }}">Daftar BLK</a></li>
+                        <li><a href="{{ route('blk.pelatihan.index') }}">Pelatihan BLK</a></li>
+                    </ul>
+                </li>
 
 
                 <li class="nav-item pcoded-hasmenu">

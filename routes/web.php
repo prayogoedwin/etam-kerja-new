@@ -44,6 +44,10 @@ use App\Http\Controllers\DashboardEksekutifController;
 use App\Http\Controllers\DashboardEksekutifKabkotaController;
 
 use App\Http\Controllers\HI\PP\PenyediaPpController;
+use App\Http\Controllers\BLK\BlkController;
+use App\Http\Controllers\BLK\UserBlkController;
+use App\Http\Controllers\BLK\PelatihanController;
+use App\Http\Controllers\BLK\PesertaController;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -298,7 +302,36 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/peraturan-perusahaan/tambah', [PenyediaPpController::class, 'create'])->name('hi.pp.penyedia.tambah');
     });
 
+    Route::prefix('blk')->group(function () {
+        Route::middleware(CheckUserRole::class . ':super-admin,admin-provinsi')->group(function () {
+            Route::get('/lembaga', [BlkController::class, 'index'])->name('blk.lembaga.index');
+            Route::post('/lembaga', [BlkController::class, 'store'])->name('blk.lembaga.store');
+            Route::get('/lembaga/{id}', [BlkController::class, 'show'])->name('blk.lembaga.show');
+            Route::put('/lembaga/{id}', [BlkController::class, 'update'])->name('blk.lembaga.update');
+            Route::delete('/lembaga/{id}', [BlkController::class, 'destroy'])->name('blk.lembaga.destroy');
+        });
 
+        Route::middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-blk')->group(function () {
+            Route::get('/users', [UserBlkController::class, 'index'])->name('blk.users.index');
+            Route::post('/users', [UserBlkController::class, 'store'])->name('blk.users.store');
+            Route::get('/users/{id}', [UserBlkController::class, 'show'])->name('blk.users.show');
+            Route::put('/users/{id}', [UserBlkController::class, 'update'])->name('blk.users.update');
+            Route::delete('/users/{id}', [UserBlkController::class, 'destroy'])->name('blk.users.destroy');
+            Route::put('/users/{id}/reset', [UserBlkController::class, 'reset'])->name('blk.users.reset');
+
+            Route::get('/pelatihan/create', [PelatihanController::class, 'create'])->name('blk.pelatihan.create');
+            Route::post('/pelatihan', [PelatihanController::class, 'store'])->name('blk.pelatihan.store');
+            Route::get('/pelatihan/{id}/edit', [PelatihanController::class, 'edit'])->name('blk.pelatihan.edit');
+            Route::put('/pelatihan/{id}', [PelatihanController::class, 'update'])->name('blk.pelatihan.update');
+            Route::delete('/pelatihan/{id}', [PelatihanController::class, 'destroy'])->name('blk.pelatihan.destroy');
+            Route::get('/pelatihan/{id}/peserta', [PesertaController::class, 'index'])->name('blk.pelatihan.peserta');
+            Route::put('/pelatihan/{id}/peserta/{pesertaId}/status', [PesertaController::class, 'updateStatus'])->name('blk.pelatihan.peserta.status');
+        });
+
+        Route::get('/pelatihan', [PelatihanController::class, 'index'])->name('blk.pelatihan.index');
+        Route::get('/pelatihan/{id}/daftar', [PesertaController::class, 'formDaftar'])->name('blk.pelatihan.daftar');
+        Route::post('/pelatihan/{id}/daftar', [PesertaController::class, 'daftar'])->name('blk.pelatihan.daftar.store');
+    });
 
     Route::prefix('ak1')->group(function () {
         Route::post('/daftar-akun', [Ak1Controller::class, 'daftar_akun'])->name('daftar-akun-ak1');

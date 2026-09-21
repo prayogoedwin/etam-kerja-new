@@ -119,7 +119,7 @@ class AdminController extends Controller
 
             // Ambil data roles untuk dikirim ke view
             // $roles = Role::select('id', 'name')->whereIn('name', ['super-admin', 'admin-provinsi', 'admin-kabkota-officer', 'admin-kabkota'])->get();
-            $roles = Role::select('id', 'name')->whereNotIn('name', ['pencari-kerja', 'penyedia-kerja', 'admin-bkk'])->get();
+            $roles = Role::select('id', 'name')->whereNotIn('name', ['pencari-kerja', 'penyedia-kerja', 'admin-bkk', 'admin-blk'])->get();
             $lokasiKerja = EtamStruktur::query()
                 ->select('kode_lokasi', 'tipe')
                 ->distinct()

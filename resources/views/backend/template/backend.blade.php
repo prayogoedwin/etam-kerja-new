@@ -25,6 +25,10 @@
     @include('backend.template.sidebar-bkk')
 @endif
 
+@if (Auth::user()->roles[0]['name'] == 'admin-blk')
+    @include('backend.template.sidebar-blk')
+@endif
+
 <body>
     @yield('content')
     @include('backend.template.footer')

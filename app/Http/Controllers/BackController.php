@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BLK\EtamBlkPelatihan;
+use App\Models\BLK\EtamBlkPelatihanPeserta;
+use App\Models\BLK\EtamBlkPelatihanPesertaPerusahaan;
+use App\Models\BLK\UserBlk;
 use App\Models\EtamAk1;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use App\Models\Kecamatan;
 use App\Models\Lamaran;
 use App\Models\Lowongan;
 use App\Models\UserBkk;
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class BackController extends Controller
 {
@@ -37,6 +41,7 @@ class BackController extends Controller
             $pencariKerja = $pencariKerja->count();
             $penyedia = $penyedia->count();
             $bkk = $bkk->count();
+
             return view('backend.dashboard.index', compact('lowonganPending', 'lamaranBelumProses', 'ak1', 'pencariKerja', 'penyedia', 'bkk'));
         }
 
@@ -47,6 +52,7 @@ class BackController extends Controller
         if (Auth::user()->roles[0]['name'] == 'penyedia-kerja') {
             $lowonganIds = Lowongan::where('posted_by', Auth::user()->id)->pluck('id');
             $jumlah_lamaran = Lamaran::whereIn('lowongan_id', $lowonganIds)->count();
+
             return view('backend.dashboard.index_penyedia', compact('lowonganHariIni', 'lowonganAktif', 'jumlah_lamaran'));
         }
 
@@ -56,11 +62,28 @@ class BackController extends Controller
             $pencariKerja = $pencariKerja->where('id_kota', Auth::user()->admin->kabkota_id)->count();
             $penyedia = $penyedia->where('id_kota', Auth::user()->admin->kabkota_id)->count();
             $bkk = $bkk->where('id_kota', Auth::user()->admin->kabkota_id)->count();
+
             return view('backend.dashboard.index_kabkota', compact('lowonganPending', 'lamaranBelumProses', 'pencariKerja', 'penyedia', 'bkk'));
         }
 
         if (Auth::user()->roles[0]['name'] == 'admin-bkk') {
             return view('backend.dashboard.index_bkk');
+        }
+
+        if (Auth::user()->roles[0]['name'] == 'admin-blk') {
+            $profile = UserBlk::where('user_id', Auth::id())->first();
+            $pelatihanQuery = EtamBlkPelatihan::query();
+            if ($profile && (int) $profile->tipe_akun !== UserBlk::TIPE_ALL) {
+                if (in_array((int) $profile->tipe_akun, [UserBlk::TIPE_ADMIN_BLK, UserBlk::TIPE_OFFICER], true)) {
+                    $pelatihanQuery->where('blk_id', $profile->blk_id);
+                }
+            }
+            $jumlahPelatihan = (clone $pelatihanQuery)->count();
+            $pelatihanIds = (clone $pelatihanQuery)->pluck('id');
+            $jumlahPeserta = EtamBlkPelatihanPeserta::whereIn('blk_pelatihan_id', $pelatihanIds)->count();
+            $jumlahPesertaPerusahaan = EtamBlkPelatihanPesertaPerusahaan::whereIn('blk_pelatihan_id', $pelatihanIds)->count();
+
+            return view('backend.dashboard.index_blk', compact('jumlahPelatihan', 'jumlahPeserta', 'jumlahPesertaPerusahaan'));
         }
     }
 
@@ -88,7 +111,7 @@ class BackController extends Controller
             return response()->json(['status' => 0, 'message' => $validator->errors()->first()]);
         }
 
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return response()->json(['status' => 0, 'message' => 'Password saat ini salah.']);
         }
 
@@ -101,7 +124,7 @@ class BackController extends Controller
     {
         $kabkotaId = $request->query('kabkota_id');
 
-        if (!$kabkotaId) {
+        if (! $kabkotaId) {
             return response()->json(['message' => 'kabkota_id is required'], 400);
         }
 

@@ -74,4 +74,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserAdmin::class, 'user_id', 'id');
     }
+
+    public function blk()
+    {
+        return $this->hasOne(\App\Models\BLK\UserBlk::class, 'user_id', 'id');
+    }
 }
