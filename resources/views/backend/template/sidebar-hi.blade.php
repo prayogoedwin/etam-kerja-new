@@ -27,17 +27,6 @@
                         <span class="pcoded-mtext">Ajuan PP</span>
                     </a>
                 </li>
-                {{-- @php
-                    $blkProfile = getRowBlkById(Auth::id());
-                @endphp
-                @if ($blkProfile && in_array((int) $blkProfile->tipe_akun, [0, 1, 2, 3], true))
-                    <li class="nav-item">
-                        <a href="{{ route('blk.users.index') }}" class="nav-link ">
-                            <span class="pcoded-micon"><i class="feather icon-users"></i></span>
-                            <span class="pcoded-mtext">User BLK</span>
-                        </a>
-                    </li>
-                @endif --}}
             </ul>
         </div>
     </div>
