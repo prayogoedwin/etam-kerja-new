@@ -23,6 +23,10 @@ class BackController extends Controller
     //
     public function index()
     {
+        // dd(Auth::user()->toArray());
+        // dd(Auth::user()->roles[0]['name']);
+        // dd(Auth::user()->kode_struktur);
+
         $lowonganHariIni = Lowongan::where('status_id', 1)->whereDate('created_at', now())->count();
         $lowonganAktif = Lowongan::where('status_id', 1)->whereNull('deleted_at')->count();
         $lamaran = Lamaran::where('pencari_id', Auth::user()->id)->count();
@@ -84,6 +88,11 @@ class BackController extends Controller
             $jumlahPesertaPerusahaan = EtamBlkPelatihanPesertaPerusahaan::whereIn('blk_pelatihan_id', $pelatihanIds)->count();
 
             return view('backend.dashboard.index_blk', compact('jumlahPelatihan', 'jumlahPeserta', 'jumlahPesertaPerusahaan'));
+        }
+
+        //bidang HI
+        if(Auth::user()->roles[0]['name'] == 'admin-bidang' && Auth::user()->kode_struktur == '41'){
+            return view('backend.dashboard.index_bidanghi');
         }
     }
 

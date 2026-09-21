@@ -44,6 +44,8 @@ use App\Http\Controllers\DashboardEksekutifController;
 use App\Http\Controllers\DashboardEksekutifKabkotaController;
 
 use App\Http\Controllers\HI\PP\PenyediaPpController;
+use App\Http\Controllers\HI\PP\AdmBidangPpController;
+
 use App\Http\Controllers\BLK\BlkController;
 use App\Http\Controllers\BLK\UserBlkController;
 use App\Http\Controllers\BLK\PelatihanController;
@@ -312,6 +314,12 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::get('/edit/{id}',   [PenyediaPpController::class, 'editForm'])->name('edit');
             Route::post('/update/{id}', [PenyediaPpController::class, 'update'])->name('update');
             Route::delete('/destroy/{id}', [PenyediaPpController::class, 'destroy'])->name('destroy');
+        });
+    });
+
+    Route::prefix('bidang-hi')->group(function () {
+        Route::middleware(CheckUserRole::class . ':super-admin,admin-provinsi,admin-bidang')->group(function () {
+            Route::get('/data-pp', [AdmBidangPpController::class, 'index'])->name('hi.pp.admbidang.index');
         });
     });
 

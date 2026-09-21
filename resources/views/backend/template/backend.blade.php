@@ -29,6 +29,10 @@
     @include('backend.template.sidebar-blk')
 @endif
 
+@if (Auth::user()->roles[0]['name'] == 'admin-bidang' && Auth::user()->kode_struktur == '41')
+    @include('backend.template.sidebar-hi')
+@endif
+
 <body>
     @yield('content')
     @include('backend.template.footer')
