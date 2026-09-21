@@ -137,6 +137,138 @@
             </div>
         </div>
 
+        {{-- ============ MODAL EDIT ============ --}}
+        <div class="modal fade" id="modalEdit" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <form id="form-edit" enctype="multipart/form-data">
+                        @csrf
+                        <input type="hidden" id="edit-id" name="id">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Pengajuan</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <ul class="nav nav-tabs mb-3" role="tablist">
+                                <li class="nav-item">
+                                    <a href="#edit-tab-input" class="nav-link active" data-bs-toggle="tab">Input</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#edit-tab-unggah" class="nav-link" data-bs-toggle="tab">Unggah</a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content">
+                                {{-- TAB INPUT --}}
+                                <div class="tab-pane fade show active" id="edit-tab-input">
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Jenis Ajuan <span class="text-danger">*</span></label>
+                                        <div class="col-sm-8">
+                                            <select id="edit-jenis-ajuan" name="jenis_ajuan" class="form-control" required></select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Surat Keputusan Izin Usaha</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" id="edit-surat" name="surat_keputusan_izin_usaha" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Nomor</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" id="edit-nomor" name="nomor" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Tanggal</label>
+                                        <div class="col-sm-8">
+                                            <input type="date" id="edit-tanggal" name="tanggal" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Nama Serikat Pekerja</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" id="edit-serikat" name="nama_serikat_pekerja" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Nomor Peserta BPJS</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" id="edit-bpjs" name="nomor_peserta_bpjs" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Jumlah Pekerja Pusat</label>
+                                        <div class="col-sm-8">
+                                            <input type="number" id="edit-pusat" name="jumlah_pekerja_pusat" class="form-control" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Jumlah Pekerja Cabang</label>
+                                        <div class="col-sm-8">
+                                            <input type="number" id="edit-cabang" name="jumlah_pekerja_cabang" class="form-control" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Upah Bulanan Min</label>
+                                        <div class="col-sm-8">
+                                            <input type="number" id="edit-ubmin" name="upah_pekerja_bulanan_min" class="form-control" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Upah Bulanan Max</label>
+                                        <div class="col-sm-8">
+                                            <input type="number" id="edit-ubmax" name="upah_pekerja_bulanan_max" class="form-control" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Upah Harian Min</label>
+                                        <div class="col-sm-8">
+                                            <input type="number" id="edit-uhmin" name="upah_pekerja_harian_min" class="form-control" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Upah Harian Max</label>
+                                        <div class="col-sm-8">
+                                            <input type="number" id="edit-uhmax" name="upah_pekerja_harian_max" class="form-control" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Sistem Kerja Waktu Tertentu</label>
+                                        <div class="col-sm-8">
+                                            <input type="number" id="edit-shktertentu" name="sistem_hub_kerja_tertentu" class="form-control" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-sm-4 col-form-label">Sistem Kerja Waktu Tidak Tertentu</label>
+                                        <div class="col-sm-8">
+                                            <input type="number" id="edit-shktidak" name="sistem_hub_kerja_tidak_tertentu" class="form-control" min="0">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- TAB UNGGAH --}}
+                                <div class="tab-pane fade" id="edit-tab-unggah">
+                                    <div id="edit-dokumen-list">
+                                        {{-- diisi via JS --}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-primary btn-update">
+                                <i class="feather icon-save"></i> Simpan Perubahan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </body>
 @endsection
 
@@ -208,73 +340,155 @@
     });
 </script>
 
-<script>
-    function showEditModal(id) {
-        var detailUrl = "{{ route('faq.detail', ':id') }}".replace(':id', id);
+{{-- <script>
+    window.showEditModal = function (id) {
         $.ajax({
-            url: detailUrl,
+            url: "{{ url('dapur/penyedias/peraturan-perusahaan/edit') }}/" + id,
             type: 'GET',
-            success: function(response) {
-                let dt = response.data;
+            success: function (res) {
+                if (!res.status) {
+                    Swal.fire('Gagal', res.message || 'Data tidak ditemukan', 'error');
+                    return;
+                }
 
-                // Isi data modal dengan data yang diperoleh
-                $('#editId').val(dt.id);
-                $('#editPertanyaan').val(dt.name);
-                $('#editJawaban').val(dt.description);
+                let d = res.data;
 
-                // Tampilkan modal edit
-                $('#modal-edit').modal('show');
+                // Set hidden id
+                $('#edit-id').val(d.id);
+
+                // Isi dropdown jenis ajuan
+                let opts = '<option value="">-- Pilih Jenis Ajuan --</option>';
+                res.jenis_ajuan_options.forEach(function (j) {
+                    let sel = (d.jenis_ajuan == j.id) ? 'selected' : '';
+                    opts += `<option value="${j.id}" ${sel}>${j.nama}</option>`;
+                });
+                $('#edit-jenis-ajuan').html(opts);
+
+                // Isi field
+                $('#edit-surat').val(d.surat_keputusan_izin_usaha || '');
+                $('#edit-nomor').val(d.nomor || '');
+                $('#edit-tanggal').val(d.tanggal ? d.tanggal.substring(0, 10) : '');
+                $('#edit-serikat').val(d.nama_serikat_pekerja || '');
+                $('#edit-bpjs').val(d.nomor_peserta_bpjs || '');
+                $('#edit-pusat').val(d.jumlah_pekerja_pusat || 0);
+                $('#edit-cabang').val(d.jumlah_pekerja_cabang || 0);
+                $('#edit-ubmin').val(d.upah_pekerja_bulanan_min || '');
+                $('#edit-ubmax').val(d.upah_pekerja_bulanan_max || '');
+                $('#edit-uhmin').val(d.upah_pekerja_harian_min || '');
+                $('#edit-uhmax').val(d.upah_pekerja_harian_max || '');
+                $('#edit-shktertentu').val(d.sistem_hub_kerja_tertentu || 0);
+                $('#edit-shktidak').val(d.sistem_hub_kerja_tidak_tertentu || 0);
+
+                // Render list dokumen dinamis
+                let html = '';
+                res.syarat_dokumen_options.forEach(function (s, i) {
+                    let uploaded = res.uploaded_dokumen[s.id];
+                    let link = uploaded
+                        ? `<a href="{{ asset('storage') }}/${uploaded}" target="_blank" class="text-primary">
+                            <i class="feather icon-file"></i> Lihat file
+                        </a>`
+                        : `<span class="text-muted">Belum diunggah</span>`;
+
+                    html += `
+                        <div class="form-group row align-items-center">
+                            <label class="col-sm-6 col-form-label">${i + 1}. ${s.nama}</label>
+                            <div class="col-sm-6">
+                                <div class="mb-1">${link}</div>
+                                <input type="file" name="dokumen[${s.id}]" class="form-control"
+                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                            </div>
+                        </div>`;
+                });
+                $('#edit-dokumen-list').html(html || '<div class="alert alert-warning">Belum ada syarat dokumen.</div>');
+
+                // Tampilkan modal
+                $('#modalEdit').modal('show');
             },
-            error: function(xhr) {
-                alert('Error: ' + xhr.responseText);
+            error: function () {
+                Swal.fire('Error', 'Gagal mengambil data.', 'error');
             }
         });
-    }
-</script>
+    };
 
+    // ============ SUBMIT UPDATE ============
+    $('#form-edit').on('submit', function (e) {
+        e.preventDefault();
 
-<script>
+        let id = $('#edit-id').val();
+        let formData = new FormData(this);
+        let btn = $('.btn-update');
+        let original = btn.html();
 
-    function updateFaq() {
-        // Get data from the modal form
-        var id = $('#editId').val();
-        var name = $('#editPertanyaan').val();
-        var description = $('#editJawaban').val();
+        btn.prop('disabled', true).html('<i class="feather icon-loader"></i> Menyimpan...');
 
-        // Send the data to the update route
         $.ajax({
-            url: "{{ route('faq.update', ':id') }}".replace(':id', id),
-            type: 'PUT',
-            data: {
-                _token: "{{ csrf_token() }}",  // CSRF token for security
-                name: name,
-                description: description
-            },
-            success: function(response) {
-                if(response.success) {
-                    // Display success message
-                    alert(response.message);
-                    // Close modal
-                    $('#modal-edit').modal('hide');
-                    // Optionally, reload the table or page to reflect the update
-                    location.reload();
+            url: "{{ url('dapur/penyedias/peraturan-perusahaan/update') }}/" + id,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                btn.prop('disabled', false).html(original);
+                if (res.status) {
+                    $('#modalEdit').modal('hide');
+                    Swal.fire('Berhasil', res.message, 'success');
+                    $('#simpletable').DataTable().ajax.reload();
                 } else {
-                    // Display error message
-                    alert('Error: ' + response.message);
+                    Swal.fire('Gagal', res.message, 'error');
                 }
             },
-            error: function(xhr) {
-                alert('Error: ' + xhr.responseText);
+            error: function (xhr) {
+                btn.prop('disabled', false).html(original);
+                let msg = 'Terjadi kesalahan.';
+                if (xhr.status === 422 && xhr.responseJSON.errors) {
+                    msg = Object.values(xhr.responseJSON.errors).flat().join('<br>');
+                }
+                Swal.fire('Validasi Gagal', msg, 'error');
             }
         });
-    }
+    });
 
-</script>
+    // ============ CONFIRM DELETE ============
+    window.confirmDelete = function (id) {
+        Swal.fire({
+            title: 'Yakin ingin menghapus?',
+            text: 'Data yang dihapus tidak dapat dikembalikan.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, Hapus',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "{{ url('dapur/penyedias/peraturan-perusahaan/destroy') }}/" + id,
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        _method: 'DELETE'
+                    },
+                    success: function (res) {
+                        if (res.status) {
+                            Swal.fire('Terhapus', res.message, 'success');
+                            $('#simpletable').DataTable().ajax.reload();
+                        } else {
+                            Swal.fire('Gagal', res.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Error', 'Gagal menghapus data.', 'error');
+                    }
+                });
+            }
+        });
+    };
+</script> --}}
 
 
 
 
-<script>
+{{-- <script>
     function confirmDelete(id) {
         // Konfirmasi penghapusan
         var deleteUrl = "{{ route('faq.softdelete', ':id') }}".replace(':id', id);
@@ -298,9 +512,7 @@
             });
         }
     }
-</script>
-
-
+</script> --}}
 
 @endpush
 
