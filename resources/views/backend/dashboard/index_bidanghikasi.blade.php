@@ -22,22 +22,20 @@
                 </div>
 
                 <div class="row">
-                    {{-- Total --}}
                     <div class="col-md-6 col-lg-3 mb-3">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body d-flex align-items-center">
-                                <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
                                     <i class="feather icon-file-text text-white" style="font-size: 24px;"></i>
                                 </div>
                                 <div>
-                                    <p class="text-muted mb-0 small">Total Ajuan</p>
+                                    <p class="text-muted mb-0 small">Siap Diverifikasi</p>
                                     <h4 class="mb-0">{{ number_format($stats['total'] ?? 0) }}</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Menunggu --}}
                     <div class="col-md-6 col-lg-3 mb-3">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body d-flex align-items-center">
@@ -52,7 +50,6 @@
                         </div>
                     </div>
 
-                    {{-- ACC --}}
                     <div class="col-md-6 col-lg-3 mb-3">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body d-flex align-items-center">
@@ -67,7 +64,6 @@
                         </div>
                     </div>
 
-                    {{-- Revisi --}}
                     <div class="col-md-6 col-lg-3 mb-3">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body d-flex align-items-center">
@@ -83,7 +79,7 @@
                     </div>
                 </div>
 
-                {{-- ===== BANNER BULAN INI + AKSI CEPAT ===== --}}
+                {{-- ===== BANNER + AKSI CEPAT ===== --}}
                 <div class="row mb-3">
                     <div class="col-lg-8 mb-3">
                         <div class="card border-0 shadow-sm h-100">
@@ -94,18 +90,18 @@
                                         Total pengajuan yang masuk pada bulan {{ now()->translatedFormat('F Y') }}
                                     </p>
                                 </div>
-                                <h2 class="mb-0 text-primary">{{ number_format($stats['bulan_ini'] ?? 0) }}</h2>
+                                <h2 class="mb-0 text-info">{{ number_format($stats['bulan_ini'] ?? 0) }}</h2>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-4 mb-3">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body d-flex flex-column justify-content-center">
-                                <a href="{{ route('hi.pp.admbidang.index') }}"
-                                class="btn btn-primary btn-block mb-2">
+                                <a href="{{ route('hi.pp.kasibidang.index') }}"
+                                class="btn btn-info btn-block mb-2 text-white">
                                     <i class="feather icon-list"></i> Lihat Semua Ajuan
                                 </a>
-                                <a href="{{ route('hi.pp.admbidang.index', ['status' => 'menunggu']) }}"
+                                <a href="{{ route('hi.pp.kasibidang.index') }}"
                                 class="btn btn-outline-secondary btn-block">
                                     <i class="feather icon-clock"></i> Perlu Diverifikasi
                                 </a>
@@ -119,8 +115,8 @@
                     <div class="col-12">
                         <div class="card border-0 shadow-sm">
                             <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Ajuan Terbaru</h5>
-                                <a href="{{ route('hi.pp.admbidang.index') }}" class="btn btn-sm btn-link">
+                                <h5 class="mb-0">Ajuan Terbaru (Sudah ACC Admin)</h5>
+                                <a href="{{ route('hi.pp.kasibidang.index') }}" class="btn btn-sm btn-link">
                                     Lihat semua <i class="feather icon-arrow-right"></i>
                                 </a>
                             </div>
@@ -145,16 +141,16 @@
                                                     <td>{{ $row->nomor ?? '-' }}</td>
                                                     <td>{{ $row->tanggal ? \Carbon\Carbon::parse($row->tanggal)->format('d-m-Y') : '-' }}</td>
                                                     <td>
-                                                        @if ((int) $row->verifikasi_admin === 1)
+                                                        @if ((int) $row->verifikasi_kasi === 1)
                                                             <span class="badge bg-success">ACC</span>
-                                                        @elseif ((int) $row->verifikasi_admin === 2)
+                                                        @elseif ((int) $row->verifikasi_kasi === 2)
                                                             <span class="badge bg-warning">Revisi</span>
                                                         @else
                                                             <span class="badge bg-secondary">Menunggu</span>
                                                         @endif
                                                     </td>
                                                     <td class="text-center">
-                                                        <a href="{{ route('hi.pp.admbidang.detail', $row->id) }}"
+                                                        <a href="{{ route('hi.pp.kasibidang.detail', $row->id) }}"
                                                         class="btn btn-sm btn-outline-info">
                                                             Detail
                                                         </a>
@@ -164,7 +160,7 @@
                                                 <tr>
                                                     <td colspan="6" class="text-center text-muted py-4">
                                                         <i class="feather icon-inbox" style="font-size: 32px;"></i>
-                                                        <p class="mb-0 mt-2">Belum ada ajuan.</p>
+                                                        <p class="mb-0 mt-2">Belum ada ajuan yang siap diverifikasi.</p>
                                                     </td>
                                                 </tr>
                                             @endforelse
@@ -175,6 +171,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </body>

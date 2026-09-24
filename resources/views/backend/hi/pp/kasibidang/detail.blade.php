@@ -37,13 +37,13 @@
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Detail Pengajuan</h5>
-                                <a href="{{ route('hi.pp.admbidang.index') }}" class="btn btn-light btn-sm">
+                                <a href="{{ route('hi.pp.kasibidang.index') }}" class="btn btn-light btn-sm">
                                     <i class="feather icon-arrow-left"></i> Kembali
                                 </a>
                             </div>
                             <div class="card-body">
 
-                                {{-- ========== STATUS VERIFIKASI ========== --}}
+                                {{-- ========== STATUS ========== --}}
                                 <div class="alert alert-info d-flex justify-content-between align-items-center">
                                     <div>
                                         <strong>Status Admin:</strong>
@@ -71,9 +71,18 @@
                                     <div class="alert alert-warning">
                                         <strong>Catatan Revisi Admin:</strong><br>
                                         {{ $ajuan->keterangan_revisi_admin }}
-                                        <hr class="my-2">
-                                        <strong class="badge badge-light-danger">Batas Revisi:</strong>
-                                        {{ \Carbon\Carbon::parse($ajuan->batas_revisi)->format('d-m-Y') }}
+                                    </div>
+                                @endif
+
+                                @if ($ajuan->verifikasi_kasi === 2 && $ajuan->keterangan_revisi_kasi)
+                                    <div class="alert alert-warning">
+                                        <strong>Catatan Revisi Kasi:</strong><br>
+                                        {{ $ajuan->keterangan_revisi_kasi }}
+                                        @if ($ajuan->batas_revisi)
+                                            <hr class="my-2">
+                                            <strong>Batas Revisi:</strong>
+                                            {{ \Carbon\Carbon::parse($ajuan->batas_revisi)->format('d-m-Y') }}
+                                        @endif
                                     </div>
                                 @endif
 
@@ -204,9 +213,7 @@
                                         </thead>
                                         <tbody>
                                             @forelse ($syaratDokumen as $i => $dok)
-                                                @php
-                                                    $existing = $uploadedDokumen[$dok->id] ?? null;
-                                                @endphp
+                                                @php $existing = $uploadedDokumen[$dok->id] ?? null; @endphp
                                                 <tr>
                                                     <td>{{ $i + 1 }}</td>
                                                     <td>{{ $dok->nama }}</td>
@@ -231,15 +238,15 @@
                                     </table>
                                 </div>
 
-                                {{-- ========== TOMBOL AKSI ========== --}}
+                                {{-- ========== TOMBOL VERIFIKASI ========== --}}
                                 <div class="d-flex justify-content-end mt-4">
-                                    @if ((int) $ajuan->verifikasi_admin === 0)
-                                        <a href="{{ route('hi.pp.admbidang.verifikasi', $ajuan->id) }}"
+                                    @if ((int) $ajuan->verifikasi_kasi === 0)
+                                        <a href="{{ route('hi.pp.kasibidang.verifikasi', $ajuan->id) }}"
                                         class="btn btn-success">
-                                            <i class="feather icon-check"></i> Aksi
+                                            <i class="feather icon-check"></i> Verifikasi
                                         </a>
                                     @else
-                                        <a href="{{ route('hi.pp.admbidang.verifikasi', $ajuan->id) }}"
+                                        <a href="{{ route('hi.pp.kasibidang.verifikasi', $ajuan->id) }}"
                                         class="btn btn-warning">
                                             <i class="feather icon-refresh-cw"></i> Ubah Verifikasi
                                         </a>

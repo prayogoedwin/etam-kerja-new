@@ -4,14 +4,12 @@ namespace App\Http\Controllers\HI\PP;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\HI\PP\EtamHiPpAjuan;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use App\Models\HI\PP\EtamHiPpDokunggahpenyedia;
 use App\Models\HI\PP\EtamHiPpSyaratdokumen;
 
-class AdmBidangPpController extends Controller
+class KasiBidangPpController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -31,7 +29,8 @@ class AdmBidangPpController extends Controller
                     'created_at'
                 )
                 ->with(['jenisAjuan:id,nama'])
-                ->orderBy('created_at', 'desc');
+                ->where('verifikasi_admin', 1)          // ← hanya yang sudah ACC admin
+                ->orderBy('verifikasi_admin_at', 'asc'); // FIFO: yang lebih dulu diverifikasi admin, tampil dulu
 
             return DataTables::of($datas)
                 ->addIndexColumn()
@@ -50,24 +49,14 @@ class AdmBidangPpController extends Controller
                     return $this->labelVerifikasi($data->verifikasi_kasi);
                 })
                 ->addColumn('options', function ($data) {
-                    $detailUrl = route('hi.pp.admbidang.detail', $data->id);
-                    $html = '<a href="' . $detailUrl . '" class="btn btn-info btn-sm">Detail</a>';
-
-                    // Tombol cetak hanya muncul kalau admin & kasi sudah ACC
-                    if ((int) $data->verifikasi_admin === 1 && (int) $data->verifikasi_kasi === 1) {
-                        $cetakUrl = route('hi.pp.admbidang.cetak', $data->id);
-                        $html .= ' <a href="' . $cetakUrl . '" target="_blank" class="btn btn-success btn-sm">
-                                    <i class="feather icon-printer"></i> Cetak
-                                </a>';
-                    }
-
-                    return $html;
+                    $detailUrl = route('hi.pp.kasibidang.detail', $data->id);
+                    return '<a href="' . $detailUrl . '" class="btn btn-info btn-sm">Detail</a>';
                 })
                 ->rawColumns(['options', 'status_admin', 'status_kasi'])
                 ->make(true);
         }
 
-        return view('backend.hi.pp.admbidang.index');
+        return view('backend.hi.pp.kasibidang.index');
     }
 
     /**
@@ -102,14 +91,17 @@ class AdmBidangPpController extends Controller
         //
     }
 
+    /**
+     * Halaman detail pengajuan (read-only) + tombol verifikasi.
+     */
     public function detail($id)
     {
         $ajuan = EtamHiPpAjuan::with([
             'jenisAjuan:id,nama',
             'syaratDokumen.syaratDokumen:id,nama',
-            'perusahaan:id,name,email',      // data user (perusahaan)
-            'profilPenyedia',                 // data profil penyedia (users_penyedia)
-        ])->findOrFail($id);
+        ])
+        ->where('verifikasi_admin', 1) // pastikan hanya ajuan yang sudah ACC admin
+        ->findOrFail($id);
 
         $syaratDokumen = EtamHiPpSyaratdokumen::where('id', '!=', 8)
             ->orderBy('id', 'asc')
@@ -119,7 +111,7 @@ class AdmBidangPpController extends Controller
             ->pluck('path_dokumen', 'syaratdokumen_id')
             ->toArray();
 
-        return view('backend.hi.pp.admbidang.detail', compact(
+        return view('backend.hi.pp.kasibidang.detail', compact(
             'ajuan',
             'syaratDokumen',
             'uploadedDokumen'
@@ -127,28 +119,22 @@ class AdmBidangPpController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Form verifikasi kasi.
      */
-    public function update(Request $request, string $id)
+    public function formVerifikasi($id)
     {
-        //
+        $ajuan = EtamHiPpAjuan::with(['jenisAjuan:id,nama'])
+            ->where('verifikasi_admin', 1)
+            ->findOrFail($id);
+
+        return view('backend.hi.pp.kasibidang.verifikasi', compact('ajuan'));
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Proses verifikasi kasi.
+     * - type = 'acc'    → verifikasi_kasi = 1
+     * - type = 'revisi' → verifikasi_kasi = 2 + keterangan_revisi_kasi + batas_revisi
      */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    public function formVerifikasi($id)
-    {
-        $ajuan = EtamHiPpAjuan::with(['jenisAjuan:id,nama'])->findOrFail($id);
-
-        return view('backend.hi.pp.admbidang.verifikasi', compact('ajuan'));
-    }
-
     public function submitVerifikasi(Request $request, $id)
     {
         $request->validate([
@@ -167,21 +153,20 @@ class AdmBidangPpController extends Controller
 
         DB::beginTransaction();
         try {
-            $ajuan = EtamHiPpAjuan::findOrFail($id);
+            $ajuan = EtamHiPpAjuan::where('verifikasi_admin', 1)->findOrFail($id);
 
             $data = [
-                'verifikasi_admin'    => $request->type === 'acc' ? 1 : 2,
-                'verifikasi_admin_by' => auth()->id(),
-                'verifikasi_admin_at' => now(),
+                'verifikasi_kasi'    => $request->type === 'acc' ? 1 : 2,
+                'verifikasi_kasi_by' => auth()->id(),
+                'verifikasi_kasi_at' => now(),
             ];
 
             if ($request->type === 'revisi') {
-                $data['keterangan_revisi_admin'] = $request->keterangan;
-                $data['batas_revisi']            = $request->batas_revisi;
+                $data['keterangan_revisi_kasi'] = $request->keterangan;
+                $data['batas_revisi']           = $request->batas_revisi;
             } else {
-                // Kalau ACC, kosongkan keterangan & batas revisi
-                $data['keterangan_revisi_admin'] = null;
-                $data['batas_revisi']            = null;
+                $data['keterangan_revisi_kasi'] = null;
+                $data['batas_revisi']           = null;
             }
 
             $ajuan->update($data);
@@ -191,9 +176,9 @@ class AdmBidangPpController extends Controller
             return response()->json([
                 'status'   => true,
                 'message'  => $request->type === 'acc'
-                                ? 'Pengajuan berhasil di-ACC.'
-                                : 'Pengajuan dikembalikan untuk revisi.',
-                'redirect' => route('hi.pp.admbidang.index'),
+                                ? 'Pengajuan berhasil di-ACC oleh Kasi.'
+                                : 'Pengajuan dikembalikan untuk revisi oleh Kasi.',
+                'redirect' => route('hi.pp.kasibidang.index'),
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -205,34 +190,25 @@ class AdmBidangPpController extends Controller
     }
 
     /**
-     * Halaman cetak pengajuan (full HTML sederhana).
-     * Hanya bisa diakses kalau sudah ACC admin & kasi.
+     * Update the specified resource in storage.
      */
-    public function cetak($id)
+    public function update(Request $request, string $id)
     {
-        $ajuan = EtamHiPpAjuan::with([
-            'jenisAjuan:id,nama',
-            'syaratDokumen.syaratDokumen:id,nama',
-        ])
-        ->where('verifikasi_admin', 1)
-        ->where('verifikasi_kasi', 1)
-        ->findOrFail($id);
-
-        $syaratDokumen = EtamHiPpSyaratdokumen::where('id', '!=', 8)
-            ->orderBy('id', 'asc')
-            ->get();
-
-        $uploadedDokumen = $ajuan->syaratDokumen
-            ->pluck('path_dokumen', 'syaratdokumen_id')
-            ->toArray();
-
-        return view('backend.hi.pp.admbidang.cetak', compact(
-            'ajuan',
-            'syaratDokumen',
-            'uploadedDokumen'
-        ));
+        //
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+
+    /**
+     * Label status verifikasi.
+     * 0 menunggu, 1 acc, 2 revisi
+     */
     private function labelVerifikasi($val)
     {
         switch ((int) $val) {

@@ -188,6 +188,13 @@
                                                                 </div>
                                                             </div>
 
+                                                            <div class="form-group row">
+                                                                <label class="col-sm-3 col-form-label"> <span class="badge badge-light-info">Link googledrive dokumen</span> Konsep Peraturan Perusahaan sebanyak 3 rangkap (tiap halaman wajib diparaf oleh manajemen perusahaan)</label>
+                                                                <div class="col-sm-9">
+                                                                    <input type="text" name="link_gdrive_dokumen8" class="form-control">
+                                                                </div>
+                                                            </div>
+
                                                            <div class="text-end mt-4">
                                                                 <button type="button" class="btn btn-primary btn-next" data-target="#tab-unggah">
                                                                     Selanjutnya <i class="feather icon-arrow-right"></i>

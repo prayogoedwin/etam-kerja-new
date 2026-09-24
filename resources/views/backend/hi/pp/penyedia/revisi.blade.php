@@ -37,10 +37,19 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="col-12">
-                                    <h5 class="mb-3 mt-4">Edit Pengajuan Peraturan Perusahaan</h5>
+                                    <h5 class="mb-3 mt-4">Revisi Pengajuan Peraturan Perusahaan</h5>
+                                    @if ((int) $ajuan->verifikasi_admin === 2)
+                                        <div class="alert alert-warning">
+                                            <strong>Catatan Revisi Admin:</strong><br>
+                                            {{ $ajuan->keterangan_revisi_admin }}
+                                            <hr class="my-2">
+                                            <strong class="badge badge-light-danger">Batas Revisi:</strong>
+                                            {{ \Carbon\Carbon::parse($ajuan->batas_revisi)->format('d-m-Y') }}
+                                        </div>
+                                    @endif
                                     <div class="bt-wizard" id="verticalwizard">
                                         <form id="form-pengajuan" enctype="multipart/form-data"
-                                            action="{{ route('hi.pp.penyedia.update', $ajuan->id) }}" method="POST">
+                                            action="{{ route('hi.pp.penyedia.updaterevisi', $ajuan->id) }}" method="POST">
                                             @csrf
 
                                             <div class="row align-items-stretch mb-4">

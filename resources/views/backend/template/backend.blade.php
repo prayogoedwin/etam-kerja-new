@@ -29,8 +29,14 @@
     @include('backend.template.sidebar-blk')
 @endif
 
+{{-- admin bidang HI (Seksi Syarat Kerja PP & PKB) --}}
 @if (Auth::user()->roles[0]['name'] == 'admin-bidang' && Auth::user()->kode_struktur == '41')
     @include('backend.template.sidebar-hi')
+@endif
+
+{{-- kasi bidang HI (Seksi Syarat Kerja PP & PKB) --}}
+@if (Auth::user()->roles[0]['name'] == 'kepala-seksi' && Auth::user()->kode_struktur == '41')
+    @include('backend.template.sidebar-hi-kasi')
 @endif
 
 <body>

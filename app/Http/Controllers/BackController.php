@@ -14,6 +14,7 @@ use App\Models\Lowongan;
 use App\Models\UserBkk;
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
+use App\Models\HI\PP\EtamHiPpAjuan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -104,9 +105,48 @@ class BackController extends Controller
             return view('backend.dashboard.index_blk', compact('jumlahPelatihan', 'jumlahPeserta', 'jumlahPesertaPerusahaan'));
         }
 
-        //bidang HI
+        //admin bidang HI (Seksi Syarat Kerja PP & PKB)
         if (Auth::user()->roles[0]['name'] == 'admin-bidang' && Auth::user()->kode_struktur == '41') {
-            return view('backend.dashboard.index_bidanghi');
+            $stats = [
+                'total'       => EtamHiPpAjuan::count(),
+                'menunggu'    => EtamHiPpAjuan::where('verifikasi_admin', 0)->count(),
+                'acc'         => EtamHiPpAjuan::where('verifikasi_admin', 1)->count(),
+                'revisi'      => EtamHiPpAjuan::where('verifikasi_admin', 2)->count(),
+                'bulan_ini'   => EtamHiPpAjuan::whereMonth('created_at', now()->month)
+                                            ->whereYear('created_at', now()->year)
+                                            ->count(),
+            ];
+
+            $terbaru = EtamHiPpAjuan::with(['jenisAjuan:id,nama'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            return view('backend.dashboard.index_bidanghi', compact('stats', 'terbaru'));
+        }
+
+        //kasi bidang HI (Seksi Syarat Kerja PP & PKB)
+        if (Auth::user()->roles[0]['name'] == 'kepala-seksi' && Auth::user()->kode_struktur == '41') {
+
+            $stats = [
+                'total'       => EtamHiPpAjuan::where('verifikasi_admin', 1)->count(),
+                'menunggu'    => EtamHiPpAjuan::where('verifikasi_admin', 1)
+                                            ->where('verifikasi_kasi', 0)->count(),
+                'acc'         => EtamHiPpAjuan::where('verifikasi_kasi', 1)->count(),
+                'revisi'      => EtamHiPpAjuan::where('verifikasi_kasi', 2)->count(),
+                'bulan_ini'   => EtamHiPpAjuan::where('verifikasi_admin', 1)
+                                            ->whereMonth('created_at', now()->month)
+                                            ->whereYear('created_at', now()->year)
+                                            ->count(),
+            ];
+
+            $terbaru = EtamHiPpAjuan::with(['jenisAjuan:id,nama'])
+                ->where('verifikasi_admin', 1)
+                ->orderBy('verifikasi_admin_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            return view('backend.dashboard.index_bidanghikasi', compact('stats', 'terbaru'));
         }
     }
 

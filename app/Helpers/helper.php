@@ -127,6 +127,12 @@ function getSektor(){
     ->get();
 }
 
+function getSektorById($id, $column = 'id'){
+    return DB::table('etam_sektor')
+    ->where($column, $id)
+    ->first();
+}
+
 function getJabatan(){
     return DB::table('etam_jabatan')
     ->get();
@@ -164,7 +170,7 @@ function decode_url($url){
         '-' => '=',
         '~' => '/'
     ));
-    
+
     $a = base64_decode($url);
     $hitung = strlen($a);
     $x = $hitung - 60;
@@ -289,7 +295,7 @@ function getTipeLowongan(){
  * =====================================================
  * ETAM NOTIFICATION HELPER
  * =====================================================
- * 
+ *
  * Helper functions untuk sistem notifikasi custom
  * - add_notif: Menambah notifikasi + kirim email/wa jika diaktifkan
  * - send_email: Kirim email via SMTP
@@ -455,7 +461,7 @@ if (!function_exists('send_email')) {
                 <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;">
                     ' . $text . '
                 </div>
-                
+
                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center; color: #666; font-size: 12px;">
                     <p style="margin: 0 0 10px 0;">Email ini dikirim secara otomatis oleh sistem.</p>
                     <p style="margin: 0 0 10px 0;">

@@ -28,6 +28,7 @@ use App\Http\Controllers\EtamGaleriController;
 use App\Http\Controllers\EtamInfografisController;
 use App\Http\Controllers\HI\PP\AdmBidangPpController;
 use App\Http\Controllers\HI\PP\PenyediaPpController;
+use App\Http\Controllers\HI\PP\KasiBidangPpController;
 use App\Http\Controllers\HistoryLamaranPencariController;
 use App\Http\Controllers\HistoryPelatihanPencariController;
 use App\Http\Controllers\JobFairController;
@@ -304,6 +305,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::post('/store', [PenyediaPpController::class, 'store'])->name('store');
             Route::get('/edit/{id}', [PenyediaPpController::class, 'editForm'])->name('edit');
             Route::post('/update/{id}', [PenyediaPpController::class, 'update'])->name('update');
+            Route::get('/revisi/{id}', [PenyediaPpController::class, 'revisiForm'])->name('revisi');
+            Route::post('/update-revisi/{id}', [PenyediaPpController::class, 'updateRevisi'])->name('updaterevisi');
             Route::delete('/destroy/{id}', [PenyediaPpController::class, 'destroy'])->name('destroy');
         });
     });
@@ -314,6 +317,14 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::get('/data-pp/detail/{id}', [AdmBidangPpController::class, 'detail'])->name('hi.pp.admbidang.detail');
             Route::get('/data-pp/verifikasi/{id}',  [AdmBidangPpController::class, 'formVerifikasi'])->name('hi.pp.admbidang.verifikasi');
             Route::post('/data-pp/verifikasi/{id}', [AdmBidangPpController::class, 'submitVerifikasi'])->name('hi.pp.admbidang.verifikasi.submit');
+            Route::get('/data-pp/cetak/{id}', [AdmBidangPpController::class, 'cetak'])->name('hi.pp.admbidang.cetak');
+        });
+
+        Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,kepala-seksi')->group(function () {
+            Route::get('/data-pp-kasi', [KasiBidangPpController::class, 'index'])->name('hi.pp.kasibidang.index');
+            Route::get('/data-pp-kasi/detail/{id}', [KasiBidangPpController::class, 'detail'])->name('hi.pp.kasibidang.detail');
+            Route::get('/data-pp-kasi/verifikasi/{id}', [KasiBidangPpController::class, 'formVerifikasi'])->name('hi.pp.kasibidang.verifikasi');
+            Route::post('/data-pp-kasi/verifikasi/{id}', [KasiBidangPpController::class, 'submitVerifikasi'])->name('hi.pp.kasibidang.verifikasi.submit');
         });
     });
 
