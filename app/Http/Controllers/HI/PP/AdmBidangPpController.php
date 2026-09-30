@@ -54,12 +54,12 @@ class AdmBidangPpController extends Controller
                     $html = '<a href="' . $detailUrl . '" class="btn btn-info btn-sm">Detail</a>';
 
                     // Tombol cetak hanya muncul kalau admin & kasi sudah ACC
-                    if ((int) $data->verifikasi_admin === 1 && (int) $data->verifikasi_kasi === 1) {
-                        $cetakUrl = route('hi.pp.admbidang.cetak', $data->id);
-                        $html .= ' <a href="' . $cetakUrl . '" target="_blank" class="btn btn-success btn-sm">
-                                    <i class="feather icon-printer"></i> Cetak
-                                </a>';
-                    }
+                    // if ((int) $data->verifikasi_admin === 1 && (int) $data->verifikasi_kasi === 1) {
+                    //     $cetakUrl = route('hi.pp.admbidang.cetak', $data->id);
+                    //     $html .= ' <a href="' . $cetakUrl . '" target="_blank" class="btn btn-success btn-sm">
+                    //                 <i class="feather icon-printer"></i> Cetak
+                    //             </a>';
+                    // }
 
                     return $html;
                 })
@@ -226,11 +226,166 @@ class AdmBidangPpController extends Controller
             ->pluck('path_dokumen', 'syaratdokumen_id')
             ->toArray();
 
-        return view('backend.hi.pp.admbidang.cetak', compact(
+        // return view('backend.hi.pp.admbidang.cetak', compact(
+        //     'ajuan',
+        //     'syaratDokumen',
+        //     'uploadedDokumen'
+        // ));
+
+        return view('backend.hi.pp.admbidang.cetak_sk', compact(
             'ajuan',
             'syaratDokumen',
             'uploadedDokumen'
         ));
+    }
+
+    /**
+    * Form input SK — hanya bisa diakses kalau admin & kasi sudah ACC.
+    */
+    public function formSk($id)
+    {
+        $ajuan = EtamHiPpAjuan::with(['jenisAjuan:id,nama'])
+            ->where('verifikasi_admin', 1)
+            ->where('verifikasi_kasi', 1)
+            ->findOrFail($id);
+
+        return view('backend.hi.pp.admbidang.form_sk', compact('ajuan'));
+    }
+
+    /**
+    * Simpan nomor_sk & tanggal_berlaku_pp_baru.
+    */
+    public function submitSk(Request $request, $id)
+    {
+        $request->validate([
+            'nomor_sk'                => 'required|string|max:255',
+            'tanggal_berlaku_pp_baru' => 'required|date',
+        ], [
+            'nomor_sk.required'                => 'Nomor SK wajib diisi.',
+            'nomor_sk.max'                     => 'Nomor SK maksimal 255 karakter.',
+            'tanggal_berlaku_pp_baru.required' => 'Tanggal berlaku PP baru wajib diisi.',
+            'tanggal_berlaku_pp_baru.date'     => 'Tanggal berlaku harus berupa tanggal yang valid.',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $ajuan = EtamHiPpAjuan::where('verifikasi_admin', 1)
+                ->where('verifikasi_kasi', 1)
+                ->findOrFail($id);
+
+            $ajuan->update([
+                'nomor_sk'                => $request->nomor_sk,
+                'tanggal_berlaku_pp_baru' => $request->tanggal_berlaku_pp_baru,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Nomor SK & tanggal berlaku berhasil disimpan.',
+                'redirect' => route('hi.pp.admbidang.cetakSk', $ajuan->id),
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal menyimpan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+    * Preview cetak SK (HTML).
+    */
+    public function cetakSk($id)
+    {
+        $ajuan = EtamHiPpAjuan::with(['jenisAjuan:id,nama', 'perusahaan.penyedia'])
+            ->where('verifikasi_admin', 1)
+            ->where('verifikasi_kasi', 1)
+            ->findOrFail($id);
+
+        // return view('backend.hi.pp.admbidang.cetak_sk', compact('ajuan'));
+
+        // ====== Hitung tanggal berakhir (asumsi 2 tahun dari tanggal_berlaku_pp_baru) ======
+        $tanggalMulai = $ajuan->tanggal_berlaku_pp_baru
+            ? \Carbon\Carbon::parse($ajuan->tanggal_berlaku_pp_baru)
+            : null;
+
+        $tanggalBerakhir = $tanggalMulai
+            ? $tanggalMulai->copy()->addYears(2)->subDay()
+            : null;
+
+        // Range tahun untuk judul ("2023-2025")
+        $rangeTahun = ($tanggalMulai && $tanggalBerakhir)
+            ? $tanggalMulai->format('Y') . '-' . $tanggalBerakhir->format('Y')
+            : now()->format('Y');
+
+        // echo json_encode($ajuan);
+
+        return view('backend.hi.pp.admbidang.cetak_sk', compact(
+            'ajuan',
+            'tanggalMulai',
+            'tanggalBerakhir',
+            'rangeTahun'
+        ));
+    }
+
+    /**
+    * Form unggah dokumen SK final.
+    */
+    public function formUnggahSk($id)
+    {
+        $ajuan = EtamHiPpAjuan::with(['jenisAjuan:id,nama'])
+            ->where('verifikasi_admin', 1)
+            ->where('verifikasi_kasi', 1)
+            ->findOrFail($id);
+
+        return view('backend.hi.pp.admbidang.unggah_sk', compact('ajuan'));
+    }
+
+    /**
+    * Simpan dokumen SK final ke kolom dok_produk_akhir.
+    */
+    public function submitUnggahSk(Request $request, $id)
+    {
+        $request->validate([
+            'dok_produk_akhir' => 'required|file|mimes:pdf|max:5120', // max 5 MB
+        ], [
+            'dok_produk_akhir.required' => 'Dokumen SK wajib diunggah.',
+            'dok_produk_akhir.mimes'    => 'Dokumen harus berformat PDF.',
+            'dok_produk_akhir.max'      => 'Ukuran dokumen maksimal 5 MB.',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $ajuan = EtamHiPpAjuan::where('verifikasi_admin', 1)
+                ->where('verifikasi_kasi', 1)
+                ->findOrFail($id);
+
+            if ($request->hasFile('dok_produk_akhir')) {
+                // Hapus file lama kalau ada
+                if ($ajuan->dok_produk_akhir && Storage::disk('public')->exists($ajuan->dok_produk_akhir)) {
+                    Storage::disk('public')->delete($ajuan->dok_produk_akhir);
+                }
+
+                $path = $request->file('dok_produk_akhir')->store('hi/pp/sk', 'public');
+                $ajuan->update(['dok_produk_akhir' => $path]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Dokumen SK berhasil diunggah.',
+                'redirect' => route('hi.pp.admbidang.detail', $ajuan->id),
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal mengunggah: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     private function labelVerifikasi($val)

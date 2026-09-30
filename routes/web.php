@@ -318,6 +318,12 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::get('/data-pp/verifikasi/{id}',  [AdmBidangPpController::class, 'formVerifikasi'])->name('hi.pp.admbidang.verifikasi');
             Route::post('/data-pp/verifikasi/{id}', [AdmBidangPpController::class, 'submitVerifikasi'])->name('hi.pp.admbidang.verifikasi.submit');
             Route::get('/data-pp/cetak/{id}', [AdmBidangPpController::class, 'cetak'])->name('hi.pp.admbidang.cetak');
+
+            Route::get('/data-pp/sk/{id}',[AdmBidangPpController::class, 'formSk'])->name('hi.pp.admbidang.formSk');
+            Route::post('/data-pp/sk/{id}',[AdmBidangPpController::class, 'submitSk'])->name('hi.pp.admbidang.submitSk');
+            Route::get('/data-pp/cetak-sk/{id}',[AdmBidangPpController::class, 'cetakSk'])->name('hi.pp.admbidang.cetakSk');
+            Route::get('/data-pp/unggah-sk/{id}',[AdmBidangPpController::class, 'formUnggahSk'])->name('hi.pp.admbidang.formUnggahSk');
+            Route::post('/data-pp/unggah-sk/{id}',[AdmBidangPpController::class, 'submitUnggahSk'])->name('hi.pp.admbidang.submitUnggahSk');
         });
 
         Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,kepala-seksi')->group(function () {

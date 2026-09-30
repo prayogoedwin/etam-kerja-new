@@ -232,7 +232,15 @@
                                 </div>
 
                                 {{-- ========== TOMBOL AKSI ========== --}}
-                                <div class="d-flex justify-content-end mt-4">
+                                <div class="d-flex justify-content-end mt-4 flex-wrap gap-2">
+                                    @php
+                                        $accAdmin = (int) $ajuan->verifikasi_admin === 1;
+                                        $accKasi  = (int) $ajuan->verifikasi_kasi === 1;
+                                        $accFull  = $accAdmin && $accKasi;
+                                        $hasSk    = !empty($ajuan->nomor_sk) && !empty($ajuan->tanggal_berlaku_pp_baru);
+                                        $hasDok   = !empty($ajuan->dok_produk_akhir);
+                                    @endphp
+
                                     @if ((int) $ajuan->verifikasi_admin === 0)
                                         <a href="{{ route('hi.pp.admbidang.verifikasi', $ajuan->id) }}"
                                         class="btn btn-success">
@@ -243,6 +251,44 @@
                                         class="btn btn-warning">
                                             <i class="feather icon-refresh-cw"></i> Ubah Verifikasi
                                         </a>
+                                    @endif
+
+                                    {{-- Tombol SK — muncul kalau admin & kasi sudah ACC --}}
+                                    @if ($accFull)
+                                        @if (!$hasSk)
+                                            <a href="{{ route('hi.pp.admbidang.formSk', $ajuan->id) }}"
+                                            class="btn btn-primary">
+                                                <i class="feather icon-edit"></i> Input Nomor SK
+                                            </a>
+                                        @else
+                                            <a href="{{ route('hi.pp.admbidang.formSk', $ajuan->id) }}"
+                                            class="btn btn-outline-primary">
+                                                <i class="feather icon-edit"></i> Ubah Nomor SK
+                                            </a>
+                                            <a href="{{ route('hi.pp.admbidang.cetakSk', $ajuan->id) }}"
+                                            target="_blank"
+                                            class="btn btn-info">
+                                                <i class="feather icon-printer"></i> Cetak SK
+                                            </a>
+                                        @endif
+
+                                        {{-- Tombol unggah dokumen final --}}
+                                        @if (!$hasDok)
+                                            <a href="{{ route('hi.pp.admbidang.formUnggahSk', $ajuan->id) }}"
+                                            class="btn btn-success">
+                                                <i class="feather icon-upload-cloud"></i> Unggah SK Final
+                                            </a>
+                                        @else
+                                            <a href="{{ asset('storage/' . $ajuan->dok_produk_akhir) }}"
+                                            target="_blank"
+                                            class="btn btn-outline-success">
+                                                <i class="feather icon-file"></i> Lihat SK Final
+                                            </a>
+                                            <a href="{{ route('hi.pp.admbidang.formUnggahSk', $ajuan->id) }}"
+                                            class="btn btn-outline-warning">
+                                                <i class="feather icon-refresh-cw"></i> Ganti SK Final
+                                            </a>
+                                        @endif
                                     @endif
                                 </div>
 

@@ -669,3 +669,18 @@ if (!function_exists('count_unread_notifications')) {
             ->count();
     }
 }
+
+if (!function_exists('tgl_indo')) {
+    function tgl_indo($date, $withDay = false)
+    {
+        if (!$date) return '-';
+        $bulan = [
+            1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+        $d = \Carbon\Carbon::parse($date);
+        $hasil = $d->format('d') . ' ' . $bulan[(int) $d->format('n')] . ' ' . $d->format('Y');
+        if ($withDay) $hasil = $d->translatedFormat('l') . ', ' . $hasil;
+        return $hasil;
+    }
+}

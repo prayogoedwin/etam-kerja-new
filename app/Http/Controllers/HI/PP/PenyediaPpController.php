@@ -28,7 +28,8 @@ class PenyediaPpController extends Controller
                 'tanggal',
                 'verifikasi_admin',
                 'verifikasi_kasi',
-                'created_at'
+                'created_at',
+                'dok_produk_akhir'
             )
             ->with(['jenisAjuan:id,nama'])
             ->where('created_by', auth()->id());
@@ -66,6 +67,17 @@ class PenyediaPpController extends Controller
                     if ((int) $data->verifikasi_admin === 2) {
                         $html = '
                             <a href="' . $revUrl . '" class="btn btn-primary btn-sm">Revisi</a>
+                        ';
+                    }
+
+                    if($data->dok_produk_akhir != null){
+                        $html =
+                        '
+                        <a href="'. asset('storage/' . $data->dok_produk_akhir) .'"
+                        target="_blank"
+                        class="btn btn-sm btn-info">
+                            <i class="feather icon-download"></i> Unduh SK
+                        </a>
                         ';
                     }
 
