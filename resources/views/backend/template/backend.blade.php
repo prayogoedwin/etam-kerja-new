@@ -39,6 +39,16 @@
     @include('backend.template.sidebar-hi-kasi')
 @endif
 
+{{-- admin bidang K3 (Seksi K3) --}}
+@if (Auth::user()->roles[0]['name'] == 'admin-bidang' && Auth::user()->kode_struktur == '21')
+    @include('backend.template.sidebar-k3')
+@endif
+
+{{-- petugas (pengawas) bidang K3 (Seksi K3) --}}
+@if (Auth::user()->roles[0]['name'] == 'petugas-bidang' && Auth::user()->kode_struktur == '21')
+    @include('backend.template.sidebar-k3-pengawas')
+@endif
+
 <body>
     @yield('content')
     @include('backend.template.footer')

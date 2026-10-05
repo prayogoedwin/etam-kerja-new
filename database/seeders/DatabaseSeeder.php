@@ -12,6 +12,8 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             StrukturSeeder::class,
+            PengawasanK3KategoriSeeder::class,
+            PengawasanK3JenisSeeder::class,
             BlkSeeder::class,
             AgamaSeeder::class,
             ProgresSeeder::class,
