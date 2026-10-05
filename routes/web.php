@@ -313,13 +313,16 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
         Route::prefix('pengawasan-k3')->name('pengawasan.k3.penyedia.')->group(function () {
             Route::get('/', [PenyediaK3Controller::class, 'index'])->name('index');
-            // Route::get('/tambah', [PenyediaPpController::class, 'create'])->name('tambah');
-            // Route::post('/store', [PenyediaPpController::class, 'store'])->name('store');
-            // Route::get('/edit/{id}', [PenyediaPpController::class, 'editForm'])->name('edit');
+            Route::post('/store', [PenyediaK3Controller::class, 'store'])->name('store');
+            Route::get('/get-jenis/{kategori_id}', [PenyediaK3Controller::class, 'getJenisByKategori'])->name('get-jenis');
+            Route::get('/edit/{id}', [PenyediaK3Controller::class, 'edit'])->name('edit');
+            Route::post('/update/{id}', [PenyediaK3Controller::class, 'update'])->name('update');
+            Route::delete('/destroy/{id}', [PenyediaK3Controller::class, 'destroy'])->name('destroy');
+
             // Route::post('/update/{id}', [PenyediaPpController::class, 'update'])->name('update');
             // Route::get('/revisi/{id}', [PenyediaPpController::class, 'revisiForm'])->name('revisi');
             // Route::post('/update-revisi/{id}', [PenyediaPpController::class, 'updateRevisi'])->name('updaterevisi');
-            // Route::delete('/destroy/{id}', [PenyediaPpController::class, 'destroy'])->name('destroy');
+
         });
     });
 

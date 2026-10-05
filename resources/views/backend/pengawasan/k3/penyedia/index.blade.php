@@ -3,516 +3,359 @@
 @section('content')
 
     <body class="box-layout container background-green">
-        <!-- [ Main Content ] start -->
         <div class="pcoded-main-container">
             <div class="pcoded-content">
-
-
-                 <!-- [ breadcrumb ] start -->
                 <div class="page-header">
                     <div class="page-block">
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">Ajuan K3</h5>
+                                    <h5 class="m-b-10">Pengawasan K3 - Permohonan Riksa Uji</h5>
                                 </div>
-                                {{-- <ul class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
-                                    <li class="breadcrumb-item"><a href="#!">Hospital</a></li>
-                                    <li class="breadcrumb-item"><a href="#!">Department</a></li>
-                                </ul> --}}
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- [ breadcrumb ] end -->
 
-
-                <!-- [ Main Content ] start -->
                 <div class="row">
-
-
-                   <!-- customar project  start -->
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-body">
                                 <div class="row align-items-center m-l-0">
                                     <div class="col-sm-6">
-
+                                        <h4 class="mb-0">Daftar Pengajuan Riksa Uji</h4>
                                     </div>
                                     <div class="col-sm-6 text-end">
-                                        <a href="{{route('hi.pp.penyedia.tambah')}}" class="btn btn-success btn-sm"><i class="feather icon-plus"></i> Add Data</a>
+                                        <button class="btn btn-success btn-sm btn-round has-ripple"
+                                            onclick="openTambahModal()">
+                                            <i class="feather icon-plus"></i> Tambah Pengajuan
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="table-responsive">
+                                <div class="table-responsive mt-3">
                                     <table id="simpletable" class="table table-bordered table-striped mb-0">
                                         <thead>
-                                            <th>No</th>
-                                            <th>Jenis Ajuan</th>
-                                            <th>Nomor</th>
-                                            <th>Tanggal</th>
-                                            <th>Status Admin</th>
-                                            <th>Status Kasi</th>
-                                            <th>Options</th>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>Nama Alat</th>
+                                                <th>Kategori</th>
+                                                <th>Jenis Alat</th>
+                                                <th>Lokasi</th>
+                                                <th>Status Disposisi</th>
+                                                <th>Options</th>
+                                            </tr>
                                         </thead>
-
                                     </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- customar project  end -->
-
-
-                </div>
-                <!-- [ Main Content ] end -->
-
-
-            </div>
-        </div>
-
-
-        <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Tambah</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="registerForm">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label class="floating-label" for="pertanyaan">Pertanyaan</label>
-                                        <textarea class="form-control" id="pertanyaan"  name="pertanyaan" rows="3"></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-12">
-                                    <div class="form-group">
-                                        <label class="floating-label" for="jawaban">Jawaban</label>
-                                        <textarea class="form-control" id="jawaban" name="jawaban" rows="3"></textarea>
-                                    </div>
-                                    <button class="btn btn-primary">Submit</button>
-                                    <button class="btn btn-danger">Clear</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="modal fade" id="modal-edit" tabindex="-1" role="dialog" aria-labelledby="modalEditLabel" aria-hidden="true">
+        <!-- Modal Form (Tambah / Edit) -->
+        <div class="modal fade" id="modal-report" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalEditLabel">Edit Admin</h5>
+                        <h5 class="modal-title" id="modalTitle">Tambah Pengajuan Riksa Uji K3</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="editAdminForm">
-                            <input type="hidden" id="editId">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label class="floating-label" for="pertanyaan">Pertanyaan</label>
-                                    <textarea class="form-control" id="editPertanyaan"  name="pertanyaan" rows="3"></textarea>
+                        <form id="formAjuan" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" name="id" id="ajuan_id">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Kategori K3</label>
+                                    <select name="kategori_id" id="kategori_id" class="form-control" required>
+                                        <option value="">Pilih Kategori</option>
+                                        @foreach (\App\Models\Pengawasan\K3\EtamPengawasanK3Kategori::all() as $kat)
+                                            <option value="{{ $kat->id }}">{{ $kat->nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Jenis Alat</label>
+                                    <select name="jenis_id" id="jenis_id" class="form-control" required>
+                                        <option value="">Pilih Kategori Terlebih Dahulu</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Nama Alat / Objek</label>
+                                    <input type="text" name="nama_alat" id="nama_alat" class="form-control"
+                                        placeholder="Contoh: Lift Penumpang Gedung A" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Lokasi Alat</label>
+                                    <input type="text" name="lokasi_alat" id="lokasi_alat" class="form-control"
+                                        placeholder="Lokasi penempatan alat" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Kapasitas Alat</label>
+                                    <input type="text" name="kapasitas_alat" id="kapasitas_alat" class="form-control"
+                                        placeholder="Contoh: 1000 Kg" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Jumlah Unit</label>
+                                    <input type="number" name="jumlah_unit" id="jumlah_unit" class="form-control"
+                                        value="1" min="1" required>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Dokumen Permohonan (PDF/Gambar max 2MB) <br> <small
+                                            class="text-muted" id="fileInfo"></small></label>
+                                    <input type="file" name="dok_unggah_penyedia" id="dok_unggah_penyedia"
+                                        class="form-control">
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Keterangan (Opsional)</label>
+                                    <textarea name="keterangan" id="keterangan" class="form-control" rows="3" placeholder="Catatan tambahan..."></textarea>
+                                </div>
+                                <div class="col-md-12 text-end">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Tutup</button>
+                                    <button type="submit" class="btn btn-primary" id="btnSimpan">Simpan</button>
                                 </div>
                             </div>
-
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label class="floating-label" for="jawaban">Jawaban</label>
-                                    <textarea class="form-control" id="editJawaban" name="jawaban" rows="3"></textarea>
-                                </div>
-                                <button class="btn btn-primary" onclick="updateFaq()" type="button">Submit</button>
-
-                            </div>
-
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-
-        {{-- ============ MODAL EDIT ============ --}}
-        <div class="modal fade" id="modalEdit" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                    <form id="form-edit" enctype="multipart/form-data">
-                        @csrf
-                        <input type="hidden" id="edit-id" name="id">
-
-                        <div class="modal-header">
-                            <h5 class="modal-title">Edit Pengajuan</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-
-                        <div class="modal-body">
-                            <ul class="nav nav-tabs mb-3" role="tablist">
-                                <li class="nav-item">
-                                    <a href="#edit-tab-input" class="nav-link active" data-bs-toggle="tab">Input</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#edit-tab-unggah" class="nav-link" data-bs-toggle="tab">Unggah</a>
-                                </li>
-                            </ul>
-
-                            <div class="tab-content">
-                                {{-- TAB INPUT --}}
-                                <div class="tab-pane fade show active" id="edit-tab-input">
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Jenis Ajuan <span class="text-danger">*</span></label>
-                                        <div class="col-sm-8">
-                                            <select id="edit-jenis-ajuan" name="jenis_ajuan" class="form-control" required></select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Surat Keputusan Izin Usaha</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" id="edit-surat" name="surat_keputusan_izin_usaha" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Nomor</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" id="edit-nomor" name="nomor" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Tanggal</label>
-                                        <div class="col-sm-8">
-                                            <input type="date" id="edit-tanggal" name="tanggal" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Nama Serikat Pekerja</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" id="edit-serikat" name="nama_serikat_pekerja" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Nomor Peserta BPJS</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" id="edit-bpjs" name="nomor_peserta_bpjs" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Jumlah Pekerja Pusat</label>
-                                        <div class="col-sm-8">
-                                            <input type="number" id="edit-pusat" name="jumlah_pekerja_pusat" class="form-control" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Jumlah Pekerja Cabang</label>
-                                        <div class="col-sm-8">
-                                            <input type="number" id="edit-cabang" name="jumlah_pekerja_cabang" class="form-control" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Upah Bulanan Min</label>
-                                        <div class="col-sm-8">
-                                            <input type="number" id="edit-ubmin" name="upah_pekerja_bulanan_min" class="form-control" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Upah Bulanan Max</label>
-                                        <div class="col-sm-8">
-                                            <input type="number" id="edit-ubmax" name="upah_pekerja_bulanan_max" class="form-control" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Upah Harian Min</label>
-                                        <div class="col-sm-8">
-                                            <input type="number" id="edit-uhmin" name="upah_pekerja_harian_min" class="form-control" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Upah Harian Max</label>
-                                        <div class="col-sm-8">
-                                            <input type="number" id="edit-uhmax" name="upah_pekerja_harian_max" class="form-control" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Sistem Kerja Waktu Tertentu</label>
-                                        <div class="col-sm-8">
-                                            <input type="number" id="edit-shktertentu" name="sistem_hub_kerja_tertentu" class="form-control" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="form-group row">
-                                        <label class="col-sm-4 col-form-label">Sistem Kerja Waktu Tidak Tertentu</label>
-                                        <div class="col-sm-8">
-                                            <input type="number" id="edit-shktidak" name="sistem_hub_kerja_tidak_tertentu" class="form-control" min="0">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{-- TAB UNGGAH --}}
-                                <div class="tab-pane fade" id="edit-tab-unggah">
-                                    <div id="edit-dokumen-list">
-                                        {{-- diisi via JS --}}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary btn-update">
-                                <i class="feather icon-save"></i> Simpan Perubahan
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
     </body>
 @endsection
 
-
 @push('js')
-<script>
-    $(document).ready(function() {
-        $('#simpletable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: '{{ route('pengawasan.k3.penyedia.index') }}',
-            autoWidth: false, // Menonaktifkan auto-width
-            columns: [
-                { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
-                { data: 'jenis_ajuan_nama', name: 'jenis_ajuan_nama' },
-                { data: 'nomor', name: 'nomor' },
-                { data: 'tanggal_fmt', name: 'tanggal_fmt' },
-                { data: 'status_admin', name: 'status_admin', orderable: false, searchable: false },
-                { data: 'status_kasi',  name: 'status_kasi',  orderable: false, searchable: false },
-                { data: 'options',      name: 'options',      orderable: false, searchable: false }
-            ]
-        });
-    });
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script>
-   $(document).ready(function () {
-        $('#registerForm').submit(function (e) {
-            e.preventDefault(); // Prevent form from submitting normally
+    <script>
+        var table;
+        $(document).ready(function() {
+            table = $('#simpletable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{{ route('pengawasan.k3.penyedia.index') }}',
+                autoWidth: false,
+                columns: [{
+                        data: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'nama_alat'
+                    },
+                    {
+                        data: 'kategori_nama'
+                    },
+                    {
+                        data: 'jenis_nama'
+                    },
+                    {
+                        data: 'lokasi_alat'
+                    },
+                    {
+                        data: 'status_disposisi',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'options',
+                        orderable: false,
+                        searchable: false
+                    },
+                ]
+            });
 
-            // Clear previous error messages
-            $('#errorMessages').html('').addClass('d-none');
+            // Dependent Dropdown
+            $('#kategori_id').on('change', function() {
+                var kategoriId = $(this).val();
+                var selectedJenisId = $('#jenis_id').data('selected'); // untuk kebutuhan edit
+                $('#jenis_id').html('<option value="">Memuat...</option>');
 
-            var formData = {
-                pertanyaan: $('#pertanyaan').val(),
-                jawaban: $('#jawaban').val(),
-                _token: '{{ csrf_token() }}' // Add CSRF token for security
-            };
+                if (kategoriId) {
+                    var url = '{{ route('pengawasan.k3.penyedia.get-jenis', ':id') }}';
+                    url = url.replace(':id', kategoriId);
 
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('faq.add') }}', // Ganti dengan rute yang sesuai
-                data: formData,
-                success: function (response) {
-                    if (response.success) {
-                        alert('Berhasil menambahkan data');
-                        $('#modal-report').modal('hide');
-                        location.reload(); // Refresh halaman
-                    } else {
-                        // If validation errors are found, display them in an alert
-                        if (response.errors) {
-                            let errorMessages = '';
-                            $.each(response.errors, function (key, value) {
-                                $.each(value, function (index, errorMessage) {
-                                    errorMessages += errorMessage + '\n'; // Gabungkan pesan error
-                                });
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(data) {
+                            $('#jenis_id').html('<option value="">Pilih Jenis Alat</option>');
+                            $.each(data, function(key, value) {
+                                var selected = (value.id == selectedJenisId) ?
+                                    'selected' : '';
+                                $('#jenis_id').append('<option value="' + value.id +
+                                    '" ' + selected + '>' + value.nama + '</option>'
+                                    );
                             });
-                            alert('Terjadi kesalahan:\n' + errorMessages);
-                        } else {
-                            alert('Gagal menambahkan data');
+                            $('#jenis_id').removeData('selected');
                         }
-                    }
-                },
-                error: function (xhr, status, error) {
-                    alert('Terjadi kesalahan: ' + error);
+                    });
+                } else {
+                    $('#jenis_id').html('<option value="">Pilih Kategori Terlebih Dahulu</option>');
                 }
             });
-        });
-    });
-</script>
 
-{{-- <script>
-    window.showEditModal = function (id) {
-        $.ajax({
-            url: "{{ url('dapur/penyedias/peraturan-perusahaan/edit') }}/" + id,
-            type: 'GET',
-            success: function (res) {
-                if (!res.status) {
-                    Swal.fire('Gagal', res.message || 'Data tidak ditemukan', 'error');
-                    return;
-                }
 
-                let d = res.data;
 
-                // Set hidden id
-                $('#edit-id').val(d.id);
+            // Submit Form (Tambah / Update)
+            $('#formAjuan').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                var id = $('#ajuan_id').val();
+                var url = id ? '{{ route("pengawasan.k3.penyedia.update", ":id") }}'.replace(':id', id) : '{{ route("pengawasan.k3.penyedia.store") }}';
 
-                // Isi dropdown jenis ajuan
-                let opts = '<option value="">-- Pilih Jenis Ajuan --</option>';
-                res.jenis_ajuan_options.forEach(function (j) {
-                    let sel = (d.jenis_ajuan == j.id) ? 'selected' : '';
-                    opts += `<option value="${j.id}" ${sel}>${j.nama}</option>`;
-                });
-                $('#edit-jenis-ajuan').html(opts);
+                $('#btnSimpan').prop('disabled', true).text('Menyimpan...');
 
-                // Isi field
-                $('#edit-surat').val(d.surat_keputusan_izin_usaha || '');
-                $('#edit-nomor').val(d.nomor || '');
-                $('#edit-tanggal').val(d.tanggal ? d.tanggal.substring(0, 10) : '');
-                $('#edit-serikat').val(d.nama_serikat_pekerja || '');
-                $('#edit-bpjs').val(d.nomor_peserta_bpjs || '');
-                $('#edit-pusat').val(d.jumlah_pekerja_pusat || 0);
-                $('#edit-cabang').val(d.jumlah_pekerja_cabang || 0);
-                $('#edit-ubmin').val(d.upah_pekerja_bulanan_min || '');
-                $('#edit-ubmax').val(d.upah_pekerja_bulanan_max || '');
-                $('#edit-uhmin').val(d.upah_pekerja_harian_min || '');
-                $('#edit-uhmax').val(d.upah_pekerja_harian_max || '');
-                $('#edit-shktertentu').val(d.sistem_hub_kerja_tertentu || 0);
-                $('#edit-shktidak').val(d.sistem_hub_kerja_tidak_tertentu || 0);
-
-                // Render list dokumen dinamis
-                let html = '';
-                res.syarat_dokumen_options.forEach(function (s, i) {
-                    let uploaded = res.uploaded_dokumen[s.id];
-                    let link = uploaded
-                        ? `<a href="{{ asset('storage') }}/${uploaded}" target="_blank" class="text-primary">
-                            <i class="feather icon-file"></i> Lihat file
-                        </a>`
-                        : `<span class="text-muted">Belum diunggah</span>`;
-
-                    html += `
-                        <div class="form-group row align-items-center">
-                            <label class="col-sm-6 col-form-label">${i + 1}. ${s.nama}</label>
-                            <div class="col-sm-6">
-                                <div class="mb-1">${link}</div>
-                                <input type="file" name="dokumen[${s.id}]" class="form-control"
-                                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
-                            </div>
-                        </div>`;
-                });
-                $('#edit-dokumen-list').html(html || '<div class="alert alert-warning">Belum ada syarat dokumen.</div>');
-
-                // Tampilkan modal
-                $('#modalEdit').modal('show');
-            },
-            error: function () {
-                Swal.fire('Error', 'Gagal mengambil data.', 'error');
-            }
-        });
-    };
-
-    // ============ SUBMIT UPDATE ============
-    $('#form-edit').on('submit', function (e) {
-        e.preventDefault();
-
-        let id = $('#edit-id').val();
-        let formData = new FormData(this);
-        let btn = $('.btn-update');
-        let original = btn.html();
-
-        btn.prop('disabled', true).html('<i class="feather icon-loader"></i> Menyimpan...');
-
-        $.ajax({
-            url: "{{ url('dapur/penyedias/peraturan-perusahaan/update') }}/" + id,
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (res) {
-                btn.prop('disabled', false).html(original);
-                if (res.status) {
-                    $('#modalEdit').modal('hide');
-                    Swal.fire('Berhasil', res.message, 'success');
-                    $('#simpletable').DataTable().ajax.reload();
-                } else {
-                    Swal.fire('Gagal', res.message, 'error');
-                }
-            },
-            error: function (xhr) {
-                btn.prop('disabled', false).html(original);
-                let msg = 'Terjadi kesalahan.';
-                if (xhr.status === 422 && xhr.responseJSON.errors) {
-                    msg = Object.values(xhr.responseJSON.errors).flat().join('<br>');
-                }
-                Swal.fire('Validasi Gagal', msg, 'error');
-            }
-        });
-    });
-
-    // ============ CONFIRM DELETE ============
-    window.confirmDelete = function (id) {
-        Swal.fire({
-            title: 'Yakin ingin menghapus?',
-            text: 'Data yang dihapus tidak dapat dikembalikan.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Ya, Hapus',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
                 $.ajax({
-                    url: "{{ url('dapur/penyedias/peraturan-perusahaan/destroy') }}/" + id,
+                    url: url,
                     type: 'POST',
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        _method: 'DELETE'
-                    },
-                    success: function (res) {
-                        if (res.status) {
-                            Swal.fire('Terhapus', res.message, 'success');
-                            $('#simpletable').DataTable().ajax.reload();
-                        } else {
-                            Swal.fire('Gagal', res.message, 'error');
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        $('#btnSimpan').prop('disabled', false).text('Simpan');
+                        if (response.status === 'success') {
+                            $('#modal-report').modal('hide');
+                            table.ajax.reload();
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
                         }
                     },
-                    error: function () {
-                        Swal.fire('Error', 'Gagal menghapus data.', 'error');
+                    error: function(xhr) {
+                        $('#btnSimpan').prop('disabled', false).text('Simpan');
+                        var errorMessage = 'Terjadi kesalahan.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: errorMessage
+                        });
                     }
                 });
-            }
+            });
         });
-    };
-</script> --}}
 
+        // Buka Modal untuk Tambah
+        function openTambahModal() {
+            $('#formAjuan')[0].reset();
+            $('#ajuan_id').val('');
+            $('#modalTitle').text('Tambah Pengajuan Riksa Uji K3');
+            $('#btnSimpan').text('Simpan Pengajuan');
+            $('#jenis_id').html('<option value="">Pilih Kategori Terlebih Dahulu</option>');
+            $('#fileInfo').text('');
+            $('#modal-report').modal('show');
+        }
 
+        // Buka Modal untuk Edit (Ambil Data via AJAX)
+        function editData(id) {
+            var editUrl = '{{ route("pengawasan.k3.penyedia.edit", ":id") }}';
+            editUrl = editUrl.replace(':id', id);
 
-
-{{-- <script>
-    function confirmDelete(id) {
-        // Konfirmasi penghapusan
-        var deleteUrl = "{{ route('faq.softdelete', ':id') }}".replace(':id', id);
-        if (confirm("Yakin hapus data?")) {
-            // Kirim request ke server untuk menghapus data
             $.ajax({
-                url: deleteUrl,
-                type: 'DELETE',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),  // Menyertakan CSRF token
-                },
+                url: editUrl,
+                type: 'GET',
                 success: function(response) {
-                    // Jika berhasil, reload DataTable
-                    alert(response.message);  // Menampilkan pesan
-                    $('#simpletable').DataTable().ajax.reload();  // Reload data tabel
+                    if (response.status === 'success') {
+                        var data = response.data;
+                        $('#ajuan_id').val(data.id);
+                        $('#nama_alat').val(data.nama_alat);
+                        $('#lokasi_alat').val(data.lokasi_alat);
+                        $('#kapasitas_alat').val(data.kapasitas_alat);
+                        $('#jumlah_unit').val(data.jumlah_unit);
+                        $('#keterangan').val(data.keterangan);
+
+                        if (data.dok_unggah_penyedia) {
+                            $('#fileInfo').text('(Abaikan jika tidak ingin mengubah dokumen)');
+                        } else {
+                            $('#fileInfo').text('');
+                        }
+
+                        // Ambil data jenis berdasarkan kategori terlebih dahulu sebelum set value
+                        var jenisUrl = '{{ route("pengawasan.k3.penyedia.get-jenis", ":kategori_id") }}';
+                        jenisUrl = jenisUrl.replace(':kategori_id', data.kategori_id);
+
+                        $.ajax({
+                            url: jenisUrl,
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(jenisData) {
+                                var options = '<option value="">Pilih Jenis Alat</option>';
+                                $.each(jenisData, function(key, value) {
+                                    var selected = (value.id == data.jenis_id) ? 'selected' : '';
+                                    options += '<option value="' + value.id + '" ' + selected + '>' + value.nama + '</option>';
+                                });
+                                $('#jenis_id').html(options);
+
+                                // Set kategori setelah dropdown jenis terisi
+                                $('#kategori_id').val(data.kategori_id);
+                            }
+                        });
+
+                        $('#modalTitle').text('Edit Pengajuan Riksa Uji K3');
+                        $('#btnSimpan').text('Perbarui Data');
+                        $('#modal-report').modal('show');
+                    }
                 },
-                error: function(xhr, status, error) {
-                    // Tampilkan error jika ada masalah
-                    alert('Error: ' + xhr.responseText);
+                error: function() {
+                    Swal.fire('Gagal', 'Tidak dapat mengambil data.', 'error');
                 }
             });
         }
-    }
-</script> --}}
 
+        // Fungsi Konfirmasi Hapus Menggunakan SweetAlert2
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Data pengajuan yang dihapus tidak dapat dikembalikan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var deleteUrl = '{{ route('pengawasan.k3.penyedia.destroy', ':id') }}';
+                    deleteUrl = deleteUrl.replace(':id', id);
+
+                    $.ajax({
+                        url: deleteUrl,
+                        type: 'DELETE',
+                        data: {
+                            "_token": "{{ csrf_token() }}"
+                        },
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                table.ajax.reload();
+                                Swal.fire(
+                                    'Terhapus!',
+                                    response.message,
+                                    'success'
+                                );
+                            }
+                        },
+                        error: function(xhr) {
+                            var errMessage = 'Gagal menghapus data.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errMessage = xhr.responseJSON.message;
+                            }
+                            Swal.fire('Gagal!', errMessage, 'error');
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 @endpush
-
