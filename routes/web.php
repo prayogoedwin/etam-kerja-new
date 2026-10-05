@@ -319,10 +319,6 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::post('/update/{id}', [PenyediaK3Controller::class, 'update'])->name('update');
             Route::delete('/destroy/{id}', [PenyediaK3Controller::class, 'destroy'])->name('destroy');
 
-            // Route::post('/update/{id}', [PenyediaPpController::class, 'update'])->name('update');
-            // Route::get('/revisi/{id}', [PenyediaPpController::class, 'revisiForm'])->name('revisi');
-            // Route::post('/update-revisi/{id}', [PenyediaPpController::class, 'updateRevisi'])->name('updaterevisi');
-
         });
     });
 
