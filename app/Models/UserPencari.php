@@ -41,6 +41,7 @@ class UserPencari extends Model
         'jenis_disabilitas',
         'keterangan_disabilitas',
         'posted_by',
+        'id_integration',
         'created_at',
         'updated_at',
         'deleted_at',

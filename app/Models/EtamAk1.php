@@ -21,6 +21,7 @@ class EtamAk1 extends Model
         'berlaku_hingga',
         'status_cetak',
         'dicetak_oleh',
+        'id_integration',
         'qr',
         'unik_kode',
     ];

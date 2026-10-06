@@ -22,15 +22,15 @@ class AuthController extends Controller
         // 'match' => captcha_check($request->captcha)
         // ]);
 
+        $recaptchaRule = config('services.recaptcha.skip')
+            ? ['nullable']
+            : ['required', new RecaptchaV3(0.5)];
+
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
-            'captcha' => 'required|captcha', // Validasi captcha
-            // 'captcha' => ['required', function ($attribute, $value, $fail) {
-            // if (!captcha_check($value)) {
-            //     $fail('Captcha tidak valid.');
-            // }
-            'recaptcha_token' => ['required', new RecaptchaV3(0.5)],  // v3
+            'captcha' => 'required|captcha',
+            'recaptcha_token' => $recaptchaRule,
         ]);
 
         // Debug auth attempt

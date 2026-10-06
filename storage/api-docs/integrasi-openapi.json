@@ -1,0 +1,584 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ETAMKERJA API Integrasi",
+    "description": "API integrasi eksternal Etam Kerja Kalimantan Timur.\n\n**Alur autentikasi:**\n1. Ambil token via `POST /auth/token` dengan `client_id` + `api_key`\n2. Kirim header `Authorization: Bearer {access_token}` pada endpoint terproteksi\n3. Perpanjang token via `POST /auth/refresh`\n\nUsername/password user integrasi hanya untuk login halaman Swagger ini.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "ETAMKERJA",
+      "url": "https://etamkerja.kaltimprov.go.id"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api/v1/integrasi",
+      "description": "Base path API Integrasi"
+    }
+  ],
+  "tags": [
+    { "name": "0. Auth", "description": "Get & refresh token" },
+    { "name": "1. Lowongan Publik", "description": "Lowongan publik (maks 10)" },
+    { "name": "2. Lowongan Internal", "description": "Lowongan internal dengan pagination" },
+    { "name": "3. Register Pencari", "description": "Registrasi pencari kerja" },
+    { "name": "4. Pencarian Pencari", "description": "Cari pencari by id / email / nik" },
+    { "name": "5. AK1", "description": "Read, detail, tambah AK1" },
+    { "name": "6. Master Data", "description": "Referensi dropdown form" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Token",
+        "description": "Access token dari endpoint /auth/token"
+      },
+      "ApiKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Api-Key",
+        "description": "Opsional alternatif pengiriman api_key saat request token"
+      }
+    },
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "boolean", "example": true },
+          "message": { "type": "string", "example": "Berhasil" },
+          "data": {}
+        }
+      },
+      "TokenData": {
+        "type": "object",
+        "properties": {
+          "access_token": { "type": "string" },
+          "refresh_token": { "type": "string" },
+          "token_type": { "type": "string", "example": "Bearer" },
+          "expires_in": { "type": "integer", "example": 86400 },
+          "refresh_expires_in": { "type": "integer", "example": 2592000 },
+          "id_integration": { "type": "integer", "example": 1 },
+          "keterangan": { "type": "string" }
+        }
+      },
+      "LowonganItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "judul_lowongan": { "type": "string" },
+          "jabatan": { "type": "string", "nullable": true },
+          "pendidikan": { "type": "string", "nullable": true },
+          "kabkota": { "type": "string", "nullable": true },
+          "nama_perusahaan": { "type": "string", "nullable": true },
+          "logo_perusahaan": { "type": "string" },
+          "lokasi_penempatan": { "type": "string", "nullable": true },
+          "tanggal_buka": { "type": "string", "nullable": true },
+          "tanggal_tutup": { "type": "string", "nullable": true },
+          "kisaran_gaji_mulai": { "type": "number", "nullable": true },
+          "kisaran_gaji_sampai": { "type": "number", "nullable": true },
+          "kebutuhan_pria": { "type": "integer", "nullable": true },
+          "kebutuhan_wanita": { "type": "integer", "nullable": true },
+          "deskripsi": { "type": "string", "nullable": true },
+          "is_lowongan_disabilitas": { "nullable": true },
+          "url_redirect": { "type": "string", "example": "https://etamkerja.kaltimprov.go.id/depan/lowongan-detail/xxx" }
+        }
+      },
+      "RegisterPencariRequest": {
+        "type": "object",
+        "required": [
+          "nik", "nama", "tempat_lahir", "tanggal_lahir", "jenis_kelamin",
+          "agama_id", "kabkota_id", "kecamatan_id", "alamat", "kodepos",
+          "pendidikan_id", "jurusan_id", "id_status_perkawinan",
+          "email", "password", "whatsapp"
+        ],
+        "properties": {
+          "nik": { "type": "string", "minLength": 16, "maxLength": 16, "example": "6472123456789012" },
+          "nama": { "type": "string", "example": "Budi Santoso" },
+          "tempat_lahir": { "type": "string", "example": "Samarinda" },
+          "tanggal_lahir": { "type": "string", "format": "date", "example": "1995-05-20" },
+          "jenis_kelamin": { "type": "string", "enum": ["L", "P"], "example": "L" },
+          "agama_id": { "type": "integer", "example": 1 },
+          "kabkota_id": { "type": "integer", "example": 6472 },
+          "kecamatan_id": { "type": "integer", "example": 6472031 },
+          "alamat": { "type": "string", "example": "Jl. Contoh No. 1" },
+          "kodepos": { "type": "string", "example": "75111" },
+          "pendidikan_id": { "type": "integer", "example": 8 },
+          "jurusan_id": { "type": "integer", "example": 6111 },
+          "tahun_lulus": { "type": "integer", "example": 2018 },
+          "id_status_perkawinan": { "type": "string", "example": "B", "description": "B=Belum Kawin, K=Kawin, J=Janda, D=Duda" },
+          "jabatan_harapan_id": { "type": "integer", "nullable": true },
+          "disabilitas": { "type": "string", "enum": ["0", "1"], "example": "0" },
+          "jenis_disabilitas": { "type": "string", "nullable": true },
+          "keterangan_disabilitas": { "type": "string", "nullable": true },
+          "email": { "type": "string", "format": "email", "example": "budi@example.com" },
+          "password": { "type": "string", "minLength": 6, "example": "secret123" },
+          "whatsapp": { "type": "string", "example": "081234567890" },
+          "medsos": { "type": "string", "nullable": true }
+        }
+      },
+      "Ak1Item": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "id_user": { "type": "integer" },
+          "tanggal_cetak": { "type": "string" },
+          "berlaku_hingga": { "type": "string" },
+          "status_cetak": { "type": "string", "example": "1" },
+          "unik_kode": { "type": "string" },
+          "qr": { "type": "string", "nullable": true },
+          "id_integration": { "type": "integer", "nullable": true }
+        }
+      },
+      "MasterItem": {
+        "type": "object",
+        "properties": {
+          "id": {},
+          "name": { "type": "string" }
+        }
+      },
+      "PaginationMeta": {
+        "type": "object",
+        "properties": {
+          "current_page": { "type": "integer" },
+          "per_page": { "type": "integer" },
+          "total": { "type": "integer" },
+          "last_page": { "type": "integer" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/auth/token": {
+      "post": {
+        "tags": ["0. Auth"],
+        "summary": "Get access token & refresh token",
+        "operationId": "getToken",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["client_id"],
+                "properties": {
+                  "client_id": { "type": "string", "example": "b7b53989-cfaa-4a10-8300-b4fd9fb1590c" },
+                  "api_key": { "type": "string", "example": "hex-api-key" },
+                  "x-api-key": { "type": "string", "description": "Alternatif field api_key" }
+                }
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "client_id": { "type": "string" },
+                  "api_key": { "type": "string" },
+                  "x-api-key": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token berhasil dibuat",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/ApiResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/TokenData" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "description": "client_id / api_key salah" },
+          "422": { "description": "Validasi gagal" }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["0. Auth"],
+        "summary": "Refresh access token",
+        "operationId": "refreshToken",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["client_id", "refresh_token"],
+                "properties": {
+                  "client_id": { "type": "string" },
+                  "api_key": { "type": "string" },
+                  "x-api-key": { "type": "string" },
+                  "refresh_token": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token berhasil di-refresh",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/ApiResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": { "$ref": "#/components/schemas/TokenData" }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { "description": "Refresh token tidak valid" }
+        }
+      }
+    },
+    "/lowongan/publik": {
+      "get": {
+        "tags": ["1. Lowongan Publik"],
+        "summary": "Daftar lowongan publik (maks 10)",
+        "operationId": "lowonganPublik",
+        "parameters": [
+          {
+            "name": "kabkota_id",
+            "in": "query",
+            "schema": { "type": "integer", "example": 6472 },
+            "description": "Filter kab/kota (opsional)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/LowonganItem" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lowongan/internal": {
+      "get": {
+        "tags": ["2. Lowongan Internal"],
+        "summary": "Daftar lowongan internal (pagination)",
+        "operationId": "lowonganInternal",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 10, "maximum": 50 } },
+          { "name": "kabkota_id", "in": "query", "schema": { "type": "integer" } },
+          { "name": "judul", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "id_integration": { "type": "integer" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/LowonganItem" }
+                    },
+                    "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/pencari/register": {
+      "post": {
+        "tags": ["3. Register Pencari"],
+        "summary": "Register pencari kerja",
+        "operationId": "registerPencari",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RegisterPencariRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Berhasil register" },
+          "409": { "description": "NIK / email / WhatsApp sudah terdaftar" },
+          "422": { "description": "Validasi gagal" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/pencari/search": {
+      "get": {
+        "tags": ["4. Pencarian Pencari"],
+        "summary": "Cari pencari kerja (GET)",
+        "operationId": "searchPencariGet",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "query", "schema": { "type": "integer" }, "description": "ID users_pencari" },
+          { "name": "email", "in": "query", "schema": { "type": "string", "format": "email" } },
+          { "name": "nik", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Ditemukan" },
+          "404": { "description": "Tidak ditemukan" },
+          "422": { "description": "Minimal isi salah satu: id, email, nik" },
+          "401": { "description": "Unauthorized" }
+        }
+      },
+      "post": {
+        "tags": ["4. Pencarian Pencari"],
+        "summary": "Cari pencari kerja (POST)",
+        "operationId": "searchPencariPost",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "integer" },
+                  "email": { "type": "string", "format": "email" },
+                  "nik": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Ditemukan" },
+          "404": { "description": "Tidak ditemukan" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/ak1": {
+      "get": {
+        "tags": ["5. AK1"],
+        "summary": "List AK1",
+        "operationId": "ak1Index",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "per_page", "in": "query", "schema": { "type": "integer", "default": 10 } },
+          { "name": "mine_only", "in": "query", "schema": { "type": "boolean", "default": true }, "description": "Filter by id_integration dari token" },
+          { "name": "id_user", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "id_integration": { "type": "integer" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Ak1Item" }
+                    },
+                    "meta": { "$ref": "#/components/schemas/PaginationMeta" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["5. AK1"],
+        "summary": "Tambah AK1",
+        "operationId": "ak1Store",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_pencari": { "type": "integer", "example": 41 },
+                  "nik": { "type": "string", "example": "6472123456789012" }
+                },
+                "description": "Wajib salah satu: id_pencari atau nik"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "AK1 dibuat" },
+          "200": { "description": "AK1 masih berlaku (existing)" },
+          "404": { "description": "Pencari tidak ditemukan" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/ak1/{id}": {
+      "get": {
+        "tags": ["5. AK1"],
+        "summary": "Detail AK1",
+        "operationId": "ak1Show",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "404": { "description": "Tidak ditemukan" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/master/jenis-kelamin": {
+      "get": {
+        "tags": ["6. Master Data"],
+        "summary": "Jenis kelamin",
+        "operationId": "masterJenisKelamin",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "boolean" },
+                    "message": { "type": "string" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/MasterItem" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/master/agama": {
+      "get": {
+        "tags": ["6. Master Data"],
+        "summary": "Agama",
+        "operationId": "masterAgama",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/master/kabkota": {
+      "get": {
+        "tags": ["6. Master Data"],
+        "summary": "Kabupaten/Kota Kaltim",
+        "operationId": "masterKabkota",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/master/kecamatan": {
+      "get": {
+        "tags": ["6. Master Data"],
+        "summary": "Kecamatan",
+        "operationId": "masterKecamatan",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "kabkota_id", "in": "query", "schema": { "type": "integer", "example": 6472 } }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/master/pendidikan": {
+      "get": {
+        "tags": ["6. Master Data"],
+        "summary": "Pendidikan",
+        "operationId": "masterPendidikan",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/master/jurusan": {
+      "get": {
+        "tags": ["6. Master Data"],
+        "summary": "Jurusan",
+        "operationId": "masterJurusan",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          { "name": "pendidikan_id", "in": "query", "schema": { "type": "integer", "example": 8 } },
+          { "name": "id_pendidikan", "in": "query", "schema": { "type": "integer" } }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/master/status-perkawinan": {
+      "get": {
+        "tags": ["6. Master Data"],
+        "summary": "Status perkawinan",
+        "operationId": "masterStatusPerkawinan",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/master/disabilitas": {
+      "get": {
+        "tags": ["6. Master Data"],
+        "summary": "Status disabilitas (Ya/Tidak)",
+        "operationId": "masterDisabilitas",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/master/jenis-disabilitas": {
+      "get": {
+        "tags": ["6. Master Data"],
+        "summary": "Jenis disabilitas",
+        "operationId": "masterJenisDisabilitas",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/master/jabatan-harapan": {
+      "get": {
+        "tags": ["6. Master Data"],
+        "summary": "Jabatan harapan",
+        "operationId": "masterJabatanHarapan",
+        "security": [{ "BearerAuth": [] }],
+        "responses": { "200": { "description": "OK" } }
+      }
+    }
+  }
+}

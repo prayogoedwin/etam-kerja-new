@@ -45,8 +45,11 @@ use App\Http\Controllers\RekapController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StrukturController;
 use App\Http\Controllers\UserBkkController;
+use App\Http\Controllers\UserIntegrasiController;
 use App\Http\Controllers\UserPencariController;
 use App\Http\Controllers\UserPenyediaController;
+use App\Http\Controllers\Api\Integrasi\AuthController as IntegrasiAuthController;
+use App\Http\Controllers\Api\Integrasi\DokumentasiController as IntegrasiDokumentasiController;
 use App\Http\Middleware\CheckUserRole;
 use App\Http\Middleware\TrackVisitors;
 use Illuminate\Support\Facades\Route;
@@ -244,6 +247,14 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/bkk', [UserBkkController::class, 'index'])->name('userbkk.index');
         Route::put('/bkk/reset/{id}', [UserBkkController::class, 'reset'])->name('userbkk.reset');
         Route::delete('/bkk/delete/{id}', [UserBkkController::class, 'softdelete'])->name('userbkk.softdelete');
+
+        Route::get('/integrasi', [UserIntegrasiController::class, 'index'])->name('userintegrasi.index');
+        Route::get('/integrasi/generate', [UserIntegrasiController::class, 'generateCredentials'])->name('userintegrasi.generate');
+        Route::post('/integrasi/add', [UserIntegrasiController::class, 'store'])->name('userintegrasi.add');
+        Route::get('/integrasi/get/{id}', [UserIntegrasiController::class, 'show'])->name('userintegrasi.detail');
+        Route::put('/integrasi/update/{id}', [UserIntegrasiController::class, 'update'])->name('userintegrasi.update');
+        Route::put('/integrasi/regen-key/{id}', [UserIntegrasiController::class, 'regenerateKey'])->name('userintegrasi.regen');
+        Route::delete('/integrasi/delete/{id}', [UserIntegrasiController::class, 'destroy'])->name('userintegrasi.delete');
     });
 
     Route::prefix('datas')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
@@ -503,4 +514,10 @@ Route::prefix('docs')->group(function () {
     Route::get('/magang-pemerintah', [Dokumentasi::class, 'magang_pemerintah'])->name('docs.magang.pemerintah');
     Route::get('/magang-mandiri', [Dokumentasi::class, 'magang_mandiri'])->name('docs.magang.mandiri');
     Route::get('/jobfair', [Dokumentasi::class, 'job_fair'])->name('docs.job.fair');
+
+    Route::get('/api', [IntegrasiDokumentasiController::class, 'loginForm'])->name('docs.api.login');
+    Route::post('/api/login', [IntegrasiAuthController::class, 'docsLogin'])->name('docs.api.login.post');
+    Route::post('/api/logout', [IntegrasiAuthController::class, 'docsLogout'])->name('docs.api.logout');
+    Route::get('/api/dokumentasi', [IntegrasiDokumentasiController::class, 'index'])->name('docs.api.index');
+    Route::get('/api/openapi.json', [IntegrasiDokumentasiController::class, 'openapi'])->name('docs.api.openapi');
 });

@@ -104,6 +104,7 @@
                         <li><a href="{{ route('userpencari.index') }}">Pencari Kerja</a></li>
                         <li><a href="{{ route('userpenyedia.index') }}">Pemberi Kerja</a></li>
                         <li><a href="{{ route('userbkk.index') }}">BKK</a></li>
+                        <li><a href="{{ route('userintegrasi.index') }}">User Integrasi</a></li>
                     </ul>
                 </li>
 
