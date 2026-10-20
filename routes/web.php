@@ -57,6 +57,7 @@ use App\Http\Controllers\Pengawasan\K3\PenyediaK3Controller;
 use App\Http\Controllers\Pengawasan\K3\KadisK3Controller;
 use App\Http\Controllers\Pengawasan\K3\KabidK3Controller;
 use App\Http\Controllers\Pengawasan\K3\KasiK3Controller;
+use App\Http\Controllers\Pengawasan\K3\AdminBidangK3Controller;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -374,6 +375,14 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::post('/disposisi/{id}', [KasiK3Controller::class, 'updateDisposisi'])->name('disposisi');
         });
 
+    });
+
+    Route::prefix('pengawasan-k3/admin-bidang')->name('pengawasan.k3.admin_bidang.')->group(function () {
+        Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-bidang')->group(function () {
+            Route::get('/', [AdminBidangK3Controller::class, 'index'])->name('index');
+            Route::get('/spt/{id}', [AdminBidangK3Controller::class, 'createSpt'])->name('create_spt');
+            Route::post('/spt/store/{id}', [AdminBidangK3Controller::class, 'storeSpt'])->name('store_spt');
+        });
     });
 
     Route::prefix('blk')->group(function () {

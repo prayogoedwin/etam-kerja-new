@@ -22,7 +22,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('hi.pp.admbidang.index') }}" class="nav-link ">
+                    <a href="{{ route('pengawasan.k3.admin_bidang.index') }}" class="nav-link ">
                         <span class="pcoded-micon"><i class="feather icon-book"></i></span>
                         <span class="pcoded-mtext">Ajuan Riksa K3</span>
                     </a>

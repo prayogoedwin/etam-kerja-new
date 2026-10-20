@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use App\Models\User;
 
 class KasiK3Controller extends Controller
 {
@@ -93,7 +94,18 @@ class KasiK3Controller extends Controller
     {
         $ajuan = EtamPengawasanK3Ajuan::with(['kategori', 'jenis', 'penyedia', 'spt', 'spt.pengawas'])->findOrFail($id);
 
-        return view('backend.pengawasan.k3.kasi.show', compact('ajuan'));
+        // Mengambil daftar user dengan kriteria:
+        // 1. deleted_at is null (otomatis di-handle oleh trait SoftDeletes jika ada, atau filter manual)
+        // 2. kode_struktur = '21'
+        // 3. Memiliki role dengan id = 18 (petugas-bidang) menggunakan Spatie Permission
+        $daftarPengawas = User::where('kode_struktur', '21')
+            ->whereNull('deleted_at')
+            ->whereHas('roles', function ($query) {
+                $query->where('id', 18);
+            })
+            ->get();
+
+        return view('backend.pengawasan.k3.kasi.show', compact('ajuan', 'daftarPengawas'));
     }
 
     /**
@@ -123,13 +135,14 @@ class KasiK3Controller extends Controller
     public function updateDisposisi(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
+            'pengawas_id' => 'required|exists:users,id',
             'catatan_disposisi' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Validasi gagal.',
+                'message' => 'Validasi gagal, silakan pilih Pengawas yang ditunjuk.',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -137,16 +150,16 @@ class KasiK3Controller extends Controller
         try {
             $ajuan = EtamPengawasanK3Ajuan::findOrFail($id);
 
-            // Update status disposisi Kasi dan catatannya
             $ajuan->update([
                 'is_kasi_dispo' => 1,
                 'kasi_dispo_at' => now(),
                 'catatan_disposisi_kasi' => $request->catatan_disposisi,
+                'pengawas_id' => $request->pengawas_id,
             ]);
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Disposisi berhasil diteruskan ke Pengawas Ketenagakerjaan!'
+                'message' => 'Disposisi dan penunjukan Pengawas berhasil disimpan!'
             ]);
         } catch (\Exception $e) {
             return response()->json([

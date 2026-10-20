@@ -66,29 +66,42 @@
                             <div class="card-header"><h5>Tindakan Kepala Seksi (Kasi)</h5></div>
                             <div class="card-body">
                                 <div class="alert alert-primary" role="alert">
-                                    Berikan instruksi penugasan dan teruskan permohonan ini kepada Pengawas Ketenagakerjaan.
+                                    Pilih Pengawas Ketenagakerjaan yang ditunjuk dan berikan catatan disposisi.
                                 </div>
 
                                 <form id="formDisposisiKasi">
                                     @csrf
                                     <div class="mb-3">
+                                        <label class="form-label font-weight-bold">Tunjuk Pengawas Ketenagakerjaan <span class="text-danger">*</span></label>
+                                        <select name="pengawas_id" class="form-control" required {{ $ajuan->is_kasi_dispo == 1 ? 'disabled' : '' }}>
+                                            <option value="">-- Pilih Pengawas --</option>
+                                            @foreach($daftarPengawas as $pw)
+                                                <option value="{{ $pw->id }}" {{ $ajuan->pengawas_id == $pw->id ? 'selected' : '' }}>
+                                                    {{ $pw->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
                                         <label class="form-label font-weight-bold">Catatan / Arahan Kasi</label>
-                                        <textarea name="catatan_disposisi" class="form-control" rows="4" placeholder="Masukkan instruksi untuk Pengawas...">{{ $ajuan->catatan_disposisi_kasi }}</textarea>
+                                        <textarea name="catatan_disposisi" class="form-control" rows="4" placeholder="Masukkan instruksi untuk Pengawas..." {{ $ajuan->is_kasi_dispo == 1 ? 'disabled' : '' }}>{{ $ajuan->catatan_disposisi_kasi }}</textarea>
                                     </div>
 
                                     @if($ajuan->is_kasi_dispo == 0)
                                         <button type="button" id="btnDisposisiKasi" class="btn btn-success w-100">
-                                            <i class="feather icon-send"></i> Teruskan ke Pengawas Ketenagakerjaan
+                                            <i class="feather icon-send"></i> Teruskan ke Pengawas Terpilih
                                         </button>
                                     @else
                                         <div class="alert alert-success text-center mb-0">
-                                            <i class="feather icon-check-circle"></i> Sudah didisposisi pada {{ $ajuan->kasi_dispo_at }}
+                                            <i class="feather icon-check-circle"></i> Sudah didisposisi kepada <b>{{ $ajuan->pengawas->name ?? '-' }}</b> pada {{ $ajuan->kasi_dispo_at }}
                                         </div>
                                     @endif
                                 </form>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -122,7 +135,7 @@
                         }
                     },
                     error: function(xhr) {
-                        Swal.fire('Gagal!', 'Terjadi kesalahan saat memproses disposisi.', 'error');
+                        Swal.fire('Gagal!', xhr.responseJSON.message, 'error');
                     }
                 });
             }

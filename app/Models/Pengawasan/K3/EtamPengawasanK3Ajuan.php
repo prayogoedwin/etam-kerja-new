@@ -32,6 +32,7 @@ class EtamPengawasanK3Ajuan extends Model
         'is_kasi_dispo',
         'kasi_dispo_at',
         'catatan_disposisi_kasi',
+        'pengawas_id',
         'deleted_by',
     ];
 
@@ -71,5 +72,11 @@ class EtamPengawasanK3Ajuan extends Model
     public function spt()
     {
         return $this->hasMany(EtamPengawasanK3Spt::class, 'ajuan_id');
+    }
+
+    // Tambahkan relasi ke Pengawas
+    public function pengawas()
+    {
+        return $this->belongsTo(User::class, 'pengawas_id');
     }
 }
