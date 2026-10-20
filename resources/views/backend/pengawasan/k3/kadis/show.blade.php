@@ -81,7 +81,7 @@
                             <div class="card-header"><h5>Tindakan Kepala Dinas</h5></div>
                             <div class="card-body">
                                 <div class="alert alert-primary" role="alert">
-                                    Sesuai SOP, Kepala Dinas memberikan disposisi kepada Kabid PPK untuk diteruskan ke Kasi dan Pengawas[cite: 1].
+                                    Sesuai SOP, Kepala Dinas memberikan disposisi kepada Kabid untuk diteruskan ke Kasi dan Pengawas.
                                 </div>
 
                                 <form id="formDisposisi">

@@ -24,6 +24,7 @@
                                 <div class="row align-items-center m-l-0">
                                     <div class="col-sm-6">
                                         <h5 class="mb-0">Daftar Pengajuan Riksa Uji</h5>
+                                        <small class="badge bg-info">Melalui Pengawas Ketenagakerjaan</small>
                                     </div>
                                     <div class="col-sm-6 text-end">
                                         <button class="btn btn-success btn-sm btn-round has-ripple"
@@ -104,10 +105,10 @@
                                         value="1" min="1" required>
                                 </div>
                                 <div class="col-md-12 mb-3">
-                                    <label class="form-label">Dokumen Permohonan (PDF/Gambar max 2MB) <br> <small
+                                    <label class="form-label">Dokumen Permohonan (PDF) <br> <small
                                             class="text-muted" id="fileInfo"></small></label>
                                     <input type="file" name="dok_unggah_penyedia" id="dok_unggah_penyedia"
-                                        class="form-control">
+                                        class="form-control" accept="application/pdf">
                                 </div>
                                 <div class="col-md-12 mb-3">
                                     <label class="form-label">Keterangan (Opsional)</label>

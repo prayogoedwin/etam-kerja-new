@@ -27,25 +27,100 @@
         }
 
         /* Header */
+        /* ===== Header ===== */
         .header {
             display: flex;
+            flex-wrap: wrap;               /* ✅ agar turun baris di layar kecil */
             justify-content: space-between;
             align-items: center;
+            gap: 12px 20px;                /* ✅ jarak antar item (row gap, column gap) */
             padding: 0 0 20px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.15); /* opsional, biar rapi */
         }
 
-        .header h1 {
+        .header-title {
             font-size: 1.5rem;
             font-weight: 800;
+            margin: 0;
+            line-height: 1.3;
             background: linear-gradient(90deg, #60a5fa, #4ade80);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
+        /* Grup kanan: link + timestamp + logout */
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;               /* ✅ ikut wrap di layar kecil */
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* ✅ Styling khusus link "Pengawasan K3" */
+        .header-nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #e2e8f0;
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            border-radius: 8px;
+            text-decoration: none;
+            white-space: nowrap;           /* ✅ jangan pecah teks */
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+        }
+
+        .header-nav-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+            opacity: 0.92;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .header-nav-link i {
+            font-size: 0.9rem;
+        }
+
+        /* Timestamp */
         .header .timestamp {
             font-size: 0.75rem;
             color: #94a3b8;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .header .timestamp strong {
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        /* ✅ Tombol Logout */
+        .header-logout {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #fecaca;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 8px;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .header-logout:hover {
+            background: rgba(239, 68, 68, 0.3);
+            color: #fff;
+            text-decoration: none;
         }
 
         /* Grid Layout - 4 columns */
@@ -454,16 +529,22 @@
     <div class="dashboard">
         <!-- Header -->
         <div class="header">
-            <h1>📊 Dashboard Eksekutif Ketenagakerjaan</h1>
-            <a href="{{ route('pengawasan.k3.kadis.index') }}">Pengawasan K3</a>
-            <div class="timestamp">
-                <span>Diperbarui:</span>
-                <strong>{{ $generated_at }}</strong> |
-                 <span><a href="{{ route('logout') }}" class="dropdown-item" style="color:#fff"><i
-                                        class="feather icon-lock"></i>
-                                    Logout</a></span>
-            </div>
+            <h1 class="header-title">📊 Dashboard Eksekutif Ketenagakerjaan</h1>
 
+            <div class="header-actions">
+                <a class="header-nav-link" href="{{ route('pengawasan.k3.kadis.index') }}">
+                    <i class="feather icon-shield"></i> Pengawasan K3
+                </a>
+
+                <div class="timestamp">
+                    <span>Diperbarui:</span>
+                    <strong>{{ $generated_at }}</strong>
+                </div>
+
+                <a href="{{ route('logout') }}" class="header-logout">
+                    <i class="feather icon-lock"></i> Logout
+                </a>
+            </div>
         </div>
 
         <!-- 5 Cards Grid -->

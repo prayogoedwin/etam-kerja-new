@@ -23,6 +23,7 @@
                                 <div class="row align-items-center m-l-0">
                                     <div class="col-sm-6">
                                         <h5 class="mb-0">Daftar Permohonan Masuk (Disposisi Kadis)</h5>
+                                        <small class="badge bg-info">Melalui Pengawas Ketenagakerjaan</small>
                                     </div>
                                 </div>
                                 <div class="table-responsive mt-3">
