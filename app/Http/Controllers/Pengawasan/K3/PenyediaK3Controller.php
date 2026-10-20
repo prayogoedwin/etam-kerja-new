@@ -125,7 +125,7 @@ class PenyediaK3Controller extends Controller
             if ($request->hasFile('dok_unggah_penyedia')) {
                 $file = $request->file('dok_unggah_penyedia');
                 $filename = time() . '_' . $file->getClientOriginalName();
-                $filePath = $file->storeAs('uploads/k3/permohonan', $filename, 'public');
+                $filePath = $file->storeAs('k3/permohonan', $filename, 'public');
             }
 
             EtamPengawasanK3Ajuan::create([

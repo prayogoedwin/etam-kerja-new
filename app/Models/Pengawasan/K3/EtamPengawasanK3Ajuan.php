@@ -5,6 +5,7 @@ namespace App\Models\Pengawasan\K3;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\User;
 
 class EtamPengawasanK3Ajuan extends Model
 {
@@ -24,10 +25,13 @@ class EtamPengawasanK3Ajuan extends Model
         'dok_unggah_penyedia',
         'is_kadis_dispo',
         'kadis_dispo_at',
+        'catatan_disposisi_kadis',
         'is_kabid_dispo',
         'kabid_dispo_at',
+        'catatan_disposisi_kabid',
         'is_kasi_dispo',
         'kasi_dispo_at',
+        'catatan_disposisi_kasi',
         'deleted_by',
     ];
 

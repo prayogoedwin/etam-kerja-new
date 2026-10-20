@@ -98,8 +98,9 @@
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-layers"></i></span><span class="pcoded-mtext">Pengawasan</span></a>
                     <ul class="pcoded-submenu">
-                        <li><a href="{{ route('pengawasan.k3.penyedia.index') }}">K3</a></li>
-                        <li><a href="#">Coming Soon</a></li>
+                        <li><a href="{{ route('pengawasan.k3.penyedia.index') }}">K3 Pengawas</a></li>
+                        <li><a href="#">K3 PJK3</a></li>
+                        <li><a href="#">Ajuan PJK3</a></li>
                     </ul>
                 </li>
 

@@ -158,6 +158,16 @@ class BackController extends Controller
         if (Auth::user()->roles[0]['name'] == 'petugas-bidang' && Auth::user()->kode_struktur == '21') {
             return view('backend.dashboard.index_bidangk3pengawas');
         }
+
+        // Kepala Bidang Pembinaan dan Pengawasan (Kepala Bidang K3)
+        if (Auth::user()->roles[0]['name'] == 'kepala-bidang' && Auth::user()->kode_struktur == '2') {
+            return view('backend.dashboard.index_kepalabidangk3');
+        }
+
+        // Kasi bidang K3 (Seksi K3)
+        if (Auth::user()->roles[0]['name'] == 'kepala-seksi' && Auth::user()->kode_struktur == '21') {
+            return view('backend.dashboard.index_bidangk3kasi');
+        }
     }
 
     public function sample()

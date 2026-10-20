@@ -455,14 +455,15 @@
         <!-- Header -->
         <div class="header">
             <h1>📊 Dashboard Eksekutif Ketenagakerjaan</h1>
+            <a href="{{ route('pengawasan.k3.kadis.index') }}">Pengawasan K3</a>
             <div class="timestamp">
                 <span>Diperbarui:</span>
-                <strong>{{ $generated_at }}</strong> | 
+                <strong>{{ $generated_at }}</strong> |
                  <span><a href="{{ route('logout') }}" class="dropdown-item" style="color:#fff"><i
                                         class="feather icon-lock"></i>
                                     Logout</a></span>
             </div>
-            
+
         </div>
 
         <!-- 5 Cards Grid -->
@@ -477,7 +478,7 @@
                     <div class="card-body">
                         <div class="big-number">{{ number_format($pencari['total']) }}</div>
                         <div class="subtitle">Belum diterima kerja</div>
-                        
+
                         <div class="gender-split">
                             <div class="gender-item">
                                 <div class="gender-icon male-icon">♂</div>

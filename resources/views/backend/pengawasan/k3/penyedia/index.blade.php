@@ -23,7 +23,7 @@
                             <div class="card-body">
                                 <div class="row align-items-center m-l-0">
                                     <div class="col-sm-6">
-                                        <h4 class="mb-0">Daftar Pengajuan Riksa Uji</h4>
+                                        <h5 class="mb-0">Daftar Pengajuan Riksa Uji</h5>
                                     </div>
                                     <div class="col-sm-6 text-end">
                                         <button class="btn btn-success btn-sm btn-round has-ripple"

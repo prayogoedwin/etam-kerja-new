@@ -49,6 +49,21 @@
     @include('backend.template.sidebar-k3-pengawas')
 @endif
 
+{{-- kepala dinas --}}
+@if (Auth::user()->roles[0]['name'] == 'eksekutif-provinsi')
+    @include('backend.template.sidebar-eksekutif-provinsi')
+@endif
+
+{{-- kepala bidang Pembinaan dan Pengawasan --}}
+@if (Auth::user()->roles[0]['name'] == 'kepala-bidang' && Auth::user()->kode_struktur == '2')
+    @include('backend.template.sidebar-kepala-bidang-pp')
+@endif
+
+{{-- kasi bidang K3 (Seksi K3) --}}
+@if (Auth::user()->roles[0]['name'] == 'kepala-seksi' && Auth::user()->kode_struktur == '21')
+    @include('backend.template.sidebar-k3-kasi')
+@endif
+
 <body>
     @yield('content')
     @include('backend.template.footer')

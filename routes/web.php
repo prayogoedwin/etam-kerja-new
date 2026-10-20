@@ -54,6 +54,9 @@ use App\Http\Middleware\CheckUserRole;
 use App\Http\Middleware\TrackVisitors;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Pengawasan\K3\PenyediaK3Controller;
+use App\Http\Controllers\Pengawasan\K3\KadisK3Controller;
+use App\Http\Controllers\Pengawasan\K3\KabidK3Controller;
+use App\Http\Controllers\Pengawasan\K3\KasiK3Controller;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -356,6 +359,23 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         });
     });
 
+    Route::prefix('pengawasan-k3/kabid')->name('pengawasan.k3.kabid.')->group(function () {
+        Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,kepala-bidang')->group(function () {
+            Route::get('/', [KabidK3Controller::class, 'index'])->name('index');
+            Route::get('/show/{id}', [KabidK3Controller::class, 'show'])->name('show');
+            Route::post('/disposisi/{id}', [KabidK3Controller::class, 'updateDisposisi'])->name('disposisi');
+        });
+    });
+
+    Route::prefix('pengawasan-k3/kasi')->name('pengawasan.k3.kasi.')->group(function () {
+        Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,kepala-seksi')->group(function () {
+            Route::get('/', [KasiK3Controller::class, 'index'])->name('index');
+            Route::get('/show/{id}', [KasiK3Controller::class, 'show'])->name('show');
+            Route::post('/disposisi/{id}', [KasiK3Controller::class, 'updateDisposisi'])->name('disposisi');
+        });
+
+    });
+
     Route::prefix('blk')->group(function () {
         Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi')->group(function () {
             Route::get('/lembaga', [BlkController::class, 'index'])->name('blk.lembaga.index');
@@ -487,6 +507,13 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 Route::prefix('eksekutif')->middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardEksekutifController::class, 'index'])->middleware(CheckUserRole::class.':super-admin,admin-provinsi,eksekutif-provinsi')->name('dashboard.eksekutif');
     Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');
+
+    Route::prefix('pengawasan-k3/kadis')->name('pengawasan.k3.kadis.')->group(function () {
+    Route::get('/', [KadisK3Controller::class, 'index'])->name('index');
+    Route::get('/show/{id}', [KadisK3Controller::class, 'show'])->name('show');
+    Route::post('/disposisi/{id}', [KadisK3Controller::class, 'updateDisposisi'])->name('disposisi');
+    Route::post('/setujui-sk/{id}', [KadisK3Controller::class, 'setujuiSuratKeterangan'])->name('setujui_sk');
+});
 });
 
 // Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');
