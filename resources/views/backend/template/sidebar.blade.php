@@ -182,6 +182,13 @@
                             class="pcoded-micon"><i class="fa fa-archive"></i></span><span
                             class="pcoded-mtext">Penempatan</span></a></li>
 
+                <li class="nav-item">
+                    <a href="{{ route('pengawasan.pjk3.admin.index') }}" class="nav-link ">
+                        <span class="pcoded-micon"><i class="feather icon-shield"></i></span>
+                        <span class="pcoded-mtext">Ajuan PJK3</span>
+                    </a>
+                </li>
+
                 <li class="nav-item pcoded-hasmenu">
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-book"></i></span><span class="pcoded-mtext">BLK</span></a>

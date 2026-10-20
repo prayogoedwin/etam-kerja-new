@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "ETAMKERJA API Integrasi",
-    "description": "API integrasi eksternal Etam Kerja Kalimantan Timur.\n\n**Alur autentikasi:**\n1. Ambil token via `POST /auth/token` dengan `client_id` + `api_key`\n2. Kirim header `Authorization: Bearer {access_token}` pada endpoint terproteksi\n3. Perpanjang token via `POST /auth/refresh`\n\nUsername/password user integrasi hanya untuk login halaman Swagger ini.",
+    "description": "API integrasi eksternal Etam Kerja Kalimantan Timur.\n\n**Alur autentikasi (penting):**\n1. Jalankan `POST /auth/token` dengan body `client_id` + `x-api-key` (dari menu User Integrasi)\n2. Copy **`access_token`** dari response (bukan x-api-key)\n3. Klik **Authorize** → paste ke **BearerAuth saja** → Authorize\n4. Baru Execute endpoint lain (master, pencari, dll)\n\nCatatan: setiap kali Get Token ulang, token lama otomatis invalid. Authorize ulang dengan `access_token` terbaru.\n\nUsername/password user integrasi hanya untuk login halaman Swagger ini.",
     "version": "1.0.0",
     "contact": {
       "name": "ETAMKERJA",
@@ -30,13 +30,7 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "Token",
-        "description": "Access token dari endpoint /auth/token"
-      },
-      "ApiKeyHeader": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "X-Api-Key",
-        "description": "Opsional alternatif pengiriman api_key saat request token"
+        "description": "Paste access_token dari response POST /auth/token. Jangan paste x-api-key di sini."
       }
     },
     "schemas": {
@@ -158,20 +152,23 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["client_id"],
+                "required": ["client_id", "x-api-key"],
                 "properties": {
                   "client_id": { "type": "string", "example": "b7b53989-cfaa-4a10-8300-b4fd9fb1590c" },
-                  "api_key": { "type": "string", "example": "hex-api-key" },
-                  "x-api-key": { "type": "string", "description": "Alternatif field api_key" }
+                  "x-api-key": {
+                    "type": "string",
+                    "description": "Nilai X-API-Key dari menu User Integrasi (kolom api_key di database)",
+                    "example": "10ba52599a068f2dc449352f1d79ce479c263e979861d4dc9d53d8e60c9e800c"
+                  }
                 }
               }
             },
             "application/x-www-form-urlencoded": {
               "schema": {
                 "type": "object",
+                "required": ["client_id", "x-api-key"],
                 "properties": {
                   "client_id": { "type": "string" },
-                  "api_key": { "type": "string" },
                   "x-api-key": { "type": "string" }
                 }
               }
@@ -213,11 +210,10 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["client_id", "refresh_token"],
+                "required": ["client_id", "x-api-key", "refresh_token"],
                 "properties": {
                   "client_id": { "type": "string" },
-                  "api_key": { "type": "string" },
-                  "x-api-key": { "type": "string" },
+                  "x-api-key": { "type": "string", "description": "Nilai X-API-Key dari menu User Integrasi" },
                   "refresh_token": { "type": "string" }
                 }
               }

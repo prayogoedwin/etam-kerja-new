@@ -5,6 +5,8 @@ use App\Http\Controllers\Ak1Controller;
 // Replace with your actual namespace
 use App\Http\Controllers\Ak1PencariController;
 use App\Http\Controllers\AlumniController;
+use App\Http\Controllers\Api\Integrasi\AuthController as IntegrasiAuthController;
+use App\Http\Controllers\Api\Integrasi\DokumentasiController as IntegrasiDokumentasiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BackController;
 use App\Http\Controllers\BkkAdminController;
@@ -27,8 +29,8 @@ use App\Http\Controllers\EtamFaqController;
 use App\Http\Controllers\EtamGaleriController;
 use App\Http\Controllers\EtamInfografisController;
 use App\Http\Controllers\HI\PP\AdmBidangPpController;
-use App\Http\Controllers\HI\PP\PenyediaPpController;
 use App\Http\Controllers\HI\PP\KasiBidangPpController;
+use App\Http\Controllers\HI\PP\PenyediaPpController;
 use App\Http\Controllers\HistoryLamaranPencariController;
 use App\Http\Controllers\HistoryPelatihanPencariController;
 use App\Http\Controllers\JobFairController;
@@ -37,6 +39,13 @@ use App\Http\Controllers\LowonganController;
 use App\Http\Controllers\LowonganPencariController;
 use App\Http\Controllers\MagangDnController;
 use App\Http\Controllers\PenempatanController;
+use App\Http\Controllers\Pengawasan\K3\AdminBidangK3Controller;
+use App\Http\Controllers\Pengawasan\K3\KabidK3Controller;
+use App\Http\Controllers\Pengawasan\K3\KadisK3Controller;
+use App\Http\Controllers\Pengawasan\K3\KasiK3Controller;
+use App\Http\Controllers\Pengawasan\K3\PenyediaK3Controller;
+use App\Http\Controllers\Pengawasan\Pjk3\AdminPjk3Controller;
+use App\Http\Controllers\Pengawasan\Pjk3\PenyediaPjk3Controller;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\ProfilBkkController;
 use App\Http\Controllers\ProfilPencariController;
@@ -48,16 +57,9 @@ use App\Http\Controllers\UserBkkController;
 use App\Http\Controllers\UserIntegrasiController;
 use App\Http\Controllers\UserPencariController;
 use App\Http\Controllers\UserPenyediaController;
-use App\Http\Controllers\Api\Integrasi\AuthController as IntegrasiAuthController;
-use App\Http\Controllers\Api\Integrasi\DokumentasiController as IntegrasiDokumentasiController;
 use App\Http\Middleware\CheckUserRole;
 use App\Http\Middleware\TrackVisitors;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Pengawasan\K3\PenyediaK3Controller;
-use App\Http\Controllers\Pengawasan\K3\KadisK3Controller;
-use App\Http\Controllers\Pengawasan\K3\KabidK3Controller;
-use App\Http\Controllers\Pengawasan\K3\KasiK3Controller;
-use App\Http\Controllers\Pengawasan\K3\AdminBidangK3Controller;
 
 // Route::get('/', function () {
 //     return view('depan.depan_index');
@@ -335,21 +337,31 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::delete('/destroy/{id}', [PenyediaK3Controller::class, 'destroy'])->name('destroy');
 
         });
+
+        Route::prefix('ajuan-pjk3')->name('pengawasan.pjk3.penyedia.')->group(function () {
+            Route::get('/', [PenyediaPjk3Controller::class, 'index'])->name('index');
+            Route::get('/create', [PenyediaPjk3Controller::class, 'create'])->name('create');
+            Route::post('/', [PenyediaPjk3Controller::class, 'store'])->name('store');
+            Route::get('/{id}/file/{key}', [PenyediaPjk3Controller::class, 'file'])->name('file');
+            Route::get('/{id}/revisi', [PenyediaPjk3Controller::class, 'revisi'])->name('revisi');
+            Route::get('/{id}', [PenyediaPjk3Controller::class, 'show'])->name('show');
+            Route::post('/{id}', [PenyediaPjk3Controller::class, 'update'])->name('update');
+        });
     });
 
     Route::prefix('bidang-hi')->group(function () {
         Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-bidang')->group(function () {
             Route::get('/data-pp', [AdmBidangPpController::class, 'index'])->name('hi.pp.admbidang.index');
             Route::get('/data-pp/detail/{id}', [AdmBidangPpController::class, 'detail'])->name('hi.pp.admbidang.detail');
-            Route::get('/data-pp/verifikasi/{id}',  [AdmBidangPpController::class, 'formVerifikasi'])->name('hi.pp.admbidang.verifikasi');
+            Route::get('/data-pp/verifikasi/{id}', [AdmBidangPpController::class, 'formVerifikasi'])->name('hi.pp.admbidang.verifikasi');
             Route::post('/data-pp/verifikasi/{id}', [AdmBidangPpController::class, 'submitVerifikasi'])->name('hi.pp.admbidang.verifikasi.submit');
             Route::get('/data-pp/cetak/{id}', [AdmBidangPpController::class, 'cetak'])->name('hi.pp.admbidang.cetak');
 
-            Route::get('/data-pp/sk/{id}',[AdmBidangPpController::class, 'formSk'])->name('hi.pp.admbidang.formSk');
-            Route::post('/data-pp/sk/{id}',[AdmBidangPpController::class, 'submitSk'])->name('hi.pp.admbidang.submitSk');
-            Route::get('/data-pp/cetak-sk/{id}',[AdmBidangPpController::class, 'cetakSk'])->name('hi.pp.admbidang.cetakSk');
-            Route::get('/data-pp/unggah-sk/{id}',[AdmBidangPpController::class, 'formUnggahSk'])->name('hi.pp.admbidang.formUnggahSk');
-            Route::post('/data-pp/unggah-sk/{id}',[AdmBidangPpController::class, 'submitUnggahSk'])->name('hi.pp.admbidang.submitUnggahSk');
+            Route::get('/data-pp/sk/{id}', [AdmBidangPpController::class, 'formSk'])->name('hi.pp.admbidang.formSk');
+            Route::post('/data-pp/sk/{id}', [AdmBidangPpController::class, 'submitSk'])->name('hi.pp.admbidang.submitSk');
+            Route::get('/data-pp/cetak-sk/{id}', [AdmBidangPpController::class, 'cetakSk'])->name('hi.pp.admbidang.cetakSk');
+            Route::get('/data-pp/unggah-sk/{id}', [AdmBidangPpController::class, 'formUnggahSk'])->name('hi.pp.admbidang.formUnggahSk');
+            Route::post('/data-pp/unggah-sk/{id}', [AdmBidangPpController::class, 'submitUnggahSk'])->name('hi.pp.admbidang.submitUnggahSk');
         });
 
         Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,kepala-seksi')->group(function () {
@@ -383,6 +395,13 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::get('/spt/{id}', [AdminBidangK3Controller::class, 'createSpt'])->name('create_spt');
             Route::post('/spt/store/{id}', [AdminBidangK3Controller::class, 'storeSpt'])->name('store_spt');
         });
+    });
+
+    Route::prefix('ajuan-pjk3')->name('pengawasan.pjk3.admin.')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,kepala-bidang,kepala-seksi,admin-bidang,petugas-bidang,sekretaris,kepala-sub-bidang,kepala-sub-bagian')->group(function () {
+        Route::get('/', [AdminPjk3Controller::class, 'index'])->name('index');
+        Route::get('/{id}/file/{key}', [AdminPjk3Controller::class, 'file'])->name('file');
+        Route::get('/{id}', [AdminPjk3Controller::class, 'show'])->name('show');
+        Route::post('/{id}/verifikasi', [AdminPjk3Controller::class, 'verifikasi'])->name('verifikasi');
     });
 
     Route::prefix('blk')->group(function () {
@@ -518,11 +537,11 @@ Route::prefix('eksekutif')->middleware('auth')->group(function () {
     Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');
 
     Route::prefix('pengawasan-k3/kadis')->name('pengawasan.k3.kadis.')->group(function () {
-    Route::get('/', [KadisK3Controller::class, 'index'])->name('index');
-    Route::get('/show/{id}', [KadisK3Controller::class, 'show'])->name('show');
-    Route::post('/disposisi/{id}', [KadisK3Controller::class, 'updateDisposisi'])->name('disposisi');
-    Route::post('/setujui-sk/{id}', [KadisK3Controller::class, 'setujuiSuratKeterangan'])->name('setujui_sk');
-});
+        Route::get('/', [KadisK3Controller::class, 'index'])->name('index');
+        Route::get('/show/{id}', [KadisK3Controller::class, 'show'])->name('show');
+        Route::post('/disposisi/{id}', [KadisK3Controller::class, 'updateDisposisi'])->name('disposisi');
+        Route::post('/setujui-sk/{id}', [KadisK3Controller::class, 'setujuiSuratKeterangan'])->name('setujui_sk');
+    });
 });
 
 // Route::get('dashboard-pimpinan', [DashboardPimpinanController::class, 'index'])->name('dashboard.pimpinan.index');

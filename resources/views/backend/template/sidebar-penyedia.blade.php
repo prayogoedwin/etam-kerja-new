@@ -100,7 +100,7 @@
                     <ul class="pcoded-submenu">
                         <li><a href="{{ route('pengawasan.k3.penyedia.index') }}">K3 Pengawas</a></li>
                         <li><a href="#">K3 PJK3</a></li>
-                        <li><a href="#">Ajuan PJK3</a></li>
+                        <li><a href="{{ route('pengawasan.pjk3.penyedia.index') }}">Ajuan PJK3</a></li>
                     </ul>
                 </li>
 

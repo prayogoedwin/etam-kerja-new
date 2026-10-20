@@ -27,6 +27,12 @@
                         <span class="pcoded-mtext">Ajuan Riksa K3</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('pengawasan.pjk3.admin.index') }}" class="nav-link ">
+                        <span class="pcoded-micon"><i class="feather icon-shield"></i></span>
+                        <span class="pcoded-mtext">Ajuan PJK3</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
