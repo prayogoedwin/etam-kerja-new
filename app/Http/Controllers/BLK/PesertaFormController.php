@@ -5,6 +5,7 @@ namespace App\Http\Controllers\BLK;
 use App\Http\Controllers\Controller;
 use App\Models\BLK\EtamBlkForm;
 use App\Models\BLK\EtamBlkPelatihan;
+use App\Models\BLK\EtamBlkPelatihanJawaban;
 use App\Models\BLK\EtamBlkPelatihanPeserta;
 use App\Models\BLK\EtamBlkPelatihanPesertaPerusahaan;
 use App\Models\UserPencari;
@@ -108,6 +109,167 @@ class PesertaFormController extends Controller
             ->with('success', $message);
     }
 
+    public function cbt(string $pelatihanId)
+    {
+        [$pelatihan, $peserta, $keys] = $this->pesertaContext($pelatihanId, EtamBlkForm::JENIS_CBT);
+        $submitted = $this->answers->isSubmitted($pelatihan, EtamBlkForm::JENIS_CBT, $keys);
+        $form = $this->answers->formFor($pelatihan, EtamBlkForm::JENIS_CBT);
+        $unlocked = $submitted || session()->get($this->cbtSessionKey($pelatihan->id), false);
+        $rows = collect();
+        $score = null;
+
+        if ($submitted || ($unlocked && $pelatihan->isCbtOpen())) {
+            $rows = $this->answers->ensureSnapshot($pelatihan, EtamBlkForm::JENIS_CBT, $keys);
+        }
+
+        if ($submitted) {
+            $score = $this->answers->score($rows);
+        }
+
+        $jenis = EtamBlkForm::JENIS_CBT;
+        $readonly = $submitted;
+        $action = route('blk.pelatihan.cbt.store', $pelatihan->id);
+        $needKode = ! $submitted && ! $unlocked;
+        $closed = ! $submitted && ! $pelatihan->isCbtOpen();
+
+        return view('backend.blk.cbt.isi', compact(
+            'pelatihan',
+            'peserta',
+            'rows',
+            'submitted',
+            'form',
+            'jenis',
+            'readonly',
+            'action',
+            'score',
+            'needKode',
+            'closed'
+        ));
+    }
+
+    public function unlockCbt(Request $request, string $pelatihanId)
+    {
+        [$pelatihan] = $this->pesertaContext($pelatihanId, EtamBlkForm::JENIS_CBT);
+
+        if (! $pelatihan->isCbtOpen()) {
+            return redirect()->back()->withErrors(['cbt_kode' => 'CBT belum dibuka.']);
+        }
+
+        $kode = trim((string) $request->input('cbt_kode'));
+        if ($kode !== (string) $pelatihan->cbt_kode) {
+            return redirect()->back()->withErrors(['cbt_kode' => 'Kode tes tidak sesuai.'])->withInput();
+        }
+
+        session()->put($this->cbtSessionKey($pelatihan->id), true);
+
+        return redirect()->route('blk.pelatihan.cbt', $pelatihan->id);
+    }
+
+    public function storeCbt(Request $request, string $pelatihanId)
+    {
+        [$pelatihan, , $keys] = $this->pesertaContext($pelatihanId, EtamBlkForm::JENIS_CBT);
+
+        if (! $pelatihan->isCbtOpen()) {
+            return redirect()->back()->withErrors(['form' => 'CBT sudah ditutup.']);
+        }
+
+        if (! session()->get($this->cbtSessionKey($pelatihan->id), false)
+            && ! $this->answers->isSubmitted($pelatihan, EtamBlkForm::JENIS_CBT, $keys)) {
+            return redirect()->route('blk.pelatihan.cbt', $pelatihan->id)
+                ->withErrors(['cbt_kode' => 'Masukkan kode tes terlebih dahulu.']);
+        }
+
+        try {
+            $this->answers->saveAnswers(
+                $pelatihan,
+                EtamBlkForm::JENIS_CBT,
+                $keys,
+                (array) $request->input('jawaban', []),
+                true
+            );
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->errors())->withInput();
+        }
+
+        session()->forget($this->cbtSessionKey($pelatihan->id));
+
+        return redirect()
+            ->route('blk.pelatihan.cbt', $pelatihan->id)
+            ->with('success', 'CBT berhasil dikirim. Nilai langsung tampil di bawah.');
+    }
+
+    public function hasilCbt(string $pelatihanId)
+    {
+        if (! $this->canCreatePelatihan()) {
+            abort(403);
+        }
+
+        $pelatihan = EtamBlkPelatihan::with(['cbtForm:id,nama', 'blk:id,nama_lembaga'])->findOrFail($pelatihanId);
+        if (! $this->canAccessBlk((int) $pelatihan->blk_id)) {
+            abort(403);
+        }
+        if (! $pelatihan->cbt_form_id) {
+            abort(404, 'Pelatihan ini tidak memiliki CBT.');
+        }
+
+        $isPerusahaan = (int) $pelatihan->pelatihan_untuk === EtamBlkPelatihan::UNTUK_PENYEDIA;
+        $pesertaRows = $isPerusahaan
+            ? EtamBlkPelatihanPesertaPerusahaan::query()->where('blk_pelatihan_id', $pelatihan->id)->get()
+            : EtamBlkPelatihanPeserta::query()->where('blk_pelatihan_id', $pelatihan->id)->get();
+
+        $hasil = $pesertaRows->map(function ($peserta) use ($pelatihan, $isPerusahaan) {
+            $keys = $this->answers->participantKeys($pelatihan, (int) $peserta->id);
+            $rows = $this->answers->answersQuery($pelatihan, EtamBlkForm::JENIS_CBT, $keys)->orderBy('urutan')->get();
+            $submitted = $rows->contains(fn (EtamBlkPelatihanJawaban $row) => $row->submitted_at !== null);
+            $score = $submitted ? $this->answers->score($rows) : null;
+
+            return [
+                'peserta' => $peserta,
+                'submitted' => $submitted,
+                'submitted_at' => $submitted ? $rows->max('submitted_at') : null,
+                'score' => $score,
+            ];
+        })->sort(function ($a, $b) {
+            if ($a['submitted'] !== $b['submitted']) {
+                return $a['submitted'] ? -1 : 1;
+            }
+            if ($a['submitted'] && $b['submitted']) {
+                $nilai = ($b['score']['nilai'] ?? 0) <=> ($a['score']['nilai'] ?? 0);
+                if ($nilai !== 0) {
+                    return $nilai;
+                }
+            }
+
+            return strcmp((string) $a['peserta']->name, (string) $b['peserta']->name);
+        })->values();
+
+        return view('backend.blk.cbt.hasil', compact('pelatihan', 'hasil', 'isPerusahaan'));
+    }
+
+    public function lihatCbt(string $pelatihanId, string $pesertaId)
+    {
+        [$pelatihan, $peserta, $keys] = $this->adminContext($pelatihanId, $pesertaId, EtamBlkForm::JENIS_CBT);
+        $rows = $this->answers->answersQuery($pelatihan, EtamBlkForm::JENIS_CBT, $keys)->orderBy('urutan')->get();
+        $submitted = $this->answers->isSubmitted($pelatihan, EtamBlkForm::JENIS_CBT, $keys);
+        $form = $this->answers->formFor($pelatihan, EtamBlkForm::JENIS_CBT);
+        $jenis = EtamBlkForm::JENIS_CBT;
+        $readonly = true;
+        $action = null;
+        $score = $submitted ? $this->answers->score($rows) : null;
+
+        return view('backend.blk.form.isi', compact(
+            'pelatihan',
+            'peserta',
+            'rows',
+            'submitted',
+            'form',
+            'jenis',
+            'readonly',
+            'action',
+            'score'
+        ));
+    }
+
     /**
      * @return array{0: EtamBlkPelatihan, 1: mixed, 2: array{blk_peserta_id: int|null, perusahaan_peserta_id: int|null, pencari_id: int|null}}
      */
@@ -133,10 +295,15 @@ class PesertaFormController extends Controller
         return [$pelatihan, $peserta, $keys];
     }
 
+    private function cbtSessionKey(int $pelatihanId): string
+    {
+        return 'blk_cbt_unlock_'.$pelatihanId;
+    }
+
     /**
      * @return array{0: EtamBlkPelatihan, 1: mixed, 2: array{blk_peserta_id: int|null, perusahaan_peserta_id: int|null, pencari_id: int|null}}
      */
-    private function pesertaContext(string $pelatihanId): array
+    private function pesertaContext(string $pelatihanId, string $jenis = EtamBlkForm::JENIS_PRETEST): array
     {
         $role = $this->currentRoleName();
         if (! in_array($role, ['pencari-kerja', 'penyedia-kerja'], true)) {
@@ -144,8 +311,8 @@ class PesertaFormController extends Controller
         }
 
         $pelatihan = EtamBlkPelatihan::findOrFail($pelatihanId);
-        if (! $this->answers->formFor($pelatihan, EtamBlkForm::JENIS_PRETEST)) {
-            abort(404, 'Pelatihan ini tidak memiliki pretest.');
+        if (! $this->answers->formFor($pelatihan, $jenis)) {
+            abort(404, 'Pelatihan ini tidak memiliki '.($jenis === EtamBlkForm::JENIS_CBT ? 'CBT' : 'pretest').'.');
         }
 
         $peserta = $this->existingRegistration($pelatihan);

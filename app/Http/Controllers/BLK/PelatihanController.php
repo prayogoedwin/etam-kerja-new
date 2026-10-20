@@ -44,7 +44,10 @@ class PelatihanController extends Controller
                     'tipe_pelatihan',
                     'status',
                     'wawancara_form_id',
-                    'pretest_form_id'
+                    'pretest_form_id',
+                    'cbt_form_id',
+                    'cbt_buka',
+                    'cbt_kode'
                 );
 
             if (in_array($role, ['pencari-kerja', 'penyedia-kerja'], true)) {
@@ -59,7 +62,7 @@ class PelatihanController extends Controller
                 }
             }
 
-            [$pesertaMap, $pretestSubmitted, $pesertaStatus] = $this->pesertaPretestState($role);
+            [$pesertaMap, $pretestSubmitted, $cbtSubmitted, $pesertaStatus] = $this->pesertaPretestState($role);
 
             return DataTables::of($datas)
                 ->addIndexColumn()
@@ -86,7 +89,7 @@ class PelatihanController extends Controller
 
                     return $this->statusBadge((int) $data->status);
                 })
-                ->addColumn('options', function (EtamBlkPelatihan $data) use ($role, $pesertaMap, $pretestSubmitted) {
+                ->addColumn('options', function (EtamBlkPelatihan $data) use ($role, $pesertaMap, $pretestSubmitted, $cbtSubmitted) {
                     if (in_array($role, ['pencari-kerja', 'penyedia-kerja'], true)) {
                         $html = '<div class="d-flex flex-wrap gap-1">';
                         if (isset($pesertaMap[$data->id])) {
@@ -94,6 +97,12 @@ class PelatihanController extends Controller
                             if ($data->pretest_form_id) {
                                 $label = in_array((int) $data->id, $pretestSubmitted, true) ? 'Lihat Pretest' : 'Isi Pretest';
                                 $html .= '<a href="'.route('blk.pelatihan.pretest', $data->id).'" class="btn btn-primary btn-sm">'.$label.'</a>';
+                            }
+                            if ($data->cbt_form_id) {
+                                $sudahCbt = in_array((int) $data->id, $cbtSubmitted, true);
+                                if ($sudahCbt || (int) $data->cbt_buka === 1) {
+                                    $html .= '<a href="'.route('blk.pelatihan.cbt', $data->id).'" class="btn btn-dark btn-sm">'.($sudahCbt ? 'Lihat CBT' : 'Ikuti CBT').'</a>';
+                                }
                             }
                         } else {
                             $html .= '<a href="'.route('blk.pelatihan.daftar', $data->id).'" class="btn btn-success btn-sm">Daftar</a>';
@@ -105,9 +114,13 @@ class PelatihanController extends Controller
 
                     $editUrl = route('blk.pelatihan.edit', $data->id);
                     $pesertaUrl = route('blk.pelatihan.peserta', $data->id);
+                    $cbtUrl = $data->cbt_form_id
+                        ? '<a href="'.route('blk.pelatihan.cbt.hasil', $data->id).'" class="btn btn-dark btn-sm">Hasil CBT</a>'
+                        : '';
 
                     return '
                         <a href="'.$pesertaUrl.'" class="btn btn-info btn-sm">Peserta</a>
+                        '.$cbtUrl.'
                         <a href="'.$editUrl.'" class="btn btn-primary btn-sm">Edit</a>
                         <button class="btn btn-danger btn-sm" onclick="confirmDelete('.$data->id.')">Delete</button>
                     ';
@@ -135,7 +148,7 @@ class PelatihanController extends Controller
         $syarat = collect();
         $fasilitas = collect();
         $isBlkStaff = $this->isBlkStaffRole();
-        [$wawancaraTemplates, $pretestTemplates] = $this->formTemplates();
+        [$wawancaraTemplates, $pretestTemplates, $cbtTemplates] = $this->formTemplates();
 
         return view('backend.blk.pelatihan.form', compact(
             'blkOptions',
@@ -144,7 +157,8 @@ class PelatihanController extends Controller
             'fasilitas',
             'isBlkStaff',
             'wawancaraTemplates',
-            'pretestTemplates'
+            'pretestTemplates',
+            'cbtTemplates'
         ));
     }
 
@@ -198,7 +212,7 @@ class PelatihanController extends Controller
         $syarat = $pelatihan->syarat()->get();
         $fasilitas = $pelatihan->fasilitas()->get();
         $isBlkStaff = $this->isBlkStaffRole();
-        [$wawancaraTemplates, $pretestTemplates] = $this->formTemplates();
+        [$wawancaraTemplates, $pretestTemplates, $cbtTemplates] = $this->formTemplates();
 
         return view('backend.blk.pelatihan.form', compact(
             'blkOptions',
@@ -207,7 +221,8 @@ class PelatihanController extends Controller
             'fasilitas',
             'isBlkStaff',
             'wawancaraTemplates',
-            'pretestTemplates'
+            'pretestTemplates',
+            'cbtTemplates'
         ));
     }
 
@@ -293,6 +308,9 @@ class PelatihanController extends Controller
             'fasilitas.*' => 'nullable|string',
             'wawancara_form_id' => 'nullable|integer',
             'pretest_form_id' => 'nullable|integer',
+            'cbt_form_id' => 'nullable|integer',
+            'cbt_buka' => 'nullable',
+            'regenerate_cbt_kode' => 'nullable',
         ]);
     }
 
@@ -313,8 +331,19 @@ class PelatihanController extends Controller
             'deskripsi' => $request->deskripsi,
             'wawancara_form_id' => $this->resolveFormId($request, EtamBlkForm::JENIS_WAWANCARA),
             'pretest_form_id' => $this->resolveFormId($request, EtamBlkForm::JENIS_PRETEST),
+            'cbt_form_id' => $this->resolveFormId($request, EtamBlkForm::JENIS_CBT),
+            'cbt_buka' => $request->boolean('cbt_buka') ? 1 : 0,
             'updated_by' => Auth::id(),
         ]);
+
+        $cbtFormId = $pelatihan->cbt_form_id;
+        if ($cbtFormId && (! $pelatihan->cbt_kode || $request->boolean('regenerate_cbt_kode'))) {
+            $pelatihan->cbt_kode = EtamBlkPelatihan::generateCbtKode();
+        }
+        if (! $cbtFormId) {
+            $pelatihan->cbt_kode = null;
+            $pelatihan->cbt_buka = 0;
+        }
 
         if ($request->hasFile('poster')) {
             if ($pelatihan->poster) {
@@ -406,7 +435,7 @@ class PelatihanController extends Controller
     }
 
     /**
-     * @return array{0: \Illuminate\Support\Collection<int, EtamBlkForm>, 1: \Illuminate\Support\Collection<int, EtamBlkForm>}
+     * @return array{0: \Illuminate\Support\Collection<int, EtamBlkForm>, 1: \Illuminate\Support\Collection<int, EtamBlkForm>, 2: \Illuminate\Support\Collection<int, EtamBlkForm>}
      */
     private function formTemplates(): array
     {
@@ -421,12 +450,17 @@ class PelatihanController extends Controller
         return [
             $all->where('jenis', EtamBlkForm::JENIS_WAWANCARA)->values(),
             $all->where('jenis', EtamBlkForm::JENIS_PRETEST)->values(),
+            $all->where('jenis', EtamBlkForm::JENIS_CBT)->values(),
         ];
     }
 
     private function resolveFormId(Request $request, string $jenis): ?int
     {
-        $field = $jenis === EtamBlkForm::JENIS_PRETEST ? 'pretest_form_id' : 'wawancara_form_id';
+        $field = match ($jenis) {
+            EtamBlkForm::JENIS_PRETEST => 'pretest_form_id',
+            EtamBlkForm::JENIS_CBT => 'cbt_form_id',
+            default => 'wawancara_form_id',
+        };
         $id = $request->input($field);
         if (! $id) {
             return null;
@@ -452,18 +486,18 @@ class PelatihanController extends Controller
     }
 
     /**
-     * @return array{0: array<int, int>, 1: array<int, int>, 2: array<int, int>}
+     * @return array{0: array<int, int>, 1: array<int, int>, 2: array<int, int>, 3: array<int, int>}
      */
     private function pesertaPretestState(?string $role): array
     {
         if (! in_array($role, ['pencari-kerja', 'penyedia-kerja'], true)) {
-            return [[], [], []];
+            return [[], [], [], []];
         }
 
         if ($role === 'pencari-kerja') {
             $pencari = UserPencari::where('user_id', Auth::id())->first();
             if (! $pencari) {
-                return [[], [], []];
+                return [[], [], [], []];
             }
 
             $rows = EtamBlkPelatihanPeserta::query()
@@ -475,7 +509,7 @@ class PelatihanController extends Controller
 
         $penyedia = UserPenyedia::where('user_id', Auth::id())->first();
         if (! $penyedia) {
-            return [[], [], []];
+            return [[], [], [], []];
         }
 
         $rows = EtamBlkPelatihanPesertaPerusahaan::query()
@@ -487,7 +521,7 @@ class PelatihanController extends Controller
 
     /**
      * @param  \Illuminate\Support\Collection<int, mixed>  $rows
-     * @return array{0: array<int, int>, 1: array<int, int>, 2: array<int, int>}
+     * @return array{0: array<int, int>, 1: array<int, int>, 2: array<int, int>, 3: array<int, int>}
      */
     private function mapPesertaState($rows, string $jawabanKey): array
     {
@@ -500,17 +534,27 @@ class PelatihanController extends Controller
         }
 
         $pretestSubmitted = [];
+        $cbtSubmitted = [];
         if ($pesertaMap !== []) {
+            $ids = array_values($pesertaMap);
             $pretestSubmitted = EtamBlkPelatihanJawaban::query()
                 ->where('jenis', EtamBlkForm::JENIS_PRETEST)
                 ->whereNotNull('submitted_at')
-                ->whereIn($jawabanKey, array_values($pesertaMap))
+                ->whereIn($jawabanKey, $ids)
+                ->pluck('blk_pelatihan_id')
+                ->unique()
+                ->map(fn ($id) => (int) $id)
+                ->all();
+            $cbtSubmitted = EtamBlkPelatihanJawaban::query()
+                ->where('jenis', EtamBlkForm::JENIS_CBT)
+                ->whereNotNull('submitted_at')
+                ->whereIn($jawabanKey, $ids)
                 ->pluck('blk_pelatihan_id')
                 ->unique()
                 ->map(fn ($id) => (int) $id)
                 ->all();
         }
 
-        return [$pesertaMap, $pretestSubmitted, $pesertaStatus];
+        return [$pesertaMap, $pretestSubmitted, $cbtSubmitted, $pesertaStatus];
     }
 }

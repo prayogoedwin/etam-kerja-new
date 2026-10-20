@@ -96,6 +96,8 @@ class FormTemplateController extends Controller
                 'jenis' => $jenis,
                 'nama' => $request->nama,
                 'deskripsi' => $request->deskripsi,
+                'jumlah_pilihan' => $jenis === EtamBlkForm::JENIS_CBT ? (int) $request->jumlah_pilihan : 4,
+                'acak_soal' => $jenis === EtamBlkForm::JENIS_CBT ? ($request->boolean('acak_soal') ? 1 : 0) : 0,
                 'created_by' => Auth::id(),
                 'updated_by' => Auth::id(),
             ]);
@@ -153,6 +155,8 @@ class FormTemplateController extends Controller
                 'blk_id' => $request->blk_id,
                 'nama' => $request->nama,
                 'deskripsi' => $request->deskripsi,
+                'jumlah_pilihan' => $jenis === EtamBlkForm::JENIS_CBT ? (int) $request->jumlah_pilihan : $form->jumlah_pilihan,
+                'acak_soal' => $jenis === EtamBlkForm::JENIS_CBT ? ($request->boolean('acak_soal') ? 1 : 0) : $form->acak_soal,
                 'updated_by' => Auth::id(),
             ]);
             $form->pertanyaan()->update(['deleted_by' => Auth::id()]);
@@ -189,29 +193,65 @@ class FormTemplateController extends Controller
 
     private function validator(Request $request)
     {
-        return Validator::make($request->all(), [
+        $isCbt = $request->route('jenis') === EtamBlkForm::JENIS_CBT;
+
+        $rules = [
             'blk_id' => 'required|integer',
             'nama' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'pertanyaan' => 'required|array|min:1',
             'pertanyaan.*.teks' => 'required|string',
-            'pertanyaan.*.jenis_pertanyaan' => 'required|in:1,2,3,4',
-            'pertanyaan.*.wajib' => 'nullable',
             'pertanyaan.*.pilihan' => 'nullable|array',
             'pertanyaan.*.pilihan.*' => 'nullable|string',
-        ], [
+        ];
+
+        if ($isCbt) {
+            $rules['jumlah_pilihan'] = 'required|integer|min:2|max:6';
+            $rules['acak_soal'] = 'nullable';
+            $rules['pertanyaan.*.kunci_index'] = 'required|integer|min:0';
+            $rules['pertanyaan.*.jenis_pertanyaan'] = 'nullable';
+            $rules['pertanyaan.*.wajib'] = 'nullable';
+        } else {
+            $rules['pertanyaan.*.jenis_pertanyaan'] = 'required|in:1,2,3,4';
+            $rules['pertanyaan.*.wajib'] = 'nullable';
+        }
+
+        return Validator::make($request->all(), $rules, [
             'pertanyaan.required' => 'Minimal satu pertanyaan harus dibuat.',
             'pertanyaan.*.teks.required' => 'Teks pertanyaan wajib diisi.',
+            'pertanyaan.*.kunci_index.required' => 'Setiap soal CBT wajib punya kunci jawaban.',
         ]);
     }
 
     private function syncPertanyaan(EtamBlkForm $form, Request $request): void
     {
+        $isCbt = $form->jenis === EtamBlkForm::JENIS_CBT;
+        $jumlahPilihan = $isCbt ? max(2, (int) $form->jumlah_pilihan) : 0;
+
         foreach (array_values((array) $request->pertanyaan) as $index => $item) {
-            $jenis = (int) ($item['jenis_pertanyaan'] ?? 1);
+            $jenis = $isCbt
+                ? EtamBlkFormPertanyaan::JENIS_PILIHAN
+                : (int) ($item['jenis_pertanyaan'] ?? 1);
             $pilihan = [];
             if (in_array($jenis, [EtamBlkFormPertanyaan::JENIS_PILIHAN, EtamBlkFormPertanyaan::JENIS_CHECKBOX], true)) {
-                $pilihan = array_values(array_filter(array_map('trim', (array) ($item['pilihan'] ?? [])), fn ($row) => $row !== ''));
+                $pilihan = array_values(array_map('trim', (array) ($item['pilihan'] ?? [])));
+                if ($isCbt) {
+                    $pilihan = array_pad($pilihan, $jumlahPilihan, '');
+                    $pilihan = array_slice($pilihan, 0, $jumlahPilihan);
+                } else {
+                    $pilihan = array_values(array_filter($pilihan, fn ($row) => $row !== ''));
+                }
+            }
+
+            $kunci = null;
+            if ($isCbt) {
+                $kunciIndex = (int) ($item['kunci_index'] ?? -1);
+                $kunci = $pilihan[$kunciIndex] ?? null;
+                if (! filled($kunci)) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'pertanyaan.'.$index.'.kunci_index' => 'Kunci jawaban soal ke '.($index + 1).' belum diisi.',
+                    ]);
+                }
             }
 
             EtamBlkFormPertanyaan::create([
@@ -220,7 +260,8 @@ class FormTemplateController extends Controller
                 'jenis_pertanyaan' => $jenis,
                 'pertanyaan' => $item['teks'] ?? '',
                 'pilihan' => $pilihan === [] ? null : json_encode($pilihan),
-                'wajib' => ! empty($item['wajib']) ? 1 : 0,
+                'kunci' => $kunci,
+                'wajib' => $isCbt ? 0 : (! empty($item['wajib']) ? 1 : 0),
                 'created_by' => Auth::id(),
                 'updated_by' => Auth::id(),
             ]);
@@ -229,7 +270,7 @@ class FormTemplateController extends Controller
 
     private function assertJenis(string $jenis): void
     {
-        if (! in_array($jenis, [EtamBlkForm::JENIS_WAWANCARA, EtamBlkForm::JENIS_PRETEST], true)) {
+        if (! in_array($jenis, EtamBlkForm::allowedJenis(), true)) {
             abort(404);
         }
     }

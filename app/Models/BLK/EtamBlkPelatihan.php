@@ -113,6 +113,21 @@ class EtamBlkPelatihan extends Model
         return $this->belongsTo(EtamBlkForm::class, 'pretest_form_id', 'id');
     }
 
+    public function cbtForm(): BelongsTo
+    {
+        return $this->belongsTo(EtamBlkForm::class, 'cbt_form_id', 'id');
+    }
+
+    public function isCbtOpen(): bool
+    {
+        return (int) $this->cbt_buka === 1 && filled($this->cbt_form_id);
+    }
+
+    public static function generateCbtKode(): string
+    {
+        return str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by', 'id');

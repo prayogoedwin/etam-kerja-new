@@ -39,6 +39,12 @@
                         <span class="pcoded-mtext">Pretest</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('blk.form.index', 'cbt') }}" class="nav-link ">
+                        <span class="pcoded-micon"><i class="feather icon-check-square"></i></span>
+                        <span class="pcoded-mtext">CBT</span>
+                    </a>
+                </li>
                 @php
                     $roleName = Auth::user()->roles[0]['name'] ?? null;
                     $blkProfile = getRowBlkById(Auth::id());

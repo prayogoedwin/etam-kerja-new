@@ -84,6 +84,10 @@
                                         <a href="{{ route('blk.pelatihan.pretest', $pelatihan->id) }}"
                                             class="btn btn-primary">{{ ! empty($pretestSubmitted) ? 'Lihat Pretest' : 'Isi Pretest' }}</a>
                                     @endif
+                                    @if ($pelatihan->cbt_form_id && (! empty($cbtSubmitted) || (int) $pelatihan->cbt_buka === 1))
+                                        <a href="{{ route('blk.pelatihan.cbt', $pelatihan->id) }}"
+                                            class="btn btn-dark">{{ ! empty($cbtSubmitted) ? 'Lihat CBT' : 'Ikuti CBT' }}</a>
+                                    @endif
                                     <a href="{{ route('blk.pelatihan.index') }}" class="btn btn-secondary">Kembali</a>
                                 @elseif ($pelatihan->isOpenForRegistration())
                                     <form action="{{ route('blk.pelatihan.daftar.store', $pelatihan->id) }}" method="POST">

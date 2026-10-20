@@ -27,7 +27,7 @@ class PesertaController extends Controller
             abort(403);
         }
 
-        $pelatihan = EtamBlkPelatihan::with(['wawancaraForm:id,nama', 'pretestForm:id,nama'])->findOrFail($pelatihanId);
+        $pelatihan = EtamBlkPelatihan::with(['wawancaraForm:id,nama', 'pretestForm:id,nama', 'cbtForm:id,nama'])->findOrFail($pelatihanId);
         if (! $this->canAccessBlk((int) $pelatihan->blk_id)) {
             abort(403);
         }
@@ -179,12 +179,18 @@ class PesertaController extends Controller
 
         $already = $this->existingRegistration($pelatihan);
         $pretestSubmitted = false;
-        if ($already && $pelatihan->pretest_form_id) {
+        $cbtSubmitted = false;
+        if ($already) {
             $keys = app(BlkFormAnswerService::class)->participantKeys($pelatihan, (int) $already->id);
-            $pretestSubmitted = app(BlkFormAnswerService::class)->isSubmitted($pelatihan, 'pretest', $keys);
+            if ($pelatihan->pretest_form_id) {
+                $pretestSubmitted = app(BlkFormAnswerService::class)->isSubmitted($pelatihan, 'pretest', $keys);
+            }
+            if ($pelatihan->cbt_form_id) {
+                $cbtSubmitted = app(BlkFormAnswerService::class)->isSubmitted($pelatihan, 'cbt', $keys);
+            }
         }
 
-        return view('backend.blk.pelatihan.daftar', compact('pelatihan', 'already', 'role', 'pretestSubmitted'));
+        return view('backend.blk.pelatihan.daftar', compact('pelatihan', 'already', 'role', 'pretestSubmitted', 'cbtSubmitted'));
     }
 
     public function daftar(Request $request, string $id)
@@ -416,6 +422,10 @@ class PesertaController extends Controller
 
         if ($pelatihan->pretest_form_id) {
             $html .= '<a href="'.route('blk.pelatihan.peserta.pretest', [$pelatihan->id, $data->id]).'" class="btn btn-info btn-sm">Lihat Pretest</a>';
+        }
+
+        if ($pelatihan->cbt_form_id) {
+            $html .= '<a href="'.route('blk.pelatihan.peserta.cbt', [$pelatihan->id, $data->id]).'" class="btn btn-dark btn-sm">Lihat CBT</a>';
         }
 
         $html .= '</div>';

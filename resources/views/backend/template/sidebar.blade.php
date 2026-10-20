@@ -197,6 +197,7 @@
                         <li><a href="{{ route('blk.pelatihan.index') }}">Pelatihan BLK</a></li>
                         <li><a href="{{ route('blk.form.index', 'wawancara') }}">Wawancara</a></li>
                         <li><a href="{{ route('blk.form.index', 'pretest') }}">Pretest</a></li>
+                        <li><a href="{{ route('blk.form.index', 'cbt') }}">CBT</a></li>
                     </ul>
                 </li>
 

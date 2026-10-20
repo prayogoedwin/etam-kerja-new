@@ -11,7 +11,7 @@
                             <div class="col-md-12">
                                 <div class="page-header-title">
                                     <h5 class="m-b-10">
-                                        {{ $jenis === 'pretest' ? 'Pretest' : 'Wawancara' }} -
+                                        {{ \App\Models\BLK\EtamBlkForm::jenisLabels()[$jenis] ?? ucfirst($jenis) }} -
                                         {{ $pelatihan->nama_pelatihan }}
                                     </h5>
                                 </div>
@@ -43,7 +43,7 @@
                     <div class="col-xl-8">
                         <div class="card mb-3" style="border-top: 8px solid #673ab7;">
                             <div class="card-body">
-                                <h4 class="mb-1">{{ $form->nama ?? ($jenis === 'pretest' ? 'Pretest' : 'Wawancara') }}</h4>
+                                <h4 class="mb-1">{{ $form->nama ?? (\App\Models\BLK\EtamBlkForm::jenisLabels()[$jenis] ?? ucfirst($jenis)) }}</h4>
                                 <p class="text-muted mb-1">Peserta: {{ $peserta->name ?? '-' }}</p>
                                 @if ($form && $form->deskripsi)
                                     <p class="mb-0">{{ $form->deskripsi }}</p>
@@ -52,6 +52,15 @@
                                     <div class="alert alert-info mt-3 mb-0">Form sudah dikirim.</div>
                                 @elseif ($readonly && $jenis === 'pretest')
                                     <div class="alert alert-warning mt-3 mb-0">Peserta belum mengisi pretest.</div>
+                                @elseif ($readonly && $jenis === 'cbt')
+                                    <div class="alert alert-warning mt-3 mb-0">Peserta belum mengikuti CBT.</div>
+                                @endif
+                                @if (!empty($score ?? null))
+                                    <p class="mt-3 mb-0">Benar <strong>{{ $score['benar'] }}</strong> · Salah
+                                        <strong>{{ $score['salah'] }}</strong> · Tidak diisi
+                                        <strong>{{ $score['kosong'] }}</strong> · Nilai
+                                        <strong>{{ $score['nilai'] }}/{{ $score['total'] }}</strong>
+                                    </p>
                                 @endif
                             </div>
                         </div>
@@ -87,13 +96,23 @@
                                                     @disabled($readonly)>{{ is_array($oldAnswer) ? implode("\n", $oldAnswer) : $oldAnswer }}</textarea>
                                             @elseif ((int) $row->jenis_pertanyaan === 3)
                                                 @foreach ($pilihan as $opsi)
+                                                    @php
+                                                        $isCorrect = $jenis === 'cbt' && $readonly && (string) $row->kunci === (string) $opsi;
+                                                        $isPicked = (string) $oldAnswer === (string) $opsi;
+                                                    @endphp
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="radio"
                                                             name="jawaban[{{ $row->id }}]"
                                                             value="{{ $opsi }}"
-                                                            @checked((string) $oldAnswer === (string) $opsi)
+                                                            @checked($isPicked)
                                                             @disabled($readonly)>
-                                                        <label class="form-check-label">{{ $opsi }}</label>
+                                                        <label
+                                                            class="form-check-label @if ($isCorrect) text-success fw-bold @elseif ($jenis === 'cbt' && $readonly && $isPicked && !$isCorrect) text-danger @endif">
+                                                            {{ $opsi }}
+                                                            @if ($isCorrect)
+                                                                (kunci)
+                                                            @endif
+                                                        </label>
                                                     </div>
                                                 @endforeach
                                             @else

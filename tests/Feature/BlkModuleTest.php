@@ -670,6 +670,128 @@ class BlkModuleTest extends TestCase
             ->assertStatus(403);
     }
 
+    public function test_cbt_template_pelatihan_and_scoring(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK CBT',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $admin = $this->makeUser('admin-balai', [
+            'kode_struktur' => '34',
+            'lokasi_kerja' => '64',
+        ]);
+
+        $this->actingAs($admin)->post(route('blk.form.store', 'cbt'), [
+            'blk_id' => $blk->id,
+            'nama' => 'Tes Keselamatan',
+            'jumlah_pilihan' => 4,
+            'acak_soal' => 0,
+            'pertanyaan' => [
+                [
+                    'teks' => 'APD wajib dipakai di area kerja?',
+                    'pilihan' => ['Ya', 'Tidak', 'Kadang', 'Tidak tahu'],
+                    'kunci_index' => 0,
+                ],
+                [
+                    'teks' => 'Warna rambu bahaya?',
+                    'pilihan' => ['Hijau', 'Merah', 'Biru', 'Putih'],
+                    'kunci_index' => 1,
+                ],
+            ],
+        ])->assertRedirect(route('blk.form.index', 'cbt'));
+
+        $form = EtamBlkForm::where('nama', 'Tes Keselamatan')->first();
+        $this->assertNotNull($form);
+        $this->assertSame(4, (int) $form->jumlah_pilihan);
+        $this->assertSame('Ya', $form->pertanyaan->first()->kunci);
+
+        $this->actingAs($admin)->post(route('blk.pelatihan.store'), [
+            'pelatihan_untuk' => 0,
+            'blk_id' => $blk->id,
+            'nama_pelatihan' => 'Pelatihan CBT',
+            'sumber_pembiayaan' => 0,
+            'tanggal_pendaftaran' => now()->toDateString(),
+            'tanggal_pendaftaran_selesai' => now()->addDays(7)->toDateString(),
+            'tanggal_pelaksanaan' => now()->addDays(10)->toDateString(),
+            'tanggal_pelaksanaan_selesai' => now()->addDays(20)->toDateString(),
+            'tipe_pelatihan' => 0,
+            'status' => 1,
+            'cbt_form_id' => $form->id,
+            'cbt_buka' => 0,
+        ])->assertRedirect(route('blk.pelatihan.index'));
+
+        $pelatihan = EtamBlkPelatihan::where('nama_pelatihan', 'Pelatihan CBT')->first();
+        $this->assertNotNull($pelatihan);
+        $this->assertSame($form->id, (int) $pelatihan->cbt_form_id);
+        $this->assertMatchesRegularExpression('/^\d{4}$/', (string) $pelatihan->cbt_kode);
+        $this->assertSame(0, (int) $pelatihan->cbt_buka);
+
+        $pencariUser = $this->makeUser('pencari-kerja');
+        $pencari = $this->makePencari($pencariUser->id, [
+            'ktp' => '6401010101010888',
+            'name' => 'Peserta CBT',
+        ]);
+        $this->actingAs($pencariUser)
+            ->post(route('blk.pelatihan.daftar.store', $pelatihan->id))
+            ->assertRedirect();
+
+        $this->actingAs($pencariUser)
+            ->post(route('blk.pelatihan.cbt.kode', $pelatihan->id), ['cbt_kode' => $pelatihan->cbt_kode])
+            ->assertSessionHasErrors('cbt_kode');
+
+        $pelatihan->update(['cbt_buka' => 1]);
+
+        $this->actingAs($pencariUser)
+            ->post(route('blk.pelatihan.cbt.kode', $pelatihan->id), ['cbt_kode' => '0000'])
+            ->assertSessionHasErrors('cbt_kode');
+
+        $this->actingAs($pencariUser)
+            ->post(route('blk.pelatihan.cbt.kode', $pelatihan->id), ['cbt_kode' => $pelatihan->cbt_kode])
+            ->assertRedirect(route('blk.pelatihan.cbt', $pelatihan->id));
+
+        $this->actingAs($pencariUser)
+            ->get(route('blk.pelatihan.cbt', $pelatihan->id))
+            ->assertOk()
+            ->assertSee('APD wajib dipakai');
+
+        $peserta = EtamBlkPelatihanPeserta::where('blk_pelatihan_id', $pelatihan->id)
+            ->where('pencari_id', $pencari->id)
+            ->first();
+        $soal = EtamBlkPelatihanJawaban::where('jenis', 'cbt')
+            ->where('blk_peserta_id', $peserta->id)
+            ->orderBy('urutan')
+            ->get();
+        $this->assertCount(2, $soal);
+
+        $this->actingAs($pencariUser)->post(route('blk.pelatihan.cbt.store', $pelatihan->id), [
+            'jawaban' => [
+                $soal[0]->id => 'Ya',
+                $soal[1]->id => 'Biru',
+            ],
+        ])->assertRedirect(route('blk.pelatihan.cbt', $pelatihan->id));
+
+        $this->actingAs($pencariUser)
+            ->get(route('blk.pelatihan.cbt', $pelatihan->id))
+            ->assertOk()
+            ->assertSee('Hasil tes')
+            ->assertSee('Benar')
+            ->assertSee('Salah')
+            ->assertSee('Tidak diisi');
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.cbt.hasil', $pelatihan->id))
+            ->assertOk()
+            ->assertSee('Peserta CBT')
+            ->assertSee('Lihat jawaban');
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.cbt', [$pelatihan->id, $peserta->id]))
+            ->assertOk()
+            ->assertSee('(kunci)');
+    }
+
     private function makeForm(int $blkId, string $jenis, string $nama): EtamBlkForm
     {
         $form = EtamBlkForm::create([

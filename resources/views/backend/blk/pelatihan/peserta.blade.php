@@ -42,9 +42,27 @@
                                             @else
                                                 <span class="badge bg-secondary">Tidak ada</span>
                                             @endif
+                                            &nbsp;|&nbsp; CBT:
+                                            @if ($pelatihan->cbt_form_id)
+                                                <span class="badge bg-dark">{{ $pelatihan->cbtForm->nama ?? 'Terpasang' }}</span>
+                                                @if ((int) $pelatihan->cbt_buka === 1)
+                                                    <span class="badge bg-success">Dibuka</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Ditutup</span>
+                                                @endif
+                                                @if ($pelatihan->cbt_kode)
+                                                    <span class="text-muted">kode {{ $pelatihan->cbt_kode }}</span>
+                                                @endif
+                                            @else
+                                                <span class="badge bg-secondary">Tidak ada</span>
+                                            @endif
                                         </p>
                                     </div>
                                     <div class="col-sm-4 text-end">
+                                        @if ($pelatihan->cbt_form_id)
+                                            <a href="{{ route('blk.pelatihan.cbt.hasil', $pelatihan->id) }}"
+                                                class="btn btn-dark btn-sm">Hasil CBT</a>
+                                        @endif
                                         <a href="{{ route('blk.pelatihan.index') }}" class="btn btn-secondary btn-sm">Kembali</a>
                                     </div>
                                 </div>

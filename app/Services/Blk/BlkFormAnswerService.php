@@ -16,9 +16,11 @@ class BlkFormAnswerService
 {
     public function formFor(EtamBlkPelatihan $pelatihan, string $jenis): ?EtamBlkForm
     {
-        $formId = $jenis === EtamBlkForm::JENIS_PRETEST
-            ? $pelatihan->pretest_form_id
-            : $pelatihan->wawancara_form_id;
+        $formId = match ($jenis) {
+            EtamBlkForm::JENIS_PRETEST => $pelatihan->pretest_form_id,
+            EtamBlkForm::JENIS_CBT => $pelatihan->cbt_form_id,
+            default => $pelatihan->wawancara_form_id,
+        };
 
         if (! $formId) {
             return null;
@@ -93,7 +95,12 @@ class BlkFormAnswerService
             ]);
         }
 
-        foreach ($form->pertanyaan as $index => $pertanyaan) {
+        $items = $form->pertanyaan;
+        if ($jenis === EtamBlkForm::JENIS_CBT && (int) $form->acak_soal === 1) {
+            $items = $items->shuffle()->values();
+        }
+
+        foreach ($items as $index => $pertanyaan) {
             EtamBlkPelatihanJawaban::create([
                 'blk_pelatihan_id' => $pelatihan->id,
                 'jenis' => $jenis,
@@ -104,11 +111,12 @@ class BlkFormAnswerService
                 'perusahaan_peserta_id' => $keys['perusahaan_peserta_id'],
                 'pencari_id' => $keys['pencari_id'],
                 'jenis_pertanyaan' => $pertanyaan->jenis_pertanyaan,
-                'urutan' => $pertanyaan->urutan ?: ($index + 1),
-                'wajib' => (int) $pertanyaan->wajib,
+                'urutan' => $index + 1,
+                'wajib' => $jenis === EtamBlkForm::JENIS_CBT ? 0 : (int) $pertanyaan->wajib,
                 'pertanyaan' => $pertanyaan->pertanyaan,
                 'pilihan' => $pertanyaan->pilihan,
                 'jawaban' => null,
+                'kunci' => $pertanyaan->kunci,
                 'created_by' => Auth::id(),
                 'updated_by' => Auth::id(),
             ]);
@@ -158,6 +166,38 @@ class BlkFormAnswerService
         }
 
         return $this->answersQuery($pelatihan, $jenis, $keys)->orderBy('urutan')->get();
+    }
+
+    /**
+     * @return array{benar: int, salah: int, kosong: int, total: int, nilai: int}
+     */
+    public function score(Collection $rows): array
+    {
+        $benar = 0;
+        $salah = 0;
+        $kosong = 0;
+
+        foreach ($rows as $row) {
+            $jawaban = trim((string) $row->jawaban);
+            $kunci = trim((string) $row->kunci);
+            if ($jawaban === '') {
+                $kosong++;
+            } elseif ($kunci !== '' && $jawaban === $kunci) {
+                $benar++;
+            } else {
+                $salah++;
+            }
+        }
+
+        $total = $rows->count();
+
+        return [
+            'benar' => $benar,
+            'salah' => $salah,
+            'kosong' => $kosong,
+            'total' => $total,
+            'nilai' => $benar,
+        ];
     }
 
     /**

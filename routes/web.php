@@ -426,7 +426,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         });
 
         Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-blk,kepala-balai,admin-balai,petugas-balai')->group(function () {
-            Route::prefix('{jenis}')->whereIn('jenis', ['wawancara', 'pretest'])->group(function () {
+            Route::prefix('{jenis}')->whereIn('jenis', ['wawancara', 'pretest', 'cbt'])->group(function () {
                 Route::get('/', [FormTemplateController::class, 'index'])->name('blk.form.index');
                 Route::get('/create', [FormTemplateController::class, 'create'])->name('blk.form.create');
                 Route::post('/', [FormTemplateController::class, 'store'])->name('blk.form.store');
@@ -446,6 +446,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::get('/pelatihan/{id}/peserta/{pesertaId}/wawancara', [PesertaFormController::class, 'wawancara'])->name('blk.pelatihan.peserta.wawancara');
             Route::post('/pelatihan/{id}/peserta/{pesertaId}/wawancara', [PesertaFormController::class, 'storeWawancara'])->name('blk.pelatihan.peserta.wawancara.store');
             Route::get('/pelatihan/{id}/peserta/{pesertaId}/pretest', [PesertaFormController::class, 'lihatPretest'])->name('blk.pelatihan.peserta.pretest');
+            Route::get('/pelatihan/{id}/cbt/hasil', [PesertaFormController::class, 'hasilCbt'])->name('blk.pelatihan.cbt.hasil');
+            Route::get('/pelatihan/{id}/peserta/{pesertaId}/cbt', [PesertaFormController::class, 'lihatCbt'])->name('blk.pelatihan.peserta.cbt');
         });
 
         Route::get('/pelatihan', [PelatihanController::class, 'index'])->name('blk.pelatihan.index');
@@ -453,6 +455,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::post('/pelatihan/{id}/daftar', [PesertaController::class, 'daftar'])->name('blk.pelatihan.daftar.store');
         Route::get('/pelatihan/{id}/pretest', [PesertaFormController::class, 'pretest'])->name('blk.pelatihan.pretest');
         Route::post('/pelatihan/{id}/pretest', [PesertaFormController::class, 'storePretest'])->name('blk.pelatihan.pretest.store');
+        Route::get('/pelatihan/{id}/cbt', [PesertaFormController::class, 'cbt'])->name('blk.pelatihan.cbt');
+        Route::post('/pelatihan/{id}/cbt/kode', [PesertaFormController::class, 'unlockCbt'])->name('blk.pelatihan.cbt.kode');
+        Route::post('/pelatihan/{id}/cbt', [PesertaFormController::class, 'storeCbt'])->name('blk.pelatihan.cbt.store');
     });
 
     Route::prefix('ak1')->group(function () {

@@ -1,5 +1,9 @@
 @extends('backend.template.backend')
 
+@php
+    $cbtTemplates = $cbtTemplates ?? collect();
+@endphp
+
 @section('content')
 
     <body class="box-layout container background-green">
@@ -166,6 +170,41 @@
                                             </select>
                                             <small class="text-muted">Jika dipilih, peserta mengisi sendiri setelah daftar.</small>
                                         </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Template CBT</label>
+                                            <select name="cbt_form_id" id="cbt_form_id" class="form-control">
+                                                <option value="">-- Tidak ada --</option>
+                                                @foreach ($cbtTemplates as $template)
+                                                    <option value="{{ $template->id }}" data-blk="{{ $template->blk_id }}"
+                                                        @selected(old('cbt_form_id', $pelatihan->cbt_form_id) == $template->id)>
+                                                        {{ $template->nama }}</option>
+                                                @endforeach
+                                            </select>
+                                            <small class="text-muted">Soal pilihan ganda. Peserta mengerjakan jika tes dibuka.</small>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Status tes CBT</label>
+                                            <div class="form-check mt-2">
+                                                <input class="form-check-input" type="checkbox" name="cbt_buka"
+                                                    id="cbt_buka" value="1"
+                                                    @checked((int) old('cbt_buka', $pelatihan->cbt_buka) === 1)>
+                                                <label class="form-check-label" for="cbt_buka">Buka tes</label>
+                                            </div>
+                                            <small class="text-muted">Jika ditutup, peserta tidak bisa mengerjakan.</small>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label class="form-label">Kode tes (4 digit)</label>
+                                            <input type="text" class="form-control" value="{{ $pelatihan->cbt_kode ?: 'Otomatis saat disimpan' }}"
+                                                disabled>
+                                            @if ($pelatihan->cbt_kode)
+                                                <div class="form-check mt-2">
+                                                    <input class="form-check-input" type="checkbox" name="regenerate_cbt_kode"
+                                                        id="regenerate_cbt_kode" value="1">
+                                                    <label class="form-check-label" for="regenerate_cbt_kode">Generate ulang
+                                                        kode</label>
+                                                </div>
+                                            @endif
+                                        </div>
                                         <div class="col-md-12 mb-3">
                                             <label class="form-label">Poster</label>
                                             <input type="file" name="poster" class="form-control" accept="image/*">
@@ -241,7 +280,7 @@
 
             function filterTemplates() {
                 var blkId = String($('select[name="blk_id"]').val() || $('input[name="blk_id"]').val() || '');
-                $('#wawancara_form_id option, #pretest_form_id option').each(function() {
+                $('#wawancara_form_id option, #pretest_form_id option, #cbt_form_id option').each(function() {
                     var optBlk = $(this).attr('data-blk');
                     if (!optBlk) {
                         $(this).prop('disabled', false);

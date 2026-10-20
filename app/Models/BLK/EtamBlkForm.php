@@ -20,12 +20,20 @@ class EtamBlkForm extends Model
 
     public const JENIS_PRETEST = 'pretest';
 
+    public const JENIS_CBT = 'cbt';
+
     public static function jenisLabels(): array
     {
         return [
             self::JENIS_WAWANCARA => 'Wawancara',
             self::JENIS_PRETEST => 'Pretest',
+            self::JENIS_CBT => 'CBT',
         ];
+    }
+
+    public static function allowedJenis(): array
+    {
+        return array_keys(self::jenisLabels());
     }
 
     public function blk(): BelongsTo
