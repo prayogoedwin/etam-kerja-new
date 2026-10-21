@@ -193,7 +193,7 @@
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-book"></i></span><span class="pcoded-mtext">BLK</span></a>
                     <ul class="pcoded-submenu">
-                        <li><a href="{{ route('blk.lembaga.index') }}">Daftar BLK</a></li>
+                        <!-- <li><a href="{{ route('blk.lembaga.index') }}">Daftar BLK</a></li> -->
                         <li><a href="{{ route('blk.pelatihan.index') }}">Pelatihan BLK</a></li>
                         <li><a href="{{ route('blk.form.index', 'wawancara') }}">Wawancara</a></li>
                         <li><a href="{{ route('blk.form.index', 'pretest') }}">Pretest</a></li>
