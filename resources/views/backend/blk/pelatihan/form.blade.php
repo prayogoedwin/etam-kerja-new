@@ -57,7 +57,7 @@
                                 @endif
                                     <h6 class="mb-3">Informasi Pelatihan</h6>
                                     <div class="row">
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-6 mb-3" hidden>
                                             <label class="form-label">Pelatihan Untuk</label>
                                             <select name="pelatihan_untuk" class="form-control" required>
                                                 @foreach (\App\Models\BLK\EtamBlkPelatihan::untukLabels() as $key => $label)
