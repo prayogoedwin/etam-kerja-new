@@ -488,10 +488,10 @@
 
 
 
-{{-- <script>
+<script>
     function confirmDelete(id) {
         // Konfirmasi penghapusan
-        var deleteUrl = "{{ route('faq.softdelete', ':id') }}".replace(':id', id);
+        var deleteUrl = "{{ route('hi.pp.penyedia.destroy', ':id') }}".replace(':id', id);
         if (confirm("Yakin hapus data?")) {
             // Kirim request ke server untuk menghapus data
             $.ajax({
@@ -512,7 +512,7 @@
             });
         }
     }
-</script> --}}
+</script>
 
 @endpush
 
