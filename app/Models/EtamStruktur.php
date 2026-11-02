@@ -13,6 +13,7 @@ class EtamStruktur extends Model
         'kode_lokasi',
         'kode_bidang',
         'nama',
+        'alamat',
         'slug',
     ];
 

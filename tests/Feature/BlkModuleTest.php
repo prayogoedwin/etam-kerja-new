@@ -7,7 +7,9 @@ use App\Models\BLK\EtamBlkForm;
 use App\Models\BLK\EtamBlkFormPertanyaan;
 use App\Models\BLK\EtamBlkPelatihan;
 use App\Models\BLK\EtamBlkPelatihanJawaban;
+use App\Models\BLK\EtamBlkPelatihanKompetensi;
 use App\Models\BLK\EtamBlkPelatihanPeserta;
+use App\Models\EtamStruktur;
 use App\Models\Lamaran;
 use App\Models\Lowongan;
 use App\Models\User;
@@ -25,7 +27,7 @@ class BlkModuleTest extends TestCase
     {
         parent::setUp();
 
-        foreach (['super-admin', 'admin-provinsi', 'admin-kabkota', 'pencari-kerja', 'penyedia-kerja', 'admin-blk', 'kepala-balai', 'admin-balai', 'petugas-balai'] as $name) {
+        foreach (['super-admin', 'admin-provinsi', 'admin-kabkota', 'pencari-kerja', 'penyedia-kerja', 'admin-blk', 'kepala-balai', 'admin-balai', 'petugas-balai', 'eksekutif-provinsi'] as $name) {
             Role::firstOrCreate([
                 'name' => $name,
                 'guard_name' => 'web',
@@ -580,6 +582,218 @@ class BlkModuleTest extends TestCase
         ]);
     }
 
+    public function test_pelatihan_can_store_unit_kompetensi_with_default_kode(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK Kompetensi',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $admin = $this->makeUser('admin-balai', [
+            'kode_struktur' => '34',
+            'lokasi_kerja' => '64',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.create'))
+            ->assertOk()
+            ->assertSee('Unit Kompetensi Inti')
+            ->assertSee('Unit Kompetensi Penunjang')
+            ->assertSee('Tanggal TTD Kepala Dinas')
+            ->assertSee('Tanggal TTD Kepala UPTD');
+
+        $this->actingAs($admin)->post(route('blk.pelatihan.store'), [
+            'pelatihan_untuk' => 0,
+            'blk_id' => $blk->id,
+            'nama_pelatihan' => 'Pelatihan Kompetensi',
+            'sumber_pembiayaan' => 0,
+            'tanggal_pendaftaran' => now()->toDateString(),
+            'tanggal_pendaftaran_selesai' => now()->addDays(7)->toDateString(),
+            'tanggal_pelaksanaan' => now()->addDays(10)->toDateString(),
+            'tanggal_pelaksanaan_selesai' => now()->addDays(20)->toDateString(),
+            'tipe_pelatihan' => 0,
+            'status' => 1,
+            'kompetensi_inti' => [
+                'nama' => ['Mengukur dengan alat ukur mekanik presisi', ''],
+                'kode' => ['C2.20.001.01', ''],
+            ],
+            'kompetensi_penunjang' => [
+                'nama' => ['Menerapkan prosedur K3'],
+                'kode' => [''],
+            ],
+        ])->assertRedirect(route('blk.pelatihan.index'));
+
+        $pelatihan = EtamBlkPelatihan::where('nama_pelatihan', 'Pelatihan Kompetensi')->first();
+        $this->assertNotNull($pelatihan);
+
+        $this->assertDatabaseHas('etam_blk_pelatihan_kompetensi', [
+            'blk_pelatihan_id' => $pelatihan->id,
+            'tipe' => 'inti',
+            'nama' => 'Mengukur dengan alat ukur mekanik presisi',
+            'kode' => 'C2.20.001.01',
+        ]);
+        $this->assertDatabaseHas('etam_blk_pelatihan_kompetensi', [
+            'blk_pelatihan_id' => $pelatihan->id,
+            'tipe' => 'penunjang',
+            'nama' => 'Menerapkan prosedur K3',
+            'kode' => '-',
+        ]);
+        $this->assertSame(2, $pelatihan->kompetensi()->count());
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.edit', $pelatihan->id))
+            ->assertOk()
+            ->assertSee('Mengukur dengan alat ukur mekanik presisi')
+            ->assertSee('C2.20.001.01')
+            ->assertSee('Menerapkan prosedur K3');
+    }
+
+    public function test_sertifikat_draft_uses_struktur_and_latest_signers_without_nip(): void
+    {
+        EtamStruktur::updateOrCreate(
+            ['tipe' => 1, 'kode_lokasi' => '64', 'kode_bidang' => '34'],
+            [
+                'nama' => 'UPTD. Balai Latihan Kerja Industri Balikpapan',
+                'slug' => 'uptd-blk-balikpapan',
+                'alamat' => "Jalan Sepinggan Baru Nomor 31, Balikpapan, Kalimantan Timur 76115\nTelepon/Faksimile (0542) 762681; Pos-el blkibalikpapan@kaltimprov.go.id",
+            ]
+        );
+        EtamStruktur::updateOrCreate(
+            ['tipe' => 1, 'kode_lokasi' => '64', 'kode_bidang' => '35'],
+            ['nama' => 'UPTD. Balai Latihan Kerja Industri Bontang', 'slug' => 'uptd-blk-bontang']
+        );
+
+        $this->makeUser('eksekutif-provinsi', ['name' => 'Kepala Dinas Lama']);
+        $this->makeUser('eksekutif-provinsi', ['name' => 'H. Rozani Erawadi, S.H., M.Si.']);
+        $this->makeUser('kepala-balai', ['name' => 'Kepala Balai Lama BPP', 'kode_struktur' => '34']);
+        $this->makeUser('kepala-balai', ['name' => 'Anna Midawaty, S.Kom., M.M.', 'kode_struktur' => '34']);
+        $this->makeUser('kepala-balai', ['name' => 'Kepala UPTD Bontang', 'kode_struktur' => '35']);
+
+        $blkBpp = EtamBlk::create([
+            'nama_lembaga' => 'UPTD. Balai Latihan Kerja Industri Balikpapan',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blkBpp->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $pelatihan->update([
+            'nama_pelatihan' => 'Pengoperasian Mesin Bubut',
+            'kejuruan' => 'Teknik Manufaktur',
+            'angkatan' => 'II',
+            'jam_pelatihan' => 260,
+            'tanggal_ttd_dinas' => '2026-09-21',
+            'tanggal_ttd_uptd' => '2026-09-22',
+        ]);
+        EtamBlkPelatihanKompetensi::create([
+            'blk_pelatihan_id' => $pelatihan->id,
+            'tipe' => EtamBlkPelatihanKompetensi::TIPE_INTI,
+            'nama' => 'Membubut Dasar',
+            'kode' => 'C.28LOG07.005.2',
+            'urutan' => 1,
+        ]);
+        EtamBlkPelatihanKompetensi::create([
+            'blk_pelatihan_id' => $pelatihan->id,
+            'tipe' => EtamBlkPelatihanKompetensi::TIPE_PENUNJANG,
+            'nama' => 'Bimbingan Mental dan Fisik',
+            'kode' => '-',
+            'urutan' => 1,
+        ]);
+
+        $admin = $this->makeUser('admin-balai', [
+            'kode_struktur' => '34',
+            'lokasi_kerja' => '64',
+        ]);
+        $pencariUser = $this->makeUser('pencari-kerja');
+        $pencari = $this->makePencari($pencariUser->id, [
+            'name' => 'Ady Pratama',
+            'ktp' => '6471050305040002',
+            'tempat_lahir' => 'Balikpapan',
+            'tanggal_lahir' => '2004-05-03',
+        ]);
+        $peserta = EtamBlkPelatihanPeserta::create([
+            'blk_pelatihan_id' => $pelatihan->id,
+            'pencari_id' => $pencari->id,
+            'status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_LULUS,
+            'name' => 'Ady Pratama',
+            'ktp' => '6471050305040002',
+            'tempat_lahir' => 'Balikpapan',
+            'tanggal_lahir' => '2004-05-03',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id]))
+            ->assertOk()
+            ->assertSee('SERTIFIKAT KELULUSAN PESERTA')
+            ->assertSee('DRAFT')
+            ->assertSee('Ady Pratama')
+            ->assertSee('6471050305040002')
+            ->assertSee('UPTD. BALAI LATIHAN KERJA INDUSTRI BALIKPAPAN')
+            ->assertSee('Jalan Sepinggan Baru Nomor 31, Balikpapan, Kalimantan Timur 76115')
+            ->assertSee('blkibalikpapan@kaltimprov.go.id')
+            ->assertSee('Balikpapan')
+            ->assertSee('Samarinda, 21 September 2026')
+            ->assertSee('Balikpapan, 22 September 2026')
+            ->assertSee('H. Rozani Erawadi, S.H., M.Si.')
+            ->assertSee('Anna Midawaty, S.Kom., M.M.')
+            ->assertSee('Membubut Dasar')
+            ->assertSee('Bimbingan Mental dan Fisik')
+            ->assertDontSee('NIP.')
+            ->assertDontSee('Kepala Dinas Lama')
+            ->assertDontSee('Kepala UPTD Bontang');
+
+        $peserta->update(['status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_DITERIMA]);
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id]))
+            ->assertRedirect(route('blk.pelatihan.peserta.show', [$pelatihan->id, $peserta->id]));
+
+        $blkBontang = EtamBlk::create([
+            'nama_lembaga' => 'UPTD. Balai Latihan Kerja Industri Bontang',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '35',
+        ]);
+        $pelatihanBontang = $this->makePelatihan($blkBontang->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $pesertaBontang = EtamBlkPelatihanPeserta::create([
+            'blk_pelatihan_id' => $pelatihanBontang->id,
+            'pencari_id' => $pencari->id,
+            'status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_LULUS,
+            'name' => 'Peserta Bontang',
+            'ktp' => '6471050305040002',
+        ]);
+
+        $this->actingAs($this->makeUser('admin-balai', [
+            'kode_struktur' => '35',
+            'lokasi_kerja' => '64',
+        ]))->get(route('blk.pelatihan.peserta.sertifikat', [$pelatihanBontang->id, $pesertaBontang->id]))
+            ->assertOk()
+            ->assertSee('Bontang')
+            ->assertSee('UPTD. BALAI LATIHAN KERJA INDUSTRI BONTANG')
+            ->assertSee('Kepala UPTD Bontang')
+            ->assertDontSee('Anna Midawaty, S.Kom., M.M.');
+    }
+
+    public function test_super_admin_can_update_struktur_alamat(): void
+    {
+        $struktur = EtamStruktur::updateOrCreate(
+            ['tipe' => 1, 'kode_lokasi' => '64', 'kode_bidang' => '35'],
+            ['nama' => 'UPTD. Balai Latihan Kerja Industri Bontang', 'slug' => 'uptd-blk-bontang']
+        );
+        $admin = $this->makeUser('super-admin');
+
+        $this->actingAs($admin)
+            ->put(route('struktur.update', $struktur->id), [
+                'alamat' => "Jalan MH Thamrin, Bontang\nTelepon (0548) 111; Pos-el blkibontang@kaltimprov.go.id",
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('etam_struktur', [
+            'id' => $struktur->id,
+            'alamat' => "Jalan MH Thamrin, Bontang\nTelepon (0548) 111; Pos-el blkibontang@kaltimprov.go.id",
+        ]);
+    }
+
     public function test_admin_fills_wawancara_and_peserta_fills_pretest_with_snapshot(): void
     {
         $blk = EtamBlk::create([
@@ -790,6 +1004,325 @@ class BlkModuleTest extends TestCase
             ->get(route('blk.pelatihan.peserta.cbt', [$pelatihan->id, $peserta->id]))
             ->assertOk()
             ->assertSee('(kunci)');
+    }
+
+    public function test_lulus_mengajukan_ttd_ke_kepala_uptd(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK TTD Lulus',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $admin = $this->makeUser('admin-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+        $peserta = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_MENUNGGU, [
+            'status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_DITERIMA,
+            'name' => 'Peserta Akan Lulus',
+        ]);
+
+        $this->actingAs($admin)
+            ->put(route('blk.pelatihan.peserta.status', [$pelatihan->id, $peserta->id]), [
+                'status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_LULUS,
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
+            'id' => $peserta->id,
+            'status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_LULUS,
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD,
+        ]);
+    }
+
+    public function test_kepala_uptd_hanya_melihat_antrean_uptd_sendiri(): void
+    {
+        $blkBpp = EtamBlk::create([
+            'nama_lembaga' => 'BLK Balikpapan TTD',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $blkBtg = EtamBlk::create([
+            'nama_lembaga' => 'BLK Bontang TTD',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '35',
+        ]);
+        $pelatihanBpp = $this->makePelatihan($blkBpp->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $pelatihanBtg = $this->makePelatihan($blkBtg->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $this->makePesertaTtd($pelatihanBpp->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Peserta BPP']);
+        $this->makePesertaTtd($pelatihanBtg->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Peserta BTG']);
+
+        $kepala = $this->makeUser('kepala-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+
+        $this->actingAs($kepala)
+            ->get(route('blk.ttd.menunggu'))
+            ->assertOk()
+            ->assertSee('Menunggu TTD');
+
+        $json = $this->actingAs($kepala)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('blk.ttd.menunggu'))
+            ->assertOk()
+            ->json('data');
+
+        $names = collect($json)->pluck('name')->all();
+        $this->assertContains('Peserta BPP', $names);
+        $this->assertNotContains('Peserta BTG', $names);
+    }
+
+    public function test_kepala_dinas_antrean_setelah_ttd_uptd(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK Kadis TTD',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Masih di UPTD']);
+        $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_TTD_UPTD, ['name' => 'Siap Kadis']);
+        $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_TTD_DINAS, ['name' => 'Sudah Kadis']);
+
+        $kadis = $this->makeUser('eksekutif-provinsi');
+
+        $this->actingAs($kadis)
+            ->get(route('blk.ttd.menunggu'))
+            ->assertOk()
+            ->assertSee('Menunggu TTD Kepala Dinas')
+            ->assertSee('TTE');
+
+        $waiting = collect($this->actingAs($kadis)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('blk.ttd.menunggu'))
+            ->json('data'))->pluck('name')->all();
+        $this->assertContains('Siap Kadis', $waiting);
+        $this->assertNotContains('Masih di UPTD', $waiting);
+        $this->assertNotContains('Sudah Kadis', $waiting);
+
+        $signed = collect($this->actingAs($kadis)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('blk.ttd.sudah'))
+            ->json('data'))->pluck('name')->all();
+        $this->assertContains('Sudah Kadis', $signed);
+        $this->assertNotContains('Siap Kadis', $signed);
+    }
+
+    public function test_ttd_kepala_uptd_mengajukan_ke_kepala_dinas(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK Demo Alur TTD',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $peserta = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, [
+            'name' => 'Peserta Demo UPTD',
+        ]);
+        $kepala = $this->makeUser('kepala-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+        $kadis = $this->makeUser('eksekutif-provinsi');
+
+        $this->actingAs($kepala)
+            ->post(route('blk.ttd.tte'), ['peserta_ids' => [$peserta->id]])
+            ->assertRedirect(route('blk.ttd.menunggu'));
+
+        $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
+            'id' => $peserta->id,
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_TTD_UPTD,
+        ]);
+
+        $waitingKadis = collect($this->actingAs($kadis)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('blk.ttd.menunggu'))
+            ->json('data'))->pluck('name')->all();
+        $this->assertContains('Peserta Demo UPTD', $waitingKadis);
+    }
+
+    public function test_ttd_kepala_dinas_menyelesaikan_alur(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK Demo Kadis TTD',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $peserta = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_TTD_UPTD, [
+            'name' => 'Peserta Demo Kadis',
+        ]);
+        $kadis = $this->makeUser('eksekutif-provinsi');
+
+        $this->actingAs($kadis)
+            ->post(route('blk.ttd.tte'), ['peserta_ids' => [$peserta->id]])
+            ->assertRedirect(route('blk.ttd.menunggu'));
+
+        $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
+            'id' => $peserta->id,
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_TTD_DINAS,
+        ]);
+    }
+
+    public function test_ttd_pilih_semua_uptd_masuk_antrean_dinas(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK TTD Semua',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $satu = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Antrean Satu']);
+        $dua = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Antrean Dua']);
+        $kepala = $this->makeUser('kepala-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+
+        $this->actingAs($kepala)
+            ->post(route('blk.ttd.tte'), ['pilih_semua' => 1])
+            ->assertRedirect(route('blk.ttd.menunggu'));
+
+        $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
+            'id' => $satu->id,
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_TTD_UPTD,
+        ]);
+        $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
+            'id' => $dua->id,
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_TTD_UPTD,
+        ]);
+    }
+
+    public function test_admin_balai_tidak_bisa_akses_menu_ttd(): void
+    {
+        $admin = $this->makeUser('admin-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+
+        $this->actingAs($admin)
+            ->get(route('blk.ttd.menunggu'))
+            ->assertStatus(403);
+    }
+
+    public function test_ajukan_ttd_manual_dari_status_menunggu(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK Ajukan TTD',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $admin = $this->makeUser('admin-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+        $peserta = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_MENUNGGU, [
+            'name' => 'Manual Ajukan',
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('blk.pelatihan.peserta.ajukan-ttd', [$pelatihan->id, $peserta->id]))
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
+            'id' => $peserta->id,
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD,
+        ]);
+    }
+
+    public function test_daftar_peserta_bisa_filter_lulus(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK Filter Lulus',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $admin = $this->makeUser('admin-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+        $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_MENUNGGU, ['name' => 'Peserta Lulus Filter']);
+        $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_MENUNGGU, [
+            'name' => 'Peserta Belum Lulus',
+            'status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_DITERIMA,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta', $pelatihan->id))
+            ->assertOk()
+            ->assertSee('Filter status')
+            ->assertSee('Ajukan TTD terpilih');
+
+        $names = collect($this->actingAs($admin)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('blk.pelatihan.peserta', [
+                'id' => $pelatihan->id,
+                'filter_status' => EtamBlkPelatihanPeserta::STATUS_LULUS,
+            ]))
+            ->json('data'))->pluck('name')->all();
+
+        $this->assertContains('Peserta Lulus Filter', $names);
+        $this->assertNotContains('Peserta Belum Lulus', $names);
+    }
+
+    public function test_bulk_ajukan_ttd_terpilih_dan_semua(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK Bulk Ajuan',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $admin = $this->makeUser('admin-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+        $satu = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_MENUNGGU, ['name' => 'Ajuan Satu']);
+        $dua = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_MENUNGGU, ['name' => 'Ajuan Dua']);
+        $sudah = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Sudah Diajukan']);
+
+        $this->actingAs($admin)
+            ->post(route('blk.pelatihan.peserta.ajukan-ttd.massal', $pelatihan->id), [
+                'peserta_ids' => [$satu->id],
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true, 'count' => 1]);
+
+        $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
+            'id' => $satu->id,
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD,
+        ]);
+        $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
+            'id' => $dua->id,
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_MENUNGGU,
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('blk.pelatihan.peserta.ajukan-ttd.massal', $pelatihan->id), [
+                'pilih_semua' => 1,
+            ])
+            ->assertOk()
+            ->assertJson(['success' => true, 'count' => 1]);
+
+        $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
+            'id' => $dua->id,
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD,
+        ]);
+        $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
+            'id' => $sudah->id,
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD,
+        ]);
+    }
+
+    private function makePesertaTtd(int $pelatihanId, int $statusTtd, array $overrides = []): EtamBlkPelatihanPeserta
+    {
+        $user = $this->makeUser('pencari-kerja');
+        $pencari = $this->makePencari($user->id, [
+            'ktp' => $overrides['ktp'] ?? '64'.fake()->unique()->numerify('##############'),
+            'name' => $overrides['name'] ?? 'Peserta TTD',
+        ]);
+
+        return EtamBlkPelatihanPeserta::create(array_merge([
+            'blk_pelatihan_id' => $pelatihanId,
+            'pencari_id' => $pencari->id,
+            'status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_LULUS,
+            'status_ttd' => $statusTtd,
+            'name' => $pencari->name,
+            'ktp' => $pencari->ktp,
+            'created_by' => $user->id,
+        ], $overrides));
     }
 
     private function makeForm(int $blkId, string $jenis, string $nama): EtamBlkForm

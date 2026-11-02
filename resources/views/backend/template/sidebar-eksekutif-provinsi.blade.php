@@ -27,6 +27,16 @@
                         <span class="pcoded-mtext">K3 Pengawas</span>
                     </a>
                 </li>
+                <li class="nav-item pcoded-hasmenu">
+                    <a href="#!" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-edit-3"></i></span>
+                        <span class="pcoded-mtext">TTE</span>
+                    </a>
+                    <ul class="pcoded-submenu">
+                        <li><a href="{{ route('blk.ttd.menunggu') }}">Menunggu TTD</a></li>
+                        <li><a href="{{ route('blk.ttd.sudah') }}">Sudah ditandatangani</a></li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>

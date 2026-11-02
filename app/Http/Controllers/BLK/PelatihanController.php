@@ -8,6 +8,7 @@ use App\Models\BLK\EtamBlkForm;
 use App\Models\BLK\EtamBlkPelatihan;
 use App\Models\BLK\EtamBlkPelatihanFasilitas;
 use App\Models\BLK\EtamBlkPelatihanJawaban;
+use App\Models\BLK\EtamBlkPelatihanKompetensi;
 use App\Models\BLK\EtamBlkPelatihanPeserta;
 use App\Models\BLK\EtamBlkPelatihanPesertaPerusahaan;
 use App\Models\BLK\EtamBlkPelatihanSyarat;
@@ -147,6 +148,8 @@ class PelatihanController extends Controller
         }
         $syarat = collect();
         $fasilitas = collect();
+        $kompetensiInti = collect();
+        $kompetensiPenunjang = collect();
         $isBlkStaff = $this->isBlkStaffRole();
         [$wawancaraTemplates, $pretestTemplates, $cbtTemplates] = $this->formTemplates();
 
@@ -155,6 +158,8 @@ class PelatihanController extends Controller
             'pelatihan',
             'syarat',
             'fasilitas',
+            'kompetensiInti',
+            'kompetensiPenunjang',
             'isBlkStaff',
             'wawancaraTemplates',
             'pretestTemplates',
@@ -211,6 +216,8 @@ class PelatihanController extends Controller
         $blkOptions = $this->blkOptions();
         $syarat = $pelatihan->syarat()->get();
         $fasilitas = $pelatihan->fasilitas()->get();
+        $kompetensiInti = $pelatihan->kompetensiInti()->get();
+        $kompetensiPenunjang = $pelatihan->kompetensiPenunjang()->get();
         $isBlkStaff = $this->isBlkStaffRole();
         [$wawancaraTemplates, $pretestTemplates, $cbtTemplates] = $this->formTemplates();
 
@@ -219,6 +226,8 @@ class PelatihanController extends Controller
             'pelatihan',
             'syarat',
             'fasilitas',
+            'kompetensiInti',
+            'kompetensiPenunjang',
             'isBlkStaff',
             'wawancaraTemplates',
             'pretestTemplates',
@@ -256,6 +265,8 @@ class PelatihanController extends Controller
             $pelatihan->syarat()->delete();
             $pelatihan->fasilitas()->update(['deleted_by' => Auth::id()]);
             $pelatihan->fasilitas()->delete();
+            $pelatihan->kompetensi()->update(['deleted_by' => Auth::id()]);
+            $pelatihan->kompetensi()->delete();
             $this->syncSyaratFasilitas($pelatihan, $request);
 
             DB::commit();
@@ -292,6 +303,11 @@ class PelatihanController extends Controller
             'pelatihan_untuk' => 'required|in:0,1',
             'blk_id' => 'required|integer',
             'nama_pelatihan' => 'required|string|max:255',
+            'kejuruan' => 'nullable|string|max:255',
+            'angkatan' => 'nullable|string|max:50',
+            'jam_pelatihan' => 'nullable|integer|min:1',
+            'tanggal_ttd_dinas' => 'nullable|date',
+            'tanggal_ttd_uptd' => 'nullable|date',
             'sumber_pembiayaan' => 'required|in:0,1,2',
             'tanggal_pendaftaran' => 'required|date',
             'tanggal_pendaftaran_selesai' => 'required|date|after_or_equal:tanggal_pendaftaran',
@@ -306,6 +322,16 @@ class PelatihanController extends Controller
             'syarat.*' => 'nullable|string',
             'fasilitas' => 'nullable|array',
             'fasilitas.*' => 'nullable|string',
+            'kompetensi_inti' => 'nullable|array',
+            'kompetensi_inti.nama' => 'nullable|array',
+            'kompetensi_inti.nama.*' => 'nullable|string|max:500',
+            'kompetensi_inti.kode' => 'nullable|array',
+            'kompetensi_inti.kode.*' => 'nullable|string|max:100',
+            'kompetensi_penunjang' => 'nullable|array',
+            'kompetensi_penunjang.nama' => 'nullable|array',
+            'kompetensi_penunjang.nama.*' => 'nullable|string|max:500',
+            'kompetensi_penunjang.kode' => 'nullable|array',
+            'kompetensi_penunjang.kode.*' => 'nullable|string|max:100',
             'wawancara_form_id' => 'nullable|integer',
             'pretest_form_id' => 'nullable|integer',
             'cbt_form_id' => 'nullable|integer',
@@ -320,6 +346,11 @@ class PelatihanController extends Controller
             'pelatihan_untuk' => $request->pelatihan_untuk,
             'blk_id' => $this->requestBlkId($request),
             'nama_pelatihan' => $request->nama_pelatihan,
+            'kejuruan' => $request->kejuruan,
+            'angkatan' => $request->angkatan,
+            'jam_pelatihan' => $request->jam_pelatihan ?: null,
+            'tanggal_ttd_dinas' => $request->tanggal_ttd_dinas ?: null,
+            'tanggal_ttd_uptd' => $request->tanggal_ttd_uptd ?: null,
             'sumber_pembiayaan' => $request->sumber_pembiayaan,
             'tanggal_pendaftaran' => $request->tanggal_pendaftaran,
             'tanggal_pendaftaran_selesai' => $request->tanggal_pendaftaran_selesai,
@@ -376,6 +407,38 @@ class PelatihanController extends Controller
             EtamBlkPelatihanFasilitas::create([
                 'blk_pelatihan_id' => $pelatihan->id,
                 'fasilitas' => $item,
+                'created_by' => Auth::id(),
+                'updated_by' => Auth::id(),
+            ]);
+        }
+
+        $this->syncKompetensi($pelatihan, $request, 'kompetensi_inti', EtamBlkPelatihanKompetensi::TIPE_INTI);
+        $this->syncKompetensi($pelatihan, $request, 'kompetensi_penunjang', EtamBlkPelatihanKompetensi::TIPE_PENUNJANG);
+    }
+
+    private function syncKompetensi(EtamBlkPelatihan $pelatihan, Request $request, string $field, string $tipe): void
+    {
+        $namaList = (array) $request->input($field.'.nama', []);
+        $kodeList = (array) $request->input($field.'.kode', []);
+        $urutan = 1;
+
+        foreach ($namaList as $index => $nama) {
+            $nama = trim((string) $nama);
+            if ($nama === '') {
+                continue;
+            }
+
+            $kode = trim((string) ($kodeList[$index] ?? ''));
+            if ($kode === '') {
+                $kode = '-';
+            }
+
+            EtamBlkPelatihanKompetensi::create([
+                'blk_pelatihan_id' => $pelatihan->id,
+                'tipe' => $tipe,
+                'nama' => $nama,
+                'kode' => $kode,
+                'urutan' => $urutan++,
                 'created_by' => Auth::id(),
                 'updated_by' => Auth::id(),
             ]);

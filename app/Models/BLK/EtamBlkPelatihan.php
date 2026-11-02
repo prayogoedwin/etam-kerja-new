@@ -22,6 +22,8 @@ class EtamBlkPelatihan extends Model
         'tanggal_pendaftaran_selesai' => 'date',
         'tanggal_pelaksanaan' => 'date',
         'tanggal_pelaksanaan_selesai' => 'date',
+        'tanggal_ttd_dinas' => 'date',
+        'tanggal_ttd_uptd' => 'date',
     ];
 
     public const UNTUK_PENCARI = 0;
@@ -86,6 +88,25 @@ class EtamBlkPelatihan extends Model
     public function syarat(): HasMany
     {
         return $this->hasMany(EtamBlkPelatihanSyarat::class, 'blk_pelatihan_id', 'id');
+    }
+
+    public function kompetensi(): HasMany
+    {
+        return $this->hasMany(EtamBlkPelatihanKompetensi::class, 'blk_pelatihan_id', 'id')->orderBy('urutan');
+    }
+
+    public function kompetensiInti(): HasMany
+    {
+        return $this->hasMany(EtamBlkPelatihanKompetensi::class, 'blk_pelatihan_id', 'id')
+            ->where('tipe', EtamBlkPelatihanKompetensi::TIPE_INTI)
+            ->orderBy('urutan');
+    }
+
+    public function kompetensiPenunjang(): HasMany
+    {
+        return $this->hasMany(EtamBlkPelatihanKompetensi::class, 'blk_pelatihan_id', 'id')
+            ->where('tipe', EtamBlkPelatihanKompetensi::TIPE_PENUNJANG)
+            ->orderBy('urutan');
     }
 
     public function pertanyaan(): HasMany

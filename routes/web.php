@@ -17,6 +17,7 @@ use App\Http\Controllers\BLK\FormTemplateController;
 use App\Http\Controllers\BLK\PelatihanController;
 use App\Http\Controllers\BLK\PesertaController;
 use App\Http\Controllers\BLK\PesertaFormController;
+use App\Http\Controllers\BLK\TtdController;
 use App\Http\Controllers\BLK\UserBlkController;
 use App\Http\Controllers\DashboardEksekutifController;
 use App\Http\Controllers\DashboardEksekutifKabkotaController;
@@ -205,6 +206,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::prefix('setting')->middleware(CheckUserRole::class.':super-admin,admin-provinsi')->group(function () {
         Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
         Route::get('/struktur', [StrukturController::class, 'index'])->name('struktur.index');
+        Route::get('/struktur/{id}', [StrukturController::class, 'show'])->name('struktur.show');
+        Route::put('/struktur/{id}', [StrukturController::class, 'update'])->name('struktur.update');
 
         Route::get('/faqs', [EtamFaqController::class, 'index'])->name('faq.index');
         Route::post('/faq/add', [EtamFaqController::class, 'store'])->name('faq.add');
@@ -405,6 +408,13 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     });
 
     Route::prefix('blk')->group(function () {
+        Route::middleware(CheckUserRole::class.':eksekutif-provinsi,kepala-balai')->group(function () {
+            Route::get('/pelatihan/ttd/menunggu', [TtdController::class, 'menunggu'])->name('blk.ttd.menunggu');
+            Route::get('/pelatihan/ttd/sudah', [TtdController::class, 'sudah'])->name('blk.ttd.sudah');
+            Route::post('/pelatihan/ttd/tte', [TtdController::class, 'tte'])->name('blk.ttd.tte');
+            Route::get('/pelatihan/ttd/maintenance', [TtdController::class, 'maintenance'])->name('blk.ttd.maintenance');
+        });
+
         Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi')->group(function () {
             Route::get('/lembaga', [BlkController::class, 'index'])->name('blk.lembaga.index');
             Route::post('/lembaga', [BlkController::class, 'store'])->name('blk.lembaga.store');
@@ -441,13 +451,19 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::put('/pelatihan/{id}', [PelatihanController::class, 'update'])->name('blk.pelatihan.update');
             Route::delete('/pelatihan/{id}', [PelatihanController::class, 'destroy'])->name('blk.pelatihan.destroy');
             Route::get('/pelatihan/{id}/peserta', [PesertaController::class, 'index'])->name('blk.pelatihan.peserta');
+            Route::post('/pelatihan/{id}/peserta/ajukan-ttd', [PesertaController::class, 'ajukanTtdMassal'])->name('blk.pelatihan.peserta.ajukan-ttd.massal');
             Route::get('/pelatihan/{id}/peserta/{pesertaId}', [PesertaController::class, 'show'])->name('blk.pelatihan.peserta.show');
             Route::put('/pelatihan/{id}/peserta/{pesertaId}/status', [PesertaController::class, 'updateStatus'])->name('blk.pelatihan.peserta.status');
+            Route::post('/pelatihan/{id}/peserta/{pesertaId}/ajukan-ttd', [PesertaController::class, 'ajukanTtd'])->name('blk.pelatihan.peserta.ajukan-ttd');
             Route::get('/pelatihan/{id}/peserta/{pesertaId}/wawancara', [PesertaFormController::class, 'wawancara'])->name('blk.pelatihan.peserta.wawancara');
             Route::post('/pelatihan/{id}/peserta/{pesertaId}/wawancara', [PesertaFormController::class, 'storeWawancara'])->name('blk.pelatihan.peserta.wawancara.store');
             Route::get('/pelatihan/{id}/peserta/{pesertaId}/pretest', [PesertaFormController::class, 'lihatPretest'])->name('blk.pelatihan.peserta.pretest');
             Route::get('/pelatihan/{id}/cbt/hasil', [PesertaFormController::class, 'hasilCbt'])->name('blk.pelatihan.cbt.hasil');
             Route::get('/pelatihan/{id}/peserta/{pesertaId}/cbt', [PesertaFormController::class, 'lihatCbt'])->name('blk.pelatihan.peserta.cbt');
+        });
+
+        Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-blk,kepala-balai,admin-balai,petugas-balai,eksekutif-provinsi')->group(function () {
+            Route::get('/pelatihan/{id}/peserta/{pesertaId}/sertifikat', [PesertaController::class, 'sertifikat'])->name('blk.pelatihan.peserta.sertifikat');
         });
 
         Route::get('/pelatihan', [PelatihanController::class, 'index'])->name('blk.pelatihan.index');

@@ -66,16 +66,41 @@
                                         <a href="{{ route('blk.pelatihan.index') }}" class="btn btn-secondary btn-sm">Kembali</a>
                                     </div>
                                 </div>
+                                <div class="row align-items-end m-l-0 mb-3">
+                                    <div class="col-md-3">
+                                        <label class="form-label mb-1" for="filter_status">Filter status</label>
+                                        <select id="filter_status" class="form-control">
+                                            <option value="">Semua status</option>
+                                            @foreach ($statusLabels as $key => $label)
+                                                <option value="{{ $key }}" @selected((int) $key === \App\Models\BLK\EtamBlkPelatihanPeserta::STATUS_LULUS)>{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    @if ($isPencari)
+                                        <div class="col-md-9 text-md-end mt-2 mt-md-0">
+                                            <button type="button" id="btn-ajukan-terpilih" class="btn btn-primary btn-sm">Ajukan TTD terpilih</button>
+                                            <button type="button" id="btn-ajukan-semua" class="btn btn-outline-primary btn-sm">Ajukan semua yang menunggu</button>
+                                        </div>
+                                    @endif
+                                </div>
                                 <div class="table-responsive">
                                     <table id="simpletable" class="table table-bordered table-striped mb-0">
                                         <thead>
                                             <tr>
+                                                @if ($isPencari)
+                                                    <th width="40">
+                                                        <input type="checkbox" id="check-all" title="Pilih semua di halaman ini">
+                                                    </th>
+                                                @endif
                                                 <th>No</th>
                                                 <th>Nama</th>
                                                 <th>{{ (int) $pelatihan->pelatihan_untuk === 1 ? 'NIB' : 'NIK' }}</th>
                                                 <th>Email</th>
                                                 <th>HP</th>
                                                 <th>Status</th>
+                                                @if ($isPencari)
+                                                    <th>Status TTD</th>
+                                                @endif
                                                 <th>Options</th>
                                             </tr>
                                         </thead>
@@ -122,38 +147,90 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            $('#simpletable').DataTable({
+            var isPencari = {{ $isPencari ? 'true' : 'false' }};
+            var columns = [];
+            if (isPencari) {
+                columns.push({
+                    data: 'checkbox',
+                    orderable: false,
+                    searchable: false,
+                    width: '40px'
+                });
+            }
+            columns.push({
+                    data: 'DT_RowIndex',
+                    orderable: false,
+                    searchable: false
+                },
+                {
+                    data: 'name'
+                },
+                {
+                    data: 'identitas'
+                },
+                {
+                    data: 'email'
+                },
+                {
+                    data: 'hp'
+                },
+                {
+                    data: 'status_label'
+                });
+            if (isPencari) {
+                columns.push({
+                    data: 'status_ttd_label',
+                    orderable: false,
+                    searchable: false
+                });
+            }
+            columns.push({
+                data: 'options',
+                orderable: false,
+                searchable: false,
+                width: '280px'
+            });
+
+            var table = $('#simpletable').DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ route('blk.pelatihan.peserta', $pelatihan->id) }}',
+                ajax: {
+                    url: '{{ route('blk.pelatihan.peserta', $pelatihan->id) }}',
+                    data: function(d) {
+                        d.filter_status = $('#filter_status').val();
+                    }
+                },
                 autoWidth: false,
-                columns: [{
-                        data: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'name'
-                    },
-                    {
-                        data: 'identitas'
-                    },
-                    {
-                        data: 'email'
-                    },
-                    {
-                        data: 'hp'
-                    },
-                    {
-                        data: 'status_label'
-                    },
-                    {
-                        data: 'options',
-                        orderable: false,
-                        searchable: false,
-                        width: '280px'
-                    },
-                ]
+                columns: columns,
+                drawCallback: function() {
+                    $('#check-all').prop('checked', false);
+                }
+            });
+
+            $('#filter_status').on('change', function() {
+                table.ajax.reload();
+            });
+
+            $('#check-all').on('change', function() {
+                $('.peserta-check').prop('checked', this.checked);
+            });
+
+            $('#btn-ajukan-terpilih').on('click', function() {
+                var ids = $('.peserta-check:checked').map(function() {
+                    return this.value;
+                }).get();
+                if (!ids.length) {
+                    alert('Pilih minimal satu peserta lulus yang masih menunggu TTD');
+                    return;
+                }
+                ajukanTtdMassal(ids, false);
+            });
+
+            $('#btn-ajukan-semua').on('click', function() {
+                if (!confirm('Ajukan semua peserta lulus yang masih menunggu TTD ke Kepala UPTD?')) {
+                    return;
+                }
+                ajukanTtdMassal([], true);
             });
 
             $('#statusForm').submit(function(e) {
@@ -186,6 +263,31 @@
             $('#status_pendaftaran').val(status);
             $('#alasan_status').val(alasan);
             $('#modal-status').modal('show');
+        }
+
+        function ajukanTtd(id) {
+            if (!confirm('Ajukan peserta ini ke Kepala UPTD untuk ditandatangani?')) {
+                return;
+            }
+            ajukanTtdMassal([id], false);
+        }
+
+        function ajukanTtdMassal(ids, pilihSemua) {
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('blk.pelatihan.peserta.ajukan-ttd.massal', $pelatihan->id) }}',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    pilih_semua: pilihSemua ? 1 : 0,
+                    peserta_ids: ids
+                },
+                success: function(response) {
+                    alert(response.message || (response.success ? 'Berhasil diajukan' : 'Gagal mengajukan'));
+                    if (response.success) {
+                        $('#simpletable').DataTable().ajax.reload();
+                    }
+                }
+            });
         }
     </script>
 @endpush

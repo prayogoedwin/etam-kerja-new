@@ -57,6 +57,24 @@
                                     </ul>
                                 @endif
 
+                                @if ($pelatihan->kompetensiInti->count())
+                                    <h6>Unit Kompetensi Inti</h6>
+                                    <ul>
+                                        @foreach ($pelatihan->kompetensiInti as $item)
+                                            <li>{{ $item->nama }} ({{ $item->kodeLabel() }})</li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+
+                                @if ($pelatihan->kompetensiPenunjang->count())
+                                    <h6>Unit Kompetensi Penunjang</h6>
+                                    <ul>
+                                        @foreach ($pelatihan->kompetensiPenunjang as $item)
+                                            <li>{{ $item->nama }} ({{ $item->kodeLabel() }})</li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+
                                 @if ($already)
                                     <div class="alert alert-info">
                                         <p class="mb-2">Anda sudah terdaftar pada pelatihan ini.</p>

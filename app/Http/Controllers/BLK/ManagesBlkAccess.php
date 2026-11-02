@@ -18,6 +18,21 @@ trait ManagesBlkAccess
         return in_array($this->currentRoleName(), ['super-admin', 'admin-provinsi'], true);
     }
 
+    protected function isKepalaDinas(): bool
+    {
+        return $this->currentRoleName() === 'eksekutif-provinsi';
+    }
+
+    protected function isKepalaUptd(): bool
+    {
+        return $this->currentRoleName() === 'kepala-balai';
+    }
+
+    protected function canAccessTtdMenu(): bool
+    {
+        return $this->isKepalaDinas() || $this->isKepalaUptd();
+    }
+
     /**
      * @return array<int, string>
      */
@@ -43,7 +58,7 @@ trait ManagesBlkAccess
      */
     protected function accessibleBlkIds(): ?array
     {
-        if ($this->isBlkMasterAdmin()) {
+        if ($this->isBlkMasterAdmin() || $this->isKepalaDinas()) {
             return null;
         }
 

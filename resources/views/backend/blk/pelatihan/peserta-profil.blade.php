@@ -17,6 +17,10 @@
                     </div>
                 </div>
 
+                @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+
                 @php
                     $status = (int) $peserta->status_pendaftaran;
                     $statusMap = [0 => 'warning', 1 => 'info', 2 => 'success', 3 => 'danger', 4 => 'secondary', 5 => 'primary'];
@@ -39,8 +43,19 @@
                                 <span class="badge bg-{{ $statusMap[$status] ?? 'secondary' }}">
                                     {{ \App\Models\BLK\EtamBlkPelatihanPeserta::statusLabels()[$status] ?? '-' }}
                                 </span>
+                                @if (! $isPerusahaan)
+                                    <div class="mt-2">
+                                        {!! \App\Models\BLK\EtamBlkPelatihanPeserta::statusTtdBadge((int) $peserta->status_ttd) !!}
+                                    </div>
+                                @endif
                                 @if ($peserta->alasan_status)
                                     <p class="mt-2 mb-0"><small>Catatan: {{ $peserta->alasan_status }}</small></p>
+                                @endif
+                                @if (! $isPerusahaan && $status === \App\Models\BLK\EtamBlkPelatihanPeserta::STATUS_LULUS)
+                                    <div class="mt-3">
+                                        <a href="{{ route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id]) }}"
+                                            class="btn btn-primary btn-sm" target="_blank">Lihat Sertifikat Draf</a>
+                                    </div>
                                 @endif
                             </div>
                         </div>

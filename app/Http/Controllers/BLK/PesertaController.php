@@ -11,6 +11,8 @@ use App\Models\Progress;
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
 use App\Services\Blk\BlkFormAnswerService;
+use App\Services\Blk\BlkSertifikatKelulusanService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +39,7 @@ class PesertaController extends Controller
                 $datas = EtamBlkPelatihanPesertaPerusahaan::query()
                     ->where('blk_pelatihan_id', $pelatihan->id)
                     ->select('id', 'name', 'nib', 'email', 'hp', 'alamat', 'status_pendaftaran', 'alasan_status');
+                $this->applyStatusFilter($datas, $request);
 
                 return DataTables::of($datas)
                     ->addIndexColumn()
@@ -55,26 +58,38 @@ class PesertaController extends Controller
 
             $datas = EtamBlkPelatihanPeserta::query()
                 ->where('blk_pelatihan_id', $pelatihan->id)
-                ->select('id', 'name', 'ktp', 'email', 'hp', 'alamat', 'status_pendaftaran', 'alasan_status');
+                ->select('id', 'name', 'ktp', 'email', 'hp', 'alamat', 'status_pendaftaran', 'status_ttd', 'alasan_status');
+            $this->applyStatusFilter($datas, $request);
 
             return DataTables::of($datas)
                 ->addIndexColumn()
+                ->addColumn('checkbox', function (EtamBlkPelatihanPeserta $data) {
+                    if (! $this->canAjukanTtd($data)) {
+                        return '';
+                    }
+
+                    return '<input type="checkbox" class="peserta-check" value="'.$data->id.'">';
+                })
                 ->addColumn('identitas', function (EtamBlkPelatihanPeserta $data) {
                     return $data->ktp ?? '-';
                 })
                 ->addColumn('status_label', function (EtamBlkPelatihanPeserta $data) {
                     return $this->statusBadge((int) $data->status_pendaftaran);
                 })
+                ->addColumn('status_ttd_label', function (EtamBlkPelatihanPeserta $data) {
+                    return EtamBlkPelatihanPeserta::statusTtdBadge((int) $data->status_ttd);
+                })
                 ->addColumn('options', function (EtamBlkPelatihanPeserta $data) use ($pelatihan) {
                     return $this->pesertaOptionButtons($pelatihan, $data);
                 })
-                ->rawColumns(['status_label', 'options'])
+                ->rawColumns(['checkbox', 'status_label', 'status_ttd_label', 'options'])
                 ->make(true);
         }
 
         $statusLabels = EtamBlkPelatihanPeserta::statusLabels();
+        $isPencari = (int) $pelatihan->pelatihan_untuk === EtamBlkPelatihan::UNTUK_PENCARI;
 
-        return view('backend.blk.pelatihan.peserta', compact('pelatihan', 'statusLabels'));
+        return view('backend.blk.pelatihan.peserta', compact('pelatihan', 'statusLabels', 'isPencari'));
     }
 
     public function updateStatus(Request $request, string $pelatihanId, string $pesertaId)
@@ -103,13 +118,102 @@ class PesertaController extends Controller
             $peserta = EtamBlkPelatihanPeserta::where('blk_pelatihan_id', $pelatihan->id)->findOrFail($pesertaId);
         }
 
-        $peserta->update([
+        $payload = [
             'status_pendaftaran' => $request->status_pendaftaran,
             'alasan_status' => $request->alasan_status,
             'updated_by' => Auth::id(),
-        ]);
+        ];
+
+        if ($peserta instanceof EtamBlkPelatihanPeserta) {
+            $newStatus = (int) $request->status_pendaftaran;
+            $currentTtd = (int) $peserta->status_ttd;
+            if ($newStatus === EtamBlkPelatihanPeserta::STATUS_LULUS && $currentTtd === EtamBlkPelatihanPeserta::TTD_MENUNGGU) {
+                $payload['status_ttd'] = EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD;
+            } elseif ($newStatus !== EtamBlkPelatihanPeserta::STATUS_LULUS && $currentTtd <= EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD) {
+                $payload['status_ttd'] = EtamBlkPelatihanPeserta::TTD_MENUNGGU;
+            }
+        }
+
+        $peserta->update($payload);
 
         return response()->json(['success' => true, 'message' => 'Status peserta berhasil diupdate']);
+    }
+
+    public function ajukanTtd(string $pelatihanId, string $pesertaId)
+    {
+        if (! $this->canCreatePelatihan()) {
+            abort(403);
+        }
+
+        $pelatihan = EtamBlkPelatihan::findOrFail($pelatihanId);
+        if (! $this->canAccessBlk((int) $pelatihan->blk_id)) {
+            abort(403);
+        }
+
+        if ((int) $pelatihan->pelatihan_untuk === EtamBlkPelatihan::UNTUK_PENYEDIA) {
+            abort(404);
+        }
+
+        $peserta = EtamBlkPelatihanPeserta::where('blk_pelatihan_id', $pelatihan->id)->findOrFail($pesertaId);
+        if ((int) $peserta->status_pendaftaran !== EtamBlkPelatihanPeserta::STATUS_LULUS) {
+            return response()->json(['success' => false, 'message' => 'Hanya peserta lulus yang dapat diajukan TTD']);
+        }
+
+        if ((int) $peserta->status_ttd !== EtamBlkPelatihanPeserta::TTD_MENUNGGU) {
+            return response()->json(['success' => false, 'message' => 'Peserta sudah diajukan atau sudah ditandatangani']);
+        }
+
+        $peserta->update([
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD,
+            'updated_by' => Auth::id(),
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Peserta diajukan ke Kepala UPTD']);
+    }
+
+    public function ajukanTtdMassal(Request $request, string $pelatihanId)
+    {
+        if (! $this->canCreatePelatihan()) {
+            abort(403);
+        }
+
+        $pelatihan = EtamBlkPelatihan::findOrFail($pelatihanId);
+        if (! $this->canAccessBlk((int) $pelatihan->blk_id)) {
+            abort(403);
+        }
+
+        if ((int) $pelatihan->pelatihan_untuk === EtamBlkPelatihan::UNTUK_PENYEDIA) {
+            abort(404);
+        }
+
+        $query = EtamBlkPelatihanPeserta::query()
+            ->where('blk_pelatihan_id', $pelatihan->id)
+            ->where('status_pendaftaran', EtamBlkPelatihanPeserta::STATUS_LULUS)
+            ->where('status_ttd', EtamBlkPelatihanPeserta::TTD_MENUNGGU);
+
+        if (! $request->boolean('pilih_semua')) {
+            $ids = array_values(array_unique(array_filter(array_map('intval', (array) $request->input('peserta_ids', [])))));
+            if ($ids === []) {
+                return response()->json(['success' => false, 'message' => 'Pilih minimal satu peserta untuk diajukan TTD']);
+            }
+            $query->whereIn('id', $ids);
+        }
+
+        $count = (clone $query)->count();
+        if ($count === 0) {
+            return response()->json(['success' => false, 'message' => 'Tidak ada peserta lulus yang menunggu pengajuan TTD']);
+        }
+
+        $query->update([
+            'status_ttd' => EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD,
+            'updated_by' => Auth::id(),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => $count.' peserta diajukan ke Kepala UPTD',
+            'count' => $count,
+        ]);
     }
 
     public function show(string $pelatihanId, string $pesertaId)
@@ -165,9 +269,36 @@ class PesertaController extends Controller
         ));
     }
 
+    public function sertifikat(string $pelatihanId, string $pesertaId, BlkSertifikatKelulusanService $sertifikatService)
+    {
+        if (! $this->canCreatePelatihan() && ! $this->isKepalaDinas()) {
+            abort(403);
+        }
+
+        $pelatihan = EtamBlkPelatihan::with(['blk', 'kompetensiInti', 'kompetensiPenunjang'])->findOrFail($pelatihanId);
+        if (! $this->canAccessBlk((int) $pelatihan->blk_id)) {
+            abort(403);
+        }
+
+        if ((int) $pelatihan->pelatihan_untuk === EtamBlkPelatihan::UNTUK_PENYEDIA) {
+            abort(404);
+        }
+
+        $peserta = EtamBlkPelatihanPeserta::where('blk_pelatihan_id', $pelatihan->id)->findOrFail($pesertaId);
+        if ((int) $peserta->status_pendaftaran !== EtamBlkPelatihanPeserta::STATUS_LULUS) {
+            return redirect()
+                ->route('blk.pelatihan.peserta.show', [$pelatihan->id, $peserta->id])
+                ->with('error', 'Sertifikat hanya tersedia untuk peserta yang lulus');
+        }
+
+        $sertifikat = $sertifikatService->build($pelatihan, $peserta, BlkSertifikatKelulusanService::VERSI_DRAFT);
+
+        return view('backend.blk.pelatihan.sertifikat', compact('pelatihan', 'peserta', 'sertifikat'));
+    }
+
     public function formDaftar(string $id)
     {
-        $pelatihan = EtamBlkPelatihan::with(['blk', 'syarat', 'fasilitas'])->findOrFail($id);
+        $pelatihan = EtamBlkPelatihan::with(['blk', 'syarat', 'fasilitas', 'kompetensiInti', 'kompetensiPenunjang'])->findOrFail($id);
         $role = $this->currentRoleName();
 
         if ($role === 'pencari-kerja' && (int) $pelatihan->pelatihan_untuk !== EtamBlkPelatihan::UNTUK_PENCARI) {
@@ -394,6 +525,25 @@ class PesertaController extends Controller
         ];
     }
 
+    private function applyStatusFilter(Builder $query, Request $request): void
+    {
+        if (! $request->filled('filter_status') || $request->input('filter_status') === '') {
+            return;
+        }
+
+        if (! array_key_exists((int) $request->input('filter_status'), EtamBlkPelatihanPeserta::statusLabels())) {
+            return;
+        }
+
+        $query->where('status_pendaftaran', (int) $request->input('filter_status'));
+    }
+
+    private function canAjukanTtd(EtamBlkPelatihanPeserta $peserta): bool
+    {
+        return (int) $peserta->status_pendaftaran === EtamBlkPelatihanPeserta::STATUS_LULUS
+            && (int) $peserta->status_ttd === EtamBlkPelatihanPeserta::TTD_MENUNGGU;
+    }
+
     private function statusBadge(int $status): string
     {
         $map = [
@@ -426,6 +576,14 @@ class PesertaController extends Controller
 
         if ($pelatihan->cbt_form_id) {
             $html .= '<a href="'.route('blk.pelatihan.peserta.cbt', [$pelatihan->id, $data->id]).'" class="btn btn-dark btn-sm">Lihat CBT</a>';
+        }
+
+        if ((int) $pelatihan->pelatihan_untuk === EtamBlkPelatihan::UNTUK_PENCARI
+            && (int) $data->status_pendaftaran === EtamBlkPelatihanPeserta::STATUS_LULUS) {
+            $html .= '<a href="'.route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $data->id]).'" class="btn btn-primary btn-sm" target="_blank">Sertifikat Draf</a>';
+            if ((int) $data->status_ttd === EtamBlkPelatihanPeserta::TTD_MENUNGGU) {
+                $html .= '<button type="button" class="btn btn-outline-primary btn-sm" onclick="ajukanTtd('.$data->id.')">Ajukan TTD</button>';
+            }
         }
 
         $html .= '</div>';

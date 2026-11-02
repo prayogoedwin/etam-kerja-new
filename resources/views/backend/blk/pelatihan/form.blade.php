@@ -87,6 +87,24 @@
                                                 value="{{ old('nama_pelatihan', $pelatihan->nama_pelatihan) }}" required>
                                         </div>
                                         <div class="col-md-4 mb-3">
+                                            <label class="form-label">Kejuruan</label>
+                                            <input type="text" name="kejuruan" class="form-control"
+                                                value="{{ old('kejuruan', $pelatihan->kejuruan) }}"
+                                                placeholder="Contoh: Teknik Manufaktur">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Angkatan</label>
+                                            <input type="text" name="angkatan" class="form-control"
+                                                value="{{ old('angkatan', $pelatihan->angkatan) }}"
+                                                placeholder="Contoh: II">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Jam Pelatihan</label>
+                                            <input type="number" name="jam_pelatihan" class="form-control" min="1"
+                                                value="{{ old('jam_pelatihan', $pelatihan->jam_pelatihan) }}"
+                                                placeholder="Contoh: 260">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
                                             <label class="form-label">Sumber Pembiayaan</label>
                                             <select name="sumber_pembiayaan" class="form-control" required>
                                                 @foreach (\App\Models\BLK\EtamBlkPelatihan::pembiayaanLabels() as $key => $label)
@@ -136,6 +154,18 @@
                                             <input type="date" name="tanggal_pelaksanaan_selesai" class="form-control"
                                                 value="{{ old('tanggal_pelaksanaan_selesai', optional($pelatihan->tanggal_pelaksanaan_selesai)->format('Y-m-d')) }}"
                                                 required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Tanggal TTD Kepala Dinas</label>
+                                            <input type="date" name="tanggal_ttd_dinas" class="form-control"
+                                                value="{{ old('tanggal_ttd_dinas', optional($pelatihan->tanggal_ttd_dinas)->format('Y-m-d')) }}">
+                                            <small class="text-muted">Muncul sebagai Samarinda, tanggal ini. Nanti terisi otomatis saat TTE.</small>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Tanggal TTD Kepala UPTD</label>
+                                            <input type="date" name="tanggal_ttd_uptd" class="form-control"
+                                                value="{{ old('tanggal_ttd_uptd', optional($pelatihan->tanggal_ttd_uptd)->format('Y-m-d')) }}">
+                                            <small class="text-muted">Muncul sebagai Balikpapan/Bontang, tanggal ini. Nanti terisi otomatis saat TTE.</small>
                                         </div>
                                         <div class="col-md-12 mb-3">
                                             <label class="form-label">Info Lokasi / Link</label>
@@ -247,6 +277,66 @@
                                     <button type="button" class="btn btn-outline-primary btn-sm mb-3"
                                         id="add-fasilitas">Tambah Fasilitas</button>
 
+                                    <h6 class="mt-3 mb-1">Unit Kompetensi Inti</h6>
+                                    <p class="text-muted small mb-2">Nama unit kompetensi dan kode unit. Kode kosong otomatis
+                                        menjadi <strong>-</strong>.</p>
+                                    <div id="kompetensi-inti-wrap">
+                                        @php
+                                            $intiOld = old('kompetensi_inti.nama');
+                                            if (is_array($intiOld)) {
+                                                $intiRows = collect($intiOld)->map(function ($nama, $i) {
+                                                    return ['nama' => $nama, 'kode' => old('kompetensi_inti.kode.'.$i, '')];
+                                                })->all();
+                                            } else {
+                                                $intiRows = $kompetensiInti->isEmpty()
+                                                    ? [['nama' => '', 'kode' => '']]
+                                                    : $kompetensiInti->map(fn ($item) => ['nama' => $item->nama, 'kode' => $item->kode])->all();
+                                            }
+                                        @endphp
+                                        @foreach ($intiRows as $item)
+                                            <div class="input-group mb-2 kompetensi-inti-row">
+                                                <input type="text" name="kompetensi_inti[nama][]" class="form-control"
+                                                    placeholder="Nama unit kompetensi" value="{{ $item['nama'] }}">
+                                                <input type="text" name="kompetensi_inti[kode][]" class="form-control"
+                                                    placeholder="Kode unit" style="max-width: 220px"
+                                                    value="{{ $item['kode'] }}">
+                                                <button type="button" class="btn btn-danger btn-remove-row">Hapus</button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm mb-3"
+                                        id="add-kompetensi-inti">Tambah Unit Kompetensi Inti</button>
+
+                                    <h6 class="mt-3 mb-1">Unit Kompetensi Penunjang</h6>
+                                    <p class="text-muted small mb-2">Nama unit kompetensi dan kode unit. Kode kosong otomatis
+                                        menjadi <strong>-</strong>.</p>
+                                    <div id="kompetensi-penunjang-wrap">
+                                        @php
+                                            $penunjangOld = old('kompetensi_penunjang.nama');
+                                            if (is_array($penunjangOld)) {
+                                                $penunjangRows = collect($penunjangOld)->map(function ($nama, $i) {
+                                                    return ['nama' => $nama, 'kode' => old('kompetensi_penunjang.kode.'.$i, '')];
+                                                })->all();
+                                            } else {
+                                                $penunjangRows = $kompetensiPenunjang->isEmpty()
+                                                    ? [['nama' => '', 'kode' => '']]
+                                                    : $kompetensiPenunjang->map(fn ($item) => ['nama' => $item->nama, 'kode' => $item->kode])->all();
+                                            }
+                                        @endphp
+                                        @foreach ($penunjangRows as $item)
+                                            <div class="input-group mb-2 kompetensi-penunjang-row">
+                                                <input type="text" name="kompetensi_penunjang[nama][]" class="form-control"
+                                                    placeholder="Nama unit kompetensi" value="{{ $item['nama'] }}">
+                                                <input type="text" name="kompetensi_penunjang[kode][]" class="form-control"
+                                                    placeholder="Kode unit" style="max-width: 220px"
+                                                    value="{{ $item['kode'] }}">
+                                                <button type="button" class="btn btn-danger btn-remove-row">Hapus</button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm mb-3"
+                                        id="add-kompetensi-penunjang">Tambah Unit Kompetensi Penunjang</button>
+
                                     <div class="mt-3">
                                         <button type="submit" class="btn btn-primary">Simpan</button>
                                         <a href="{{ route('blk.pelatihan.index') }}" class="btn btn-secondary">Kembali</a>
@@ -272,6 +362,16 @@
             $('#add-fasilitas').on('click', function() {
                 $('#fasilitas-wrap').append(
                     '<div class="input-group mb-2 fasilitas-row"><input type="text" name="fasilitas[]" class="form-control"><button type="button" class="btn btn-danger btn-remove-row">Hapus</button></div>'
+                );
+            });
+            $('#add-kompetensi-inti').on('click', function() {
+                $('#kompetensi-inti-wrap').append(
+                    '<div class="input-group mb-2 kompetensi-inti-row"><input type="text" name="kompetensi_inti[nama][]" class="form-control" placeholder="Nama unit kompetensi"><input type="text" name="kompetensi_inti[kode][]" class="form-control" placeholder="Kode unit" style="max-width:220px"><button type="button" class="btn btn-danger btn-remove-row">Hapus</button></div>'
+                );
+            });
+            $('#add-kompetensi-penunjang').on('click', function() {
+                $('#kompetensi-penunjang-wrap').append(
+                    '<div class="input-group mb-2 kompetensi-penunjang-row"><input type="text" name="kompetensi_penunjang[nama][]" class="form-control" placeholder="Nama unit kompetensi"><input type="text" name="kompetensi_penunjang[kode][]" class="form-control" placeholder="Kode unit" style="max-width:220px"><button type="button" class="btn btn-danger btn-remove-row">Hapus</button></div>'
                 );
             });
             $(document).on('click', '.btn-remove-row', function() {

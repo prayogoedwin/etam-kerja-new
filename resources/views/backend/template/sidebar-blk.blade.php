@@ -27,6 +27,21 @@
                         <span class="pcoded-mtext">Pelatihan BLK</span>
                     </a>
                 </li>
+                @php
+                    $roleNameBlk = Auth::user()->roles[0]['name'] ?? null;
+                @endphp
+                @if ($roleNameBlk === 'kepala-balai')
+                    <li class="nav-item pcoded-hasmenu">
+                        <a href="#!" class="nav-link">
+                            <span class="pcoded-micon"><i class="feather icon-edit-3"></i></span>
+                            <span class="pcoded-mtext">TTE</span>
+                        </a>
+                        <ul class="pcoded-submenu">
+                            <li><a href="{{ route('blk.ttd.menunggu') }}">Menunggu TTD</a></li>
+                            <li><a href="{{ route('blk.ttd.sudah') }}">Sudah ditandatangani</a></li>
+                        </ul>
+                    </li>
+                @endif
                 <li class="nav-item">
                     <a href="{{ route('blk.form.index', 'wawancara') }}" class="nav-link ">
                         <span class="pcoded-micon"><i class="feather icon-message-square"></i></span>
