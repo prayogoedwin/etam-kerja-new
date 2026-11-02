@@ -13,7 +13,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">{{ $isRevisi ? 'Revisi Ajuan PJK3' : 'Ajukan PJK3' }}</h5>
+                                    <h5 class="m-b-10">{{ $isRevisi ? 'Revisi Pendaftaran PJK3' : 'Pendaftaran PJK3' }}</h5>
                                 </div>
                             </div>
                         </div>

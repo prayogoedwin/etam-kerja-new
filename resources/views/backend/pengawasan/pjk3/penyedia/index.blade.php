@@ -10,7 +10,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">Ajuan PJK3</h5>
+                                    <h5 class="m-b-10">Pendaftaran PJK3</h5>
                                 </div>
                             </div>
                         </div>
@@ -20,6 +20,13 @@
                 @if (session('error'))
                     <div class="alert alert-danger">{{ session('error') }}</div>
                 @endif
+
+                <div class="alert alert-info">
+                    Semua perusahaan yang sudah punya akun dapat mendaftar sebagai PJK3.
+                    Setelah ACC, muncul menu <b>Pengajuan Suket Layak K3</b>.
+                    Perusahaan yang hanya punya akun berperan sebagai <b>perusahaan yang diperiksa</b>
+                    dan melihat hasilnya di menu Suket Layak K3.
+                </div>
 
                 <div class="row">
                     <div class="col-xl-12">
@@ -33,7 +40,7 @@
                                         @if ($canAjukan)
                                             <a href="{{ route('pengawasan.pjk3.penyedia.create') }}"
                                                 class="btn btn-success btn-sm">
-                                                <i class="feather icon-plus"></i> Ajukan PJK3
+                                                <i class="feather icon-plus"></i> Daftar PJK3
                                             </a>
                                         @endif
                                     </div>

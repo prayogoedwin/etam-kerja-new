@@ -1,0 +1,85 @@
+@php
+    $fileRoute = $fileRouteName ?? 'pengawasan.suket.admin.file';
+@endphp
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="mb-0">Data pengajuan</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>PJK3:</strong> {{ $suket->profilPjk3->name ?? '-' }}</p>
+                <p><strong>Perusahaan diuji:</strong> {{ $suket->profilPerusahaan->name ?? '-' }}</p>
+                <p><strong>Alamat:</strong> {{ $suket->profilPerusahaan->alamat ?? '-' }}</p>
+                <p><strong>Kategori:</strong> {{ $suket->kategori->nama ?? '-' }}
+                    @if ($suket->kategori?->kode)
+                        ({{ $suket->kategori->kode }})
+                    @endif
+                </p>
+                <p><strong>Jenis alat:</strong> {{ $suket->jenis->nama ?? '-' }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Nama alat:</strong> {{ $suket->nama_alat }}</p>
+                <p><strong>Lokasi:</strong> {{ $suket->lokasi_alat }}</p>
+                <p><strong>Kapasitas / unit:</strong> {{ $suket->kapasitas_alat ?: '-' }}
+                    ({{ $suket->jumlah_unit }} unit)</p>
+                <p><strong>Status:</strong> {{ $suket->statusLabel() }}</p>
+                <p><strong>Nomor suket:</strong> {{ $suket->nomor_suket ?? '-' }}</p>
+                <p><strong>Hasil:</strong>
+                    @if ($suket->is_layak === null)
+                        Belum dinilai
+                    @elseif ((int) $suket->is_layak === 1)
+                        <span class="badge bg-success">Layak</span>
+                    @else
+                        <span class="badge bg-danger">Tidak layak</span>
+                    @endif
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5 class="mb-0">Dokumen unggahan PJK3</h5>
+    </div>
+    <div class="card-body">
+        <ul class="list-unstyled mb-0">
+            @foreach ($dokumenKeys as $key => $label)
+                @php $item = $suket->dokumen[$key] ?? null; @endphp
+                <li class="mb-2">
+                    <strong>{{ $label }}</strong><br>
+                    @if (($item['tipe'] ?? null) === 'link' && !empty($item['value']))
+                        <a href="{{ $item['value'] }}" target="_blank" rel="noopener">{{ $item['value'] }}</a>
+                    @elseif (($item['tipe'] ?? null) === 'file' && !empty($item['value']))
+                        <a href="{{ route($fileRoute, [$suket->id, $key]) }}" target="_blank">Lihat file</a>
+                    @else
+                        <span class="text-muted">Tidak ada</span>
+                    @endif
+                </li>
+            @endforeach
+        </ul>
+    </div>
+</div>
+
+@if ($suket->pengawas_id || $suket->hasil_analisis)
+    <div class="card mb-3">
+        <div class="card-header">
+            <h5 class="mb-0">Hasil pemeriksaan</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Pengawas:</strong> {{ $suket->pengawas->name ?? '-' }}</p>
+            <p><strong>Kasi:</strong> {{ $suket->kasi->name ?? '-' }}</p>
+            <p><strong>Catatan disposisi:</strong> {{ $suket->catatan_disposisi ?: '-' }}</p>
+            <p><strong>Tanggal pemeriksaan:</strong>
+                {{ optional($suket->tanggal_pemeriksaan)->format('d-m-Y') ?? '-' }}</p>
+            <p><strong>Hasil analisis:</strong><br>{!! nl2br(e($suket->hasil_analisis ?: '-')) !!}</p>
+            <p><strong>Rekomendasi:</strong><br>{!! nl2br(e($suket->rekomendasi ?: '-')) !!}</p>
+            <p><strong>TTD pengawas:</strong>
+                {{ optional($suket->ttd_pengawas_at)->format('d-m-Y H:i') ?? 'Belum' }}</p>
+            <p><strong>TTD Kepala Dinas:</strong>
+                {{ optional($suket->ttd_kadis_at)->format('d-m-Y H:i') ?? 'Belum' }}</p>
+        </div>
+    </div>
+@endif

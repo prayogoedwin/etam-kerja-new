@@ -27,6 +27,7 @@
                         <span class="pcoded-mtext">K3 Pengawas</span>
                     </a>
                 </li>
+                @include('backend.pengawasan.pjk3._menu-layanan-k3')
                 <li class="nav-item pcoded-hasmenu">
                     <a href="#!" class="nav-link">
                         <span class="pcoded-micon"><i class="feather icon-edit-3"></i></span>

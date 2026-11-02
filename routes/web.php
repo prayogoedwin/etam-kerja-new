@@ -46,7 +46,9 @@ use App\Http\Controllers\Pengawasan\K3\KadisK3Controller;
 use App\Http\Controllers\Pengawasan\K3\KasiK3Controller;
 use App\Http\Controllers\Pengawasan\K3\PenyediaK3Controller;
 use App\Http\Controllers\Pengawasan\Pjk3\AdminPjk3Controller;
+use App\Http\Controllers\Pengawasan\Pjk3\AdminSuketController;
 use App\Http\Controllers\Pengawasan\Pjk3\PenyediaPjk3Controller;
+use App\Http\Controllers\Pengawasan\Pjk3\PenyediaSuketController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\ProfilBkkController;
 use App\Http\Controllers\ProfilPencariController;
@@ -341,7 +343,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
         });
 
-        Route::prefix('ajuan-pjk3')->name('pengawasan.pjk3.penyedia.')->group(function () {
+        Route::prefix('pendaftaran-pjk3')->name('pengawasan.pjk3.penyedia.')->group(function () {
             Route::get('/', [PenyediaPjk3Controller::class, 'index'])->name('index');
             Route::get('/create', [PenyediaPjk3Controller::class, 'create'])->name('create');
             Route::post('/', [PenyediaPjk3Controller::class, 'store'])->name('store');
@@ -350,6 +352,23 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::get('/{id}', [PenyediaPjk3Controller::class, 'show'])->name('show');
             Route::post('/{id}', [PenyediaPjk3Controller::class, 'update'])->name('update');
         });
+
+        Route::prefix('pengajuan-suket-k3')->name('pengawasan.suket.penyedia.pengajuan.')->group(function () {
+            Route::get('/', [PenyediaSuketController::class, 'pengajuanIndex'])->name('index');
+            Route::get('/create', [PenyediaSuketController::class, 'create'])->name('create');
+            Route::post('/', [PenyediaSuketController::class, 'store'])->name('store');
+            Route::get('/jenis/{kategoriId}', [PenyediaSuketController::class, 'jenisByKategori'])->name('jenis');
+            Route::get('/{id}', [PenyediaSuketController::class, 'showPengajuan'])->name('show');
+        });
+
+        Route::prefix('suket-layak-k3')->name('pengawasan.suket.penyedia.terbit.')->group(function () {
+            Route::get('/', [PenyediaSuketController::class, 'terbitIndex'])->name('index');
+            Route::get('/{id}', [PenyediaSuketController::class, 'showTerbit'])->name('show');
+        });
+
+        Route::get('/suket-k3/{id}/file/{key}', [PenyediaSuketController::class, 'file'])->name('pengawasan.suket.penyedia.file');
+        Route::get('/suket-k3/{id}/cetak-lhpp', [AdminSuketController::class, 'cetakLhpp'])->name('pengawasan.suket.penyedia.cetak-lhpp');
+        Route::get('/suket-k3/{id}/cetak-suket', [AdminSuketController::class, 'cetakSuket'])->name('pengawasan.suket.penyedia.cetak-suket');
     });
 
     Route::prefix('bidang-hi')->group(function () {
@@ -400,11 +419,24 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         });
     });
 
-    Route::prefix('ajuan-pjk3')->name('pengawasan.pjk3.admin.')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,kepala-bidang,kepala-seksi,admin-bidang,petugas-bidang,sekretaris,kepala-sub-bidang,kepala-sub-bagian')->group(function () {
+    Route::prefix('pendaftaran-pjk3')->name('pengawasan.pjk3.admin.')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,kepala-bidang,kepala-seksi,admin-bidang,petugas-bidang,sekretaris,kepala-sub-bidang,kepala-sub-bagian,eksekutif-provinsi')->group(function () {
         Route::get('/', [AdminPjk3Controller::class, 'index'])->name('index');
         Route::get('/{id}/file/{key}', [AdminPjk3Controller::class, 'file'])->name('file');
         Route::get('/{id}', [AdminPjk3Controller::class, 'show'])->name('show');
         Route::post('/{id}/verifikasi', [AdminPjk3Controller::class, 'verifikasi'])->name('verifikasi');
+    });
+
+    Route::prefix('layanan-k3')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,kepala-bidang,kepala-seksi,admin-bidang,petugas-bidang,eksekutif-provinsi')->group(function () {
+        Route::get('/pengajuan-suket', [AdminSuketController::class, 'pengajuanIndex'])->name('pengawasan.suket.admin.pengajuan');
+        Route::get('/suket-layak-k3', [AdminSuketController::class, 'terbitIndex'])->name('pengawasan.suket.admin.terbit');
+        Route::get('/suket/{id}/file/{key}', [AdminSuketController::class, 'file'])->name('pengawasan.suket.admin.file');
+        Route::get('/suket/{id}/cetak-lhpp', [AdminSuketController::class, 'cetakLhpp'])->name('pengawasan.suket.admin.cetak-lhpp');
+        Route::get('/suket/{id}/cetak-suket', [AdminSuketController::class, 'cetakSuket'])->name('pengawasan.suket.admin.cetak-suket');
+        Route::get('/suket/{id}', [AdminSuketController::class, 'show'])->name('pengawasan.suket.admin.show');
+        Route::post('/suket/{id}/disposisi', [AdminSuketController::class, 'disposisi'])->name('pengawasan.suket.admin.disposisi');
+        Route::post('/suket/{id}/analisis', [AdminSuketController::class, 'analisis'])->name('pengawasan.suket.admin.analisis');
+        Route::post('/suket/{id}/tte-pengawas', [AdminSuketController::class, 'ttePengawas'])->name('pengawasan.suket.admin.tte-pengawas');
+        Route::post('/suket/{id}/tte-kadis', [AdminSuketController::class, 'tteKadis'])->name('pengawasan.suket.admin.tte-kadis');
     });
 
     Route::prefix('blk')->group(function () {

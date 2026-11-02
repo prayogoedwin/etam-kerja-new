@@ -61,6 +61,17 @@ class EtamPjk3Ajuan extends Model
         return $this->belongsTo(UserPenyedia::class, 'penyedia_id', 'user_id');
     }
 
+    public static function isPjk3Aktif(int $userId): bool
+    {
+        $ajuan = self::query()
+            ->where('penyedia_id', $userId)
+            ->where('status_verifikasi', self::STATUS_ACC)
+            ->latest('id')
+            ->first();
+
+        return $ajuan !== null && ! $ajuan->isExpired();
+    }
+
     public function isExpired(): bool
     {
         if ((int) $this->status_verifikasi !== self::STATUS_ACC || ! $this->masa_berlaku) {

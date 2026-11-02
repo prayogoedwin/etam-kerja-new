@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -17,6 +16,7 @@ class PengawasanK3KategoriSeeder extends Seeder
             [
                 'id' => 1,
                 'nama' => 'Listrik',
+                'kode' => 'LIS',
                 'keterangan' => null,
                 'created_at' => '2026-10-02 02:02:02',
                 'updated_at' => now(),
@@ -25,6 +25,7 @@ class PengawasanK3KategoriSeeder extends Seeder
             [
                 'id' => 2,
                 'nama' => 'Pesawat Tenaga dan Produksi',
+                'kode' => 'PTP',
                 'keterangan' => null,
                 'created_at' => '2026-10-02 02:02:02',
                 'updated_at' => now(),
@@ -33,6 +34,7 @@ class PengawasanK3KategoriSeeder extends Seeder
             [
                 'id' => 3,
                 'nama' => 'Pesawat Uap, Bejana Tekanan, dan Tangki Timbun',
+                'kode' => 'PUBT',
                 'keterangan' => null,
                 'created_at' => '2026-10-02 02:02:02',
                 'updated_at' => now(),
@@ -41,6 +43,7 @@ class PengawasanK3KategoriSeeder extends Seeder
             [
                 'id' => 4,
                 'nama' => 'Kebakaran',
+                'kode' => 'KBK',
                 'keterangan' => null,
                 'created_at' => '2026-10-02 02:02:02',
                 'updated_at' => now(),
@@ -49,6 +52,7 @@ class PengawasanK3KategoriSeeder extends Seeder
             [
                 'id' => 5,
                 'nama' => 'Pesawat Angkat dan Pesawat Angkut',
+                'kode' => 'PAPA',
                 'keterangan' => null,
                 'created_at' => '2026-10-02 02:02:02',
                 'updated_at' => now(),
@@ -57,6 +61,7 @@ class PengawasanK3KategoriSeeder extends Seeder
             [
                 'id' => 6,
                 'nama' => 'Lingkungan Kerja',
+                'kode' => 'LK',
                 'keterangan' => null,
                 'created_at' => '2026-10-02 02:02:02',
                 'updated_at' => now(),

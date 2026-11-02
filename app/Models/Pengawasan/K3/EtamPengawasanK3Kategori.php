@@ -14,6 +14,7 @@ class EtamPengawasanK3Kategori extends Model
 
     protected $fillable = [
         'nama',
+        'kode',
         'keterangan',
     ];
 
