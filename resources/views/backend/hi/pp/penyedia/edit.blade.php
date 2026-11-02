@@ -93,10 +93,10 @@
                                                             </div>
 
                                                             <div class="form-group row">
-                                                                <label class="col-sm-3 col-form-label">Surat Keputusan Izin Usaha</label>
+                                                                <label class="col-sm-3 col-form-label">Surat Keputusan Izin Usaha :</label>
                                                                 <div class="col-sm-9">
-                                                                    <input type="text" name="surat_keputusan_izin_usaha" class="form-control"
-                                                                        value="{{ old('surat_keputusan_izin_usaha', $ajuan->surat_keputusan_izin_usaha) }}">
+                                                                    {{-- <input type="text" name="surat_keputusan_izin_usaha" class="form-control"
+                                                                        value="{{ old('surat_keputusan_izin_usaha', $ajuan->surat_keputusan_izin_usaha) }}"> --}}
                                                                 </div>
                                                             </div>
 
@@ -121,11 +121,12 @@
                                                                 <div class="col-sm-9">
                                                                     <input type="text" name="nama_serikat_pekerja" class="form-control"
                                                                         value="{{ old('nama_serikat_pekerja', $ajuan->nama_serikat_pekerja) }}">
+                                                                    <small>Apabila Ada</small>
                                                                 </div>
                                                             </div>
 
                                                             <div class="form-group row">
-                                                                <label class="col-sm-3 col-form-label">Nomor Peserta BPJS</label>
+                                                                <label class="col-sm-3 col-form-label">Nomor Kepesertaan BPJS</label>
                                                                 <div class="col-sm-9">
                                                                     <input type="text" name="nomor_peserta_bpjs" class="form-control"
                                                                         value="{{ old('nomor_peserta_bpjs', $ajuan->nomor_peserta_bpjs) }}">

@@ -89,9 +89,9 @@
                                                             </div>
 
                                                             <div class="form-group row">
-                                                                <label class="col-sm-3 col-form-label">Surat Keputusan Izin Usaha</label>
+                                                                <label class="col-sm-3 col-form-label">Surat Keputusan Izin Usaha :</label>
                                                                 <div class="col-sm-9">
-                                                                    <input type="text" name="surat_keputusan_izin_usaha" class="form-control" placeholder="Masukkan nomor SK izin usaha">
+                                                                    {{-- <input type="text" name="surat_keputusan_izin_usaha" class="form-control" placeholder="Masukkan nomor SK izin usaha"> --}}
                                                                 </div>
                                                             </div>
 
@@ -113,11 +113,12 @@
                                                                 <label class="col-sm-3 col-form-label">Nama Serikat Pekerja</label>
                                                                 <div class="col-sm-9">
                                                                     <input type="text" name="nama_serikat_pekerja" class="form-control" placeholder="Contoh: SP FSPMI">
+                                                                    <small>Apabila Ada</small>
                                                                 </div>
                                                             </div>
 
                                                             <div class="form-group row">
-                                                                <label class="col-sm-3 col-form-label">Nomor Peserta BPJS</label>
+                                                                <label class="col-sm-3 col-form-label">Nomor Kepesertaan BPJS</label>
                                                                 <div class="col-sm-9">
                                                                     <input type="text" name="nomor_peserta_bpjs" class="form-control" placeholder="Masukkan nomor peserta BPJS">
                                                                 </div>

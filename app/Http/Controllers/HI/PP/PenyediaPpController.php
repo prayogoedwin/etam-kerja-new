@@ -141,7 +141,7 @@ class PenyediaPpController extends Controller
             $ajuan = EtamHiPpAjuan::create([
                 'jenis_ajuan'                       => $request->jenis_ajuan,
                 'perusahaan_id'                     => auth()->id() ?? 0,
-                'surat_keputusan_izin_usaha'        => $request->surat_keputusan_izin_usaha,
+                // 'surat_keputusan_izin_usaha'        => $request->surat_keputusan_izin_usaha,
                 'nomor'                             => $request->nomor,
                 'tanggal'                           => $request->tanggal,
                 'nama_serikat_pekerja'              => $request->nama_serikat_pekerja,
@@ -277,7 +277,7 @@ class PenyediaPpController extends Controller
 
             $ajuan->update([
                 'jenis_ajuan'                     => $request->jenis_ajuan,
-                'surat_keputusan_izin_usaha'      => $request->surat_keputusan_izin_usaha,
+                // 'surat_keputusan_izin_usaha'      => $request->surat_keputusan_izin_usaha,
                 'nomor'                           => $request->nomor,
                 'tanggal'                         => $request->tanggal,
                 'nama_serikat_pekerja'            => $request->nama_serikat_pekerja,
@@ -396,7 +396,7 @@ class PenyediaPpController extends Controller
 
             $ajuan->update([
                 'jenis_ajuan'                     => $request->jenis_ajuan,
-                'surat_keputusan_izin_usaha'      => $request->surat_keputusan_izin_usaha,
+                // 'surat_keputusan_izin_usaha'      => $request->surat_keputusan_izin_usaha,
                 'nomor'                           => $request->nomor,
                 'tanggal'                         => $request->tanggal,
                 'nama_serikat_pekerja'            => $request->nama_serikat_pekerja,

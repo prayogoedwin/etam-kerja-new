@@ -21,7 +21,7 @@ return new class extends Migration
         DB::table('etam_hi_pp_jenisajuan')->insert([
             ['nama' => 'Perpanjangan',           'keterangan' => null],
             ['nama' => 'Baru',                   'keterangan' => null],
-            ['nama' => 'Perpanjangan 1 Tahun',   'keterangan' => null],
+            // ['nama' => 'Perpanjangan 1 Tahun',   'keterangan' => null],
             ['nama' => 'Perubahan',              'keterangan' => null],
         ]);
     }

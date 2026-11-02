@@ -14,7 +14,7 @@
                         <div class="row align-items-center">
                             <div class="col-md-12">
                                 <div class="page-header-title">
-                                    <h5 class="m-b-10">Peraturan Perusahaan</h5>
+                                    <h5 class="m-b-10">Pengesahan Peraturan Perusahaan</h5>
                                 </div>
                                 {{-- <ul class="breadcrumb">
                                     <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
@@ -51,8 +51,8 @@
                                             <th>Jenis Ajuan</th>
                                             <th>Nomor</th>
                                             <th>Tanggal</th>
-                                            <th>Status Admin</th>
-                                            <th>Status Kasi</th>
+                                            <th>Verifikasi<br>Berkas</th>
+                                            <th>Verifikasi<br>Konsep PP</th>
                                             <th>Options</th>
                                         </thead>
 

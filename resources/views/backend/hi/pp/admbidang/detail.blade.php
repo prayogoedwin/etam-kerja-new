@@ -127,8 +127,8 @@
                                             <td>{{ $ajuan->jenisAjuan->nama ?? '-' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Surat Keputusan Izin Usaha</th>
-                                            <td>{{ $ajuan->surat_keputusan_izin_usaha ?? '-' }}</td>
+                                            <th>Surat Keputusan Izin Usaha:</th>
+                                            {{-- <td>{{ $ajuan->surat_keputusan_izin_usaha ?? '-' }}</td> --}}
                                         </tr>
                                         <tr>
                                             <th>Nomor</th>
@@ -143,7 +143,7 @@
                                             <td>{{ $ajuan->nama_serikat_pekerja ?? '-' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Nomor Peserta BPJS</th>
+                                            <th>Nomor Kepesertaan BPJS</th>
                                             <td>{{ $ajuan->nomor_peserta_bpjs ?? '-' }}</td>
                                         </tr>
                                         <tr>
