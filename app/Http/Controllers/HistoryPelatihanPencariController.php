@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BLK\EtamBlkPelatihanPeserta;
 use App\Models\UserPencari;
+use App\Services\Blk\BlkSertifikatKelulusanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
@@ -25,7 +26,7 @@ class HistoryPelatihanPencariController extends Controller
                     'pelatihan:id,nama_pelatihan,blk_id,tanggal_pelaksanaan,tanggal_pelaksanaan_selesai,pretest_form_id',
                     'pelatihan.blk:id,nama_lembaga',
                 ])
-                ->select('id', 'blk_pelatihan_id', 'status_pendaftaran', 'created_at')
+                ->select('id', 'blk_pelatihan_id', 'status_pendaftaran', 'status_ttd', 'created_at')
                 ->where('pencari_id', $pencariId)
                 ->latest();
 
@@ -88,6 +89,10 @@ class HistoryPelatihanPencariController extends Controller
                     if ($pelatihan->pretest_form_id) {
                         $html .= ' <a href="'.route('blk.pelatihan.pretest', $pelatihan->id).'" class="btn btn-primary btn-sm">Pretest</a>';
                     }
+                    if ((int) $history->status_pendaftaran === EtamBlkPelatihanPeserta::STATUS_LULUS
+                        && (int) $history->status_ttd === EtamBlkPelatihanPeserta::TTD_TTD_DINAS) {
+                        $html .= ' <a href="'.route('historypelatihan.pencari.sertifikat', $history->id).'" class="btn btn-success btn-sm">Unduh Sertifikat</a>';
+                    }
 
                     return $html;
                 })
@@ -96,5 +101,24 @@ class HistoryPelatihanPencariController extends Controller
         }
 
         return view('backend.historypelatihanpencari.index');
+    }
+
+    public function unduhSertifikat(string $pesertaId, BlkSertifikatKelulusanService $sertifikat)
+    {
+        if ((Auth::user()->roles[0]['name'] ?? null) !== 'pencari-kerja') {
+            abort(403);
+        }
+
+        $pencari = UserPencari::where('user_id', Auth::id())->first();
+        $peserta = EtamBlkPelatihanPeserta::query()
+            ->where('pencari_id', $pencari?->id ?? 0)
+            ->findOrFail($pesertaId);
+
+        if ((int) $peserta->status_pendaftaran !== EtamBlkPelatihanPeserta::STATUS_LULUS
+            || (int) $peserta->status_ttd !== EtamBlkPelatihanPeserta::TTD_TTD_DINAS) {
+            abort(403);
+        }
+
+        return $sertifikat->unduhZip($peserta);
     }
 }

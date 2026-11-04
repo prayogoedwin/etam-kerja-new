@@ -6,10 +6,16 @@ use App\Models\BLK\EtamBlk;
 use App\Models\BLK\EtamBlkPelatihan;
 use App\Models\BLK\EtamBlkPelatihanPeserta;
 use App\Models\EtamStruktur;
+use App\Models\EtamTte;
 use App\Models\Kabkota;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use ZipArchive;
 
 class BlkSertifikatKelulusanService
 {
@@ -35,9 +41,24 @@ class BlkSertifikatKelulusanService
 
         $this->ensureNomorSertifikat($peserta, $pelatihan, $tanggalTtdDinas);
 
+        $statusTtd = (int) $peserta->status_ttd;
+        $signedKompetensi = $statusTtd >= EtamBlkPelatihanPeserta::TTD_TTD_UPTD;
+        $signedSertifikat = $statusTtd >= EtamBlkPelatihanPeserta::TTD_TTD_DINAS;
+        if ($versi === self::VERSI_TTE) {
+            $signedKompetensi = true;
+            $signedSertifikat = true;
+        }
+
         return [
             'versi' => $versi === self::VERSI_TTE ? self::VERSI_TTE : self::VERSI_DRAFT,
-            'is_draft' => $versi !== self::VERSI_TTE,
+            'is_draft' => ! $signedSertifikat,
+            'signed' => [
+                'sertifikat' => $signedSertifikat,
+                'kompetensi' => $signedKompetensi,
+            ],
+            'logo_kaltim' => asset('assets/etam_fe/images/logo/logo_kaltim.png'),
+            'logo_bsre' => asset('assets/etam_be/images/logo/logo_bsre.png'),
+            'bsre_teks' => "Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik\nyang diterbitkan oleh Balai Sertifikasi Elektronik (BSrE), Badan Siber dan Sandi Negara (BSSN).",
             'nomor' => $peserta->nomor_sertifikat,
             'peserta' => [
                 'nama' => $peserta->name ?: '-',
@@ -79,6 +100,133 @@ class BlkSertifikatKelulusanService
                 ],
             ],
         ];
+    }
+
+    public function simpanDokumenTte(EtamBlkPelatihanPeserta $peserta, string $kodeDokumen, bool $sudahTte = true, ?string $urlVerifikasi = null): string
+    {
+        $peserta->loadMissing(['pelatihan.blk', 'pelatihan.kompetensiInti', 'pelatihan.kompetensiPenunjang']);
+        $pelatihan = $peserta->pelatihan;
+        if (! $pelatihan) {
+            throw new \RuntimeException('Peserta BLK tidak memiliki pelatihan');
+        }
+
+        $sertifikat = $this->build($pelatihan, $peserta);
+        $sertifikat['logo_kaltim'] = $this->dataUri(public_path('assets/etam_fe/images/logo/logo_kaltim.png')) ?: $sertifikat['logo_kaltim'];
+        $sertifikat['logo_bsre'] = $this->dataUri(public_path('assets/etam_be/images/logo/logo_bsre.png')) ?: $sertifikat['logo_bsre'];
+        if ($sudahTte && $kodeDokumen === EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI) {
+            $sertifikat['signed']['kompetensi'] = true;
+        }
+        if ($sudahTte && $kodeDokumen === EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT) {
+            $sertifikat['signed']['sertifikat'] = true;
+            $sertifikat['is_draft'] = false;
+        }
+
+        $html = view('backend.blk.pelatihan.sertifikat', [
+            'pelatihan' => $pelatihan,
+            'peserta' => $peserta,
+            'sertifikat' => $sertifikat,
+            'halaman' => $kodeDokumen,
+            'modeUnduh' => true,
+            'tampilanAdmin' => ! $sudahTte,
+            'urlVerifikasi' => $urlVerifikasi,
+            'qrVerifikasi' => $urlVerifikasi ? $this->qrDataUri($urlVerifikasi) : null,
+        ])->render();
+
+        $path = $sudahTte
+            ? 'tte/blk/'.$peserta->id.'/'.$kodeDokumen.'.pdf'
+            : 'tte/blk/'.$peserta->id.'/'.$kodeDokumen.'.before.pdf';
+        Storage::disk('local')->put($path, $this->htmlKePdf($html));
+
+        return $path;
+    }
+
+    public function unduhZip(EtamBlkPelatihanPeserta $peserta): BinaryFileResponse
+    {
+        $peserta->loadMissing(['pelatihan.blk', 'pelatihan.kompetensiInti', 'pelatihan.kompetensiPenunjang']);
+        $files = [
+            EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT => '1-sertifikat-kelulusan.pdf',
+            EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI => '2-daftar-unit-kompetensi.pdf',
+        ];
+
+        $tmp = tempnam(sys_get_temp_dir(), 'blk-sertifikat-');
+        $zip = new ZipArchive;
+        if ($zip->open($tmp, ZipArchive::OVERWRITE) !== true) {
+            throw new \RuntimeException('Gagal membuat berkas unduhan sertifikat');
+        }
+
+        foreach ($files as $kode => $namaFile) {
+            $path = $this->pathBerkasTte($peserta, $kode);
+            $isi = $path
+                ? (string) Storage::disk('local')->get($path)
+                : $this->simpanLaluBaca($peserta, $kode);
+            $zip->addFromString($namaFile, $isi);
+        }
+        $zip->close();
+
+        $unduhNama = 'sertifikat-blk-'.$peserta->id.'.zip';
+
+        return response()->download($tmp, $unduhNama)->deleteFileAfterSend(true);
+    }
+
+    private function pathBerkasTte(EtamBlkPelatihanPeserta $peserta, string $kode): ?string
+    {
+        $path = EtamTte::query()
+            ->where('nama_modul', 'blk')
+            ->where('id_refrensi', $peserta->id)
+            ->where('kode_dokumen', $kode)
+            ->where('status', EtamTte::STATUS_BERHASIL)
+            ->orderByDesc('id')
+            ->value('path_file_after');
+
+        if (is_string($path) && $path !== '' && Storage::disk('local')->exists($path)) {
+            return $path;
+        }
+
+        $legacy = 'tte/blk/'.$peserta->id.'/'.$kode.'.pdf';
+        if (Storage::disk('local')->exists($legacy)) {
+            return $legacy;
+        }
+
+        return null;
+    }
+
+    private function simpanLaluBaca(EtamBlkPelatihanPeserta $peserta, string $kode): string
+    {
+        $path = $this->simpanDokumenTte($peserta, $kode);
+
+        return (string) Storage::disk('local')->get($path);
+    }
+
+    private function qrDataUri(string $url): ?string
+    {
+        try {
+            $svg = (string) QrCode::size(140)->margin(1)->generate($url);
+
+            return 'data:image/svg+xml;base64,'.base64_encode($svg);
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    private function htmlKePdf(string $html): string
+    {
+        return Pdf::loadHTML($html)
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultMediaType', 'print')
+            ->setOption('isRemoteEnabled', false)
+            ->setOption('isHtml5ParserEnabled', true)
+            ->output();
+    }
+
+    private function dataUri(string $path): ?string
+    {
+        if (! is_file($path)) {
+            return null;
+        }
+
+        $mime = mime_content_type($path) ?: 'image/png';
+
+        return 'data:'.$mime.';base64,'.base64_encode((string) file_get_contents($path));
     }
 
     private function strukturBalai(?EtamBlk $blk): ?EtamStruktur

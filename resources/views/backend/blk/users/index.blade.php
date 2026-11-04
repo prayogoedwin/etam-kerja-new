@@ -37,6 +37,7 @@
                                                 <th>Nama</th>
                                                 <th>Email</th>
                                                 <th>Whatsapp</th>
+                                                <th>NIK</th>
                                                 <th>BLK</th>
                                                 <th>{{ $createOnly ? 'Peran' : 'Tipe Akun' }}</th>
                                                 @unless ($createOnly)
@@ -80,6 +81,13 @@
                                     <div class="form-group">
                                         <label class="form-label">Whatsapp</label>
                                         <input type="text" class="form-control" id="whatsapp" name="whatsapp">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label">NIK</label>
+                                        <input type="text" class="form-control" id="nik" name="nik" inputmode="numeric" maxlength="16">
+                                        <small class="text-muted">Opsional. Wajib jika akun ini akan TTE.</small>
                                     </div>
                                 </div>
                                 @if ($createOnly)
@@ -156,6 +164,11 @@
                                 <input type="text" class="form-control" id="edit_whatsapp" name="whatsapp">
                             </div>
                             <div class="mb-3">
+                                <label class="form-label">NIK</label>
+                                <input type="text" class="form-control" id="edit_nik" name="nik" inputmode="numeric" maxlength="16">
+                                <small class="text-muted">Opsional. Wajib jika akun ini akan TTE.</small>
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label">Tipe Akun</label>
                                 <select class="form-control" id="edit_tipe_akun" name="tipe_akun">
                                     @foreach ($tipeAkun as $key => $label)
@@ -205,6 +218,9 @@
                         data: 'whatsapp'
                     },
                     {
+                        data: 'nik'
+                    },
+                    {
                         data: 'blk_nama'
                     },
                     {
@@ -229,6 +245,7 @@
                         name: $('#name').val(),
                         email: $('#email').val(),
                         whatsapp: $('#whatsapp').val(),
+                        nik: $('#nik').val(),
                         @if ($createOnly)
                         role: $('#role').val(),
                         @else
@@ -268,6 +285,7 @@
                         name: $('#edit_name').val(),
                         email: $('#edit_email').val(),
                         whatsapp: $('#edit_whatsapp').val(),
+                        nik: $('#edit_nik').val(),
                         tipe_akun: $('#edit_tipe_akun').val(),
                         blk_id: $('#edit_blk_id').val(),
                         _token: '{{ csrf_token() }}'
@@ -303,6 +321,7 @@
                     $('#edit_name').val(data.user ? data.user.name : '');
                     $('#edit_email').val(data.user ? data.user.email : '');
                     $('#edit_whatsapp').val(data.user ? data.user.whatsapp : '');
+                    $('#edit_nik').val(data.user ? (data.user.nik || '') : '');
                     $('#edit_tipe_akun').val(data.tipe_akun);
                     $('#edit_blk_id').val(data.blk_id);
                     $('#modal-edit').modal('show');

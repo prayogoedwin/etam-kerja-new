@@ -62,8 +62,10 @@
         .frame {
             min-height: calc(297mm - 20mm);
             border: 1.5px solid #000;
-            padding: 10mm 16mm 14mm;
+            padding: 10mm 14mm 8mm;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
         .watermark {
@@ -248,6 +250,57 @@
             font-style: italic;
         }
 
+        .bsre-footer {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: auto;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 8pt;
+            line-height: 1.35;
+            color: #222;
+            font-style: normal;
+            font-weight: 400;
+        }
+
+        .bsre-footer .bsre-logo {
+            width: 20mm;
+            vertical-align: middle;
+            padding: 8mm 6px 0 0;
+        }
+
+        .bsre-footer .bsre-logo img {
+            width: 18mm;
+            height: auto;
+        }
+
+        .bsre-footer .bsre-text {
+            vertical-align: middle;
+            text-align: left;
+            padding-top: 8mm;
+        }
+
+        .qr-tte {
+            margin-top: 4px;
+            text-align: center;
+        }
+
+        .qr-tte img {
+            width: 22mm;
+            height: 22mm;
+        }
+
+        .qr-tte small {
+            display: block;
+            font-size: 7pt;
+            color: #444;
+        }
+
+        .ttd .space .tte-ok {
+            color: #1b5e20;
+            font-style: italic;
+            font-size: 8.5pt;
+        }
+
         @media print {
             body { background: none; }
             .toolbar { display: none; }
@@ -263,27 +316,71 @@
                 border: 1.6px solid #000;
             }
             .watermark { color: rgba(176, 0, 0, .18); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .bsre-footer { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
 <body>
+    @php
+        $halaman = in_array($halaman ?? '', ['sertifikat', 'kompetensi'], true) ? $halaman : 'sertifikat';
+        $modeUnduh = $modeUnduh ?? false;
+        $tampilanAdmin = $tampilanAdmin ?? false;
+        $urlVerifikasi = $urlVerifikasi ?? null;
+        $qrVerifikasi = $qrVerifikasi ?? null;
+        $signedSertifikat = (bool) ($sertifikat['signed']['sertifikat'] ?? false);
+        $signedKompetensi = (bool) ($sertifikat['signed']['kompetensi'] ?? false);
+        $lihatSertifikatResmi = $tampilanAdmin || $signedSertifikat;
+        $lihatKompetensiResmi = $tampilanAdmin || $signedKompetensi;
+        $tampilSertifikat = $halaman === 'sertifikat';
+        $tampilKompetensi = $halaman === 'kompetensi';
+    @endphp
     <div class="toolbar">
-        <div>{{ $sertifikat['is_draft'] ? 'Draf sertifikat — belum TTE' : 'Sertifikat' }}</div>
         <div>
+            @if ($halaman === 'kompetensi')
+                @if ($signedKompetensi)
+                    Daftar Unit Kompetensi
+                @elseif ($tampilanAdmin)
+                    Diajukan, menunggu TTE
+                @else
+                    Draf daftar unit kompetensi — belum TTE
+                @endif
+            @elseif ($halaman === 'sertifikat')
+                @if ($signedSertifikat)
+                    Sertifikat Kelulusan
+                @elseif ($tampilanAdmin)
+                    Diajukan, menunggu TTE
+                @else
+                    Draf sertifikat — belum TTE
+                @endif
+            @else
+                {{ $sertifikat['is_draft'] ? 'Draf sertifikat — belum TTE' : 'Sertifikat' }}
+            @endif
+        </div>
+        <div>
+            @unless ($modeUnduh)
+                @if ($halaman === 'sertifikat')
+                    <a href="{{ route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id, 'kompetensi']) }}">Unit Kompetensi</a>
+                @else
+                    <a href="{{ route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id, 'sertifikat']) }}">Sertifikat</a>
+                @endif
+            @endunless
             <button type="button" onclick="window.print()">Cetak / PDF</button>
-            <a href="{{ route('blk.pelatihan.peserta.show', [$pelatihan->id, $peserta->id]) }}">Kembali</a>
+            @unless ($modeUnduh)
+                <a href="{{ route('blk.pelatihan.peserta.show', [$pelatihan->id, $peserta->id]) }}">Kembali</a>
+            @endunless
         </div>
     </div>
 
+    @if ($tampilSertifikat)
     <div class="page">
         <div class="frame">
-        @if ($sertifikat['is_draft'])
+        @unless ($lihatSertifikatResmi)
             <div class="watermark">DRAFT</div>
-        @endif
+        @endunless
         <div class="content">
             <div class="header">
                 <div class="logo-wrap">
-                    <img src="{{ asset('assets/etam_fe/images/logo/logo_kaltim.png') }}" alt="Lambang Kalimantan Timur">
+                    <img src="{{ $sertifikat['logo_kaltim'] }}" alt="Lambang Kalimantan Timur">
                 </div>
                 <div class="gov">{{ $sertifikat['kop']['pemerintah'] }}</div>
                 <div class="dinas">{{ $sertifikat['kop']['dinas'] }}</div>
@@ -324,21 +421,27 @@
                 <div>{{ $sertifikat['penandatangan']['dinas']['instansi'] }}</div>
                 <div>{{ $sertifikat['penandatangan']['dinas']['jabatan'] }}</div>
                 <div class="space">
-                    @if ($sertifikat['is_draft'])
-                        Menunggu TTE
+                    @if ($lihatSertifikatResmi)
+                        <span class="tte-ok">Telah ditandatangani secara elektronik</span>
                     @endif
+                    @include('backend.blk.pelatihan._qr-berkas')
                 </div>
                 <div class="nama">{{ $sertifikat['penandatangan']['dinas']['nama'] ?: '................................' }}</div>
             </div>
         </div>
+            @if ($lihatSertifikatResmi)
+            @include('backend.blk.pelatihan._bsre-footer')
+            @endif
         </div>
     </div>
+    @endif
 
+    @if ($tampilKompetensi)
     <div class="page">
         <div class="frame">
-        @if ($sertifikat['is_draft'])
+        @unless ($lihatKompetensiResmi)
             <div class="watermark">DRAFT</div>
-        @endif
+        @endunless
         <div class="content">
             <div class="section-title">DAFTAR UNIT KOMPETENSI</div>
 
@@ -399,18 +502,19 @@
                 <div>{{ $sertifikat['penandatangan']['balai']['instansi'] }}</div>
                 <div>{{ $sertifikat['penandatangan']['balai']['jabatan'] }}</div>
                 <div class="space">
-                    @if ($sertifikat['is_draft'])
-                        Menunggu TTE
+                    @if ($lihatKompetensiResmi)
+                        <span class="tte-ok">Telah ditandatangani secara elektronik</span>
                     @endif
+                    @include('backend.blk.pelatihan._qr-berkas')
                 </div>
                 <div class="nama">{{ $sertifikat['penandatangan']['balai']['nama'] ?: '................................' }}</div>
             </div>
-
-            @if ($sertifikat['is_draft'])
-                <p class="catatan">Dokumen draf. Nama penanda tangan sudah terisi, tanpa nomor induk pegawai. Proses tanda tangan elektronik (TTE) belum dijalankan.</p>
+        </div>
+            @if ($lihatKompetensiResmi)
+            @include('backend.blk.pelatihan._bsre-footer')
             @endif
         </div>
-        </div>
     </div>
+    @endif
 </body>
 </html>

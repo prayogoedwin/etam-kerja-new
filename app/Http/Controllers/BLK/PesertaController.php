@@ -12,11 +12,14 @@ use App\Models\UserPencari;
 use App\Models\UserPenyedia;
 use App\Services\Blk\BlkFormAnswerService;
 use App\Services\Blk\BlkSertifikatKelulusanService;
+use App\Services\Tte\TteQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Yajra\DataTables\Facades\DataTables;
 
 class PesertaController extends Controller
@@ -58,7 +61,7 @@ class PesertaController extends Controller
 
             $datas = EtamBlkPelatihanPeserta::query()
                 ->where('blk_pelatihan_id', $pelatihan->id)
-                ->select('id', 'name', 'ktp', 'email', 'hp', 'alamat', 'status_pendaftaran', 'status_ttd', 'alasan_status');
+                ->select('id', 'name', 'ktp', 'email', 'hp', 'alamat', 'status_pendaftaran', 'status_ttd', 'alasan_status', 'nomor_sertifikat');
             $this->applyStatusFilter($datas, $request);
 
             return DataTables::of($datas)
@@ -106,10 +109,15 @@ class PesertaController extends Controller
         $validator = Validator::make($request->all(), [
             'status_pendaftaran' => 'required|in:0,1,2,3,4,5',
             'alasan_status' => 'nullable|string',
+            'nomor_sertifikat' => 'nullable|string|max:100',
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()]);
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+                'message' => $validator->errors()->first(),
+            ]);
         }
 
         if ((int) $pelatihan->pelatihan_untuk === EtamBlkPelatihan::UNTUK_PENYEDIA) {
@@ -118,23 +126,59 @@ class PesertaController extends Controller
             $peserta = EtamBlkPelatihanPeserta::where('blk_pelatihan_id', $pelatihan->id)->findOrFail($pesertaId);
         }
 
+        $newStatus = (int) $request->status_pendaftaran;
+        if ($peserta instanceof EtamBlkPelatihanPeserta && $newStatus === EtamBlkPelatihanPeserta::STATUS_LULUS) {
+            $nomorValidator = Validator::make($request->all(), [
+                'nomor_sertifikat' => [
+                    'required',
+                    'string',
+                    'max:100',
+                    Rule::unique('etam_blk_pelatihan_peserta', 'nomor_sertifikat')
+                        ->ignore($peserta->id)
+                        ->whereNull('deleted_at'),
+                ],
+            ]);
+            if ($nomorValidator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'errors' => $nomorValidator->errors(),
+                    'message' => $nomorValidator->errors()->first(),
+                ]);
+            }
+        }
+
         $payload = [
             'status_pendaftaran' => $request->status_pendaftaran,
             'alasan_status' => $request->alasan_status,
             'updated_by' => Auth::id(),
         ];
+        if ($peserta instanceof EtamBlkPelatihanPeserta && $newStatus === EtamBlkPelatihanPeserta::STATUS_LULUS) {
+            $payload['nomor_sertifikat'] = trim((string) $request->nomor_sertifikat);
+        }
 
+        $enqueueTte = false;
+        $batalkanTte = false;
         if ($peserta instanceof EtamBlkPelatihanPeserta) {
-            $newStatus = (int) $request->status_pendaftaran;
             $currentTtd = (int) $peserta->status_ttd;
             if ($newStatus === EtamBlkPelatihanPeserta::STATUS_LULUS && $currentTtd === EtamBlkPelatihanPeserta::TTD_MENUNGGU) {
                 $payload['status_ttd'] = EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD;
+                $enqueueTte = true;
             } elseif ($newStatus !== EtamBlkPelatihanPeserta::STATUS_LULUS && $currentTtd <= EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD) {
                 $payload['status_ttd'] = EtamBlkPelatihanPeserta::TTD_MENUNGGU;
+                $batalkanTte = true;
             }
         }
 
         $peserta->update($payload);
+
+        if ($peserta instanceof EtamBlkPelatihanPeserta) {
+            if ($enqueueTte) {
+                app(TteQueue::class)->ajukanBlkUptd($peserta->fresh(['pelatihan.blk']));
+            }
+            if ($batalkanTte) {
+                app(TteQueue::class)->batalkanMenunggu('blk', $peserta->getTable(), $peserta->id);
+            }
+        }
 
         return response()->json(['success' => true, 'message' => 'Status peserta berhasil diupdate']);
     }
@@ -168,6 +212,8 @@ class PesertaController extends Controller
             'updated_by' => Auth::id(),
         ]);
 
+        app(TteQueue::class)->ajukanBlkUptd($peserta->fresh(['pelatihan.blk']));
+
         return response()->json(['success' => true, 'message' => 'Peserta diajukan ke Kepala UPTD']);
     }
 
@@ -199,15 +245,20 @@ class PesertaController extends Controller
             $query->whereIn('id', $ids);
         }
 
-        $count = (clone $query)->count();
+        $pesertaList = $query->get();
+        $count = $pesertaList->count();
         if ($count === 0) {
             return response()->json(['success' => false, 'message' => 'Tidak ada peserta lulus yang menunggu pengajuan TTD']);
         }
 
-        $query->update([
-            'status_ttd' => EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD,
-            'updated_by' => Auth::id(),
-        ]);
+        $queue = app(TteQueue::class);
+        foreach ($pesertaList as $peserta) {
+            $peserta->update([
+                'status_ttd' => EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD,
+                'updated_by' => Auth::id(),
+            ]);
+            $queue->ajukanBlkUptd($peserta->fresh(['pelatihan.blk']));
+        }
 
         return response()->json([
             'success' => true,
@@ -269,10 +320,15 @@ class PesertaController extends Controller
         ));
     }
 
-    public function sertifikat(string $pelatihanId, string $pesertaId, BlkSertifikatKelulusanService $sertifikatService)
+    public function sertifikat(string $pelatihanId, string $pesertaId, BlkSertifikatKelulusanService $sertifikatService, ?string $halaman = null)
     {
         if (! $this->canCreatePelatihan() && ! $this->isKepalaDinas()) {
             abort(403);
+        }
+
+        $halaman = $halaman ?: EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT;
+        if (! in_array($halaman, [EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT, EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI], true)) {
+            abort(404);
         }
 
         $pelatihan = EtamBlkPelatihan::with(['blk', 'kompetensiInti', 'kompetensiPenunjang'])->findOrFail($pelatihanId);
@@ -291,9 +347,9 @@ class PesertaController extends Controller
                 ->with('error', 'Sertifikat hanya tersedia untuk peserta yang lulus');
         }
 
-        $sertifikat = $sertifikatService->build($pelatihan, $peserta, BlkSertifikatKelulusanService::VERSI_DRAFT);
+        $sertifikat = $sertifikatService->build($pelatihan, $peserta);
 
-        return view('backend.blk.pelatihan.sertifikat', compact('pelatihan', 'peserta', 'sertifikat'));
+        return view('backend.blk.pelatihan.sertifikat', compact('pelatihan', 'peserta', 'sertifikat', 'halaman'));
     }
 
     public function formDaftar(string $id)
@@ -460,7 +516,7 @@ class PesertaController extends Controller
     }
 
     /**
-     * @return \Illuminate\Support\Collection<int, EtamBlkPelatihanPeserta>
+     * @return Collection<int, EtamBlkPelatihanPeserta>
      */
     private function riwayatPencari(EtamBlkPelatihanPeserta $peserta)
     {
@@ -478,7 +534,7 @@ class PesertaController extends Controller
     }
 
     /**
-     * @return \Illuminate\Support\Collection<int, EtamBlkPelatihanPesertaPerusahaan>
+     * @return Collection<int, EtamBlkPelatihanPesertaPerusahaan>
      */
     private function riwayatPenyedia(EtamBlkPelatihanPesertaPerusahaan $peserta)
     {
@@ -496,7 +552,7 @@ class PesertaController extends Controller
     }
 
     /**
-     * @return \Illuminate\Support\Collection<int, Lamaran>
+     * @return Collection<int, Lamaran>
      */
     private function riwayatLamaran(?int $userId)
     {
@@ -564,7 +620,8 @@ class PesertaController extends Controller
     {
         $html = '<div class="d-flex flex-wrap gap-1">';
         $html .= '<a href="'.route('blk.pelatihan.peserta.show', [$pelatihan->id, $data->id]).'" class="btn btn-secondary btn-sm">Profil</a>';
-        $html .= '<button class="btn btn-warning btn-sm" onclick="showStatusModal('.$data->id.', '.$data->status_pendaftaran.', `'.e($data->alasan_status ?? '').'`)">Status</button>';
+        $nomor = $data instanceof EtamBlkPelatihanPeserta ? (string) ($data->nomor_sertifikat ?? '') : '';
+        $html .= '<button class="btn btn-warning btn-sm" onclick="showStatusModal('.$data->id.', '.$data->status_pendaftaran.', '.json_encode((string) ($data->alasan_status ?? '')).', '.json_encode($nomor).')">Status</button>';
 
         if ($pelatihan->wawancara_form_id) {
             $html .= '<a href="'.route('blk.pelatihan.peserta.wawancara', [$pelatihan->id, $data->id]).'" class="btn btn-success btn-sm">Isi Wawancara</a>';
@@ -580,7 +637,8 @@ class PesertaController extends Controller
 
         if ((int) $pelatihan->pelatihan_untuk === EtamBlkPelatihan::UNTUK_PENCARI
             && (int) $data->status_pendaftaran === EtamBlkPelatihanPeserta::STATUS_LULUS) {
-            $html .= '<a href="'.route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $data->id]).'" class="btn btn-primary btn-sm" target="_blank">Sertifikat Draf</a>';
+            $html .= '<a href="'.route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $data->id, 'sertifikat']).'" class="btn btn-primary btn-sm" target="_blank">Sertifikat</a>';
+            $html .= '<a href="'.route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $data->id, 'kompetensi']).'" class="btn btn-outline-primary btn-sm" target="_blank">Unit Kompetensi</a>';
             if ((int) $data->status_ttd === EtamBlkPelatihanPeserta::TTD_MENUNGGU) {
                 $html .= '<button type="button" class="btn btn-outline-primary btn-sm" onclick="ajukanTtd('.$data->id.')">Ajukan TTD</button>';
             }

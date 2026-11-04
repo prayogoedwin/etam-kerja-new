@@ -42,6 +42,10 @@ class EtamBlkPelatihanPeserta extends Model
 
     public const TTD_TTD_DINAS = 3;
 
+    public const TTE_DOK_KOMPETENSI = 'kompetensi';
+
+    public const TTE_DOK_SERTIFIKAT = 'sertifikat';
+
     public static function statusLabels(): array
     {
         return [

@@ -10,12 +10,15 @@ use App\Models\BLK\EtamBlkPelatihanJawaban;
 use App\Models\BLK\EtamBlkPelatihanKompetensi;
 use App\Models\BLK\EtamBlkPelatihanPeserta;
 use App\Models\EtamStruktur;
+use App\Models\EtamTte;
 use App\Models\Lamaran;
 use App\Models\Lowongan;
 use App\Models\User;
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
+use App\Services\Tte\TteQueue;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
@@ -26,6 +29,7 @@ class BlkModuleTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Storage::fake('local');
 
         foreach (['super-admin', 'admin-provinsi', 'admin-kabkota', 'pencari-kerja', 'penyedia-kerja', 'admin-blk', 'kepala-balai', 'admin-balai', 'petugas-balai', 'eksekutif-provinsi'] as $name) {
             Role::firstOrCreate([
@@ -722,25 +726,40 @@ class BlkModuleTest extends TestCase
         ]);
 
         $this->actingAs($admin)
-            ->get(route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id]))
+            ->get(route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id, 'sertifikat']))
             ->assertOk()
             ->assertSee('SERTIFIKAT KELULUSAN PESERTA')
+            ->assertSee('Draf sertifikat — belum TTE')
             ->assertSee('DRAFT')
+            ->assertDontSee('Telah ditandatangani secara elektronik')
             ->assertSee('Ady Pratama')
             ->assertSee('6471050305040002')
             ->assertSee('UPTD. BALAI LATIHAN KERJA INDUSTRI BALIKPAPAN')
             ->assertSee('Jalan Sepinggan Baru Nomor 31, Balikpapan, Kalimantan Timur 76115')
             ->assertSee('blkibalikpapan@kaltimprov.go.id')
-            ->assertSee('Balikpapan')
             ->assertSee('Samarinda, 21 September 2026')
-            ->assertSee('Balikpapan, 22 September 2026')
             ->assertSee('H. Rozani Erawadi, S.H., M.Si.')
+            ->assertDontSee('DAFTAR UNIT KOMPETENSI')
+            ->assertDontSee('Anna Midawaty, S.Kom., M.M.')
+            ->assertDontSee('NIP.')
+            ->assertDontSee('Kepala Dinas Lama')
+            ->assertDontSee('Balai Sertifikasi Elektronik (BSrE)');
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id, 'kompetensi']))
+            ->assertOk()
+            ->assertSee('DAFTAR UNIT KOMPETENSI')
+            ->assertSee('Draf daftar unit kompetensi — belum TTE')
+            ->assertSee('DRAFT')
+            ->assertDontSee('Telah ditandatangani secara elektronik')
+            ->assertSee('Balikpapan, 22 September 2026')
             ->assertSee('Anna Midawaty, S.Kom., M.M.')
             ->assertSee('Membubut Dasar')
             ->assertSee('Bimbingan Mental dan Fisik')
-            ->assertDontSee('NIP.')
-            ->assertDontSee('Kepala Dinas Lama')
-            ->assertDontSee('Kepala UPTD Bontang');
+            ->assertDontSee('SERTIFIKAT KELULUSAN PESERTA')
+            ->assertDontSee('H. Rozani Erawadi, S.H., M.Si.')
+            ->assertDontSee('Kepala UPTD Bontang')
+            ->assertDontSee('Balai Sertifikasi Elektronik (BSrE)');
 
         $peserta->update(['status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_DITERIMA]);
         $this->actingAs($admin)
@@ -765,12 +784,19 @@ class BlkModuleTest extends TestCase
         $this->actingAs($this->makeUser('admin-balai', [
             'kode_struktur' => '35',
             'lokasi_kerja' => '64',
-        ]))->get(route('blk.pelatihan.peserta.sertifikat', [$pelatihanBontang->id, $pesertaBontang->id]))
+        ]))->get(route('blk.pelatihan.peserta.sertifikat', [$pelatihanBontang->id, $pesertaBontang->id, 'kompetensi']))
             ->assertOk()
             ->assertSee('Bontang')
-            ->assertSee('UPTD. BALAI LATIHAN KERJA INDUSTRI BONTANG')
             ->assertSee('Kepala UPTD Bontang')
             ->assertDontSee('Anna Midawaty, S.Kom., M.M.');
+
+        $this->actingAs($this->makeUser('admin-balai', [
+            'kode_struktur' => '35',
+            'lokasi_kerja' => '64',
+        ]))->get(route('blk.pelatihan.peserta.sertifikat', [$pelatihanBontang->id, $pesertaBontang->id, 'sertifikat']))
+            ->assertOk()
+            ->assertSee('UPTD. BALAI LATIHAN KERJA INDUSTRI BONTANG')
+            ->assertDontSee('DAFTAR UNIT KOMPETENSI');
     }
 
     public function test_super_admin_can_update_struktur_alamat(): void
@@ -1026,13 +1052,56 @@ class BlkModuleTest extends TestCase
                 'status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_LULUS,
             ])
             ->assertOk()
+            ->assertJson(['success' => false]);
+
+        $this->actingAs($admin)
+            ->put(route('blk.pelatihan.peserta.status', [$pelatihan->id, $peserta->id]), [
+                'status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_LULUS,
+                'nomor_sertifikat' => '0001/XI.26/34',
+            ])
+            ->assertOk()
             ->assertJson(['success' => true]);
 
         $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
             'id' => $peserta->id,
             'status_pendaftaran' => EtamBlkPelatihanPeserta::STATUS_LULUS,
             'status_ttd' => EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD,
+            'nomor_sertifikat' => '0001/XI.26/34',
         ]);
+        $this->assertDatabaseHas('etam_tte', [
+            'nama_modul' => 'blk',
+            'id_refrensi' => $peserta->id,
+            'id_struktur' => '34',
+            'kode_dokumen' => EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI,
+            'status' => EtamTte::STATUS_MENUNGGU,
+        ]);
+        $tte = EtamTte::query()
+            ->where('nama_modul', 'blk')
+            ->where('id_refrensi', $peserta->id)
+            ->where('status', EtamTte::STATUS_MENUNGGU)
+            ->first();
+        $this->assertNotNull($tte?->path_file_before);
+        $this->assertStringEndsWith('.before.pdf', $tte->path_file_before);
+        Storage::disk('local')->assertExists($tte->path_file_before);
+        $isiBefore = Storage::disk('local')->get($tte->path_file_before);
+        $this->assertStringStartsWith('%PDF', $isiBefore);
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id, 'kompetensi']))
+            ->assertOk()
+            ->assertSee('DAFTAR UNIT KOMPETENSI')
+            ->assertSee('Draf daftar unit kompetensi — belum TTE')
+            ->assertSee('DRAFT')
+            ->assertDontSee('Telah ditandatangani secara elektronik')
+            ->assertDontSee('Balai Sertifikasi Elektronik (BSrE)');
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id, 'sertifikat']))
+            ->assertOk()
+            ->assertSee('Draf sertifikat — belum TTE')
+            ->assertSee('DRAFT')
+            ->assertDontSee('Telah ditandatangani secara elektronik')
+            ->assertDontSee('Balai Sertifikasi Elektronik (BSrE)');
     }
 
     public function test_kepala_uptd_hanya_melihat_antrean_uptd_sendiri(): void
@@ -1051,25 +1120,27 @@ class BlkModuleTest extends TestCase
         ]);
         $pelatihanBpp = $this->makePelatihan($blkBpp->id, EtamBlkPelatihan::UNTUK_PENCARI);
         $pelatihanBtg = $this->makePelatihan($blkBtg->id, EtamBlkPelatihan::UNTUK_PENCARI);
-        $this->makePesertaTtd($pelatihanBpp->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Peserta BPP']);
-        $this->makePesertaTtd($pelatihanBtg->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Peserta BTG']);
+        $bpp = $this->makePesertaTtd($pelatihanBpp->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Peserta BPP']);
+        $btg = $this->makePesertaTtd($pelatihanBtg->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Peserta BTG']);
+        $this->enqueueBlkTte($bpp, '34');
+        $this->enqueueBlkTte($btg, '35');
 
         $kepala = $this->makeUser('kepala-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
 
         $this->actingAs($kepala)
-            ->get(route('blk.ttd.menunggu'))
+            ->get(route('tte.menunggu'))
             ->assertOk()
             ->assertSee('Menunggu TTD');
 
         $json = $this->actingAs($kepala)
             ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
-            ->get(route('blk.ttd.menunggu'))
+            ->get(route('tte.menunggu'))
             ->assertOk()
             ->json('data');
 
-        $names = collect($json)->pluck('name')->all();
-        $this->assertContains('Peserta BPP', $names);
-        $this->assertNotContains('Peserta BTG', $names);
+        $names = collect($json)->pluck('judul')->all();
+        $this->assertTrue(collect($names)->contains(fn ($judul) => str_contains((string) $judul, 'Peserta BPP')));
+        $this->assertFalse(collect($names)->contains(fn ($judul) => str_contains((string) $judul, 'Peserta BTG')));
     }
 
     public function test_kepala_dinas_antrean_setelah_ttd_uptd(): void
@@ -1081,32 +1152,38 @@ class BlkModuleTest extends TestCase
             'kode_struktur' => '34',
         ]);
         $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
-        $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Masih di UPTD']);
-        $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_TTD_UPTD, ['name' => 'Siap Kadis']);
-        $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_TTD_DINAS, ['name' => 'Sudah Kadis']);
+        $masihUptd = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Masih di UPTD']);
+        $siapKadis = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_TTD_UPTD, ['name' => 'Siap Kadis']);
+        $sudahKadis = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_TTD_DINAS, ['name' => 'Sudah Kadis']);
+        $this->enqueueBlkTte($masihUptd, '34');
+        $this->enqueueBlkTte($siapKadis, null);
+        $sudah = $this->enqueueBlkTte($sudahKadis, null);
+        $sudah->update([
+            'status' => EtamTte::STATUS_BERHASIL,
+        ]);
 
         $kadis = $this->makeUser('eksekutif-provinsi');
 
         $this->actingAs($kadis)
-            ->get(route('blk.ttd.menunggu'))
+            ->get(route('tte.menunggu'))
             ->assertOk()
             ->assertSee('Menunggu TTD Kepala Dinas')
             ->assertSee('TTE');
 
         $waiting = collect($this->actingAs($kadis)
             ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
-            ->get(route('blk.ttd.menunggu'))
-            ->json('data'))->pluck('name')->all();
-        $this->assertContains('Siap Kadis', $waiting);
-        $this->assertNotContains('Masih di UPTD', $waiting);
-        $this->assertNotContains('Sudah Kadis', $waiting);
+            ->get(route('tte.menunggu'))
+            ->json('data'))->pluck('judul')->all();
+        $this->assertTrue(collect($waiting)->contains(fn ($judul) => str_contains((string) $judul, 'Siap Kadis')));
+        $this->assertFalse(collect($waiting)->contains(fn ($judul) => str_contains((string) $judul, 'Masih di UPTD')));
+        $this->assertFalse(collect($waiting)->contains(fn ($judul) => str_contains((string) $judul, 'Sudah Kadis')));
 
         $signed = collect($this->actingAs($kadis)
             ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
-            ->get(route('blk.ttd.sudah'))
-            ->json('data'))->pluck('name')->all();
-        $this->assertContains('Sudah Kadis', $signed);
-        $this->assertNotContains('Siap Kadis', $signed);
+            ->get(route('tte.sudah'))
+            ->json('data'))->pluck('judul')->all();
+        $this->assertTrue(collect($signed)->contains(fn ($judul) => str_contains((string) $judul, 'Sudah Kadis')));
+        $this->assertFalse(collect($signed)->contains(fn ($judul) => str_contains((string) $judul, 'Siap Kadis')));
     }
 
     public function test_ttd_kepala_uptd_mengajukan_ke_kepala_dinas(): void
@@ -1121,23 +1198,30 @@ class BlkModuleTest extends TestCase
         $peserta = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, [
             'name' => 'Peserta Demo UPTD',
         ]);
+        $tte = $this->enqueueBlkTte($peserta, '34');
         $kepala = $this->makeUser('kepala-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
         $kadis = $this->makeUser('eksekutif-provinsi');
 
         $this->actingAs($kepala)
-            ->post(route('blk.ttd.tte'), ['peserta_ids' => [$peserta->id]])
-            ->assertRedirect(route('blk.ttd.menunggu'));
+            ->post(route('tte.tandatangani'), ['tte_ids' => [$tte->id], 'passphrase' => 'rahasia-tte'])
+            ->assertOk()
+            ->assertJsonPath('berhasil', 1);
 
         $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
             'id' => $peserta->id,
             'status_ttd' => EtamBlkPelatihanPeserta::TTD_TTD_UPTD,
         ]);
+        $this->assertDatabaseHas('etam_tte', [
+            'id' => $tte->id,
+            'status' => EtamTte::STATUS_BERHASIL,
+            'user_id_tte' => $kepala->id,
+        ]);
 
         $waitingKadis = collect($this->actingAs($kadis)
             ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
-            ->get(route('blk.ttd.menunggu'))
-            ->json('data'))->pluck('name')->all();
-        $this->assertContains('Peserta Demo UPTD', $waitingKadis);
+            ->get(route('tte.menunggu'))
+            ->json('data'))->pluck('judul')->all();
+        $this->assertTrue(collect($waitingKadis)->contains(fn ($judul) => str_contains((string) $judul, 'Peserta Demo UPTD')));
     }
 
     public function test_ttd_kepala_dinas_menyelesaikan_alur(): void
@@ -1152,15 +1236,22 @@ class BlkModuleTest extends TestCase
         $peserta = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_TTD_UPTD, [
             'name' => 'Peserta Demo Kadis',
         ]);
+        $tte = $this->enqueueBlkTte($peserta, null);
         $kadis = $this->makeUser('eksekutif-provinsi');
 
         $this->actingAs($kadis)
-            ->post(route('blk.ttd.tte'), ['peserta_ids' => [$peserta->id]])
-            ->assertRedirect(route('blk.ttd.menunggu'));
+            ->post(route('tte.tandatangani'), ['tte_ids' => [$tte->id], 'passphrase' => 'rahasia-tte'])
+            ->assertOk()
+            ->assertJsonPath('berhasil', 1);
 
         $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
             'id' => $peserta->id,
             'status_ttd' => EtamBlkPelatihanPeserta::TTD_TTD_DINAS,
+        ]);
+        $this->assertDatabaseHas('etam_tte', [
+            'id' => $tte->id,
+            'status' => EtamTte::STATUS_BERHASIL,
+            'user_id_tte' => $kadis->id,
         ]);
     }
 
@@ -1170,16 +1261,20 @@ class BlkModuleTest extends TestCase
             'nama_lembaga' => 'BLK TTD Semua',
             'tipe_lembaga' => 1,
             'provinsi_id' => 64,
-            'kode_struktur' => '34',
+            'kode_struktur' => '98',
         ]);
         $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
         $satu = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Antrean Satu']);
         $dua = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD, ['name' => 'Antrean Dua']);
-        $kepala = $this->makeUser('kepala-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+        $this->enqueueBlkTte($satu, '98');
+        $this->enqueueBlkTte($dua, '98');
+        $kepala = $this->makeUser('kepala-balai', ['kode_struktur' => '98', 'lokasi_kerja' => '64']);
 
         $this->actingAs($kepala)
-            ->post(route('blk.ttd.tte'), ['pilih_semua' => 1])
-            ->assertRedirect(route('blk.ttd.menunggu'));
+            ->post(route('tte.tandatangani'), ['pilih_semua' => 1, 'passphrase' => 'rahasia-tte'])
+            ->assertOk()
+            ->assertJsonPath('berhasil', 2)
+            ->assertJsonCount(2, 'items');
 
         $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
             'id' => $satu->id,
@@ -1196,7 +1291,7 @@ class BlkModuleTest extends TestCase
         $admin = $this->makeUser('admin-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
 
         $this->actingAs($admin)
-            ->get(route('blk.ttd.menunggu'))
+            ->get(route('tte.menunggu'))
             ->assertStatus(403);
     }
 
@@ -1223,6 +1318,19 @@ class BlkModuleTest extends TestCase
             'id' => $peserta->id,
             'status_ttd' => EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD,
         ]);
+        $this->assertDatabaseHas('etam_tte', [
+            'nama_modul' => 'blk',
+            'id_refrensi' => $peserta->id,
+            'id_struktur' => '34',
+            'kode_dokumen' => EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI,
+            'status' => EtamTte::STATUS_MENUNGGU,
+        ]);
+        $tte = EtamTte::query()
+            ->where('nama_modul', 'blk')
+            ->where('id_refrensi', $peserta->id)
+            ->first();
+        $this->assertNotNull($tte?->path_file_before);
+        Storage::disk('local')->assertExists($tte->path_file_before);
     }
 
     public function test_daftar_peserta_bisa_filter_lulus(): void
@@ -1306,6 +1414,18 @@ class BlkModuleTest extends TestCase
         ]);
     }
 
+    private function enqueueBlkTte(EtamBlkPelatihanPeserta $peserta, ?string $idStruktur): EtamTte
+    {
+        return app(TteQueue::class)->ajukan([
+            'nama_modul' => 'blk',
+            'nama_table' => $peserta->getTable(),
+            'id_refrensi' => $peserta->id,
+            'kolom_status_refrensi' => 'status_ttd',
+            'id_struktur' => $idStruktur,
+            'judul' => 'Sertifikat BLK — '.$peserta->name,
+        ]);
+    }
+
     private function makePesertaTtd(int $pelatihanId, int $statusTtd, array $overrides = []): EtamBlkPelatihanPeserta
     {
         $user = $this->makeUser('pencari-kerja');
@@ -1345,10 +1465,16 @@ class BlkModuleTest extends TestCase
 
     private function makeUser(string $role, array $overrides = []): User
     {
-        $user = User::factory()->create(array_merge([
+        $defaults = [
             'whatsapp' => '08'.fake()->unique()->numerify('##########'),
             'is_finished' => 1,
-        ], $overrides));
+        ];
+        if (in_array($role, ['kepala-balai', 'eksekutif-provinsi', 'super-admin'], true)
+            && ! array_key_exists('nik', $overrides)) {
+            $defaults['nik'] = fake()->unique()->numerify('################');
+        }
+
+        $user = User::factory()->create(array_merge($defaults, $overrides));
         $user->assignRole($role);
 
         return $user;

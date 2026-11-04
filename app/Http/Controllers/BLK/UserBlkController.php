@@ -8,6 +8,7 @@ use App\Models\BLK\UserBlk;
 use App\Models\User;
 use App\Models\UserAdmin;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -31,7 +32,7 @@ class UserBlkController extends Controller
 
             $datas = UserBlk::query()
                 ->with([
-                    'user:id,name,email,whatsapp',
+                    'user:id,name,email,whatsapp,nik',
                     'blk:id,nama_lembaga',
                 ])
                 ->select('id', 'user_id', 'tipe_akun', 'blk_id');
@@ -52,7 +53,8 @@ class UserBlkController extends Controller
                     $query->whereHas('user', function ($userQuery) use ($searchValue) {
                         $userQuery->where('name', 'like', "%{$searchValue}%")
                             ->orWhere('email', 'like', "%{$searchValue}%")
-                            ->orWhere('whatsapp', 'like', "%{$searchValue}%");
+                            ->orWhere('whatsapp', 'like', "%{$searchValue}%")
+                            ->orWhere('nik', 'like', "%{$searchValue}%");
                     })->orWhereHas('blk', function ($blkQuery) use ($searchValue) {
                         $blkQuery->where('nama_lembaga', 'like', "%{$searchValue}%");
                     });
@@ -69,6 +71,9 @@ class UserBlkController extends Controller
                 })
                 ->addColumn('whatsapp', function (UserBlk $data) {
                     return $data->user->whatsapp ?? 'N/A';
+                })
+                ->addColumn('nik', function (UserBlk $data) {
+                    return $data->user->nik ?? '-';
                 })
                 ->addColumn('blk_nama', function (UserBlk $data) {
                     return $data->blk->nama_lembaga ?? '-';
@@ -114,10 +119,12 @@ class UserBlkController extends Controller
             return $this->storeBalaiStaff($request);
         }
 
+        $request->merge(['nik' => User::nikDariInput($request->input('nik'))]);
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'whatsapp' => 'required|string|max:20|unique:users,whatsapp',
+            'nik' => User::aturanNik(),
             'tipe_akun' => 'required|in:0,1,2,3,4',
             'blk_id' => 'nullable|integer',
         ]);
@@ -137,6 +144,7 @@ class UserBlkController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'whatsapp' => $request->whatsapp,
+                'nik' => $request->nik,
                 'password' => bcrypt($request->email),
                 'is_finished' => 1,
             ]);
@@ -168,7 +176,7 @@ class UserBlkController extends Controller
             abort(403);
         }
 
-        $data = UserBlk::with(['user:id,name,email,whatsapp'])->findOrFail($id);
+        $data = UserBlk::with(['user:id,name,email,whatsapp,nik'])->findOrFail($id);
 
         if ((int) $data->tipe_akun !== UserBlk::TIPE_ALL && ! $this->canAccessBlk((int) $data->blk_id)) {
             abort(403);
@@ -185,10 +193,12 @@ class UserBlkController extends Controller
 
         $data = UserBlk::findOrFail($id);
 
+        $request->merge(['nik' => User::nikDariInput($request->input('nik'))]);
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$data->user_id,
             'whatsapp' => 'required|string|max:20|unique:users,whatsapp,'.$data->user_id,
+            'nik' => User::aturanNik($data->user_id),
             'tipe_akun' => 'required|in:0,1,2,3,4',
             'blk_id' => 'nullable|integer',
         ]);
@@ -206,6 +216,7 @@ class UserBlkController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'whatsapp' => $request->whatsapp,
+            'nik' => $request->nik,
         ]);
 
         $data->update([
@@ -275,7 +286,7 @@ class UserBlkController extends Controller
             ->value('nama_lembaga') ?? '-';
 
         $datas = User::query()
-            ->select('id', 'name', 'email', 'whatsapp', 'kode_struktur')
+            ->select('id', 'name', 'email', 'whatsapp', 'nik', 'kode_struktur')
             ->where('kode_struktur', $kodeStruktur)
             ->whereHas('roles', function ($query) use ($roleNames) {
                 $query->whereIn('name', $roleNames);
@@ -287,7 +298,8 @@ class UserBlkController extends Controller
             $datas->where(function ($query) use ($searchValue) {
                 $query->where('name', 'like', "%{$searchValue}%")
                     ->orWhere('email', 'like', "%{$searchValue}%")
-                    ->orWhere('whatsapp', 'like', "%{$searchValue}%");
+                    ->orWhere('whatsapp', 'like', "%{$searchValue}%")
+                    ->orWhere('nik', 'like', "%{$searchValue}%");
             });
         }
 
@@ -301,6 +313,9 @@ class UserBlkController extends Controller
             })
             ->addColumn('whatsapp', function (User $data) {
                 return $data->whatsapp ?? 'N/A';
+            })
+            ->addColumn('nik', function (User $data) {
+                return $data->nik ?? '-';
             })
             ->addColumn('blk_nama', function () use ($blkNama) {
                 return $blkNama;
@@ -321,10 +336,12 @@ class UserBlkController extends Controller
     {
         $allowedRoles = array_keys($this->balaiStaffCreateRoles());
 
+        $request->merge(['nik' => User::nikDariInput($request->input('nik'))]);
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'whatsapp' => 'required|string|max:20|unique:users,whatsapp',
+            'nik' => User::aturanNik(),
             'role' => 'required|in:'.implode(',', $allowedRoles),
         ]);
 
@@ -343,6 +360,7 @@ class UserBlkController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'whatsapp' => $request->whatsapp,
+                'nik' => $request->nik,
                 'kode_struktur' => $kodeStruktur,
                 'lokasi_kerja' => Auth::user()->lokasi_kerja,
                 'password' => bcrypt($request->email),
@@ -369,7 +387,7 @@ class UserBlkController extends Controller
     }
 
     /**
-     * @return \Illuminate\Support\Collection<int, EtamBlk>
+     * @return Collection<int, EtamBlk>
      */
     private function blkOptions()
     {

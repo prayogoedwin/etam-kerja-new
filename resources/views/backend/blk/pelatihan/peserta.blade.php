@@ -135,6 +135,13 @@
                                 <label class="form-label">Alasan Status</label>
                                 <textarea class="form-control" id="alasan_status" name="alasan_status" rows="3"></textarea>
                             </div>
+                            @if ($isPencari)
+                            <div class="mb-3" id="wrap_nomor_sertifikat" style="display: none;">
+                                <label class="form-label">Nomor Sertifikat</label>
+                                <input type="text" class="form-control" id="nomor_sertifikat" name="nomor_sertifikat" maxlength="100" placeholder="Contoh: 0001/XI.26/34">
+                                <small class="text-muted">Wajib diisi jika status Lulus</small>
+                            </div>
+                            @endif
                             <button type="submit" class="btn btn-primary">Simpan</button>
                         </form>
                     </div>
@@ -233,18 +240,24 @@
                 ajukanTtdMassal([], true);
             });
 
+            $('#status_pendaftaran').on('change', toggleNomorSertifikat);
+
             $('#statusForm').submit(function(e) {
                 e.preventDefault();
                 var id = $('#pesertaId').val();
+                var payload = {
+                    status_pendaftaran: $('#status_pendaftaran').val(),
+                    alasan_status: $('#alasan_status').val(),
+                    _token: '{{ csrf_token() }}'
+                };
+                if (isPencari) {
+                    payload.nomor_sertifikat = $('#nomor_sertifikat').val();
+                }
                 $.ajax({
                     type: 'PUT',
                     url: '{{ url('dapur/blk/pelatihan/' . $pelatihan->id . '/peserta') }}/' + id +
                         '/status',
-                    data: {
-                        status_pendaftaran: $('#status_pendaftaran').val(),
-                        alasan_status: $('#alasan_status').val(),
-                        _token: '{{ csrf_token() }}'
-                    },
+                    data: payload,
                     success: function(response) {
                         if (response.success) {
                             alert(response.message);
@@ -258,10 +271,24 @@
             });
         });
 
-        function showStatusModal(id, status, alasan) {
+        function toggleNomorSertifikat() {
+            var wrap = $('#wrap_nomor_sertifikat');
+            if (!wrap.length) {
+                return;
+            }
+            var lulus = String($('#status_pendaftaran').val()) === '{{ \App\Models\BLK\EtamBlkPelatihanPeserta::STATUS_LULUS }}';
+            wrap.toggle(lulus);
+            $('#nomor_sertifikat').prop('required', lulus);
+        }
+
+        function showStatusModal(id, status, alasan, nomor) {
             $('#pesertaId').val(id);
             $('#status_pendaftaran').val(status);
             $('#alasan_status').val(alasan);
+            if ({{ $isPencari ? 'true' : 'false' }}) {
+                $('#nomor_sertifikat').val(nomor || '');
+                toggleNomorSertifikat();
+            }
             $('#modal-status').modal('show');
         }
 

@@ -52,9 +52,11 @@
                                     <p class="mt-2 mb-0"><small>Catatan: {{ $peserta->alasan_status }}</small></p>
                                 @endif
                                 @if (! $isPerusahaan && $status === \App\Models\BLK\EtamBlkPelatihanPeserta::STATUS_LULUS)
-                                    <div class="mt-3">
-                                        <a href="{{ route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id]) }}"
-                                            class="btn btn-primary btn-sm" target="_blank">Lihat Sertifikat Draf</a>
+                                    <div class="mt-3 d-flex flex-wrap gap-1">
+                                        <a href="{{ route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id, 'sertifikat']) }}"
+                                            class="btn btn-primary btn-sm" target="_blank">Sertifikat</a>
+                                        <a href="{{ route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id, 'kompetensi']) }}"
+                                            class="btn btn-outline-primary btn-sm" target="_blank">Unit Kompetensi</a>
                                     </div>
                                 @endif
                             </div>

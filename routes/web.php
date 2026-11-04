@@ -56,6 +56,8 @@ use App\Http\Controllers\ProfilPenyediaController;
 use App\Http\Controllers\RekapController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StrukturController;
+use App\Http\Controllers\TestMailController;
+use App\Http\Controllers\Tte\TteController;
 use App\Http\Controllers\UserBkkController;
 use App\Http\Controllers\UserIntegrasiController;
 use App\Http\Controllers\UserPencariController;
@@ -70,7 +72,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DepanController::class, 'index'])->middleware(TrackVisitors::class);
 
-Route::get('/test-mail', [App\Http\Controllers\TestMailController::class, 'send']);
+Route::get('/test-mail', [TestMailController::class, 'send']);
 
 Route::get('/depan/bkk', [DepanController::class, 'bkk']);
 Route::get('/depan/login', [DepanController::class, 'login']);
@@ -87,7 +89,7 @@ Route::get('/depan/jobfair/{id}', [DepanController::class, 'jobfair_show'])->nam
 Route::get('/depan/berita', [DepanController::class, 'berita']);
 Route::get('/depan/berita/{id}', [DepanController::class, 'show'])->name('berita.show');
 Route::post('/depan/daftar-akun', [DepanController::class, 'daftar_akun'])->name('daftar-akun');
-Route::get('/depan/daftar', [DepanController::class, 'daftar']); //with role
+Route::get('/depan/daftar', [DepanController::class, 'daftar']); // with role
 Route::post('/depan/cek-awal-akun', [DepanController::class, 'cek_awal_akun'])->name('cek-awal-akun');
 Route::post('/depan/cek-awal-otp', [DepanController::class, 'cek_awal_otp'])->name('cek-awal-otp');
 Route::get('/depan/getkecamatanbyid/{kabkota_id}', [DepanController::class, 'getKecamatanByKabkota'])->name('get-kecamatan-bykabkota');
@@ -155,7 +157,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     // Routes untuk Perusahaan Job Fair
     Route::get('/jobfair/{jobfair}/perusahaan', [JobFairController::class, 'perusahaan'])->name('jobfair.perusahaan');
     Route::post('/jobfair/{jobfair}/perusahaan', [JobFairController::class, 'storePerusahaan'])->name('jobfair.perusahaan.store');
-    Route::post('/jobfair/{jobfair}/join', [JobFairController::class, 'joinJobFair'])->name('jobfair.join'); //untuk perusahaan daftar sendiri
+    Route::post('/jobfair/{jobfair}/join', [JobFairController::class, 'joinJobFair'])->name('jobfair.join'); // untuk perusahaan daftar sendiri
     Route::get('/jobfair/{jobfair}/perusahaan/{id}', [JobFairController::class, 'showPerusahaan'])->name('jobfair.perusahaan.show');
     Route::put('/jobfair/{jobfair}/perusahaan/{id}', [JobFairController::class, 'updatePerusahaan'])->name('jobfair.perusahaan.update');
     Route::delete('/jobfair/{jobfair}/perusahaan/{id}', [JobFairController::class, 'destroyPerusahaan'])->name('jobfair.perusahaan.destroy');
@@ -173,7 +175,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
     Route::get('/api/get-penyedia-kerja', [JobFairController::class, 'getPenyediaKerjaList'])->name('api.penyedia-kerja');
 
-    //Magang Dn Routes
+    // Magang Dn Routes
     Route::get('/magang_dn', [MagangDnController::class, 'index'])->name('magang_dn.index');
     Route::post('/magang_dn', [MagangDnController::class, 'store'])->name('magang_dn.store');
     Route::get('/magang_dn/{id}', [MagangDnController::class, 'show'])->name('magang_dn.show');
@@ -190,7 +192,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     // Routes untuk Perusahaan Magang Dn
     Route::get('/magang_dn/{magang}/perusahaan', [MagangDnController::class, 'perusahaan'])->name('magang_dn.perusahaan');
     Route::post('/magang_dn/{magang}/perusahaan', [MagangDnController::class, 'storePerusahaan'])->name('magang_dn.perusahaan.store');
-    Route::post('/magang_dn/{magang}/join', [MagangDnController::class, 'joinMagang'])->name('magang_dn.join'); //untuk perusahaan daftar sendiri
+    Route::post('/magang_dn/{magang}/join', [MagangDnController::class, 'joinMagang'])->name('magang_dn.join'); // untuk perusahaan daftar sendiri
     Route::get('/magang_dn/{magang}/perusahaan/{id}', [MagangDnController::class, 'showPerusahaan'])->name('magang_dn.perusahaan.show');
     Route::put('/magang_dn/{magang}/perusahaan/{id}', [MagangDnController::class, 'updatePerusahaan'])->name('magang_dn.perusahaan.update');
     Route::delete('/magang_dn/{magang}/perusahaan/{id}', [MagangDnController::class, 'destroyPerusahaan'])->name('magang_dn.perusahaan.destroy');
@@ -202,7 +204,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::post('magang_dn/{magangId}/perusahaan/{userId}/lowongan/{id}', [MagangDnController::class, 'updateLowongan'])->name('magang_dn.lowongan.update');
     // Route::delete('magang_dn/{magangId}/perusahaan/{userId}/lowongan/{id}', [MagangDnController::class, 'destroyLowongan'])->name('jobfair.lowongan.destroy');
 
-    //route untuk admin
+    // route untuk admin
     Route::get('/dashboard', [BackController::class, 'index'])->name('dashboard');
     Route::get('/sample', [BackController::class, 'sample'])->name('sample');
     Route::prefix('setting')->middleware(CheckUserRole::class.':super-admin,admin-provinsi')->group(function () {
@@ -271,7 +273,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
     Route::prefix('datas')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-kabkota,admin-kabkota-officer')->group(function () {
 
         Route::get('/pencari', [UserPencariController::class, 'data'])->name('datapencari.index');
-        Route::get('/pencari-extambang', [UserPencariController::class, 'dataExtambang'])->name('datapencariextambang.index'); //ex tambang
+        Route::get('/pencari-extambang', [UserPencariController::class, 'dataExtambang'])->name('datapencariextambang.index'); // ex tambang
         Route::get('/pencari-disabilitas', [UserPencariController::class, 'dataDisabilitas'])->name('datapencaridisabilitas.index');
         Route::get('/datapencari/export-csv', [UserPencariController::class, 'exportCsv'])->name('datapencari.exportCsv');
         Route::get('/datapencari-disabilitas/export-csv', [UserPencariController::class, 'exportCsvDisabilitas'])->name('datapencaridisabilitas.exportCsv');
@@ -312,8 +314,8 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/bkk', [BkkPenyediaController::class, 'index'])->name('bkk.penyedia.index');
         Route::get('/pencari_diterima', [DiterimaPencariController::class, 'index'])->name('pencari_diterima.index');
 
-        //HI
-        //modul PP
+        // HI
+        // modul PP
 
         // Route::get('/peraturan-perusahaan', [PenyediaPpController::class, 'index'])->name('hi.pp.penyedia.index');
         // Route::get('/peraturan-perusahaan/tambah', [PenyediaPpController::class, 'create'])->name('hi.pp.penyedia.tambah');
@@ -439,11 +441,18 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::post('/suket/{id}/tte-kadis', [AdminSuketController::class, 'tteKadis'])->name('pengawasan.suket.admin.tte-kadis');
     });
 
+    Route::prefix('tte')->middleware(CheckUserRole::class.':super-admin,eksekutif-provinsi,kepala-balai')->group(function () {
+        Route::get('/menunggu', [TteController::class, 'menunggu'])->name('tte.menunggu');
+        Route::get('/sudah', [TteController::class, 'sudah'])->name('tte.sudah');
+        Route::get('/log', [TteController::class, 'log'])->name('tte.log');
+        Route::post('/tandatangani', [TteController::class, 'tandatangani'])->name('tte.tandatangani');
+    });
+
     Route::prefix('blk')->group(function () {
         Route::middleware(CheckUserRole::class.':eksekutif-provinsi,kepala-balai')->group(function () {
-            Route::get('/pelatihan/ttd/menunggu', [TtdController::class, 'menunggu'])->name('blk.ttd.menunggu');
-            Route::get('/pelatihan/ttd/sudah', [TtdController::class, 'sudah'])->name('blk.ttd.sudah');
-            Route::post('/pelatihan/ttd/tte', [TtdController::class, 'tte'])->name('blk.ttd.tte');
+            Route::get('/pelatihan/ttd/menunggu', [TteController::class, 'menunggu'])->name('blk.ttd.menunggu');
+            Route::get('/pelatihan/ttd/sudah', [TteController::class, 'sudah'])->name('blk.ttd.sudah');
+            Route::post('/pelatihan/ttd/tte', [TteController::class, 'tandatangani'])->name('blk.ttd.tte');
             Route::get('/pelatihan/ttd/maintenance', [TtdController::class, 'maintenance'])->name('blk.ttd.maintenance');
         });
 
@@ -495,7 +504,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         });
 
         Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-blk,kepala-balai,admin-balai,petugas-balai,eksekutif-provinsi')->group(function () {
-            Route::get('/pelatihan/{id}/peserta/{pesertaId}/sertifikat', [PesertaController::class, 'sertifikat'])->name('blk.pelatihan.peserta.sertifikat');
+            Route::get('/pelatihan/{id}/peserta/{pesertaId}/sertifikat/{halaman?}', [PesertaController::class, 'sertifikat'])
+                ->whereIn('halaman', ['sertifikat', 'kompetensi'])
+                ->name('blk.pelatihan.peserta.sertifikat');
         });
 
         Route::get('/pelatihan', [PelatihanController::class, 'index'])->name('blk.pelatihan.index');
@@ -510,7 +521,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
     Route::prefix('ak1')->group(function () {
         Route::post('/daftar-akun', [Ak1Controller::class, 'daftar_akun'])->name('daftar-akun-ak1');
-        Route::get('/daftar-by-admin', [Ak1Controller::class, 'daftar_by_admin']); //with role
+        Route::get('/daftar-by-admin', [Ak1Controller::class, 'daftar_by_admin']); // with role
         Route::post('/cek-awal-akun', [Ak1Controller::class, 'cek_awal_akun'])->name('cek-awal-akun-ak1');
         Route::post('/cek-awal-otp', [Ak1Controller::class, 'cek_awal_otp'])->name('cek-awal-otp-ak1');
         Route::post('/akhir_daftar-akun', [Ak1Controller::class, 'akhir_daftar_akun'])->name('akhir-daftar-akun-ak1');
@@ -552,6 +563,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
         Route::get('/history_lamaran', [HistoryLamaranPencariController::class, 'index'])->name('historylamaran.pencari.index');
         Route::get('/history_pelatihan', [HistoryPelatihanPencariController::class, 'index'])->name('historypelatihan.pencari.index');
+        Route::get('/history_pelatihan/{pesertaId}/sertifikat', [HistoryPelatihanPencariController::class, 'unduhSertifikat'])->name('historypelatihan.pencari.sertifikat');
 
         Route::get('/lowongan_bkk', [LowonganPencariController::class, 'indexbkk'])->name('lowonganbkk.pencari.index');
     });
@@ -575,7 +587,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/cekaja', [PerusahaanController::class, 'cekaja']);
     });
 
-    //ubah password
+    // ubah password
     Route::post('/ubah-password', [BackController::class, 'ubahPassword'])->name('ubah-password');
 });
 
@@ -615,6 +627,7 @@ Route::get('/get-kecamatan', [BackController::class, 'getKecamatan']);
 //   });
 
 Route::get('ak1/cek/{unik_kode}', [Ak1Controller::class, 'viewAk1'])->name('ak1.view');
+Route::get('verifikasi/tte/{token}', [TteController::class, 'berkas'])->name('tte.berkas');
 
 Route::get('/docs', [Dokumentasi::class, 'index'])->name('docs.index');
 Route::prefix('docs')->group(function () {

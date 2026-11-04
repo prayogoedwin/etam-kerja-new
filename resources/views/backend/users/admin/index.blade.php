@@ -54,6 +54,7 @@
                                                 <th>Nama</th>
                                                 <th>Email</th>
                                                 <th>Whatsapp</th>
+                                                <th>NIK</th>
                                                 <th>Role</th>
                                                 <th>Lokasi Kerja</th>
                                                 <th>Struktur</th>
@@ -113,6 +114,15 @@
                                         <label class="floating-label" for="whatsapp">Whatsapp</label>
                                         <input type="text" class="form-control" id="whatsapp" name="whatsapp"
                                             placeholder="">
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <label class="floating-label" for="nik">NIK</label>
+                                        <input type="text" class="form-control" id="nik" name="nik"
+                                            placeholder="" inputmode="numeric" maxlength="16">
+                                        <small class="text-muted">Opsional. Wajib diisi jika akun ini akan TTE.</small>
                                     </div>
                                 </div>
 
@@ -220,6 +230,11 @@
                                 <input type="text" class="form-control" id="editWhatsapp" name="whatsapp" required>
                             </div>
                             <div class="mb-3">
+                                <label for="editNik" class="form-label">NIK</label>
+                                <input type="text" class="form-control" id="editNik" name="nik" inputmode="numeric" maxlength="16">
+                                <small class="text-muted">Opsional. Wajib diisi jika akun ini akan TTE.</small>
+                            </div>
+                            <div class="mb-3">
                                 <label for="editRole" class="form-label">Role</label>
                                 <select class="form-control" id="editRole" name="role_id" required>
                                     <option value="">Select Role</option>
@@ -302,6 +317,9 @@
                     },
                     {
                         data: 'whatsapp'
+                    },
+                    {
+                        data: 'nik'
                     },
                     {
                         data: 'roles'
@@ -493,6 +511,7 @@
                     name: $('#name').val(),
                     email: $('#email').val(),
                     whatsapp: $('#whatsapp').val(),
+                    nik: $('#nik').val(),
                     role_id: $('#userRole').val(),
                     lokasi_kerja: $('#lokasi_kerja').val(),
                     kode_struktur: $('#kode_struktur').val(),
@@ -572,6 +591,7 @@
                     
                     $('#editEmail').val(admin.user.email);
                     $('#editWhatsapp').val(admin.user.whatsapp);
+                    $('#editNik').val(admin.user.nik || '');
                     $('#editLokasiKerja').val(admin.user.lokasi_kerja || '');
                     loadStrukturByLokasi('#editKodeStruktur', admin.user.lokasi_kerja || '', admin.user.kode_struktur || '');
                     $('#editRole').val(admin.user.roles[0].id).prop('selected', true);
@@ -600,6 +620,7 @@
             var email = $('#editEmail').val();
             var jabatan = $('#editJabatan').val();
             var whatsapp = $('#editWhatsapp').val();
+            var nik = $('#editNik').val();
             var role_id = $('#editRole').val();
             var lokasi_kerja = $('#editLokasiKerja').val();
             var kode_struktur = $('#editKodeStruktur').val();
@@ -618,6 +639,7 @@
                     name: name,
                     email: email,
                     whatsapp: whatsapp,
+                    nik: nik,
                     jabatan: jabatan,
                     role_id: role_id,
                     lokasi_kerja: lokasi_kerja,

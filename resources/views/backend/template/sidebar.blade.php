@@ -205,6 +205,10 @@
                     </ul>
                 </li>
 
+                @if ((Auth::user()->roles[0]['name'] ?? null) === 'super-admin')
+                    @include('backend.tte._menu')
+                @endif
+
                 <li class="nav-item pcoded-hasmenu">
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-users"></i></span><span class="pcoded-mtext">Rekap</span></a>

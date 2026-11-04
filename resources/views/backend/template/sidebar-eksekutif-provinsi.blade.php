@@ -28,16 +28,7 @@
                     </a>
                 </li>
                 @include('backend.pengawasan.pjk3._menu-layanan-k3')
-                <li class="nav-item pcoded-hasmenu">
-                    <a href="#!" class="nav-link">
-                        <span class="pcoded-micon"><i class="feather icon-edit-3"></i></span>
-                        <span class="pcoded-mtext">TTE</span>
-                    </a>
-                    <ul class="pcoded-submenu">
-                        <li><a href="{{ route('blk.ttd.menunggu') }}">Menunggu TTD</a></li>
-                        <li><a href="{{ route('blk.ttd.sudah') }}">Sudah ditandatangani</a></li>
-                    </ul>
-                </li>
+                @include('backend.tte._menu')
             </ul>
         </div>
     </div>

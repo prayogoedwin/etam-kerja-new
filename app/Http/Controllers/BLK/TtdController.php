@@ -121,7 +121,8 @@ class TtdController extends Controller
                     return EtamBlkPelatihanPeserta::statusTtdBadge((int) $row->status_ttd);
                 })
                 ->addColumn('options', function (EtamBlkPelatihanPeserta $row) use ($waiting) {
-                    $html = '<a href="'.route('blk.pelatihan.peserta.sertifikat', [$row->blk_pelatihan_id, $row->id]).'" class="btn btn-secondary btn-sm" target="_blank">Sertifikat</a>';
+                    $html = '<a href="'.route('blk.pelatihan.peserta.sertifikat', [$row->blk_pelatihan_id, $row->id, 'sertifikat']).'" class="btn btn-secondary btn-sm" target="_blank">Sertifikat</a>';
+                    $html .= ' <a href="'.route('blk.pelatihan.peserta.sertifikat', [$row->blk_pelatihan_id, $row->id, 'kompetensi']).'" class="btn btn-outline-secondary btn-sm" target="_blank">Unit Kompetensi</a>';
                     if ($waiting) {
                         $html .= ' <button type="button" class="btn btn-primary btn-sm btn-ttd-satu" data-id="'.$row->id.'">TTD</button>';
                     }

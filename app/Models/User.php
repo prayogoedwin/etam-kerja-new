@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\BLK\UserBlk;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;  // Add this import
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\Rule;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, SoftDeletes;  // Add HasRoles here
+    use HasFactory, HasRoles, Notifiable, SoftDeletes;  // Add HasRoles here
 
     /**
      * The attributes that are mass assignable.
@@ -21,11 +23,12 @@ class User extends Authenticatable
         'name',
         'email',
         'whatsapp',
+        'nik',
         'lokasi_kerja',
         'kode_struktur',
         'password',
         'otp',
-        'is_finished'
+        'is_finished',
     ];
 
     /**
@@ -77,6 +80,33 @@ class User extends Authenticatable
 
     public function blk()
     {
-        return $this->hasOne(\App\Models\BLK\UserBlk::class, 'user_id', 'id');
+        return $this->hasOne(UserBlk::class, 'user_id', 'id');
+    }
+
+    public static function nikDariInput(mixed $nilai): ?string
+    {
+        $nik = preg_replace('/\D/', '', (string) $nilai);
+
+        return $nik === '' ? null : $nik;
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    public static function aturanNik(?int $ignoreUserId = null): array
+    {
+        $unique = Rule::unique('users', 'nik')->whereNull('deleted_at');
+        if ($ignoreUserId) {
+            $unique->ignore($ignoreUserId);
+        }
+
+        return ['nullable', 'digits:16', $unique];
+    }
+
+    public function nikSiapTte(): ?string
+    {
+        $nik = self::nikDariInput($this->nik);
+
+        return $nik !== null && strlen($nik) === 16 ? $nik : null;
     }
 }
