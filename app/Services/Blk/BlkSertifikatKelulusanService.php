@@ -13,7 +13,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use ZipArchive;
 
@@ -102,7 +101,41 @@ class BlkSertifikatKelulusanService
         ];
     }
 
-    public function simpanDokumenTte(EtamBlkPelatihanPeserta $peserta, string $kodeDokumen, bool $sudahTte = true, ?string $urlVerifikasi = null): string
+    public function simpanDokumenTte(EtamBlkPelatihanPeserta $peserta, string $kodeDokumen, bool $sudahTte = true): string
+    {
+        $path = $sudahTte
+            ? 'tte/blk/'.$peserta->id.'/'.$kodeDokumen.'.pdf'
+            : 'tte/blk/'.$peserta->id.'/'.$kodeDokumen.'.before.pdf';
+        Storage::disk('local')->put($path, $this->buatPdfDokumen($peserta, $kodeDokumen));
+
+        return $path;
+    }
+
+    public function pdfUntukDs(EtamBlkPelatihanPeserta $peserta, string $kodeDokumen): string
+    {
+        $pdf = $this->buatPdfDokumen($peserta, $kodeDokumen);
+
+        $tte = EtamTte::query()
+            ->where('nama_modul', 'blk')
+            ->where('id_refrensi', $peserta->id)
+            ->where('kode_dokumen', $kodeDokumen)
+            ->where('status', EtamTte::STATUS_MENUNGGU)
+            ->orderByDesc('id')
+            ->first();
+
+        if ($tte) {
+            $path = $tte->path_file_before ?: 'tte/blk/'.$peserta->id.'/'.$kodeDokumen.'.before.pdf';
+            Storage::disk('local')->put($path, $pdf);
+            if ($tte->path_file_before !== $path) {
+                $tte->path_file_before = $path;
+                $tte->save();
+            }
+        }
+
+        return $pdf;
+    }
+
+    public function buatPdfDokumen(EtamBlkPelatihanPeserta $peserta, string $kodeDokumen): string
     {
         $peserta->loadMissing(['pelatihan.blk', 'pelatihan.kompetensiInti', 'pelatihan.kompetensiPenunjang']);
         $pelatihan = $peserta->pelatihan;
@@ -113,13 +146,9 @@ class BlkSertifikatKelulusanService
         $sertifikat = $this->build($pelatihan, $peserta);
         $sertifikat['logo_kaltim'] = $this->dataUri(public_path('assets/etam_fe/images/logo/logo_kaltim.png')) ?: $sertifikat['logo_kaltim'];
         $sertifikat['logo_bsre'] = $this->dataUri(public_path('assets/etam_be/images/logo/logo_bsre.png')) ?: $sertifikat['logo_bsre'];
-        if ($sudahTte && $kodeDokumen === EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI) {
-            $sertifikat['signed']['kompetensi'] = true;
-        }
-        if ($sudahTte && $kodeDokumen === EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT) {
-            $sertifikat['signed']['sertifikat'] = true;
-            $sertifikat['is_draft'] = false;
-        }
+        $sertifikat['signed']['sertifikat'] = false;
+        $sertifikat['signed']['kompetensi'] = false;
+        $sertifikat['is_draft'] = false;
 
         $html = view('backend.blk.pelatihan.sertifikat', [
             'pelatihan' => $pelatihan,
@@ -127,17 +156,13 @@ class BlkSertifikatKelulusanService
             'sertifikat' => $sertifikat,
             'halaman' => $kodeDokumen,
             'modeUnduh' => true,
-            'tampilanAdmin' => ! $sudahTte,
-            'urlVerifikasi' => $urlVerifikasi,
-            'qrVerifikasi' => $urlVerifikasi ? $this->qrDataUri($urlVerifikasi) : null,
+            'untukDs' => true,
+            'tampilanAdmin' => false,
+            'urlVerifikasi' => null,
+            'qrVerifikasi' => null,
         ])->render();
 
-        $path = $sudahTte
-            ? 'tte/blk/'.$peserta->id.'/'.$kodeDokumen.'.pdf'
-            : 'tte/blk/'.$peserta->id.'/'.$kodeDokumen.'.before.pdf';
-        Storage::disk('local')->put($path, $this->htmlKePdf($html));
-
-        return $path;
+        return $this->htmlKePdf($html);
     }
 
     public function unduhZip(EtamBlkPelatihanPeserta $peserta): BinaryFileResponse
@@ -197,22 +222,12 @@ class BlkSertifikatKelulusanService
         return (string) Storage::disk('local')->get($path);
     }
 
-    private function qrDataUri(string $url): ?string
-    {
-        try {
-            $svg = (string) QrCode::size(140)->margin(1)->generate($url);
-
-            return 'data:image/svg+xml;base64,'.base64_encode($svg);
-        } catch (\Throwable $e) {
-            return null;
-        }
-    }
-
     private function htmlKePdf(string $html): string
     {
         return Pdf::loadHTML($html)
             ->setPaper('a4', 'portrait')
             ->setOption('defaultMediaType', 'print')
+            ->setOption('dpi', 96)
             ->setOption('isRemoteEnabled', false)
             ->setOption('isHtml5ParserEnabled', true)
             ->output();

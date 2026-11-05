@@ -509,6 +509,12 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
                 ->name('blk.pelatihan.peserta.sertifikat');
         });
 
+        Route::middleware(CheckUserRole::class.':super-admin')->group(function () {
+            Route::get('/pelatihan/{id}/peserta/{pesertaId}/preview-ds/{halaman}', [PesertaController::class, 'previewDs'])
+                ->whereIn('halaman', ['sertifikat', 'kompetensi'])
+                ->name('blk.pelatihan.peserta.preview-ds');
+        });
+
         Route::get('/pelatihan', [PelatihanController::class, 'index'])->name('blk.pelatihan.index');
         Route::get('/pelatihan/{id}/daftar', [PesertaController::class, 'formDaftar'])->name('blk.pelatihan.daftar');
         Route::post('/pelatihan/{id}/daftar', [PesertaController::class, 'daftar'])->name('blk.pelatihan.daftar.store');

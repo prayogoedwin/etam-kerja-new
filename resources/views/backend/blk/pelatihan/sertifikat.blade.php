@@ -7,7 +7,7 @@
     <style>
         @page {
             size: A4 portrait;
-            margin: 8mm;
+            margin: 0;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -48,24 +48,40 @@
 
         .page {
             width: 210mm;
-            min-height: 297mm;
             margin: 10mm auto;
             background: #fff;
             padding: 10mm;
             box-shadow: 0 2px 12px rgba(0,0,0,.15);
             position: relative;
-            page-break-after: always;
+            page-break-after: auto;
         }
 
-        .page:last-of-type { page-break-after: auto; }
-
-        .frame {
-            min-height: calc(297mm - 20mm);
+        .sheet {
+            width: 100%;
             border: 1.5px solid #000;
-            padding: 10mm 14mm 8mm;
             position: relative;
+        }
+
+        .sheet-main {
+            padding: 10mm 12mm 6mm;
+        }
+
+        .sheet-foot {
+            padding: 0 12mm 6mm;
+        }
+
+        body:not(.mode-pdf) .page {
+            min-height: 297mm;
+        }
+
+        body:not(.mode-pdf) .sheet {
+            min-height: 257mm;
             display: flex;
             flex-direction: column;
+        }
+
+        body:not(.mode-pdf) .sheet-foot {
+            margin-top: auto;
         }
 
         .watermark {
@@ -190,7 +206,7 @@
 
         .ttd {
             width: 78mm;
-            margin: 18mm 4mm 0 auto;
+            margin: 12mm 4mm 0 auto;
             text-align: center;
             font-size: 12pt;
             font-weight: 400;
@@ -198,7 +214,7 @@
         }
 
         .ttd .space {
-            height: 26mm;
+            height: 22mm;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -263,20 +279,20 @@
         }
 
         .bsre-footer .bsre-logo {
-            width: 20mm;
+            width: 38mm;
             vertical-align: middle;
-            padding: 8mm 6px 0 0;
+            padding: 2mm 6px 0 0;
         }
 
         .bsre-footer .bsre-logo img {
-            width: 18mm;
+            width: 36mm;
             height: auto;
         }
 
         .bsre-footer .bsre-text {
             vertical-align: middle;
             text-align: left;
-            padding-top: 8mm;
+            padding-top: 2mm;
         }
 
         .qr-tte {
@@ -301,39 +317,89 @@
             font-size: 8.5pt;
         }
 
+        body.mode-pdf {
+            background: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        body.mode-pdf .page {
+            width: auto;
+            height: auto;
+            min-height: 0;
+            margin: 0;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        body.mode-pdf .sheet {
+            width: 194mm;
+            height: 277mm;
+            margin: 8mm;
+            border: 2px solid #000;
+            position: relative;
+        }
+
+        body.mode-pdf .sheet-main {
+            padding: 8mm 10mm 8mm;
+        }
+
+        body.mode-pdf .sheet-foot {
+            display: none;
+        }
+
+        body.mode-pdf .ttd {
+            margin-top: 8mm;
+        }
+
+        body.mode-pdf .ttd .space {
+            height: 18mm;
+        }
+
+        body.mode-pdf .bsre-footer {
+            position: static;
+            width: 100%;
+            margin: 0;
+        }
+
+        body.mode-pdf .bsre-footer .bsre-logo,
+        body.mode-pdf .bsre-footer .bsre-text {
+            padding-top: 0;
+        }
+
         @media print {
             body { background: none; }
             .toolbar { display: none; }
-            .page {
-                width: auto;
-                min-height: auto;
+            body.mode-pdf .page {
                 margin: 0;
                 padding: 0;
                 box-shadow: none;
-            }
-            .frame {
-                min-height: calc(297mm - 16mm);
-                border: 1.6px solid #000;
             }
             .watermark { color: rgba(176, 0, 0, .18); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .bsre-footer { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
-<body>
+<body @class(['mode-pdf' => ($modeUnduh ?? false) || ($untukDs ?? false)])>
     @php
         $halaman = in_array($halaman ?? '', ['sertifikat', 'kompetensi'], true) ? $halaman : 'sertifikat';
         $modeUnduh = $modeUnduh ?? false;
+        $untukDs = $untukDs ?? $modeUnduh;
         $tampilanAdmin = $tampilanAdmin ?? false;
         $urlVerifikasi = $urlVerifikasi ?? null;
         $qrVerifikasi = $qrVerifikasi ?? null;
         $signedSertifikat = (bool) ($sertifikat['signed']['sertifikat'] ?? false);
         $signedKompetensi = (bool) ($sertifikat['signed']['kompetensi'] ?? false);
-        $lihatSertifikatResmi = $tampilanAdmin || $signedSertifikat;
-        $lihatKompetensiResmi = $tampilanAdmin || $signedKompetensi;
+        $lihatSertifikatResmi = ! $untukDs && ($tampilanAdmin || $signedSertifikat);
+        $lihatKompetensiResmi = ! $untukDs && ($tampilanAdmin || $signedKompetensi);
+        $tampilFooterSertifikat = $lihatSertifikatResmi;
+        $tampilFooterKompetensi = $lihatKompetensiResmi;
+        $tampilWatermarkSertifikat = ! $untukDs && ! $lihatSertifikatResmi;
+        $tampilWatermarkKompetensi = ! $untukDs && ! $lihatKompetensiResmi;
         $tampilSertifikat = $halaman === 'sertifikat';
         $tampilKompetensi = $halaman === 'kompetensi';
     @endphp
+    @unless ($modeUnduh)
     <div class="toolbar">
         <div>
             @if ($halaman === 'kompetensi')
@@ -370,13 +436,15 @@
             @endunless
         </div>
     </div>
+    @endunless
 
     @if ($tampilSertifikat)
     <div class="page">
-        <div class="frame">
-        @unless ($lihatSertifikatResmi)
+        <div class="sheet">
+        <div class="sheet-main">
+        @if ($tampilWatermarkSertifikat)
             <div class="watermark">DRAFT</div>
-        @endunless
+        @endif
         <div class="content">
             <div class="header">
                 <div class="logo-wrap">
@@ -424,24 +492,30 @@
                     @if ($lihatSertifikatResmi)
                         <span class="tte-ok">Telah ditandatangani secara elektronik</span>
                     @endif
-                    @include('backend.blk.pelatihan._qr-berkas')
+                    @unless ($untukDs)
+                        @include('backend.blk.pelatihan._qr-berkas')
+                    @endunless
                 </div>
                 <div class="nama">{{ $sertifikat['penandatangan']['dinas']['nama'] ?: '................................' }}</div>
             </div>
         </div>
-            @if ($lihatSertifikatResmi)
+        </div>
+        @if ($tampilFooterSertifikat)
+        <div class="sheet-foot">
             @include('backend.blk.pelatihan._bsre-footer')
-            @endif
+        </div>
+        @endif
         </div>
     </div>
     @endif
 
     @if ($tampilKompetensi)
     <div class="page">
-        <div class="frame">
-        @unless ($lihatKompetensiResmi)
+        <div class="sheet">
+        <div class="sheet-main">
+        @if ($tampilWatermarkKompetensi)
             <div class="watermark">DRAFT</div>
-        @endunless
+        @endif
         <div class="content">
             <div class="section-title">DAFTAR UNIT KOMPETENSI</div>
 
@@ -505,14 +579,19 @@
                     @if ($lihatKompetensiResmi)
                         <span class="tte-ok">Telah ditandatangani secara elektronik</span>
                     @endif
-                    @include('backend.blk.pelatihan._qr-berkas')
+                    @unless ($untukDs)
+                        @include('backend.blk.pelatihan._qr-berkas')
+                    @endunless
                 </div>
                 <div class="nama">{{ $sertifikat['penandatangan']['balai']['nama'] ?: '................................' }}</div>
             </div>
         </div>
-            @if ($lihatKompetensiResmi)
+        </div>
+        @if ($tampilFooterKompetensi)
+        <div class="sheet-foot">
             @include('backend.blk.pelatihan._bsre-footer')
-            @endif
+        </div>
+        @endif
         </div>
     </div>
     @endif

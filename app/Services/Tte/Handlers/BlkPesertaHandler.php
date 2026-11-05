@@ -77,8 +77,7 @@ class BlkPesertaHandler implements TteModuleHandler
         $pathSertifikat = $this->sertifikat->simpanDokumenTte(
             $peserta,
             EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT,
-            false,
-            route('tte.berkas', $tokenSertifikat)
+            false
         );
 
         $this->queue->ajukan([

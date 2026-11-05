@@ -16,6 +16,7 @@ use App\Models\Lowongan;
 use App\Models\User;
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
+use App\Services\Blk\BlkSertifikatKelulusanService;
 use App\Services\Tte\TteQueue;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Storage;
@@ -1367,6 +1368,99 @@ class BlkModuleTest extends TestCase
         $this->assertNotContains('Peserta Belum Lulus', $names);
     }
 
+    public function test_super_admin_bisa_preview_pdf_ds_sertifikat_dan_kompetensi(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK Preview DS',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $admin = $this->makeUser('super-admin');
+        $peserta = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_MENUNGGU, [
+            'name' => 'Peserta Preview DS',
+        ]);
+
+        $options = collect($this->actingAs($admin)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('blk.pelatihan.peserta', $pelatihan->id))
+            ->json('data'))
+            ->firstWhere('name', 'Peserta Preview DS')['options'] ?? '';
+
+        $this->assertStringContainsString('Preview DS Sertifikat', $options);
+        $this->assertStringContainsString('Preview DS Kompetensi', $options);
+
+        $sertifikat = $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.preview-ds', [$pelatihan->id, $peserta->id, 'sertifikat']));
+        $sertifikat->assertOk()
+            ->assertHeader('Content-Type', 'application/pdf');
+        $this->assertStringStartsWith('%PDF', $sertifikat->getContent());
+        $this->assertSame(1, $this->jumlahHalamanPdf($sertifikat->getContent()));
+
+        $kompetensi = $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.preview-ds', [$pelatihan->id, $peserta->id, 'kompetensi']));
+        $kompetensi->assertOk()
+            ->assertHeader('Content-Type', 'application/pdf');
+        $this->assertStringStartsWith('%PDF', $kompetensi->getContent());
+        $this->assertSame(1, $this->jumlahHalamanPdf($kompetensi->getContent()));
+
+        $pelatihan->load(['blk', 'kompetensiInti', 'kompetensiPenunjang']);
+        $html = view('backend.blk.pelatihan.sertifikat', [
+            'pelatihan' => $pelatihan,
+            'peserta' => $peserta,
+            'sertifikat' => app(BlkSertifikatKelulusanService::class)->build($pelatihan, $peserta),
+            'halaman' => 'sertifikat',
+            'modeUnduh' => true,
+            'untukDs' => true,
+            'tampilanAdmin' => false,
+            'urlVerifikasi' => null,
+            'qrVerifikasi' => null,
+        ])->render();
+        $this->assertStringNotContainsString('QR berkas asli', $html);
+        $this->assertStringNotContainsString('Berkas asli', $html);
+        $this->assertStringNotContainsString('Telah ditandatangani secara elektronik', $html);
+        $this->assertStringNotContainsString('DRAFT', $html);
+        $this->assertStringContainsString('mode-pdf', $html);
+        $this->assertStringNotContainsString('Balai Sertifikasi Elektronik (BSrE)', $html);
+        $this->assertStringNotContainsString('logo_bsre', $html);
+
+        $this->assertDatabaseMissing('etam_tte', [
+            'nama_modul' => 'blk',
+            'id_refrensi' => $peserta->id,
+        ]);
+    }
+
+    public function test_admin_balai_tidak_bisa_preview_pdf_ds(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK Preview DS Dilarang',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $admin = $this->makeUser('admin-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+        $peserta = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_MENUNGGU, [
+            'name' => 'Peserta Tanpa Preview DS',
+        ]);
+
+        $options = collect($this->actingAs($admin)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('blk.pelatihan.peserta', $pelatihan->id))
+            ->json('data'))
+            ->firstWhere('name', 'Peserta Tanpa Preview DS')['options'] ?? '';
+
+        $this->assertStringContainsString('Sertifikat', $options);
+        $this->assertStringContainsString('Unit Kompetensi', $options);
+        $this->assertStringNotContainsString('Preview DS Sertifikat', $options);
+        $this->assertStringNotContainsString('Preview DS Kompetensi', $options);
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.preview-ds', [$pelatihan->id, $peserta->id, 'sertifikat']))
+            ->assertStatus(403);
+    }
+
     public function test_bulk_ajukan_ttd_terpilih_dan_semua(): void
     {
         $blk = EtamBlk::create([
@@ -1538,5 +1632,14 @@ class BlkModuleTest extends TestCase
             'status' => EtamBlkPelatihan::STATUS_AKTIF,
             'slug' => 'pelatihan-uji-'.uniqid(),
         ]);
+    }
+
+    private function jumlahHalamanPdf(string $pdf): int
+    {
+        if (preg_match('/\/Type\s*\/Pages\b.*?\/Count\s+(\d+)/s', $pdf, $match)) {
+            return (int) $match[1];
+        }
+
+        return max(1, preg_match_all('/\/Type\s*\/Page\b/', $pdf) - preg_match_all('/\/Type\s*\/Pages\b/', $pdf));
     }
 }

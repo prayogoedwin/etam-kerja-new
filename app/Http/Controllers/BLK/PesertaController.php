@@ -352,6 +352,41 @@ class PesertaController extends Controller
         return view('backend.blk.pelatihan.sertifikat', compact('pelatihan', 'peserta', 'sertifikat', 'halaman'));
     }
 
+    public function previewDs(string $pelatihanId, string $pesertaId, string $halaman, BlkSertifikatKelulusanService $sertifikatService)
+    {
+        if (! $this->isSuperAdmin()) {
+            abort(403);
+        }
+
+        $halaman = $halaman ?: EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT;
+        if (! in_array($halaman, [EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT, EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI], true)) {
+            abort(404);
+        }
+
+        $pelatihan = EtamBlkPelatihan::with(['blk', 'kompetensiInti', 'kompetensiPenunjang'])->findOrFail($pelatihanId);
+        if (! $this->canAccessBlk((int) $pelatihan->blk_id)) {
+            abort(403);
+        }
+
+        if ((int) $pelatihan->pelatihan_untuk === EtamBlkPelatihan::UNTUK_PENYEDIA) {
+            abort(404);
+        }
+
+        $peserta = EtamBlkPelatihanPeserta::where('blk_pelatihan_id', $pelatihan->id)->findOrFail($pesertaId);
+        if ((int) $peserta->status_pendaftaran !== EtamBlkPelatihanPeserta::STATUS_LULUS) {
+            return redirect()
+                ->route('blk.pelatihan.peserta.show', [$pelatihan->id, $peserta->id])
+                ->with('error', 'Sertifikat hanya tersedia untuk peserta yang lulus');
+        }
+
+        $pdf = $sertifikatService->pdfUntukDs($peserta, $halaman);
+
+        return response($pdf, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="preview-ds-'.$halaman.'-'.$peserta->id.'.pdf"',
+        ]);
+    }
+
     public function formDaftar(string $id)
     {
         $pelatihan = EtamBlkPelatihan::with(['blk', 'syarat', 'fasilitas', 'kompetensiInti', 'kompetensiPenunjang'])->findOrFail($id);
@@ -618,7 +653,7 @@ class PesertaController extends Controller
 
     private function pesertaOptionButtons(EtamBlkPelatihan $pelatihan, EtamBlkPelatihanPeserta|EtamBlkPelatihanPesertaPerusahaan $data): string
     {
-        $html = '<div class="d-flex flex-wrap gap-1">';
+        $html = '<div class="d-flex flex-wrap gap-1" style="white-space:normal">';
         $html .= '<a href="'.route('blk.pelatihan.peserta.show', [$pelatihan->id, $data->id]).'" class="btn btn-secondary btn-sm">Profil</a>';
         $nomor = $data instanceof EtamBlkPelatihanPeserta ? (string) ($data->nomor_sertifikat ?? '') : '';
         $html .= '<button class="btn btn-warning btn-sm" onclick="showStatusModal('.$data->id.', '.$data->status_pendaftaran.', '.json_encode((string) ($data->alasan_status ?? '')).', '.json_encode($nomor).')">Status</button>';
@@ -639,6 +674,11 @@ class PesertaController extends Controller
             && (int) $data->status_pendaftaran === EtamBlkPelatihanPeserta::STATUS_LULUS) {
             $html .= '<a href="'.route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $data->id, 'sertifikat']).'" class="btn btn-primary btn-sm" target="_blank">Sertifikat</a>';
             $html .= '<a href="'.route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $data->id, 'kompetensi']).'" class="btn btn-outline-primary btn-sm" target="_blank">Unit Kompetensi</a>';
+            if ($this->isSuperAdmin()) {
+                $html .= '<span class="d-block w-100"></span>';
+                $html .= '<a href="'.route('blk.pelatihan.peserta.preview-ds', [$pelatihan->id, $data->id, 'sertifikat']).'" class="btn btn-dark btn-sm" target="_blank" title="PDF yang dikirim ke DS">Preview DS Sertifikat</a>';
+                $html .= '<a href="'.route('blk.pelatihan.peserta.preview-ds', [$pelatihan->id, $data->id, 'kompetensi']).'" class="btn btn-dark btn-sm" target="_blank" title="PDF yang dikirim ke DS">Preview DS Kompetensi</a>';
+            }
             if ((int) $data->status_ttd === EtamBlkPelatihanPeserta::TTD_MENUNGGU) {
                 $html .= '<button type="button" class="btn btn-outline-primary btn-sm" onclick="ajukanTtd('.$data->id.')">Ajukan TTD</button>';
             }

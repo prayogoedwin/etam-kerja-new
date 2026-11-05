@@ -103,8 +103,7 @@ class TteQueue
         $tte->path_file_before = $this->sertifikat->simpanDokumenTte(
             $peserta,
             EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI,
-            false,
-            route('tte.berkas', $tte->token_verifikasi)
+            false
         );
         $tte->save();
 

@@ -1,6 +1,12 @@
 @extends('backend.template.backend')
 
 @section('content')
+    <style>
+        #simpletable td.peserta-aksi {
+            white-space: normal !important;
+            min-width: 320px;
+        }
+    </style>
 
     <body class="box-layout container background-green">
         <div class="pcoded-main-container">
@@ -101,7 +107,7 @@
                                                 @if ($isPencari)
                                                     <th>Status TTD</th>
                                                 @endif
-                                                <th>Options</th>
+                                                <th class="peserta-aksi">Options</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -195,7 +201,7 @@
                 data: 'options',
                 orderable: false,
                 searchable: false,
-                width: '280px'
+                className: 'peserta-aksi'
             });
 
             var table = $('#simpletable').DataTable({

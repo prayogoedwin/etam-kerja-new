@@ -13,6 +13,11 @@ trait ManagesBlkAccess
         return Auth::user()?->roles[0]['name'] ?? null;
     }
 
+    protected function isSuperAdmin(): bool
+    {
+        return (bool) Auth::user()?->hasRole('super-admin');
+    }
+
     protected function isBlkMasterAdmin(): bool
     {
         return in_array($this->currentRoleName(), ['super-admin', 'admin-provinsi'], true);
