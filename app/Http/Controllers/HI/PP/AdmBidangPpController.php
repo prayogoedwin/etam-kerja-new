@@ -522,6 +522,119 @@ class AdmBidangPpController extends Controller
         }
     }
 
+    public function expired(Request $request)
+    {
+        if ($request->ajax()) {
+            $datas = EtamHiPpAjuan::select(
+                    'id',
+                    'jenis_ajuan',
+                    'perusahaan_id',
+                    'nomor',
+                    'tanggal_berlaku_pp_baru',
+                    'nomor_sk',
+                    'created_at'
+                )
+                ->with([
+                    'jenisAjuan:id,nama',
+                    'perusahaan:id,name',
+                    'perusahaan.penyedia:user_id,name',
+                ])
+                ->whereNotNull('tanggal_berlaku_pp_baru');
+
+            // Filter default: yang expired dalam 6 bulan ke depan (termasuk yang sudah expired)
+            $rangeBulan = (int) ($request->range_bulan ?? 6);
+            $batasAkhir = now()->addMonths($rangeBulan)->endOfDay();
+
+            $datas->where('tanggal_berlaku_pp_baru', '<=', $batasAkhir->format('Y-m-d'));
+
+            // Filter opsional: hanya yang sudah expired
+            if ($request->filter === 'expired') {
+                $datas->whereRaw("
+                    DATE_ADD(tanggal_berlaku_pp_baru, INTERVAL
+                        CASE jenis_ajuan
+                            WHEN 2 THEN 2
+                            WHEN 4 THEN 2
+                            ELSE 1
+                        END YEAR
+                    ) <= CURDATE()
+                ");
+            }
+
+            // Filter opsional: yang akan expired (belum expired)
+            if ($request->filter === 'akan_expired') {
+                $datas->whereRaw("
+                    DATE_ADD(tanggal_berlaku_pp_baru, INTERVAL
+                        CASE jenis_ajuan
+                            WHEN 2 THEN 2
+                            WHEN 4 THEN 2
+                            ELSE 1
+                        END YEAR
+                    ) > CURDATE()
+                ");
+            }
+
+            $datas->orderBy('tanggal_berlaku_pp_baru', 'asc');
+
+            return DataTables::of($datas)
+                ->addIndexColumn()
+                ->addColumn('perusahaan_nama', function ($data) {
+                    return $data->perusahaan->penyedia->name
+                        ?? $data->perusahaan->name
+                        ?? '-';
+                })
+                ->addColumn('jenis_ajuan_nama', function ($data) {
+                    return $data->jenisAjuan->nama ?? '-';
+                })
+                ->addColumn('masa_berlaku', function ($data) {
+                    return in_array((int) $data->jenis_ajuan, [2, 4]) ? '2 Tahun' : '1 Tahun';
+                })
+                ->addColumn('tanggal_mulai', function ($data) {
+                    return $data->tanggal_berlaku_pp_baru
+                        ? \Carbon\Carbon::parse($data->tanggal_berlaku_pp_baru)->format('d-m-Y')
+                        : '-';
+                })
+                ->addColumn('tanggal_expired', function ($data) {
+                    return $this->hitungExpired($data)->format('d-m-Y');
+                })
+                ->addColumn('sisa_hari', function ($data) {
+                    $expired = $this->hitungExpired($data);
+                    $hari    = (int) now()->startOfDay()->diffInDays($expired->startOfDay(), false);
+
+                    if ($hari < 0) {
+                        return '<span class="badge bg-danger">Sudah expired ' . abs($hari) . ' hari</span>';
+                    } elseif ($hari <= 30) {
+                        return '<span class="badge bg-warning">' . $hari . ' hari lagi</span>';
+                    } elseif ($hari <= 90) {
+                        return '<span class="badge bg-info">' . $hari . ' hari lagi</span>';
+                    } else {
+                        return '<span class="badge bg-success">' . $hari . ' hari lagi</span>';
+                    }
+                })
+                ->addColumn('options', function ($data) {
+                    $detailUrl = route('hi.pp.admbidang.detail', $data->id);
+                    return '<a href="' . $detailUrl . '" class="btn btn-sm btn-info">Detail</a>';
+                })
+                ->rawColumns(['sisa_hari', 'options'])
+                ->make(true);
+        }
+
+        return view('backend.hi.pp.admbidang.expired');
+    }
+
+    /**
+     * Hitung tanggal expired berdasarkan jenis ajuan.
+     * - Jenis 2 (Baru) & 4 (Perubahan) → 2 tahun
+     * - Jenis 1 (Perpanjangan) & 3 (Perpanjangan 1 Tahun) → 1 tahun
+     * Kurangi 1 hari supaya pas di hari terakhir.
+     */
+    private function hitungExpired($data): \Carbon\Carbon
+    {
+        $mulai = \Carbon\Carbon::parse($data->tanggal_berlaku_pp_baru);
+        $tahun = in_array((int) $data->jenis_ajuan, [2, 4]) ? 2 : 1;
+
+        return $mulai->copy()->addYears($tahun)->subDay();
+    }
+
     private function labelVerifikasi($val)
     {
         switch ((int) $val) {

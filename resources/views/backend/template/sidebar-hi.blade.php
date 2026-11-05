@@ -27,6 +27,12 @@
                         <span class="pcoded-mtext">Ajuan PP</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('hi.pp.admbidang.expired') }}" class="nav-link">
+                        <span class="pcoded-micon"><i class="feather icon-clock"></i></span>
+                        <span>PP Expired</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
