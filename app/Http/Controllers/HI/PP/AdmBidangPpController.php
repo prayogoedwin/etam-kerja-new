@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Models\HI\PP\EtamHiPpDokunggahpenyedia;
 use App\Models\HI\PP\EtamHiPpSyaratdokumen;
+use App\Services\HI\PP\PpLogService;
+use App\Models\HI\PP\EtamHiPpLog;
 
 class AdmBidangPpController extends Controller
 {
@@ -109,6 +111,7 @@ class AdmBidangPpController extends Controller
             'syaratDokumen.syaratDokumen:id,nama',
             'perusahaan:id,name,email',      // data user (perusahaan)
             'profilPenyedia',                 // data profil penyedia (users_penyedia)
+            // 'logs.user:id,name',
         ])->findOrFail($id);
 
         $syaratDokumen = EtamHiPpSyaratdokumen::where('id', '!=', 8)
@@ -193,11 +196,28 @@ class AdmBidangPpController extends Controller
                     $path = $request->file('dok_revisi_admin')->store(upload_path_pp('revisi'), 'public');
                     $data['dok_revisi_admin'] = $path;
                 }
+
+                PpLogService::log(
+                    $ajuan->id,
+                    EtamHiPpLog::ACTION_ADMIN_REVISI,
+                    'Admin Bidang mengembalikan pengajuan untuk revisi',
+                    [
+                        'keterangan' => $request->keterangan,
+                        'dok_revisi' => $data['dok_revisi_admin'] ?? null,
+                    ]
+                );
             } else {
                 // Kalau ACC, kosongkan keterangan & batas revisi
                 $data['keterangan_revisi_admin'] = null;
                 $data['batas_revisi']            = null;
                 $data['dok_revisi_admin']        = null;
+
+                PpLogService::log(
+                    $ajuan->id,
+                    EtamHiPpLog::ACTION_ADMIN_ACC,
+                    'Admin Bidang menyetujui pengajuan',
+                    []
+                );
             }
 
             $ajuan->update($data);
@@ -296,6 +316,16 @@ class AdmBidangPpController extends Controller
 
             DB::commit();
 
+            PpLogService::log(
+                $ajuan->id,
+                EtamHiPpLog::ACTION_INPUT_SK,
+                'Admin Bidang menginput nomor SK & tanggal berlaku PP',
+                [
+                    'nomor_sk'                => $request->nomor_sk,
+                    'tanggal_berlaku_pp_baru' => $request->tanggal_berlaku_pp_baru,
+                ]
+            );
+
             return response()->json([
                 'status'   => true,
                 'message'  => 'Nomor SK & tanggal berlaku berhasil disimpan.',
@@ -364,6 +394,18 @@ class AdmBidangPpController extends Controller
     */
     public function submitUnggahSk(Request $request, $id)
     {
+        // ===== DEBUG SEMENTARA =====
+        // \Log::info('Upload debug', [
+        //     'hasFile'            => $request->hasFile('dok_produk_akhir'),
+        //     'files_raw'          => $_FILES['dok_produk_akhir'] ?? null,
+        //     'php_upload_limit'   => ini_get('upload_max_filesize'),
+        //     'php_post_limit'     => ini_get('post_max_size'),
+        //     'php_memory_limit'   => ini_get('memory_limit'),
+        //     'post_content_length'=> $request->server('CONTENT_LENGTH'),
+        //     'error_code'         => $request->file('dok_produk_akhir')?->getError(),
+        // ]);
+        // ==========================
+
         $request->validate([
             'dok_produk_akhir' => 'required|file|mimes:pdf|max:5120', // max 5 MB
         ], [
@@ -390,6 +432,15 @@ class AdmBidangPpController extends Controller
             }
 
             DB::commit();
+
+            PpLogService::log(
+                $ajuan->id,
+                EtamHiPpLog::ACTION_UPLOAD_SK_FINAL,
+                'Admin Bidang mengunggah dokumen SK final',
+                [
+                    'path' => $path,
+                ]
+            );
 
             return response()->json([
                 'status'   => true,
@@ -447,6 +498,15 @@ class AdmBidangPpController extends Controller
             }
 
             DB::commit();
+
+            PpLogService::log(
+                $ajuan->id,
+                EtamHiPpLog::ACTION_UPLOAD_FINAL_PP,
+                'Admin Bidang mengunggah dokumen final konsep PP — Status selesai',
+                [
+                    'path' => $path,
+                ]
+            );
 
             return response()->json([
                 'status'   => true,

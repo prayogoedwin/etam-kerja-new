@@ -9,6 +9,8 @@ use Yajra\DataTables\Facades\DataTables;
 use App\Models\HI\PP\EtamHiPpAjuan;
 use App\Models\HI\PP\EtamHiPpSyaratdokumen;
 use Illuminate\Support\Facades\Storage;
+use App\Services\HI\PP\PpLogService;
+use App\Models\HI\PP\EtamHiPpLog;
 
 class KasiBidangPpController extends Controller
 {
@@ -179,10 +181,27 @@ class KasiBidangPpController extends Controller
                     $path = $request->file('dok_revisi_kasi')->store(upload_path_pp('revisi'), 'public');
                     $data['dok_revisi_kasi'] = $path;
                 }
+
+                PpLogService::log(
+                    $ajuan->id,
+                    EtamHiPpLog::ACTION_KASI_REVISI,
+                    'Kepala Seksi mengembalikan pengajuan untuk revisi',
+                    [
+                        'keterangan' => $request->keterangan,
+                        'dok_revisi' => $data['dok_revisi_kasi'] ?? null,
+                    ]
+                );
             } else {
                 $data['keterangan_revisi_kasi'] = null;
                 $data['batas_revisi']           = null;
                 $data['dok_revisi_kasi']        = null;
+
+                PpLogService::log(
+                    $ajuan->id,
+                    EtamHiPpLog::ACTION_KASI_ACC,
+                    'Kepala Seksi menyetujui pengajuan',
+                    []
+                );
             }
 
             $ajuan->update($data);

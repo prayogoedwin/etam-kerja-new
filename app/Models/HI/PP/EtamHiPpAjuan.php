@@ -77,4 +77,10 @@ class EtamHiPpAjuan extends Model
             'id'                                 // local key di users
         );
     }
+
+    public function logs()
+    {
+        return $this->hasMany(EtamHiPpLog::class, 'ajuan_id', 'id')
+                    ->orderBy('created_at', 'asc');
+    }
 }

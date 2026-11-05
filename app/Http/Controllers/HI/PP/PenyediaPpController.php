@@ -11,6 +11,8 @@ use App\Models\HI\PP\EtamHiPpSyaratdokumen;
 use App\Models\HI\PP\EtamHiPpDokunggahpenyedia;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Services\HI\PP\PpLogService;
+use App\Models\HI\PP\EtamHiPpLog;
 
 class PenyediaPpController extends Controller
 {
@@ -190,6 +192,17 @@ class PenyediaPpController extends Controller
             }
 
             DB::commit();
+
+            PpLogService::log(
+                $ajuan->id,
+                EtamHiPpLog::ACTION_SUBMIT_AJUAN,
+                'Perusahaan mengirim pengajuan Peraturan Perusahaan',
+                [
+                    'jenis_ajuan' => $ajuan->jenis_ajuan,
+                    'nomor'       => $ajuan->nomor,
+                    'dokumen'     => collect($request->file('dokumen') ?? [])->keys()->toArray(),
+                ]
+            );
 
             return response()->json([
                 'status'  => true,
@@ -460,6 +473,16 @@ class PenyediaPpController extends Controller
             }
 
             DB::commit();
+
+            PpLogService::log(
+                $ajuan->id,
+                EtamHiPpLog::ACTION_SUBMIT_REVISI,
+                'Perusahaan mengirim perbaikan revisi',
+                [
+                    'batas_revisi' => $ajuan->batas_revisi?->format('Y-m-d'),
+                    'file_diubah'  => $request->hasFile('dokumen') ? array_keys($request->file('dokumen')) : [],
+                ]
+            );
 
             return response()->json([
                 'status'  => true,

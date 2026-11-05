@@ -236,6 +236,53 @@
                                 </div>
                             @endif
 
+                            {{-- ========== RIWAYAT AKTIVITAS ========== --}}
+                            <h6 class="text-muted mb-3 mt-4">Riwayat Aktivitas</h6>
+                            <div class="table-responsive mb-4">
+                                <table class="table table-sm table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th width="18%">Waktu</th>
+                                            <th width="15%">Oleh</th>
+                                            <th>Aktivitas</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($ajuan->logs as $i => $log)
+                                            <tr>
+                                                <td>{{ $i + 1 }}</td>
+                                                <td>
+                                                    <small>{{ $log->created_at?->format('d-m-Y H:i') }}</small>
+                                                </td>
+                                                <td>
+                                                    <small>
+                                                        <strong>{{ $log->user->name ?? 'System' }}</strong><br>
+                                                        <span class="badge bg-secondary">{{ $log->role ?? '-' }}</span>
+                                                    </small>
+                                                </td>
+                                                <td>
+                                                    {{ $log->description ?? $log->action }}
+
+                                                    @if (!empty($log->meta))
+                                                        <details class="mt-1">
+                                                            <summary class="text-muted small" style="cursor:pointer;">Detail</summary>
+                                                            <pre class="small bg-light p-2 mt-1 mb-0" style="white-space: pre-wrap;">{{ json_encode($log->meta, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
+                                                        </details>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-3">
+                                                    <i class="feather icon-clock"></i> Belum ada aktivitas.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+
                             {{-- ========== TOMBOL AKSI ========== --}}
                             <div class="d-flex justify-content-end mt-4 flex-wrap gap-2">
                                 @php
