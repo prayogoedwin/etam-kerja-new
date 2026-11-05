@@ -156,6 +156,7 @@ class AdmBidangPpController extends Controller
             // 'keterangan'   => 'required_if:type,revisi|nullable|string|max:255',
             'keterangan'   => 'required_if:type,revisi|nullable|string',
             // 'batas_revisi' => 'required_if:type,revisi|nullable|date|after_or_equal:today',
+            'dok_revisi_admin'       => 'nullable|file|mimes:pdf|max:1024', // max 1 MB
         ], [
             'type.required'              => 'Pilih jenis verifikasi.',
             'type.in'                    => 'Jenis verifikasi tidak valid.',
@@ -164,6 +165,8 @@ class AdmBidangPpController extends Controller
             // 'batas_revisi.required_if'   => 'Batas revisi wajib diisi jika melakukan revisi.',
             // 'batas_revisi.date'          => 'Batas revisi harus berupa tanggal yang valid.',
             // 'batas_revisi.after_or_equal'=> 'Batas revisi tidak boleh sebelum hari ini.',
+            'dok_revisi_admin.mimes'     => 'Dokumen revisi harus berformat PDF.',
+            'dok_revisi_admin.max'       => 'Ukuran dokumen revisi maksimal 1 MB.',
         ]);
 
         DB::beginTransaction();
@@ -179,10 +182,22 @@ class AdmBidangPpController extends Controller
             if ($request->type === 'revisi') {
                 $data['keterangan_revisi_admin'] = $request->keterangan;
                 // $data['batas_revisi']            = $request->batas_revisi;
+                // Upload dok revisi admin (opsional)
+                if ($request->hasFile('dok_revisi_admin')) {
+                    // Hapus file lama kalau ada
+                    if ($ajuan->dok_revisi_admin && Storage::disk('public')->exists($ajuan->dok_revisi_admin)) {
+                        Storage::disk('public')->delete($ajuan->dok_revisi_admin);
+                    }
+
+                    // $path = $request->file('dok_revisi_admin')->store('hi/pp/revisi/admin', 'public');
+                    $path = $request->file('dok_revisi_admin')->store(upload_path_pp('revisi'), 'public');
+                    $data['dok_revisi_admin'] = $path;
+                }
             } else {
                 // Kalau ACC, kosongkan keterangan & batas revisi
                 $data['keterangan_revisi_admin'] = null;
                 $data['batas_revisi']            = null;
+                $data['dok_revisi_admin']        = null;
             }
 
             $ajuan->update($data);
@@ -369,7 +384,8 @@ class AdmBidangPpController extends Controller
                     Storage::disk('public')->delete($ajuan->dok_produk_akhir);
                 }
 
-                $path = $request->file('dok_produk_akhir')->store('hi/pp/sk', 'public');
+                // $path = $request->file('dok_produk_akhir')->store('hi/pp/sk', 'public');
+                $path = $request->file('dok_produk_akhir')->store(upload_path_pp('sk'), 'public');
                 $ajuan->update(['dok_produk_akhir' => $path]);
             }
 
@@ -389,9 +405,68 @@ class AdmBidangPpController extends Controller
         }
     }
 
+    public function formFinalKonsep($id)
+    {
+        $ajuan = EtamHiPpAjuan::with(['jenisAjuan:id,nama'])
+            ->where('verifikasi_admin', 1)
+            ->where('verifikasi_kasi', 1)
+            ->findOrFail($id);
+
+        return view('backend.hi.pp.admbidang.final_konsep', compact('ajuan'));
+    }
+
+    public function submitFinalKonsep(Request $request, $id)
+    {
+        $request->validate([
+            'dok_final_konsep_pp' => 'required|file|mimes:pdf|max:10240', // max 10 MB
+        ], [
+            'dok_final_konsep_pp.required' => 'Dokumen final konsep PP wajib diunggah.',
+            'dok_final_konsep_pp.mimes'    => 'Dokumen harus berformat PDF.',
+            'dok_final_konsep_pp.max'      => 'Ukuran dokumen maksimal 10 MB.',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $ajuan = EtamHiPpAjuan::where('verifikasi_admin', 1)
+                ->where('verifikasi_kasi', 1)
+                ->findOrFail($id);
+
+            if ($request->hasFile('dok_final_konsep_pp')) {
+                // Hapus file lama kalau ada
+                if ($ajuan->dok_final_konsep_pp && Storage::disk('public')->exists($ajuan->dok_final_konsep_pp)) {
+                    Storage::disk('public')->delete($ajuan->dok_final_konsep_pp);
+                }
+
+                $path = $request->file('dok_final_konsep_pp')->store(upload_path_pp('final-konsep'), 'public');
+
+                $ajuan->update([
+                    'dok_final_konsep_pp' => $path,
+                    'verifikasi_admin'    => 8,
+                    'verifikasi_kasi'     => 8,
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status'   => true,
+                'message'  => 'Dokumen final konsep PP berhasil diunggah. Status: Selesai.',
+                'redirect' => route('hi.pp.admbidang.detail', $ajuan->id),
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal mengunggah: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     private function labelVerifikasi($val)
     {
         switch ((int) $val) {
+            case 8:
+                return '<span class="badge bg-primary">Selesai</span>';
             case 1:
                 return '<span class="badge bg-success">ACC</span>';
             case 2:

@@ -29,7 +29,8 @@ class PenyediaPpController extends Controller
                 'verifikasi_admin',
                 'verifikasi_kasi',
                 'created_at',
-                'dok_produk_akhir'
+                'dok_produk_akhir',
+                'dok_final_konsep_pp'
             )
             ->with(['jenisAjuan:id,nama'])
             ->where('created_by', auth()->id());
@@ -77,6 +78,17 @@ class PenyediaPpController extends Controller
                         target="_blank"
                         class="btn btn-sm btn-info">
                             <i class="feather icon-download"></i> Unduh SK
+                        </a>
+                        ';
+                    }
+
+                    if(((int) $data->verifikasi_admin === 8 && (int) $data->verifikasi_kasi === 8)){
+                        $html =
+                        '
+                        <a href="'. asset('storage/' . $data->dok_final_konsep_pp) .'"
+                        target="_blank"
+                        class="btn btn-sm btn-info">
+                            <i class="feather icon-download"></i> Unduh Konsep PP
                         </a>
                         ';
                     }
@@ -164,7 +176,8 @@ class PenyediaPpController extends Controller
             if ($request->hasFile('dokumen')) {
                 foreach ($request->file('dokumen') as $syaratId => $file) {
                     if ($file && $file->isValid()) {
-                        $path = $file->store('hi/pp/dokumen', 'public');
+                        // $path = $file->store('hi/pp/dokumen', 'public');
+                        $path = $file->store(upload_path_pp('dokumen', $ajuan->created_at ?? now()), 'public');
 
                         EtamHiPpDokunggahpenyedia::create([
                             'ajuan_id'          => $ajuan->id,
@@ -308,7 +321,8 @@ class PenyediaPpController extends Controller
                             $old->forceDelete();
                         }
 
-                        $path = $file->store('hi/pp/dokumen', 'public');
+                        // $path = $file->store('hi/pp/dokumen', 'public');
+                        $path = $file->store(upload_path_pp('dokumen', $ajuan->created_at ?? now()), 'public');
 
                         EtamHiPpDokunggahpenyedia::create([
                             'ajuan_id'         => $ajuan->id,
@@ -432,7 +446,8 @@ class PenyediaPpController extends Controller
                             $old->forceDelete();
                         }
 
-                        $path = $file->store('hi/pp/dokumen', 'public');
+                        // $path = $file->store('hi/pp/dokumen', 'public');
+                        $path = $file->store(upload_path_pp('dokumen', $ajuan->created_at ?? now()), 'public');
 
                         EtamHiPpDokunggahpenyedia::create([
                             'ajuan_id'         => $ajuan->id,
@@ -498,6 +513,8 @@ class PenyediaPpController extends Controller
     private function labelVerifikasi($val)
     {
         switch ((int) $val) {
+            case 8:
+                return '<span class="badge bg-primary">Selesai</span>';
             case 1:
                 return '<span class="badge bg-success">ACC</span>';
             case 2:

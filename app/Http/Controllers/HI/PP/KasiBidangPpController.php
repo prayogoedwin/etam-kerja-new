@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 use App\Models\HI\PP\EtamHiPpAjuan;
 use App\Models\HI\PP\EtamHiPpSyaratdokumen;
+use Illuminate\Support\Facades\Storage;
 
 class KasiBidangPpController extends Controller
 {
@@ -139,16 +140,20 @@ class KasiBidangPpController extends Controller
     {
         $request->validate([
             'type'         => 'required|in:acc,revisi',
-            'keterangan'   => 'required_if:type,revisi|nullable|string|max:255',
+            // 'keterangan'   => 'required_if:type,revisi|nullable|string|max:255',
+            'keterangan'   => 'required_if:type,revisi|nullable|string',
             'batas_revisi' => 'required_if:type,revisi|nullable|date|after_or_equal:today',
+            'dok_revisi_kasi'       => 'nullable|file|mimes:pdf|max:1024',
         ], [
             'type.required'              => 'Pilih jenis verifikasi.',
             'type.in'                    => 'Jenis verifikasi tidak valid.',
             'keterangan.required_if'     => 'Keterangan wajib diisi jika melakukan revisi.',
-            'keterangan.max'             => 'Keterangan maksimal 255 karakter.',
+            // 'keterangan.max'             => 'Keterangan maksimal 255 karakter.',
             'batas_revisi.required_if'   => 'Batas revisi wajib diisi jika melakukan revisi.',
             'batas_revisi.date'          => 'Batas revisi harus berupa tanggal yang valid.',
             'batas_revisi.after_or_equal'=> 'Batas revisi tidak boleh sebelum hari ini.',
+            'dok_revisi_kasi.mimes'      => 'Dokumen revisi harus berformat PDF.',
+            'dok_revisi_kasi.max'        => 'Ukuran dokumen revisi maksimal 1 MB.',
         ]);
 
         DB::beginTransaction();
@@ -164,9 +169,20 @@ class KasiBidangPpController extends Controller
             if ($request->type === 'revisi') {
                 $data['keterangan_revisi_kasi'] = $request->keterangan;
                 $data['batas_revisi']           = $request->batas_revisi;
+
+                if ($request->hasFile('dok_revisi_kasi')) {
+                    if ($ajuan->dok_revisi_kasi && Storage::disk('public')->exists($ajuan->dok_revisi_kasi)) {
+                        Storage::disk('public')->delete($ajuan->dok_revisi_kasi);
+                    }
+
+                    // $path = $request->file('dok_revisi_kasi')->store('hi/pp/revisi/kasi', 'public');
+                    $path = $request->file('dok_revisi_kasi')->store(upload_path_pp('revisi'), 'public');
+                    $data['dok_revisi_kasi'] = $path;
+                }
             } else {
                 $data['keterangan_revisi_kasi'] = null;
                 $data['batas_revisi']           = null;
+                $data['dok_revisi_kasi']        = null;
             }
 
             $ajuan->update($data);
@@ -212,6 +228,8 @@ class KasiBidangPpController extends Controller
     private function labelVerifikasi($val)
     {
         switch ((int) $val) {
+            case 8:
+                return '<span class="badge bg-primary">Selesai</span>';
             case 1:
                 return '<span class="badge bg-success">ACC</span>';
             case 2:

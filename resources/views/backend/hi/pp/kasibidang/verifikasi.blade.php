@@ -82,7 +82,7 @@
                                                 <textarea name="keterangan" id="keterangan" class="form-control" rows="4"
                                                         maxlength="255"
                                                         placeholder="Jelaskan alasan revisi...">{{ old('keterangan', $ajuan->keterangan_revisi_kasi) }}</textarea>
-                                                <small class="text-muted">Maksimal 255 karakter.</small>
+                                                {{-- <small class="text-muted">Maksimal 255 karakter.</small> --}}
                                             </div>
                                         </div>
 
@@ -95,6 +95,25 @@
                                                     value="{{ old('batas_revisi', $ajuan->batas_revisi ? \Carbon\Carbon::parse($ajuan->batas_revisi)->format('Y-m-d') : '') }}"
                                                     min="{{ date('Y-m-d') }}">
                                                 <small class="text-muted">Tanggal batas akhir revisi (tidak boleh sebelum hari ini).</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">
+                                                Dokumen Revisi <span class="text-muted">(opsional)</span>
+                                            </label>
+                                            <div class="col-sm-9">
+                                                @if ($ajuan->dok_revisi_kasi)
+                                                    <div class="mb-1">
+                                                        <a href="{{ asset('storage/' . $ajuan->dok_revisi_kasi) }}" target="_blank" class="text-primary">
+                                                            <i class="feather icon-file"></i> Lihat dokumen saat ini
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                                <input type="file" name="dok_revisi_kasi" id="dok_revisi_kasi"
+                                                    class="form-control input-dok-revisi"
+                                                    accept=".pdf,application/pdf">
+                                                <small class="text-muted">Format: PDF. Maksimal 1 MB. Kosongkan jika tidak perlu.</small>
                                             </div>
                                         </div>
 
@@ -140,11 +159,27 @@ $(function () {
             $('#row-revisi').hide();
             $('#keterangan').prop('required', false);
             $('#batas_revisi').prop('required', false);
+            $('#dok_revisi_kasi').val('');
         }
     }
 
     $('input[name="type"]').on('change', toggleRevisi);
     toggleRevisi();
+
+    // Validasi file client-side
+    $('.input-dok-revisi').on('change', function () {
+        let file = this.files[0];
+        if (!file) return;
+        if (file.size > 1 * 1024 * 1024) {
+            Swal.fire('File Terlalu Besar', 'Ukuran maksimal 1 MB.', 'error');
+            this.value = '';
+            return;
+        }
+        if (file.type !== 'application/pdf') {
+            Swal.fire('Format Salah', 'File harus PDF.', 'error');
+            this.value = '';
+        }
+    });
 
     $('#form-verifikasi').on('submit', function (e) {
         e.preventDefault();

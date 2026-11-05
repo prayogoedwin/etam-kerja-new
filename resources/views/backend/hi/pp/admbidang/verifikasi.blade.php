@@ -99,6 +99,25 @@
                                             </div>
                                         </div> --}}
 
+                                        <div class="form-group row">
+                                            <label class="col-sm-3 col-form-label">
+                                                Dokumen Revisi <span class="text-muted">(opsional)</span>
+                                            </label>
+                                            <div class="col-sm-9">
+                                                @if ($ajuan->dok_revisi_admin)
+                                                    <div class="mb-1">
+                                                        <a href="{{ asset('storage/' . $ajuan->dok_revisi_admin) }}" target="_blank" class="text-primary">
+                                                            <i class="feather icon-file"></i> Lihat dokumen saat ini
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                                <input type="file" name="dok_revisi_admin" id="dok_revisi_admin"
+                                                    class="form-control input-dok-revisi"
+                                                    accept=".pdf,application/pdf">
+                                                <small class="text-muted">Format: PDF. Maksimal 1 MB. Kosongkan jika tidak perlu.</small>
+                                            </div>
+                                        </div>
+
                                     </div>
 
                                     <div class="d-flex justify-content-end mt-4">
@@ -142,6 +161,7 @@
                 $('#row-revisi').hide();
                 $('#keterangan').prop('required', false);
                 $('#batas_revisi').prop('required', false);
+                $('#dok_revisi_admin').val('');
             }
         }
 
@@ -162,6 +182,21 @@
 
         $('input[name="type"]').on('change', toggleKeterangan);
         toggleKeterangan(); // initial state
+
+        // Validasi file client-side
+        $('.input-dok-revisi').on('change', function () {
+            let file = this.files[0];
+            if (!file) return;
+            if (file.size > 1 * 1024 * 1024) {
+                Swal.fire('File Terlalu Besar', 'Ukuran maksimal 1 MB.', 'error');
+                this.value = '';
+                return;
+            }
+            if (file.type !== 'application/pdf') {
+                Swal.fire('Format Salah', 'File harus PDF.', 'error');
+                this.value = '';
+            }
+        });
 
         // Submit AJAX
         $('#form-verifikasi').on('submit', function (e) {

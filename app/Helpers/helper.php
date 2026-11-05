@@ -684,3 +684,10 @@ if (!function_exists('tgl_indo')) {
         return $hasil;
     }
 }
+
+if (!function_exists('upload_path_pp')) {
+    function upload_path_pp(string $kategori, $date = null): string {
+        $date = $date ? \Carbon\Carbon::parse($date) : now();
+        return "hi/pp/{$date->format('Y')}/{$date->format('m')}/{$kategori}";
+    }
+}

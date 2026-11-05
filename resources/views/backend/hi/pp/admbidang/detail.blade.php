@@ -1,317 +1,331 @@
 @extends('backend.template.backend')
 
 @section('content')
+<body class="box-layout container background-green">
+    <div class="pcoded-main-container">
+        <div class="pcoded-content">
 
-    <body class="box-layout container background-green">
-        <!-- [ Main Content ] start -->
-        <div class="pcoded-main-container">
-            <div class="pcoded-content">
-
-
-                 <!-- [ breadcrumb ] start -->
-                <div class="page-header">
-                    <div class="page-block">
-                        <div class="row align-items-center">
-                            <div class="col-md-12">
-                                <div class="page-header-title">
-                                    <h5 class="m-b-10">Detail Ajuan Peraturan Perusahaan</h5>
-                                </div>
-                                {{-- <ul class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="index.html"><i class="feather icon-home"></i></a></li>
-                                    <li class="breadcrumb-item"><a href="#!">Hospital</a></li>
-                                    <li class="breadcrumb-item"><a href="#!">Department</a></li>
-                                </ul> --}}
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Detail Ajuan Peraturan Perusahaan</h5>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- [ breadcrumb ] end -->
+            </div>
 
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Detail Pengajuan</h5>
+                            <a href="{{ route('hi.pp.admbidang.index') }}" class="btn btn-light btn-sm">
+                                <i class="feather icon-arrow-left"></i> Kembali
+                            </a>
+                        </div>
+                        <div class="card-body">
 
-                <!-- [ Main Content ] start -->
-                <div class="row">
+                            {{-- ========== STATUS VERIFIKASI ========== --}}
+                            <div class="alert alert-info d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>Status Admin:</strong>
+                                    @if ((int) $ajuan->verifikasi_admin === 8)
+                                        <span class="badge bg-primary">Selesai</span>
+                                    @elseif ((int) $ajuan->verifikasi_admin === 1)
+                                        <span class="badge bg-success">ACC</span>
+                                    @elseif ((int) $ajuan->verifikasi_admin === 2)
+                                        <span class="badge bg-warning">Revisi</span>
+                                    @else
+                                        <span class="badge bg-secondary">Menunggu</span>
+                                    @endif
 
-
-                   <!-- customar project  start -->
-                    <div class="col-xl-12">
-                        <div class="card">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">Detail Pengajuan</h5>
-                                <a href="{{ route('hi.pp.admbidang.index') }}" class="btn btn-light btn-sm">
-                                    <i class="feather icon-arrow-left"></i> Kembali
-                                </a>
-                            </div>
-                            <div class="card-body">
-
-                                {{-- ========== STATUS VERIFIKASI ========== --}}
-                                <div class="alert alert-info d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>Status Admin:</strong>
-                                        @if ((int) $ajuan->verifikasi_admin === 1)
-                                            <span class="badge bg-success">ACC</span>
-                                        @elseif ((int) $ajuan->verifikasi_admin === 2)
-                                            <span class="badge bg-warning">Revisi</span>
-                                        @else
-                                            <span class="badge bg-secondary">Menunggu</span>
-                                        @endif
-
-                                        &nbsp;|&nbsp;
-                                        <strong>Status Kasi:</strong>
-                                        @if ((int) $ajuan->verifikasi_kasi === 1)
-                                            <span class="badge bg-success">ACC</span>
-                                        @elseif ((int) $ajuan->verifikasi_kasi === 2)
-                                            <span class="badge bg-warning">Revisi</span>
-                                        @else
-                                            <span class="badge bg-secondary">Menunggu</span>
-                                        @endif
-                                    </div>
+                                    &nbsp;|&nbsp;
+                                    <strong>Status Kasi:</strong>
+                                    @if ((int) $ajuan->verifikasi_kasi === 8)
+                                        <span class="badge bg-primary">Selesai</span>
+                                    @elseif ((int) $ajuan->verifikasi_kasi === 1)
+                                        <span class="badge bg-success">ACC</span>
+                                    @elseif ((int) $ajuan->verifikasi_kasi === 2)
+                                        <span class="badge bg-warning">Revisi</span>
+                                    @else
+                                        <span class="badge bg-secondary">Menunggu</span>
+                                    @endif
                                 </div>
+                            </div>
 
-                                @if ($ajuan->verifikasi_admin === 2 && $ajuan->keterangan_revisi_admin)
-                                    <div class="alert alert-warning">
-                                        <strong>Catatan Revisi Admin:</strong><br>
-                                        {{ $ajuan->keterangan_revisi_admin }}
+                            @if ($ajuan->verifikasi_admin === 2 && $ajuan->keterangan_revisi_admin)
+                                <div class="alert alert-warning">
+                                    <strong>Catatan Revisi Admin:</strong><br>
+                                    {{ $ajuan->keterangan_revisi_admin }}
+
+                                    @if ($ajuan->dok_revisi_admin)
+                                        <hr class="my-2">
+                                        <strong>Dokumen Revisi:</strong>
+                                        <a href="{{ asset('storage/' . $ajuan->dok_revisi_admin) }}" target="_blank" class="text-primary">
+                                            <i class="feather icon-file"></i> Lihat dokumen
+                                        </a>
+                                    @endif
+
+                                    @if ($ajuan->batas_revisi)
                                         <hr class="my-2">
                                         <strong class="badge badge-light-danger">Batas Revisi:</strong>
                                         {{ \Carbon\Carbon::parse($ajuan->batas_revisi)->format('d-m-Y') }}
-                                    </div>
-                                @endif
-
-                                {{-- ========== INFORMASI PERUSAHAAN ========== --}}
-                                <h6 class="text-muted mb-3">Informasi Perusahaan</h6>
-                                <div class="table-responsive mb-4">
-                                    <table class="table table-sm table-borderless">
-                                        <tr>
-                                            <th width="30%">Nama Perusahaan</th>
-                                            <td>{{ $ajuan->perusahaan->penyedia->name ?? '-' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Email</th>
-                                            <td>{{ $ajuan->perusahaan->email ?? '-' }}</td>
-                                        </tr>
-                                        @if ($ajuan->perusahaan && $ajuan->perusahaan->penyedia)
-                                            <tr>
-                                                <th>Alamat</th>
-                                                <td>{{ $ajuan->perusahaan->penyedia->alamat ?? '-' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Telepon</th>
-                                                <td>{{ $ajuan->perusahaan->penyedia->telpon ?? '-' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Status Perusahaan</th>
-                                                <td>{{ getFullCompanyType($ajuan->perusahaan->penyedia->jenis_perusahaan) ?? '-' }}</td>
-                                            </tr>
-                                            <tr>
-                                                <th>Sektor Bidang Usaha</th>
-                                                <td>{{ getSektorById($ajuan->perusahaan->penyedia->id_sektor)->name ?? '-' }}</td>
-                                            </tr>
-                                        @else
-                                            <tr>
-                                                <td colspan="2" class="text-muted">
-                                                    <em>Profil perusahaan belum dilengkapi.</em>
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    </table>
+                                    @endif
                                 </div>
+                            @endif
 
-                                <hr>
-
-                                {{-- ========== DATA PENGAJUAN ========== --}}
-                                <h6 class="text-muted mb-3">Data Pengajuan</h6>
-                                <div class="table-responsive mb-4">
-                                    <table class="table table-sm table-borderless">
+                            {{-- ========== INFORMASI PERUSAHAAN ========== --}}
+                            <h6 class="text-muted mb-3">Informasi Perusahaan</h6>
+                            <div class="table-responsive mb-4">
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <th width="30%">Nama Perusahaan</th>
+                                        <td>{{ $ajuan->perusahaan->penyedia->name ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email</th>
+                                        <td>{{ $ajuan->perusahaan->email ?? '-' }}</td>
+                                    </tr>
+                                    @if ($ajuan->perusahaan && $ajuan->perusahaan->penyedia)
                                         <tr>
-                                            <th width="30%">Jenis Ajuan</th>
-                                            <td>{{ $ajuan->jenisAjuan->nama ?? '-' }}</td>
+                                            <th>Alamat</th>
+                                            <td>{{ $ajuan->perusahaan->penyedia->alamat ?? '-' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Surat Keputusan Izin Usaha:</th>
-                                            {{-- <td>{{ $ajuan->surat_keputusan_izin_usaha ?? '-' }}</td> --}}
+                                            <th>Telepon</th>
+                                            <td>{{ $ajuan->perusahaan->penyedia->telpon ?? '-' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Nomor</th>
-                                            <td>{{ $ajuan->nomor ?? '-' }}</td>
+                                            <th>Status Perusahaan</th>
+                                            <td>{{ getFullCompanyType($ajuan->perusahaan->penyedia->jenis_perusahaan) ?? '-' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Tanggal</th>
-                                            <td>{{ $ajuan->tanggal ? \Carbon\Carbon::parse($ajuan->tanggal)->format('d-m-Y') : '-' }}</td>
+                                            <th>Sektor Bidang Usaha</th>
+                                            <td>{{ getSektorById($ajuan->perusahaan->penyedia->id_sektor)->name ?? '-' }}</td>
                                         </tr>
+                                    @else
                                         <tr>
-                                            <th>Nama Serikat Pekerja</th>
-                                            <td>{{ $ajuan->nama_serikat_pekerja ?? '-' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Nomor Kepesertaan BPJS</th>
-                                            <td>{{ $ajuan->nomor_peserta_bpjs ?? '-' }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Jumlah Pekerja Pusat</th>
-                                            <td>{{ $ajuan->jumlah_pekerja_pusat ?? 0 }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Jumlah Pekerja Cabang</th>
-                                            <td>{{ $ajuan->jumlah_pekerja_cabang ?? 0 }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Upah Bulanan Min</th>
-                                            <td>Rp {{ number_format($ajuan->upah_pekerja_bulanan_min ?? 0, 0, ',', '.') }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Upah Bulanan Max</th>
-                                            <td>Rp {{ number_format($ajuan->upah_pekerja_bulanan_max ?? 0, 0, ',', '.') }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Upah Harian Min</th>
-                                            <td>Rp {{ number_format($ajuan->upah_pekerja_harian_min ?? 0, 0, ',', '.') }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Upah Harian Max</th>
-                                            <td>Rp {{ number_format($ajuan->upah_pekerja_harian_max ?? 0, 0, ',', '.') }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Sistem Kerja Waktu Tertentu</th>
-                                            <td>{{ $ajuan->sistem_hub_kerja_tertentu ?? 0 }} orang</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Sistem Kerja Waktu Tidak Tertentu</th>
-                                            <td>{{ $ajuan->sistem_hub_kerja_tidak_tertentu ?? 0 }} orang</td>
-                                        </tr>
-                                        <tr>
-                                            <th>
-                                                Link googledrive dokumen
-                                            </th>
-                                            <td>
-                                                {{ $ajuan->link_gdrive_dokumen8 }}
-                                                <br>
-                                                <span class="badge badge-light-info"><small>Konsep Peraturan Perusahaan sebanyak 3 rangkap (tiap halaman wajib diparaf oleh manajemen perusahaan)</small></span>
+                                            <td colspan="2" class="text-muted">
+                                                <em>Profil perusahaan belum dilengkapi.</em>
                                             </td>
                                         </tr>
-                                    </table>
-                                </div>
+                                    @endif
+                                </table>
+                            </div>
 
-                                {{-- ========== DOKUMEN UNGGAHAN ========== --}}
-                                <h6 class="text-muted mb-3">Dokumen Unggahan</h6>
-                                <div class="table-responsive mb-4">
-                                    <table class="table table-bordered">
-                                        <thead>
+                            <hr>
+
+                            {{-- ========== DATA PENGAJUAN ========== --}}
+                            <h6 class="text-muted mb-3">Data Pengajuan</h6>
+                            <div class="table-responsive mb-4">
+                                <table class="table table-sm table-borderless">
+                                    <tr>
+                                        <th width="30%">Jenis Ajuan</th>
+                                        <td>{{ $ajuan->jenisAjuan->nama ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nomor</th>
+                                        <td>{{ $ajuan->nomor ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tanggal</th>
+                                        <td>{{ $ajuan->tanggal ? \Carbon\Carbon::parse($ajuan->tanggal)->format('d-m-Y') : '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nama Serikat Pekerja</th>
+                                        <td>{{ $ajuan->nama_serikat_pekerja ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nomor Kepesertaan BPJS</th>
+                                        <td>{{ $ajuan->nomor_peserta_bpjs ?? '-' }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Jumlah Pekerja Pusat</th>
+                                        <td>{{ $ajuan->jumlah_pekerja_pusat ?? 0 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Jumlah Pekerja Cabang</th>
+                                        <td>{{ $ajuan->jumlah_pekerja_cabang ?? 0 }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Upah Bulanan Min</th>
+                                        <td>Rp {{ number_format($ajuan->upah_pekerja_bulanan_min ?? 0, 0, ',', '.') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Upah Bulanan Max</th>
+                                        <td>Rp {{ number_format($ajuan->upah_pekerja_bulanan_max ?? 0, 0, ',', '.') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Upah Harian Min</th>
+                                        <td>Rp {{ number_format($ajuan->upah_pekerja_harian_min ?? 0, 0, ',', '.') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Upah Harian Max</th>
+                                        <td>Rp {{ number_format($ajuan->upah_pekerja_harian_max ?? 0, 0, ',', '.') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Sistem Kerja Waktu Tertentu</th>
+                                        <td>{{ $ajuan->sistem_hub_kerja_tertentu ?? 0 }} orang</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Sistem Kerja Waktu Tidak Tertentu</th>
+                                        <td>{{ $ajuan->sistem_hub_kerja_tidak_tertentu ?? 0 }} orang</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Link googledrive dokumen</th>
+                                        <td>
+                                            {{ $ajuan->link_gdrive_dokumen8 }}
+                                            <br>
+                                            <span class="badge badge-light-info">
+                                                <small>Konsep Peraturan Perusahaan sebanyak 3 rangkap (tiap halaman wajib diparaf oleh manajemen perusahaan)</small>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            {{-- ========== DOKUMEN UNGGAHAN ========== --}}
+                            <h6 class="text-muted mb-3">Dokumen Unggahan</h6>
+                            <div class="table-responsive mb-4">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th width="5%">No</th>
+                                            <th>Syarat Dokumen</th>
+                                            <th width="25%">File</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($syaratDokumen as $i => $dok)
+                                            @php $existing = $uploadedDokumen[$dok->id] ?? null; @endphp
                                             <tr>
-                                                <th width="5%">No</th>
-                                                <th>Syarat Dokumen</th>
-                                                <th width="25%">File</th>
+                                                <td>{{ $i + 1 }}</td>
+                                                <td>{{ $dok->nama }}</td>
+                                                <td>
+                                                    @if ($existing)
+                                                        <a href="{{ asset('storage/' . $existing) }}"
+                                                           target="_blank"
+                                                           class="btn btn-sm btn-outline-primary">
+                                                            <i class="feather icon-file"></i> Lihat
+                                                        </a>
+                                                    @else
+                                                        <span class="text-muted">Belum diunggah</span>
+                                                    @endif
+                                                </td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse ($syaratDokumen as $i => $dok)
-                                                @php
-                                                    $existing = $uploadedDokumen[$dok->id] ?? null;
-                                                @endphp
-                                                <tr>
-                                                    <td>{{ $i + 1 }}</td>
-                                                    <td>{{ $dok->nama }}</td>
-                                                    <td>
-                                                        @if ($existing)
-                                                            <a href="{{ asset('storage/' . $existing) }}"
-                                                            target="_blank"
-                                                            class="btn btn-sm btn-outline-primary">
-                                                                <i class="feather icon-file"></i> Lihat
-                                                            </a>
-                                                        @else
-                                                            <span class="text-muted">Belum diunggah</span>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="3" class="text-center text-muted">Tidak ada syarat dokumen.</td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                                        @empty
+                                            <tr>
+                                                <td colspan="3" class="text-center text-muted">Tidak ada syarat dokumen.</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            @if ($ajuan->dok_final_konsep_pp)
+                                <div class="alert alert-primary">
+                                    <strong>Dokumen Final Konsep PP:</strong>
+                                    <a href="{{ asset('storage/' . $ajuan->dok_final_konsep_pp) }}"
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline-primary ms-2">
+                                        <i class="feather icon-file"></i> Lihat Dokumen
+                                    </a>
                                 </div>
+                            @endif
 
-                                {{-- ========== TOMBOL AKSI ========== --}}
-                                <div class="d-flex justify-content-end mt-4 flex-wrap gap-2">
-                                    @php
-                                        $accAdmin = (int) $ajuan->verifikasi_admin === 1;
-                                        $accKasi  = (int) $ajuan->verifikasi_kasi === 1;
-                                        $accFull  = $accAdmin && $accKasi;
-                                        $hasSk    = !empty($ajuan->nomor_sk) && !empty($ajuan->tanggal_berlaku_pp_baru);
-                                        $hasDok   = !empty($ajuan->dok_produk_akhir);
-                                    @endphp
+                            {{-- ========== TOMBOL AKSI ========== --}}
+                            <div class="d-flex justify-content-end mt-4 flex-wrap gap-2">
+                                @php
+                                    $accAdmin = (int) $ajuan->verifikasi_admin === 1;
+                                    $accKasi  = (int) $ajuan->verifikasi_kasi === 1;
+                                    $accFull  = $accAdmin && $accKasi;
+                                    $hasSk    = !empty($ajuan->nomor_sk) && !empty($ajuan->tanggal_berlaku_pp_baru);
+                                    $hasDok   = !empty($ajuan->dok_produk_akhir);
+                                    $isDone   = (int) $ajuan->verifikasi_admin === 8;
+                                @endphp
 
-                                    @if ((int) $ajuan->verifikasi_admin === 0)
-                                        <a href="{{ route('hi.pp.admbidang.verifikasi', $ajuan->id) }}"
-                                        class="btn btn-success">
-                                            <i class="feather icon-check"></i> Aksi
+                                {{-- Tombol Final Konsep PP --}}
+                                @if ($accFull && !$isDone)
+                                    @if (!$ajuan->dok_final_konsep_pp)
+                                        <a href="{{ route('hi.pp.admbidang.formFinalKonsep', $ajuan->id) }}"
+                                           class="btn btn-dark">
+                                            <i class="feather icon-file-plus"></i> Final Konsep PP
                                         </a>
                                     @else
-                                        <a href="{{ route('hi.pp.admbidang.verifikasi', $ajuan->id) }}"
-                                        class="btn btn-warning">
-                                            <i class="feather icon-refresh-cw"></i> Ubah Verifikasi
+                                        <a href="{{ asset('storage/' . $ajuan->dok_final_konsep_pp) }}"
+                                           target="_blank"
+                                           class="btn btn-outline-dark">
+                                            <i class="feather icon-file"></i> Lihat Final Konsep PP
+                                        </a>
+                                    @endif
+                                @endif
+
+                                {{-- Tombol Verifikasi --}}
+                                @if ((int) $ajuan->verifikasi_admin === 0)
+                                    <a href="{{ route('hi.pp.admbidang.verifikasi', $ajuan->id) }}"
+                                       class="btn btn-success">
+                                        <i class="feather icon-check"></i> Aksi
+                                    </a>
+                                @elseif (!$isDone)
+                                    <a href="{{ route('hi.pp.admbidang.verifikasi', $ajuan->id) }}"
+                                       class="btn btn-warning">
+                                        <i class="feather icon-refresh-cw"></i> Ubah Verifikasi
+                                    </a>
+                                @endif
+
+                                {{-- Tombol SK --}}
+                                @if ($accFull && !$isDone)
+                                    @if (!$hasSk)
+                                        <a href="{{ route('hi.pp.admbidang.formSk', $ajuan->id) }}"
+                                           class="btn btn-primary">
+                                            <i class="feather icon-edit"></i> Input Nomor SK
+                                        </a>
+                                    @else
+                                        <a href="{{ route('hi.pp.admbidang.formSk', $ajuan->id) }}"
+                                           class="btn btn-outline-primary">
+                                            <i class="feather icon-edit"></i> Ubah Nomor SK
+                                        </a>
+                                        <a href="{{ route('hi.pp.admbidang.cetakSk', $ajuan->id) }}"
+                                           target="_blank"
+                                           class="btn btn-info">
+                                            <i class="feather icon-printer"></i> Cetak SK
                                         </a>
                                     @endif
 
-                                    {{-- Tombol SK — muncul kalau admin & kasi sudah ACC --}}
-                                    @if ($accFull)
-                                        @if (!$hasSk)
-                                            <a href="{{ route('hi.pp.admbidang.formSk', $ajuan->id) }}"
-                                            class="btn btn-primary">
-                                                <i class="feather icon-edit"></i> Input Nomor SK
-                                            </a>
-                                        @else
-                                            <a href="{{ route('hi.pp.admbidang.formSk', $ajuan->id) }}"
-                                            class="btn btn-outline-primary">
-                                                <i class="feather icon-edit"></i> Ubah Nomor SK
-                                            </a>
-                                            <a href="{{ route('hi.pp.admbidang.cetakSk', $ajuan->id) }}"
-                                            target="_blank"
-                                            class="btn btn-info">
-                                                <i class="feather icon-printer"></i> Cetak SK
-                                            </a>
-                                        @endif
-
-                                        {{-- Tombol unggah dokumen final --}}
-                                        @if (!$hasDok)
-                                            <a href="{{ route('hi.pp.admbidang.formUnggahSk', $ajuan->id) }}"
-                                            class="btn btn-success">
-                                                <i class="feather icon-upload-cloud"></i> Unggah SK Final
-                                            </a>
-                                        @else
-                                            <a href="{{ asset('storage/' . $ajuan->dok_produk_akhir) }}"
-                                            target="_blank"
-                                            class="btn btn-outline-success">
-                                                <i class="feather icon-file"></i> Lihat SK Final
-                                            </a>
-                                            <a href="{{ route('hi.pp.admbidang.formUnggahSk', $ajuan->id) }}"
-                                            class="btn btn-outline-warning">
-                                                <i class="feather icon-refresh-cw"></i> Ganti SK Final
-                                            </a>
-                                        @endif
+                                    @if (!$hasDok)
+                                        <a href="{{ route('hi.pp.admbidang.formUnggahSk', $ajuan->id) }}"
+                                           class="btn btn-success">
+                                            <i class="feather icon-upload-cloud"></i> Unggah SK Final
+                                        </a>
+                                    @else
+                                        <a href="{{ asset('storage/' . $ajuan->dok_produk_akhir) }}"
+                                           target="_blank"
+                                           class="btn btn-outline-success">
+                                            <i class="feather icon-file"></i> Lihat SK Final
+                                        </a>
+                                        <a href="{{ route('hi.pp.admbidang.formUnggahSk', $ajuan->id) }}"
+                                           class="btn btn-outline-warning">
+                                            <i class="feather icon-refresh-cw"></i> Ganti SK Final
+                                        </a>
                                     @endif
-                                </div>
-
+                                @endif
                             </div>
+
                         </div>
                     </div>
-                    <!-- customar project  end -->
-
-
                 </div>
-                <!-- [ Main Content ] end -->
-
-
             </div>
+
         </div>
-
-    </body>
+    </div>
+</body>
 @endsection
-
 
 @push('js')
 <script>
-
+// Kosong — script khusus bisa ditambahkan di sini kalau perlu
 </script>
 @endpush
-

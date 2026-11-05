@@ -386,6 +386,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::get('/data-pp/cetak-sk/{id}', [AdmBidangPpController::class, 'cetakSk'])->name('hi.pp.admbidang.cetakSk');
             Route::get('/data-pp/unggah-sk/{id}', [AdmBidangPpController::class, 'formUnggahSk'])->name('hi.pp.admbidang.formUnggahSk');
             Route::post('/data-pp/unggah-sk/{id}', [AdmBidangPpController::class, 'submitUnggahSk'])->name('hi.pp.admbidang.submitUnggahSk');
+
+            Route::get('/data-pp/final-konsep/{id}',  [AdmBidangPpController::class, 'formFinalKonsep'])->name('hi.pp.admbidang.formFinalKonsep');
+            Route::post('/data-pp/final-konsep/{id}', [AdmBidangPpController::class, 'submitFinalKonsep'])->name('hi.pp.admbidang.submitFinalKonsep');
         });
 
         Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,kepala-seksi')->group(function () {

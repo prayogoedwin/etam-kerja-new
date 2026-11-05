@@ -40,7 +40,7 @@
                                     <h5 class="mb-3 mt-4">Revisi Pengajuan Peraturan Perusahaan</h5>
                                     @if ((int) $ajuan->verifikasi_admin === 2)
                                         <div class="alert alert-warning">
-                                            <strong>Catatan Revisi Admin:</strong><br>
+                                            <strong>Catatan Revisi Admin Verifikasi Berkas:</strong><br>
                                             {{ $ajuan->keterangan_revisi_admin }}
                                             <hr class="my-2">
                                             {{-- @if($ajuan->batas_revisi)
@@ -49,9 +49,20 @@
                                             @endif --}}
                                         </div>
                                     @endif
+
+                                    @if ($ajuan->dok_revisi_admin)
+                                        <div class="alert alert-info">
+                                            <strong>Dokumen dari Admin:</strong>
+                                            <a href="{{ asset('storage/' . $ajuan->dok_revisi_admin) }}" target="_blank">
+                                                <i class="feather icon-download"></i> Unduh
+                                            </a>
+                                        </div>
+                                    @endif
+
                                     @if ((int) $ajuan->verifikasi_kasi === 2)
                                         <div class="alert alert-warning">
-                                            <strong>Catatan Revisi Kasi:</strong><br>
+                                            {{-- Kasi --}}
+                                            <strong>Catatan Revisi Admin Konsep PP :</strong><br>
                                             {{ $ajuan->keterangan_revisi_kasi }}
                                             <hr class="my-2">
                                             @if($ajuan->batas_revisi)
@@ -60,6 +71,16 @@
                                             @endif
                                         </div>
                                     @endif
+
+                                    @if ($ajuan->dok_revisi_kasi)
+                                        <div class="alert alert-info">
+                                            <strong>Dokumen dari Admin:</strong>
+                                            <a href="{{ asset('storage/' . $ajuan->dok_revisi_kasi) }}" target="_blank">
+                                                <i class="feather icon-download"></i> Unduh
+                                            </a>
+                                        </div>
+                                    @endif
+
                                     <div class="bt-wizard" id="verticalwizard">
                                         <form id="form-pengajuan" enctype="multipart/form-data"
                                             action="{{ route('hi.pp.penyedia.updaterevisi', $ajuan->id) }}" method="POST">

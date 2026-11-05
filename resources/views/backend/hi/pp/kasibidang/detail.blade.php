@@ -78,6 +78,15 @@
                                     <div class="alert alert-warning">
                                         <strong>Catatan Revisi Kasi:</strong><br>
                                         {{ $ajuan->keterangan_revisi_kasi }}
+
+                                        @if ($ajuan->dok_revisi_kasi)
+                                            <hr class="my-2">
+                                            <strong>Dokumen Revisi:</strong>
+                                            <a href="{{ asset('storage/' . $ajuan->dok_revisi_kasi) }}" target="_blank" class="text-primary">
+                                                <i class="feather icon-file"></i> Lihat dokumen
+                                            </a>
+                                        @endif
+
                                         @if ($ajuan->batas_revisi)
                                             <hr class="my-2">
                                             <strong>Batas Revisi:</strong>
