@@ -89,7 +89,7 @@
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-layers"></i></span><span class="pcoded-mtext">Layanan HI</span></a>
                     <ul class="pcoded-submenu">
-                        <li><a href="{{ route('hi.pp.penyedia.index') }}">Pengesahan PP</a></li>
+                        <li><a href="{{ route('hi.pp.penyedia.index') }}">Pengesahan Peraturan Perusahaan</a></li>
                         {{-- <li><a href="#">Coming Soon</a></li> --}}
                     </ul>
                 </li>

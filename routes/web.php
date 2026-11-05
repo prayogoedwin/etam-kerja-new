@@ -391,6 +391,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::post('/data-pp/final-konsep/{id}', [AdmBidangPpController::class, 'submitFinalKonsep'])->name('hi.pp.admbidang.submitFinalKonsep');
 
             Route::get('/data-pp-expired', [AdmBidangPpController::class, 'expired'])->name('hi.pp.admbidang.expired');
+
+            Route::get('/data-pp-report', [AdmBidangPpController::class, 'report'])->name('hi.pp.admbidang.report');
+            Route::get('/data-pp-report/data', [AdmBidangPpController::class, 'reportData'])->name('hi.pp.admbidang.report.data');
         });
 
         Route::middleware(CheckUserRole::class.':super-admin,admin-provinsi,kepala-seksi')->group(function () {

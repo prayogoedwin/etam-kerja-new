@@ -12,6 +12,7 @@ use App\Models\HI\PP\EtamHiPpDokunggahpenyedia;
 use App\Models\HI\PP\EtamHiPpSyaratdokumen;
 use App\Services\HI\PP\PpLogService;
 use App\Models\HI\PP\EtamHiPpLog;
+use App\Models\HI\PP\EtamHiPpJenisajuan;
 
 class AdmBidangPpController extends Controller
 {
@@ -619,6 +620,117 @@ class AdmBidangPpController extends Controller
         }
 
         return view('backend.hi.pp.admbidang.expired');
+    }
+
+    /**
+     * Halaman Report & Rekap.
+     */
+    public function report(Request $request)
+    {
+        $jenisAjuan = EtamHiPpJenisajuan::orderBy('id')->get(['id', 'nama']);
+
+        return view('backend.hi.pp.admbidang.report', compact('jenisAjuan'));
+    }
+
+    /**
+     * Data report (JSON) — dipanggil via AJAX dengan filter periode.
+     */
+    public function reportData(Request $request)
+    {
+        $tahun      = (int) ($request->tahun ?? now()->year);
+        $jenisId    = $request->jenis_ajuan; // optional
+
+        // Base query
+        $base = EtamHiPpAjuan::query()
+            ->whereYear('created_at', $tahun);
+
+        if ($jenisId) {
+            $base->where('jenis_ajuan', $jenisId);
+        }
+
+        // ====== 1. RINGKASAN ======
+        $ringkasan = [
+            'total'            => (clone $base)->count(),
+            'total_perusahaan' => (clone $base)->distinct('perusahaan_id')->count('perusahaan_id'),
+            'menunggu'         => (clone $base)->where('verifikasi_admin', 0)->where('verifikasi_kasi', 0)->count(),
+            'acc_admin'        => (clone $base)->where('verifikasi_admin', 1)->count(),
+            'revisi_admin'     => (clone $base)->where('verifikasi_admin', 2)->count(),
+            'acc_kasi'         => (clone $base)->where('verifikasi_kasi', 1)->count(),
+            'revisi_kasi'      => (clone $base)->where('verifikasi_kasi', 2)->count(),
+            'selesai'          => (clone $base)->where('verifikasi_admin', 8)->where('verifikasi_kasi', 8)->count(),
+        ];
+
+        // ====== 2. PER JENIS AJUAN ======
+        $perJenis = (clone $base)
+            ->select('jenis_ajuan', DB::raw('COUNT(*) as total'))
+            ->groupBy('jenis_ajuan')
+            ->with('jenisAjuan:id,nama')
+            ->get()
+            ->map(fn ($row) => [
+                'jenis_ajuan' => $row->jenisAjuan->nama ?? '-',
+                'total'       => (int) $row->total,
+            ]);
+
+        // ====== 3. REKAP DETAIL PER JENIS (status breakdown) ======
+        $rekapPerJenis = EtamHiPpJenisajuan::orderBy('id')
+            ->get(['id', 'nama'])
+            ->map(function ($j) use ($tahun) {
+                $q = EtamHiPpAjuan::whereYear('created_at', $tahun)
+                    ->where('jenis_ajuan', $j->id);
+
+                return [
+                    'jenis'    => $j->nama,
+                    'total'    => (clone $q)->count(),
+                    'menunggu' => (clone $q)->where('verifikasi_admin', 0)->where('verifikasi_kasi', 0)->count(),
+                    'revisi'   => (clone $q)->where('verifikasi_admin', 2)->orWhere('verifikasi_kasi', 2)->count(),
+                    'acc'      => (clone $q)->where('verifikasi_admin', 1)->orWhere('verifikasi_kasi', 1)->count(),
+                    'selesai'  => (clone $q)->where('verifikasi_admin', 8)->where('verifikasi_kasi', 8)->count(),
+                ];
+            });
+
+        // ====== 4. TREN BULANAN (12 bulan) ======
+        $bulan = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $bulan[] = [
+                'bulan'   => \Carbon\Carbon::create($tahun, $i, 1)->translatedFormat('M'),
+                'total'   => EtamHiPpAjuan::whereYear('created_at', $tahun)
+                                ->whereMonth('created_at', $i)
+                                ->when($jenisId, fn ($q) => $q->where('jenis_ajuan', $jenisId))
+                                ->count(),
+                'selesai' => EtamHiPpAjuan::whereYear('created_at', $tahun)
+                                ->whereMonth('created_at', $i)
+                                ->where('verifikasi_admin', 8)
+                                ->where('verifikasi_kasi', 8)
+                                ->when($jenisId, fn ($q) => $q->where('jenis_ajuan', $jenisId))
+                                ->count(),
+            ];
+        }
+
+        // ====== 5. TOP PERUSAHAAN ======
+        $topPerusahaan = EtamHiPpAjuan::whereYear('created_at', $tahun)
+            ->when($jenisId, fn ($q) => $q->where('jenis_ajuan', $jenisId))
+            ->with(['perusahaan:id,name', 'perusahaan.penyedia:user_id,name'])
+            ->select('perusahaan_id', DB::raw('COUNT(*) as total_ajuan'))
+            ->groupBy('perusahaan_id')
+            ->orderByDesc('total_ajuan')
+            ->limit(10)
+            ->get()
+            ->map(fn ($row) => [
+                'perusahaan'  => $row->perusahaan->penyedia->name
+                                    ?? $row->perusahaan->name
+                                    ?? '-',
+                'total_ajuan' => (int) $row->total_ajuan,
+            ]);
+
+        return response()->json([
+            'status'          => true,
+            'tahun'           => $tahun,
+            'ringkasan'       => $ringkasan,
+            'per_jenis'       => $perJenis,
+            'rekap_per_jenis' => $rekapPerJenis,
+            'tren_bulanan'    => $bulan,
+            'top_perusahaan'  => $topPerusahaan,
+        ]);
     }
 
     /**
