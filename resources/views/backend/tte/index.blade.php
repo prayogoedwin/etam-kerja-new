@@ -244,7 +244,7 @@
             function jalankanTte(passphrase) {
                 $('#proses-hasil').empty();
                 $('#proses-bar').addClass('progress-bar-animated').css('width', '8%').text('...');
-                $('#proses-status').text('Menghubungi BSrE...');
+                $('#proses-status').text('Menghubungi DS...');
                 $('#btn-tutup-proses').prop('disabled', true);
                 $('#modal-proses').modal('show');
 
@@ -339,8 +339,8 @@
                     $('#proses-status').text('Passphrase salah');
                     tampilkanAlert('Passphrase salah', 'danger');
                 } else if (res.kode === 'koneksi_putus') {
-                    $('#proses-status').text('Koneksi ke server BSrE terputus');
-                    tampilkanAlert('Koneksi ke server BSrE terputus', 'danger');
+                    $('#proses-status').text('Koneksi ke server DS terputus');
+                    tampilkanAlert('Koneksi ke server DS terputus', 'danger');
                 } else if (res.kode === 'nik_kosong') {
                     $('#proses-status').text('NIK penandatangan belum diisi');
                     tampilkanAlert(res.message || 'NIK penandatangan belum diisi', 'danger');

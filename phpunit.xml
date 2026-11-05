@@ -29,7 +29,6 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
-        <env name="TTE_BSRE_DEMO" value="true"/>
-        <env name="TTE_DEMO_PASSPHRASE" value="rahasia-tte"/>
+        <env name="TTE_DS_DEMO" value="true"/>
     </php>
 </phpunit>

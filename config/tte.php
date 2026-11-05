@@ -9,11 +9,12 @@ return [
         // 'suket_k3' => App\Services\Tte\Handlers\SuketK3Handler::class,
     ],
 
-    'bsre' => [
-        'demo' => (bool) env('TTE_BSRE_DEMO', true),
-        'demo_passphrase' => env('TTE_DEMO_PASSPHRASE', 'rahasia-tte'),
-        'simulate_disconnect' => (bool) env('TTE_BSRE_SIMULATE_DISCONNECT', false),
-        'url' => env('TTE_BSRE_URL'),
-        'timeout' => (int) env('TTE_BSRE_TIMEOUT', 30),
+    'ds' => [
+        'url' => rtrim((string) env('TTE_DS_URL', 'https://ds.kaltimprov.go.id/api'), '/'),
+        'token' => env('TTE_DS_TOKEN'),
+        'template' => env('TTE_DS_TEMPLATE'),
+        'demo' => (bool) env('TTE_DS_DEMO', true),
+        'simulate_disconnect' => (bool) env('TTE_DS_SIMULATE_DISCONNECT', false),
+        'timeout' => (int) env('TTE_DS_TIMEOUT', 30),
     ],
 ];

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 
 class TteService
 {
-    public function __construct(private BsreClient $bsre) {}
+    public function __construct(private DsClient $ds) {}
 
     public function canAccess(?User $user): bool
     {
@@ -87,7 +87,7 @@ class TteService
                 'count' => 0,
                 'berhasil' => 0,
                 'gagal' => 0,
-                'kode' => BsreClient::PASSPHRASE_SALAH,
+                'kode' => DsClient::PASSPHRASE_SALAH,
                 'message' => 'Passphrase wajib diisi',
                 'items' => [],
             ];
@@ -99,7 +99,7 @@ class TteService
                 'count' => 0,
                 'berhasil' => 0,
                 'gagal' => 0,
-                'kode' => BsreClient::NIK_KOSONG,
+                'kode' => DsClient::NIK_KOSONG,
                 'message' => 'NIK penandatangan belum diisi. Lengkapi NIK di kelola admin sebelum TTE.',
                 'items' => [],
             ];
@@ -129,7 +129,7 @@ class TteService
                 $kodeBatch = $kodeBatch ?? $hasil['kode'];
             }
 
-            if (in_array($hasil['kode'], [BsreClient::PASSPHRASE_SALAH, BsreClient::KONEKSI_PUTUS], true)) {
+            if (in_array($hasil['kode'], [DsClient::PASSPHRASE_SALAH, DsClient::KONEKSI_PUTUS], true)) {
                 break;
             }
         }
@@ -182,22 +182,22 @@ class TteService
 
         $judul = $tte ? $this->judulUntuk($tte) : '#'.$id;
         if (! $tte) {
-            return $this->item($id, $judul, false, BsreClient::GAGAL, 'Dokumen tidak ada dalam antrean Anda');
+            return $this->item($id, $judul, false, DsClient::GAGAL, 'Dokumen tidak ada dalam antrean Anda');
         }
 
-        $bsre = $this->bsre->tandatangani($tte->path_file_before, $passphrase, $nik);
+        $ds = $this->ds->tandatangani($tte->path_file_before, $passphrase, $nik, $judul);
 
-        if (! $bsre['ok']) {
-            $this->catatLog($tte, false, $bsre['kode'], $bsre['pesan']);
-            if ($bsre['kode'] === BsreClient::GAGAL) {
+        if (! $ds['ok']) {
+            $this->catatLog($tte, false, $ds['kode'], $ds['pesan']);
+            if ($ds['kode'] === DsClient::GAGAL) {
                 $this->tandaiGagal($tte);
             }
 
-            return $this->item($tte->id, $judul, false, $bsre['kode'], $bsre['pesan']);
+            return $this->item($tte->id, $judul, false, $ds['kode'], $ds['pesan']);
         }
 
         try {
-            DB::transaction(function () use ($tte, $bsre) {
+            DB::transaction(function () use ($tte, $ds) {
                 $tte = $this->visibleQuery(Auth::user())
                     ->where('status', EtamTte::STATUS_MENUNGGU)
                     ->where('id', $tte->id)
@@ -209,7 +209,7 @@ class TteService
                 }
 
                 $pathAfter = 'tte/after/'.$tte->id.'.pdf';
-                Storage::disk('local')->put($pathAfter, (string) $bsre['pdf']);
+                Storage::disk('local')->put($pathAfter, (string) $ds['pdf']);
 
                 $tte->path_file_after = $pathAfter;
                 $tte->status = EtamTte::STATUS_BERHASIL;
@@ -248,19 +248,19 @@ class TteService
                 $handler->setelahBerhasil($tte->fresh());
             });
         } catch (\Throwable $e) {
-            Log::error('TTE gagal setelah BSrE', [
+            Log::error('TTE gagal setelah DS', [
                 'tte_id' => $id,
                 'message' => $e->getMessage(),
             ]);
             $this->tandaiGagal($tte);
-            $this->catatLog($tte, false, BsreClient::GAGAL, $e->getMessage());
+            $this->catatLog($tte, false, DsClient::GAGAL, $e->getMessage());
 
-            return $this->item($tte->id, $judul, false, BsreClient::GAGAL, 'TTE BSrE berhasil, tetapi aksi modul gagal');
+            return $this->item($tte->id, $judul, false, DsClient::GAGAL, 'TTE DS berhasil, tetapi aksi modul gagal');
         }
 
-        $this->catatLog($tte->fresh(), true, BsreClient::OK, 'TTE berhasil');
+        $this->catatLog($tte->fresh(), true, DsClient::OK, 'TTE berhasil');
 
-        return $this->item($tte->id, $judul, true, BsreClient::OK, 'Berhasil ditandatangani');
+        return $this->item($tte->id, $judul, true, DsClient::OK, 'Berhasil ditandatangani');
     }
 
     private function tandaiGagal(EtamTte $tte): void
@@ -301,13 +301,13 @@ class TteService
 
     private function pesanRingkasan(int $berhasil, int $gagal, ?string $kode): string
     {
-        if ($kode === BsreClient::PASSPHRASE_SALAH) {
+        if ($kode === DsClient::PASSPHRASE_SALAH) {
             return 'Passphrase salah. Tidak ada dokumen yang ditandatangani.';
         }
-        if ($kode === BsreClient::KONEKSI_PUTUS) {
-            return 'Koneksi ke server BSrE terputus. Proses TTE dihentikan.';
+        if ($kode === DsClient::KONEKSI_PUTUS) {
+            return 'Koneksi ke server DS terputus. Proses TTE dihentikan.';
         }
-        if ($kode === BsreClient::NIK_KOSONG) {
+        if ($kode === DsClient::NIK_KOSONG) {
             return 'NIK penandatangan belum diisi. Lengkapi NIK di kelola admin sebelum TTE.';
         }
         if ($berhasil === 0 && $gagal === 0) {

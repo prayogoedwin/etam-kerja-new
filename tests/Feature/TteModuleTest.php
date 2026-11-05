@@ -9,7 +9,7 @@ use App\Models\EtamTte;
 use App\Models\EtamTteLog;
 use App\Models\User;
 use App\Models\UserPencari;
-use App\Services\Tte\BsreClient;
+use App\Services\Tte\DsClient;
 use App\Services\Tte\TteQueue;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Storage;
@@ -367,7 +367,7 @@ class TteModuleTest extends TestCase
         $this->actingAs($kepala)
             ->post(route('tte.tandatangani'), ['tte_ids' => [$tte->id], 'passphrase' => 'rahasia-tte'])
             ->assertStatus(422)
-            ->assertJsonPath('kode', BsreClient::NIK_KOSONG);
+            ->assertJsonPath('kode', DsClient::NIK_KOSONG);
 
         $this->assertDatabaseHas('etam_tte', [
             'id' => $tte->id,
@@ -387,7 +387,7 @@ class TteModuleTest extends TestCase
         $this->actingAs($kepala)
             ->post(route('tte.tandatangani'), ['tte_ids' => [$tte->id], 'passphrase' => 'bukan-rahasia'])
             ->assertStatus(422)
-            ->assertJsonPath('kode', BsreClient::PASSPHRASE_SALAH);
+            ->assertJsonPath('kode', DsClient::PASSPHRASE_SALAH);
 
         $this->assertDatabaseHas('etam_tte', [
             'id' => $tte->id,
@@ -395,14 +395,14 @@ class TteModuleTest extends TestCase
         ]);
         $this->assertDatabaseHas('etam_tte_log', [
             'etam_tte_id' => $tte->id,
-            'kode' => BsreClient::PASSPHRASE_SALAH,
+            'kode' => DsClient::PASSPHRASE_SALAH,
             'status' => EtamTteLog::STATUS_GAGAL,
         ]);
     }
 
-    public function test_koneksi_bsre_putus_memberi_notif_dan_log(): void
+    public function test_koneksi_ds_putus_memberi_notif_dan_log(): void
     {
-        config(['tte.bsre.simulate_disconnect' => true]);
+        config(['tte.ds.simulate_disconnect' => true]);
         $peserta = $this->buatPesertaBlk('34', 'Koneksi Putus');
         $tte = app(TteQueue::class)->ajukanBlkUptd($peserta);
         $kepala = $this->makeUser('kepala-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
@@ -410,8 +410,8 @@ class TteModuleTest extends TestCase
         $this->actingAs($kepala)
             ->post(route('tte.tandatangani'), ['tte_ids' => [$tte->id], 'passphrase' => 'rahasia-tte'])
             ->assertStatus(422)
-            ->assertJsonPath('kode', BsreClient::KONEKSI_PUTUS)
-            ->assertJsonFragment(['message' => 'Koneksi ke server BSrE terputus. Proses TTE dihentikan.']);
+            ->assertJsonPath('kode', DsClient::KONEKSI_PUTUS)
+            ->assertJsonFragment(['message' => 'Koneksi ke server DS terputus. Proses TTE dihentikan.']);
 
         $this->assertDatabaseHas('etam_tte', [
             'id' => $tte->id,
@@ -419,7 +419,7 @@ class TteModuleTest extends TestCase
         ]);
         $this->assertDatabaseHas('etam_tte_log', [
             'etam_tte_id' => $tte->id,
-            'kode' => BsreClient::KONEKSI_PUTUS,
+            'kode' => DsClient::KONEKSI_PUTUS,
             'status' => EtamTteLog::STATUS_GAGAL,
         ]);
     }

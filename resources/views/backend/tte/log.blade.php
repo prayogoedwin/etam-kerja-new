@@ -22,7 +22,7 @@
                             <div class="card-body">
                                 <div class="row align-items-center mb-3">
                                     <div class="col-sm-8">
-                                        <p class="mb-0 text-muted">Catatan setiap proses TTE. Kegagalan wajib tercatat, termasuk passphrase salah dan koneksi BSrE putus.</p>
+                                        <p class="mb-0 text-muted">Catatan setiap proses TTE. Kegagalan wajib tercatat, termasuk passphrase salah dan koneksi DS putus.</p>
                                     </div>
                                     <div class="col-sm-4 text-end">
                                         <a href="{{ route('tte.menunggu') }}" class="btn btn-secondary btn-sm">Kembali ke antrean</a>
