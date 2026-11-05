@@ -153,16 +153,17 @@ class AdmBidangPpController extends Controller
     {
         $request->validate([
             'type'         => 'required|in:acc,revisi',
-            'keterangan'   => 'required_if:type,revisi|nullable|string|max:255',
-            'batas_revisi' => 'required_if:type,revisi|nullable|date|after_or_equal:today',
+            // 'keterangan'   => 'required_if:type,revisi|nullable|string|max:255',
+            'keterangan'   => 'required_if:type,revisi|nullable|string',
+            // 'batas_revisi' => 'required_if:type,revisi|nullable|date|after_or_equal:today',
         ], [
             'type.required'              => 'Pilih jenis verifikasi.',
             'type.in'                    => 'Jenis verifikasi tidak valid.',
             'keterangan.required_if'     => 'Keterangan wajib diisi jika melakukan revisi.',
-            'keterangan.max'             => 'Keterangan maksimal 255 karakter.',
-            'batas_revisi.required_if'   => 'Batas revisi wajib diisi jika melakukan revisi.',
-            'batas_revisi.date'          => 'Batas revisi harus berupa tanggal yang valid.',
-            'batas_revisi.after_or_equal'=> 'Batas revisi tidak boleh sebelum hari ini.',
+            // 'keterangan.max'             => 'Keterangan maksimal 255 karakter.',
+            // 'batas_revisi.required_if'   => 'Batas revisi wajib diisi jika melakukan revisi.',
+            // 'batas_revisi.date'          => 'Batas revisi harus berupa tanggal yang valid.',
+            // 'batas_revisi.after_or_equal'=> 'Batas revisi tidak boleh sebelum hari ini.',
         ]);
 
         DB::beginTransaction();
@@ -177,7 +178,7 @@ class AdmBidangPpController extends Controller
 
             if ($request->type === 'revisi') {
                 $data['keterangan_revisi_admin'] = $request->keterangan;
-                $data['batas_revisi']            = $request->batas_revisi;
+                // $data['batas_revisi']            = $request->batas_revisi;
             } else {
                 // Kalau ACC, kosongkan keterangan & batas revisi
                 $data['keterangan_revisi_admin'] = null;

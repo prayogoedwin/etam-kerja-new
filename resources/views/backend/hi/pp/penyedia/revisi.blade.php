@@ -43,8 +43,21 @@
                                             <strong>Catatan Revisi Admin:</strong><br>
                                             {{ $ajuan->keterangan_revisi_admin }}
                                             <hr class="my-2">
-                                            <strong class="badge badge-light-danger">Batas Revisi:</strong>
-                                            {{ \Carbon\Carbon::parse($ajuan->batas_revisi)->format('d-m-Y') }}
+                                            {{-- @if($ajuan->batas_revisi)
+                                                <strong class="badge badge-light-danger">Batas Revisi:</strong>
+                                                {{ \Carbon\Carbon::parse($ajuan->batas_revisi)->format('d-m-Y') }}
+                                            @endif --}}
+                                        </div>
+                                    @endif
+                                    @if ((int) $ajuan->verifikasi_kasi === 2)
+                                        <div class="alert alert-warning">
+                                            <strong>Catatan Revisi Kasi:</strong><br>
+                                            {{ $ajuan->keterangan_revisi_kasi }}
+                                            <hr class="my-2">
+                                            @if($ajuan->batas_revisi)
+                                                <strong class="badge badge-light-danger">Batas Revisi:</strong>
+                                                {{ \Carbon\Carbon::parse($ajuan->batas_revisi)->format('d-m-Y') }}
+                                            @endif
                                         </div>
                                     @endif
                                     <div class="bt-wizard" id="verticalwizard">

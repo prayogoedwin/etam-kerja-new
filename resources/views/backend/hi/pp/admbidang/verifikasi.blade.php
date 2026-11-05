@@ -81,13 +81,13 @@
                                             </label>
                                             <div class="col-sm-9">
                                                 <textarea name="keterangan" id="keterangan" class="form-control" rows="4"
-                                                        maxlength="255"
+
                                                         placeholder="Jelaskan alasan revisi...">{{ old('keterangan', $ajuan->keterangan_revisi_admin) }}</textarea>
-                                                <small class="text-muted">Maksimal 255 karakter.</small>
+                                                {{-- <small class="text-muted">Maksimal 255 karakter.</small> --}}
                                             </div>
                                         </div>
 
-                                        <div class="form-group row">
+                                        {{-- <div class="form-group row">
                                             <label class="col-sm-3 col-form-label">
                                                 Batas Revisi <span class="text-danger">*</span>
                                             </label>
@@ -97,7 +97,7 @@
                                                     min="{{ date('Y-m-d') }}">
                                                 <small class="text-muted">Tanggal batas akhir revisi (tidak boleh sebelum hari ini).</small>
                                             </div>
-                                        </div>
+                                        </div> --}}
 
                                     </div>
 

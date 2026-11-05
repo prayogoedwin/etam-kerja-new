@@ -385,7 +385,8 @@ class PenyediaPpController extends Controller
                     'status'  => false,
                     'message' => 'Batas waktu revisi telah berakhir pada '
                                 . $batasRevisi->format('d-m-Y')
-                                . '. Anda tidak dapat mengirim revisi.',
+                                . '. Anda tidak dapat mengirim revisi. '
+                                . 'Silahkan ajukan ulang',
                 ]);
             }
         }
