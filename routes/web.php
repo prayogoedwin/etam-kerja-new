@@ -58,6 +58,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StrukturController;
 use App\Http\Controllers\TestMailController;
 use App\Http\Controllers\Tte\TteController;
+use App\Http\Controllers\Tte\TteUjiDsController;
 use App\Http\Controllers\UserBkkController;
 use App\Http\Controllers\UserIntegrasiController;
 use App\Http\Controllers\UserPencariController;
@@ -387,7 +388,7 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::get('/data-pp/unggah-sk/{id}', [AdmBidangPpController::class, 'formUnggahSk'])->name('hi.pp.admbidang.formUnggahSk');
             Route::post('/data-pp/unggah-sk/{id}', [AdmBidangPpController::class, 'submitUnggahSk'])->name('hi.pp.admbidang.submitUnggahSk');
 
-            Route::get('/data-pp/final-konsep/{id}',  [AdmBidangPpController::class, 'formFinalKonsep'])->name('hi.pp.admbidang.formFinalKonsep');
+            Route::get('/data-pp/final-konsep/{id}', [AdmBidangPpController::class, 'formFinalKonsep'])->name('hi.pp.admbidang.formFinalKonsep');
             Route::post('/data-pp/final-konsep/{id}', [AdmBidangPpController::class, 'submitFinalKonsep'])->name('hi.pp.admbidang.submitFinalKonsep');
 
             Route::get('/data-pp-expired', [AdmBidangPpController::class, 'expired'])->name('hi.pp.admbidang.expired');
@@ -447,6 +448,12 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::post('/suket/{id}/analisis', [AdminSuketController::class, 'analisis'])->name('pengawasan.suket.admin.analisis');
         Route::post('/suket/{id}/tte-pengawas', [AdminSuketController::class, 'ttePengawas'])->name('pengawasan.suket.admin.tte-pengawas');
         Route::post('/suket/{id}/tte-kadis', [AdminSuketController::class, 'tteKadis'])->name('pengawasan.suket.admin.tte-kadis');
+    });
+
+    Route::prefix('tte')->middleware(CheckUserRole::class.':super-admin')->group(function () {
+        Route::get('/uji-ds', [TteUjiDsController::class, 'index'])->name('tte.uji-ds');
+        Route::post('/uji-ds', [TteUjiDsController::class, 'kirim'])->name('tte.uji-ds.kirim');
+        Route::get('/uji-ds/{uji}/berkas', [TteUjiDsController::class, 'berkas'])->name('tte.uji-ds.berkas');
     });
 
     Route::prefix('tte')->middleware(CheckUserRole::class.':super-admin,eksekutif-provinsi,kepala-balai')->group(function () {

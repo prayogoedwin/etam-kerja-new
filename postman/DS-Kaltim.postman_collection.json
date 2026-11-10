@@ -1,0 +1,136 @@
+{
+  "info": {
+    "name": "DS Kaltim — 3 langkah TTE",
+    "description": "Alur yang sama dengan ETAM:\n1. POST /ttdds — unggah PDF, dapat kode\n2. POST /sign — kode + passphrase\n3. POST /dokumen — ambil PDF sudah TTE\n\nCara pakai:\n- Import collection + environment `DS Kaltim — ETAM`\n- Isi environment: token, template, nik, passphrase\n- Di request 1, pilih file PDF di field `pdf`\n- Jalankan urut 1 → 2 → 3. Kode dari langkah 1 tersimpan otomatis ke `{{kode}}`.\n- Langkah 3: pakai **Send and Download** kalau responsnya file PDF.\n\nGanti `base_url` ke `https://ds.kaltimprov.go.id/api/v2` kalau Diskominfo minta v2.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "https://ds.kaltimprov.go.id/api" },
+    { "key": "token", "value": "" },
+    { "key": "template", "value": "" },
+    { "key": "nik", "value": "" },
+    { "key": "passphrase", "value": "" },
+    { "key": "keterangan", "value": "Uji DS ETAM" },
+    { "key": "kode", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Kirim dokumen (ttdds)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "let json = null;",
+              "try { json = pm.response.json(); } catch (e) {}",
+              "if (json) {",
+              "  console.log(json);",
+              "  const kode = (json.data && json.data.kode) || json.kode;",
+              "  if (kode) {",
+              "    pm.collectionVariables.set('kode', kode);",
+              "    pm.environment.set('kode', kode);",
+              "    pm.test('Dapat kode dokumen', function () { pm.expect(kode).to.be.a('string').and.not.empty; });",
+              "  }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "pdf",
+              "type": "file",
+              "src": [],
+              "description": "Pilih file PDF yang akan dikirim ke DS"
+            },
+            {
+              "key": "nik",
+              "value": "{{nik}}",
+              "type": "text"
+            },
+            {
+              "key": "template",
+              "value": "{{template}}",
+              "type": "text"
+            },
+            {
+              "key": "keterangan",
+              "value": "{{keterangan}}",
+              "type": "text"
+            }
+          ]
+        },
+        "url": "{{base_url}}/ttdds?token={{token}}",
+        "description": "Multipart: nik, template, keterangan, pdf (file).\nAuth: query `token`.\nSukses biasanya JSON `{ success, data.kode, message }`."
+      }
+    },
+    {
+      "name": "2. Tanda tangan (sign)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "try { console.log(pm.response.json()); } catch (e) { console.log(pm.response.text()); }"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "kode", "value": "{{kode}}", "type": "text" },
+            { "key": "passphrase", "value": "{{passphrase}}", "type": "text" }
+          ]
+        },
+        "url": "{{base_url}}/sign?token={{token}}",
+        "description": "Form: kode (dari langkah 1) + passphrase pejabat.\nTidak mengembalikan PDF — hanya JSON status."
+      }
+    },
+    {
+      "name": "3. Ambil dokumen (dokumen)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const body = pm.response.text() || '';",
+              "if (body.indexOf('%PDF') === 0) {",
+              "  pm.test('Respons PDF', function () { pm.expect(body).to.include('%PDF'); });",
+              "} else {",
+              "  try { console.log(pm.response.json()); } catch (e) { console.log(body); }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "kode", "value": "{{kode}}", "type": "text" }
+          ]
+        },
+        "url": "{{base_url}}/dokumen?token={{token}}",
+        "description": "Form: kode saja. Kalau sukses, body-nya file PDF.\nDi Postman: Send and Download."
+      }
+    }
+  ]
+}

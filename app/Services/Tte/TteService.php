@@ -185,7 +185,18 @@ class TteService
             return $this->item($id, $judul, false, DsClient::GAGAL, 'Dokumen tidak ada dalam antrean Anda');
         }
 
-        $ds = $this->ds->tandatangani($tte->path_file_before, $passphrase, $nik, $judul);
+        $ds = $this->ds->tandatangani(
+            $tte->path_file_before,
+            $passphrase,
+            $nik,
+            $judul,
+            $tte->kode_ds
+        );
+
+        if (! empty($ds['kode_dokumen']) && $tte->kode_ds !== $ds['kode_dokumen']) {
+            $tte->kode_ds = $ds['kode_dokumen'];
+            $tte->save();
+        }
 
         if (! $ds['ok']) {
             $this->catatLog($tte, false, $ds['kode'], $ds['pesan']);
