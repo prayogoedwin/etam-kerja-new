@@ -17,6 +17,7 @@ class EtamHiPpAjuan extends Model
     protected $casts = [
         'tanggal'                 => 'date',
         'tanggal_berlaku_pp_baru' => 'date',
+        'status_ttd'              => 'integer',
         'nomor_sk'                => 'string',
         'batas_revisi'            => 'date',
         'verifikasi_admin_at'     => 'datetime',

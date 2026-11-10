@@ -1,11 +1,12 @@
 <?php
 
 use App\Services\Tte\Handlers\BlkPesertaHandler;
+use App\Services\Tte\Handlers\HiPpAjuanHandler;
 
 return [
     'modules' => [
         'blk' => BlkPesertaHandler::class,
-        // 'hi_pp' => App\Services\Tte\Handlers\HiPpHandler::class,
+        'hi_pp' => HiPpAjuanHandler::class,
         // 'suket_k3' => App\Services\Tte\Handlers\SuketK3Handler::class,
     ],
 

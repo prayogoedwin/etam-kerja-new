@@ -13,6 +13,9 @@ use App\Models\HI\PP\EtamHiPpSyaratdokumen;
 use App\Services\HI\PP\PpLogService;
 use App\Models\HI\PP\EtamHiPpLog;
 use App\Models\HI\PP\EtamHiPpJenisajuan;
+use App\Services\Tte\TteQueue;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 
 class AdmBidangPpController extends Controller
 {
@@ -304,6 +307,9 @@ class AdmBidangPpController extends Controller
             'tanggal_berlaku_pp_baru.date'     => 'Tanggal berlaku harus berupa tanggal yang valid.',
         ]);
 
+        $generatedPath = null;
+        $tteSourcePath = null;
+
         DB::beginTransaction();
         try {
             $ajuan = EtamHiPpAjuan::where('verifikasi_admin', 1)
@@ -315,25 +321,78 @@ class AdmBidangPpController extends Controller
                 'tanggal_berlaku_pp_baru' => $request->tanggal_berlaku_pp_baru,
             ]);
 
-            DB::commit();
+            $ajuan->load(['jenisAjuan:id,nama', 'perusahaan.penyedia']);
+            $viewData = $this->dataCetakSk($ajuan);
+            $viewData['logoDataUri'] = $this->logoDataUri();
+            $pdfBytes = Pdf::loadView('backend.hi.pp.admbidang.cetak_sk', $viewData)
+                ->setPaper('a4', 'portrait')
+                ->setOption('defaultMediaType', 'print')
+                ->setOption('dpi', 96)
+                ->setOption('isRemoteEnabled', false)
+                ->setOption('isHtml5ParserEnabled', true)
+                ->output();
+
+            $directory = upload_path_pp('sk', now());
+            $generatedPath = $directory.'/sk-'.$ajuan->id.'-'.Str::uuid().'.pdf';
+            if (! Storage::disk('public')->put($generatedPath, $pdfBytes)) {
+                throw new \RuntimeException('PDF SK gagal disimpan.');
+            }
+
+            // TTE membaca berkas dari disk local, sedangkan dok_produk_akhir
+            // memakai disk public agar dapat ditampilkan pada halaman PP.
+            $tteSourcePath = 'tte/before/hi-pp/'.$ajuan->id.'/'.basename($generatedPath);
+            if (! Storage::disk('local')->put($tteSourcePath, $pdfBytes)) {
+                throw new \RuntimeException('Salinan PDF untuk antrean TTE gagal disimpan.');
+            }
+
+            $ajuan->update([
+                'dok_produk_akhir' => $generatedPath,
+                'status_ttd' => 0,
+            ]);
+
+            $tte = app(TteQueue::class)->ajukan([
+                'nama_modul' => 'hi_pp',
+                'nama_table' => 'etam_hi_pp_ajuan',
+                'id_refrensi' => $ajuan->id,
+                'kolom_status_refrensi' => 'status_ttd',
+                'kode_dokumen' => 'suket_hi_pp',
+                'id_struktur' => '41',
+                'judul' => 'Surat Pengesahan Peraturan Perusahaan - '.($ajuan->perusahaan?->penyedia?->name ?? '-'),
+                'path_file_before' => $tteSourcePath,
+            ]);
+            if ($tte->path_file_before !== $tteSourcePath) {
+                $tte->path_file_before = $tteSourcePath;
+                $tte->save();
+            }
 
             PpLogService::log(
                 $ajuan->id,
                 EtamHiPpLog::ACTION_INPUT_SK,
-                'Admin Bidang menginput nomor SK & tanggal berlaku PP',
+                'Admin Bidang menginput nomor SK, membuat PDF, dan mengajukan TTE',
                 [
-                    'nomor_sk'                => $request->nomor_sk,
+                    'nomor_sk' => $request->nomor_sk,
                     'tanggal_berlaku_pp_baru' => $request->tanggal_berlaku_pp_baru,
+                    'path' => $generatedPath,
+                    'tte_id' => $tte->id,
                 ]
             );
 
+            DB::commit();
+
             return response()->json([
                 'status'   => true,
-                'message'  => 'Nomor SK & tanggal berlaku berhasil disimpan.',
+                'message'  => 'Nomor SK berhasil disimpan, PDF dibuat, dan dokumen masuk antrean TTE.',
                 'redirect' => route('hi.pp.admbidang.cetakSk', $ajuan->id),
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
+            if ($generatedPath) {
+                Storage::disk('public')->delete($generatedPath);
+            }
+            if ($tteSourcePath) {
+                Storage::disk('local')->delete($tteSourcePath);
+            }
+
             return response()->json([
                 'status'  => false,
                 'message' => 'Gagal menyimpan: ' . $e->getMessage(),
@@ -353,6 +412,12 @@ class AdmBidangPpController extends Controller
 
         // return view('backend.hi.pp.admbidang.cetak_sk', compact('ajuan'));
 
+        return view('backend.hi.pp.admbidang.cetak_sk', $this->dataCetakSk($ajuan));
+    }
+
+    /** Data bersama untuk preview HTML dan pembuatan PDF SK. */
+    private function dataCetakSk(EtamHiPpAjuan $ajuan): array
+    {
         // ====== Hitung tanggal berakhir (asumsi 2 tahun dari tanggal_berlaku_pp_baru) ======
         $tanggalMulai = $ajuan->tanggal_berlaku_pp_baru
             ? \Carbon\Carbon::parse($ajuan->tanggal_berlaku_pp_baru)
@@ -367,14 +432,24 @@ class AdmBidangPpController extends Controller
             ? $tanggalMulai->format('Y') . '-' . $tanggalBerakhir->format('Y')
             : now()->format('Y');
 
-        // echo json_encode($ajuan);
-
-        return view('backend.hi.pp.admbidang.cetak_sk', compact(
+        return compact(
             'ajuan',
             'tanggalMulai',
             'tanggalBerakhir',
             'rangeTahun'
-        ));
+        );
+    }
+
+    private function logoDataUri(): ?string
+    {
+        $logoPath = public_path('assets/etam_fe/images/logo/logo_kaltim.png');
+        if (! is_file($logoPath)) {
+            return null;
+        }
+
+        $mime = mime_content_type($logoPath) ?: 'image/png';
+
+        return 'data:'.$mime.';base64,'.base64_encode((string) file_get_contents($logoPath));
     }
 
     /**

@@ -362,7 +362,7 @@
     <div class="header">
       {{-- <div class="logo-space">Logo<br>Dinas</div> --}}
       <div class="logo-space" style="margin-left: 50px;">
-        <img src="{{asset('assets/etam_fe/images/logo/logo_kaltim.png')}}" width="50" alt="">
+        <img src="{{ $logoDataUri ?? asset('assets/etam_fe/images/logo/logo_kaltim.png') }}" width="50" alt="">
       </div>
       <div class="gov">Pemerintah Provinsi Kalimantan Timur</div>
       <div class="dinas">Dinas Tenaga Kerja dan Transmigrasi</div>
