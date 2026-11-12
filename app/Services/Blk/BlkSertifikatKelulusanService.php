@@ -100,11 +100,25 @@ class BlkSertifikatKelulusanService
         ];
     }
 
-    public function simpanDokumenTte(EtamBlkPelatihanPeserta $peserta, string $kodeDokumen, bool $sudahTte = true): string
+    public function pathDokumenTte(int $pesertaId, string $kodeDokumen, bool $sudahTte = false, ?Carbon $waktu = null): string
     {
-        $path = $sudahTte
-            ? 'tte/blk/'.$peserta->id.'/'.$kodeDokumen.'.pdf'
-            : 'tte/blk/'.$peserta->id.'/'.$kodeDokumen.'.before.pdf';
+        $waktu ??= now();
+        $nama = $kodeDokumen === EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT
+            ? 'sertifikat_tte_'.$pesertaId.'.pdf'
+            : 'uji_kompetensi_tte_'.$pesertaId.'.pdf';
+
+        return sprintf(
+            'tte/%s/blk/%s/%s/%s',
+            $sudahTte ? 'after' : 'before',
+            $waktu->format('Y'),
+            $waktu->format('m'),
+            $nama
+        );
+    }
+
+    public function simpanDokumenTte(EtamBlkPelatihanPeserta $peserta, string $kodeDokumen, bool $sudahTte = false): string
+    {
+        $path = $this->pathDokumenTte($peserta->id, $kodeDokumen, $sudahTte);
         Storage::disk('local')->put($path, $this->buatPdfDokumen($peserta, $kodeDokumen));
 
         return $path;
@@ -123,7 +137,7 @@ class BlkSertifikatKelulusanService
             ->first();
 
         if ($tte) {
-            $path = $tte->path_file_before ?: 'tte/blk/'.$peserta->id.'/'.$kodeDokumen.'.before.pdf';
+            $path = $tte->path_file_before ?: $this->pathDokumenTte($peserta->id, $kodeDokumen, false);
             Storage::disk('local')->put($path, $pdf);
             if ($tte->path_file_before !== $path) {
                 $tte->path_file_before = $path;
@@ -201,9 +215,13 @@ class BlkSertifikatKelulusanService
             return $path;
         }
 
-        $legacy = 'tte/blk/'.$peserta->id.'/'.$kode.'.pdf';
-        if (Storage::disk('local')->exists($legacy)) {
-            return $legacy;
+        foreach ([
+            'tte/blk/'.$peserta->id.'/'.$kode.'.pdf',
+            $this->pathDokumenTte($peserta->id, $kode, true),
+        ] as $legacy) {
+            if (Storage::disk('local')->exists($legacy)) {
+                return $legacy;
+            }
         }
 
         return null;

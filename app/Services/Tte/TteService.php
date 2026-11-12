@@ -5,6 +5,7 @@ namespace App\Services\Tte;
 use App\Models\EtamTte;
 use App\Models\EtamTteLog;
 use App\Models\User;
+use App\Services\Blk\BlkSertifikatKelulusanService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -217,7 +218,7 @@ class TteService
                     throw new \RuntimeException('Dokumen TTE tidak lagi menunggu');
                 }
 
-                $pathAfter = 'tte/after/'.$tte->id.'.pdf';
+                $pathAfter = $this->pathFileAfter($tte);
                 Storage::disk('local')->put($pathAfter, (string) $ds['pdf']);
 
                 $tte->path_file_after = $pathAfter;
@@ -348,6 +349,19 @@ class TteService
         }
 
         return route('tte.berkas', $tte->token_verifikasi);
+    }
+
+    private function pathFileAfter(EtamTte $tte): string
+    {
+        if ($tte->nama_modul === 'blk') {
+            return app(BlkSertifikatKelulusanService::class)->pathDokumenTte(
+                (int) $tte->id_refrensi,
+                (string) ($tte->kode_dokumen ?: ''),
+                true
+            );
+        }
+
+        return 'tte/after/'.$tte->id.'.pdf';
     }
 
     private function roleName(?User $user): ?string

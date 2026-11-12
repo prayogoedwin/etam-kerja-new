@@ -215,13 +215,22 @@
 
         .ttd .space {
             height: 22mm;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            text-align: center;
             color: #888;
             font-size: 9pt;
             font-style: italic;
             font-weight: 400;
+        }
+
+        .ttd-bsre-wrap {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2mm 0 1mm;
+        }
+
+        .ttd-bsre-wrap td {
+            text-align: center;
+            vertical-align: middle;
         }
 
         .ttd .nama {
@@ -360,14 +369,13 @@
         body.mode-pdf .ttd .space {
             height: auto;
             min-height: 22mm;
-            flex-direction: column;
-            gap: 2mm;
+            text-align: center;
         }
 
         .ttd .space .ttd-bsre {
             width: 32mm;
             height: auto;
-            display: block;
+            display: inline-block;
             margin: 0 auto;
         }
 
@@ -514,7 +522,11 @@
                         <span class="tte-ok">Telah ditandatangani secara elektronik</span>
                     @endif
                     @if ($untukDs && ! empty($sertifikat['logo_bsre']))
-                        <img src="{{ $sertifikat['logo_bsre'] }}" alt="Logo BSrE" class="ttd-bsre">
+                        <table class="ttd-bsre-wrap">
+                            <tr>
+                                <td><img src="{{ $sertifikat['logo_bsre'] }}" alt="Logo BSrE" class="ttd-bsre"></td>
+                            </tr>
+                        </table>
                     @endif
                 </div>
                 <div class="nama">{{ $sertifikat['penandatangan']['dinas']['nama'] ?: '................................' }}</div>
@@ -601,7 +613,11 @@
                         <span class="tte-ok">Telah ditandatangani secara elektronik</span>
                     @endif
                     @if ($untukDs && ! empty($sertifikat['logo_bsre']))
-                        <img src="{{ $sertifikat['logo_bsre'] }}" alt="Logo BSrE" class="ttd-bsre">
+                        <table class="ttd-bsre-wrap">
+                            <tr>
+                                <td><img src="{{ $sertifikat['logo_bsre'] }}" alt="Logo BSrE" class="ttd-bsre"></td>
+                            </tr>
+                        </table>
                     @endif
                 </div>
                 <div class="nama">{{ $sertifikat['penandatangan']['balai']['nama'] ?: '................................' }}</div>

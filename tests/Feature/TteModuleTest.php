@@ -181,8 +181,11 @@ class TteModuleTest extends TestCase
         $pencariUser = User::find($peserta->pencari->user_id);
 
         $this->assertSame(EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI, $tteKompetensi->kode_dokumen);
-        Storage::disk('local')->assertExists('tte/blk/'.$peserta->id.'/kompetensi.before.pdf');
-        $this->assertSame('tte/blk/'.$peserta->id.'/kompetensi.before.pdf', $tteKompetensi->path_file_before);
+        $folder = now()->format('Y').'/'.now()->format('m');
+        $beforeKompetensi = 'tte/before/blk/'.$folder.'/uji_kompetensi_tte_'.$peserta->id.'.pdf';
+        $beforeSertifikat = 'tte/before/blk/'.$folder.'/sertifikat_tte_'.$peserta->id.'.pdf';
+        Storage::disk('local')->assertExists($beforeKompetensi);
+        $this->assertSame($beforeKompetensi, $tteKompetensi->path_file_before);
         $this->assertStringStartsWith('%PDF', Storage::disk('local')->get($tteKompetensi->path_file_before));
 
         $this->actingAs($kepala)
@@ -192,8 +195,9 @@ class TteModuleTest extends TestCase
 
         $tteKompetensi->refresh();
         Storage::disk('local')->assertExists($tteKompetensi->path_file_after);
+        $this->assertSame('tte/after/blk/'.$folder.'/uji_kompetensi_tte_'.$peserta->id.'.pdf', $tteKompetensi->path_file_after);
         $this->assertStringStartsWith('%PDF', (string) Storage::disk('local')->get($tteKompetensi->path_file_after));
-        Storage::disk('local')->assertExists('tte/blk/'.$peserta->id.'/sertifikat.before.pdf');
+        Storage::disk('local')->assertExists($beforeSertifikat);
         $this->assertDatabaseHas('etam_tte_log', [
             'etam_tte_id' => $tteKompetensi->id,
             'status' => EtamTteLog::STATUS_BERHASIL,
@@ -208,7 +212,7 @@ class TteModuleTest extends TestCase
             'nama_modul' => 'blk',
             'id_refrensi' => $peserta->id,
             'kode_dokumen' => EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT,
-            'path_file_before' => 'tte/blk/'.$peserta->id.'/sertifikat.before.pdf',
+            'path_file_before' => $beforeSertifikat,
         ]);
 
         $this->actingAs($pencariUser)
@@ -234,6 +238,7 @@ class TteModuleTest extends TestCase
 
         $tteSertifikat->refresh();
         Storage::disk('local')->assertExists($tteSertifikat->path_file_after);
+        $this->assertSame('tte/after/blk/'.$folder.'/sertifikat_tte_'.$peserta->id.'.pdf', $tteSertifikat->path_file_after);
         $this->assertStringStartsWith('%PDF', (string) Storage::disk('local')->get($tteSertifikat->path_file_after));
         $this->assertDatabaseHas('etam_blk_pelatihan_peserta', [
             'id' => $peserta->id,

@@ -1083,7 +1083,8 @@ class BlkModuleTest extends TestCase
             ->where('status', EtamTte::STATUS_MENUNGGU)
             ->first();
         $this->assertNotNull($tte?->path_file_before);
-        $this->assertStringEndsWith('.before.pdf', $tte->path_file_before);
+        $this->assertStringStartsWith('tte/before/blk/', $tte->path_file_before);
+        $this->assertStringEndsWith('uji_kompetensi_tte_'.$peserta->id.'.pdf', $tte->path_file_before);
         Storage::disk('local')->assertExists($tte->path_file_before);
         $isiBefore = Storage::disk('local')->get($tte->path_file_before);
         $this->assertStringStartsWith('%PDF', $isiBefore);
@@ -1427,6 +1428,7 @@ class BlkModuleTest extends TestCase
         $this->assertStringContainsString('Balai Sertifikasi Elektronik (BSrE)', $html);
         $this->assertStringContainsString('logo_bsre', $html);
         $this->assertStringContainsString('ttd-bsre', $html);
+        $this->assertStringContainsString('ttd-bsre-wrap', $html);
 
         $this->assertDatabaseMissing('etam_tte', [
             'nama_modul' => 'blk',
