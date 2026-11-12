@@ -8,6 +8,7 @@ use App\Models\BLK\EtamBlkPelatihanPeserta;
 use App\Models\EtamStruktur;
 use App\Models\EtamTte;
 use App\Models\EtamTteLog;
+use App\Models\HI\PP\EtamHiPpAjuan;
 use App\Models\User;
 use App\Models\UserPencari;
 use App\Services\Tte\DsClient;
@@ -27,7 +28,7 @@ class TteModuleTest extends TestCase
 
         Storage::fake('local');
 
-        foreach (['super-admin', 'admin-provinsi', 'pencari-kerja', 'kepala-balai', 'admin-balai', 'eksekutif-provinsi'] as $name) {
+        foreach (['super-admin', 'admin-provinsi', 'pencari-kerja', 'penyedia-kerja', 'kepala-balai', 'admin-balai', 'eksekutif-provinsi'] as $name) {
             Role::firstOrCreate([
                 'name' => $name,
                 'guard_name' => 'web',
@@ -386,6 +387,42 @@ class TteModuleTest extends TestCase
         $this->assertTrue($filtered->pluck('judul')->contains(fn ($item) => str_contains((string) $item, 'Dokumen BLK Filter')));
         $this->assertFalse($filtered->pluck('judul')->contains(fn ($item) => str_contains((string) $item, 'SK PP Filter')));
         $this->assertTrue($filtered->every(fn ($row) => ($row['modul'] ?? '') === 'blk'));
+    }
+
+    public function test_penyedia_mengunduh_sk_dari_dokumen_tte_sukses(): void
+    {
+        $penyedia = $this->makeUser('penyedia-kerja');
+        $ajuan = EtamHiPpAjuan::create([
+            'jenis_ajuan' => 1,
+            'perusahaan_id' => $penyedia->id,
+            'created_by' => $penyedia->id,
+        ]);
+        $path = 'tte/after/hi-pp-'.$ajuan->id.'.pdf';
+        Storage::disk('local')->put($path, '%PDF-1.4 HI PP SIGNED');
+        $token = str_repeat('a', 40);
+        EtamTte::create([
+            'nama_modul' => 'hi_pp',
+            'nama_table' => 'etam_hi_pp_ajuan',
+            'id_refrensi' => $ajuan->id,
+            'kolom_status_refrensi' => 'status_ttd',
+            'kode_dokumen' => 'suket_hi_pp',
+            'path_file_after' => $path,
+            'token_verifikasi' => $token,
+            'status' => EtamTte::STATUS_BERHASIL,
+        ]);
+
+        $listing = $this->actingAs($penyedia)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('hi.pp.penyedia.index'))
+            ->assertOk();
+        $this->assertStringContainsString(
+            route('tte.berkas', ['token' => $token, 'unduh' => 1]),
+            $listing->json('data.0.options')
+        );
+
+        $this->get(route('tte.berkas', ['token' => $token, 'unduh' => 1]))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
     }
 
     public function test_kelola_admin_nik_tidak_wajib(): void
