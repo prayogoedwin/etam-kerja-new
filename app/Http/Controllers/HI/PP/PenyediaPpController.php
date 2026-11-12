@@ -31,10 +31,12 @@ class PenyediaPpController extends Controller
                 'verifikasi_admin',
                 'verifikasi_kasi',
                 'created_at',
-                'dok_produk_akhir',
                 'dok_final_konsep_pp'
             )
-            ->with(['jenisAjuan:id,nama'])
+            ->with([
+                'jenisAjuan:id,nama',
+                'tteDokumenFinal',
+            ])
             ->where('created_by', auth()->id());
 
             return DataTables::of($datas)
@@ -57,7 +59,7 @@ class PenyediaPpController extends Controller
 
                     // <button class="btn btn-primary btn-sm" onclick="showEditModal(' . $data->id . ')">Edit</button>
                     $editUrl = route('hi.pp.penyedia.edit', $data->id);
-                    $html = '-';
+                    $html = '';
 
                     if ((int) $data->verifikasi_admin === 0 && (int) $data->verifikasi_kasi === 0) {
                         $html = '
@@ -73,19 +75,17 @@ class PenyediaPpController extends Controller
                         ';
                     }
 
-                    if($data->dok_produk_akhir != null){
-                        $html =
-                        '
-                        <a href="'. asset('storage/' . $data->dok_produk_akhir) .'"
-                        target="_blank"
-                        class="btn btn-sm btn-info">
-                            <i class="feather icon-download"></i> Unduh SK
-                        </a>
-                        ';
+                    if ($data->tteDokumenFinal?->token_verifikasi) {
+                        $downloadUrl = route('tte.berkas', [
+                            'token' => $data->tteDokumenFinal->token_verifikasi,
+                            'unduh' => 1,
+                        ]);
+                        $html .= '<a href="'.$downloadUrl.'" class="btn btn-sm btn-info">'
+                            .'<i class="feather icon-download"></i> Unduh SK</a>';
                     }
 
                     if(((int) $data->verifikasi_admin === 8 && (int) $data->verifikasi_kasi === 8)){
-                        $html =
+                        $html .=
                         '
                         <a href="'. asset('storage/' . $data->dok_final_konsep_pp) .'"
                         target="_blank"
@@ -108,7 +108,7 @@ class PenyediaPpController extends Controller
                     //             </a>';
                     // }
 
-                    return $html;
+                    return $html !== '' ? $html : '-';
                 })
                 ->rawColumns(['options', 'status_admin', 'status_kasi'])
                 ->make(true);

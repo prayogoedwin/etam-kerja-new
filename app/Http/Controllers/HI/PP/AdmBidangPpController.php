@@ -115,6 +115,7 @@ class AdmBidangPpController extends Controller
             'syaratDokumen.syaratDokumen:id,nama',
             'perusahaan:id,name,email',      // data user (perusahaan)
             'profilPenyedia',                 // data profil penyedia (users_penyedia)
+            'tteDokumenFinal',
             // 'logs.user:id,name',
         ])->findOrFail($id);
 

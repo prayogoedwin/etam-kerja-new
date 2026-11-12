@@ -290,7 +290,6 @@
                                     $accKasi  = (int) $ajuan->verifikasi_kasi === 1;
                                     $accFull  = $accAdmin && $accKasi;
                                     $hasSk    = !empty($ajuan->nomor_sk) && !empty($ajuan->tanggal_berlaku_pp_baru);
-                                    $hasDok   = !empty($ajuan->dok_produk_akhir);
                                     $isDone   = (int) $ajuan->verifikasi_admin === 8;
                                 @endphp
 
@@ -335,29 +334,20 @@
                                            class="btn btn-outline-primary">
                                             <i class="feather icon-edit"></i> Ubah Nomor SK
                                         </a>
-                                        <a href="{{ route('hi.pp.admbidang.cetakSk', $ajuan->id) }}"
+                                        {{-- <a href="{{ route('hi.pp.admbidang.cetakSk', $ajuan->id) }}"
                                            target="_blank"
                                            class="btn btn-info">
                                             <i class="feather icon-printer"></i> Cetak SK
-                                        </a>
+                                        </a> --}}
                                     @endif
 
-                                    @if (!$hasDok)
-                                        <a href="{{ route('hi.pp.admbidang.formUnggahSk', $ajuan->id) }}"
-                                           class="btn btn-success">
-                                            <i class="feather icon-upload-cloud"></i> Unggah SK Final
-                                        </a>
-                                    @else
-                                        <a href="{{ asset('storage/' . $ajuan->dok_produk_akhir) }}"
-                                           target="_blank"
-                                           class="btn btn-outline-success">
-                                            <i class="feather icon-file"></i> Lihat SK Final
-                                        </a>
-                                        <a href="{{ route('hi.pp.admbidang.formUnggahSk', $ajuan->id) }}"
-                                           class="btn btn-outline-warning">
-                                            <i class="feather icon-refresh-cw"></i> Ganti SK Final
-                                        </a>
-                                    @endif
+                                @endif
+
+                                @if ($ajuan->tteDokumenFinal?->token_verifikasi)
+                                    <a href="{{ route('tte.berkas', ['token' => $ajuan->tteDokumenFinal->token_verifikasi, 'unduh' => 1]) }}"
+                                       class="btn btn-outline-success">
+                                        <i class="feather icon-download"></i> Unduh SK TTE
+                                    </a>
                                 @endif
                             </div>
 

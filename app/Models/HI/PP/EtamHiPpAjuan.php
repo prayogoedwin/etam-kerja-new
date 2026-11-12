@@ -84,4 +84,21 @@ class EtamHiPpAjuan extends Model
         return $this->hasMany(EtamHiPpLog::class, 'ajuan_id', 'id')
                     ->orderBy('created_at', 'asc');
     }
+
+    public function tteDokumenFinal()
+    {
+        return $this->hasOne(\App\Models\EtamTte::class, 'id_refrensi', 'id')
+            ->where('etam_tte.nama_modul', 'hi_pp')
+            ->where('etam_tte.nama_table', 'etam_hi_pp_ajuan')
+            ->where('etam_tte.status', \App\Models\EtamTte::STATUS_BERHASIL)
+            ->whereNotNull('etam_tte.path_file_after')
+            ->where('etam_tte.path_file_after', '!=', '')
+            ->ofMany(['id' => 'max'], function ($query): void {
+                $query->where('nama_modul', 'hi_pp')
+                    ->where('nama_table', 'etam_hi_pp_ajuan')
+                    ->where('status', \App\Models\EtamTte::STATUS_BERHASIL)
+                    ->whereNotNull('path_file_after')
+                    ->where('path_file_after', '!=', '');
+            });
+    }
 }
