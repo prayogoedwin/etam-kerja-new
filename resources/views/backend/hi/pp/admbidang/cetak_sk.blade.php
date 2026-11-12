@@ -7,7 +7,7 @@
   <style>
     @page {
       size: A4;
-      margin: 12mm 15mm 12mm 15mm;
+      margin: 12mm 15mm;
     }
 
     * {
@@ -26,10 +26,10 @@
 
     .page {
       width: 210mm;
-      min-height: 297mm;
+      height: 297mm;
       margin: 8mm auto;
       background: #fff;
-      padding: 10mm 15mm 12mm 15mm;
+      padding: 12mm 15mm 24mm;
       box-shadow: 0 2px 12px rgba(0,0,0,0.15);
       position: relative;
       page-break-after: always;
@@ -279,7 +279,15 @@
     }
 
     .ttd-kanan .space-ttd {
-      height: 18mm;
+      height: 22mm;
+      text-align: center;
+    }
+
+    .ttd-kanan .space-ttd img {
+      width: 32mm;
+      height: auto;
+      max-height: 20mm;
+      display: inline-block;
     }
 
     .ttd-kanan .nama {
@@ -328,6 +336,38 @@
       font-size: 10pt;
     }
 
+    .hi-pp-bsre-footer {
+      position: absolute;
+      left: 5mm;
+      right: 5mm;
+      bottom: 6mm;
+    }
+
+    .hi-pp-bsre-footer table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 8pt;
+      line-height: 1.35;
+      color: #222;
+    }
+
+    .hi-pp-bsre-footer .hi-pp-bsre-logo {
+      width: 38mm;
+      vertical-align: middle;
+      padding-right: 2mm;
+    }
+
+    .hi-pp-bsre-footer .hi-pp-bsre-logo img {
+      width: 36mm;
+      height: auto;
+    }
+
+    .hi-pp-bsre-footer .hi-pp-bsre-text {
+      vertical-align: middle;
+      text-align: left;
+    }
+
     /* ===== PRINT ===== */
     @media print {
       body {
@@ -336,9 +376,9 @@
         print-color-adjust: exact;
       }
       .page {
-        width: 100%;
-        min-height: auto;
+        width: auto;
         height: auto;
+        min-height: 273mm;
         margin: 0;
         padding: 0;
         box-shadow: none;
@@ -351,6 +391,16 @@
       .header .logo-space {
         border: none;
         color: transparent;
+      }
+
+      .hi-pp-bsre-footer {
+        position: absolute;
+        left: 5mm;
+        right: 5mm;
+        bottom: 6mm;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        page-break-inside: avoid;
       }
     }
   </style>
@@ -480,6 +530,7 @@
     </div>
 
     {{-- <div class="halaman">1</div> --}}
+    @include('backend.hi.pp.admbidang._bsre-footer')
   </div>
 
   <!-- ==================== HALAMAN 2 ==================== -->
@@ -525,7 +576,11 @@
         <div class="tempat">Ditetapkan di Samarinda</div>
         <div class="tempat">Pada tanggal {{tgl_indo($tanggalMulai)}}</div>
         <div class="jabatan">Kepala Dinas</div>
-        <div class="space-ttd"></div>
+        <div class="space-ttd">
+          @if (!empty($bsreLogoDataUri))
+            <img src="{{ $bsreLogoDataUri }}" alt="Logo BSrE">
+          @endif
+        </div>
         <div class="nama">H. Rozani Erawadi, S.H, M.Si</div>
         <div class="pangkat">Pembina Utama Madya</div>
         <div class="nip">NIP. 19710124 199703 1 007</div>
@@ -543,6 +598,7 @@
     </div>
 
     {{-- <div class="halaman">2</div> --}}
+    @include('backend.hi.pp.admbidang._bsre-footer')
   </div>
 
 </body>

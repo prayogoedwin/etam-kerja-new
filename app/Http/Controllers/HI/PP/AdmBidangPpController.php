@@ -323,7 +323,6 @@ class AdmBidangPpController extends Controller
 
             $ajuan->load(['jenisAjuan:id,nama', 'perusahaan.penyedia']);
             $viewData = $this->dataCetakSk($ajuan);
-            $viewData['logoDataUri'] = $this->logoDataUri();
             $pdfBytes = Pdf::loadView('backend.hi.pp.admbidang.cetak_sk', $viewData)
                 ->setPaper('a4', 'portrait')
                 ->setOption('defaultMediaType', 'print')
@@ -345,10 +344,10 @@ class AdmBidangPpController extends Controller
                 throw new \RuntimeException('Salinan PDF untuk antrean TTE gagal disimpan.');
             }
 
-            $ajuan->update([
-                'dok_produk_akhir' => $generatedPath,
-                'status_ttd' => 0,
-            ]);
+            // $ajuan->update([
+            //     'dok_produk_akhir' => $generatedPath,
+            //     'status_ttd' => 0,
+            // ]);
 
             $tte = app(TteQueue::class)->ajukan([
                 'nama_modul' => 'hi_pp',
@@ -356,7 +355,6 @@ class AdmBidangPpController extends Controller
                 'id_refrensi' => $ajuan->id,
                 'kolom_status_refrensi' => 'status_ttd',
                 'kode_dokumen' => 'suket_hi_pp',
-                // 'id_struktur' => '41',
                 'id_struktur' => NULL,
                 'judul' => 'Surat Pengesahan Peraturan Perusahaan - '.($ajuan->perusahaan?->penyedia?->name ?? '-'),
                 'path_file_before' => $tteSourcePath,
@@ -438,12 +436,28 @@ class AdmBidangPpController extends Controller
             'tanggalMulai',
             'tanggalBerakhir',
             'rangeTahun'
-        );
+        ) + [
+            'logoDataUri' => $this->logoDataUri(),
+            'bsreLogoDataUri' => $this->bsreLogoDataUri(),
+            'bsreFooterText' => "Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik\nyang diterbitkan oleh Balai Sertifikasi Elektronik (BSrE), Badan Siber dan Sandi Negara (BSSN).",
+        ];
     }
 
     private function logoDataUri(): ?string
     {
         $logoPath = public_path('assets/etam_fe/images/logo/logo_kaltim.png');
+        if (! is_file($logoPath)) {
+            return null;
+        }
+
+        $mime = mime_content_type($logoPath) ?: 'image/png';
+
+        return 'data:'.$mime.';base64,'.base64_encode((string) file_get_contents($logoPath));
+    }
+
+    private function bsreLogoDataUri(): ?string
+    {
+        $logoPath = public_path('assets/etam_be/images/logo/logo_bsre.png');
         if (! is_file($logoPath)) {
             return null;
         }
