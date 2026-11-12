@@ -13,8 +13,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use ZipArchive;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BlkSertifikatKelulusanService
 {
@@ -165,32 +164,27 @@ class BlkSertifikatKelulusanService
         return $this->htmlKePdf($html);
     }
 
-    public function unduhZip(EtamBlkPelatihanPeserta $peserta): BinaryFileResponse
+    public function unduhPdf(EtamBlkPelatihanPeserta $peserta, string $kode): StreamedResponse
     {
-        $peserta->loadMissing(['pelatihan.blk', 'pelatihan.kompetensiInti', 'pelatihan.kompetensiPenunjang']);
-        $files = [
-            EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT => '1-sertifikat-kelulusan.pdf',
-            EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI => '2-daftar-unit-kompetensi.pdf',
-        ];
-
-        $tmp = tempnam(sys_get_temp_dir(), 'blk-sertifikat-');
-        $zip = new ZipArchive;
-        if ($zip->open($tmp, ZipArchive::OVERWRITE) !== true) {
-            throw new \RuntimeException('Gagal membuat berkas unduhan sertifikat');
+        if (! in_array($kode, [
+            EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT,
+            EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI,
+        ], true)) {
+            abort(404);
         }
 
-        foreach ($files as $kode => $namaFile) {
-            $path = $this->pathBerkasTte($peserta, $kode);
-            $isi = $path
-                ? (string) Storage::disk('local')->get($path)
-                : $this->simpanLaluBaca($peserta, $kode);
-            $zip->addFromString($namaFile, $isi);
+        $path = $this->pathBerkasTte($peserta, $kode);
+        if ($path === null) {
+            abort(404, 'Berkas TTE belum tersedia');
         }
-        $zip->close();
 
-        $unduhNama = 'sertifikat-blk-'.$peserta->id.'.zip';
+        $nama = $kode === EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT
+            ? '1-sertifikat-kelulusan.pdf'
+            : '2-daftar-unit-kompetensi.pdf';
 
-        return response()->download($tmp, $unduhNama)->deleteFileAfterSend(true);
+        return Storage::disk('local')->download($path, $nama, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 
     private function pathBerkasTte(EtamBlkPelatihanPeserta $peserta, string $kode): ?string
@@ -213,13 +207,6 @@ class BlkSertifikatKelulusanService
         }
 
         return null;
-    }
-
-    private function simpanLaluBaca(EtamBlkPelatihanPeserta $peserta, string $kode): string
-    {
-        $path = $this->simpanDokumenTte($peserta, $kode);
-
-        return (string) Storage::disk('local')->get($path);
     }
 
     private function htmlKePdf(string $html): string
@@ -286,6 +273,9 @@ class BlkSertifikatKelulusanService
     private function namaPenandatangan(string $role, ?string $kodeStruktur = null): string
     {
         $query = User::role($role)->orderByDesc('users.id');
+        if ($role === self::ROLE_KEPALA_DINAS && ! $kodeStruktur) {
+            $kodeStruktur = EtamStruktur::KODE_DINAS;
+        }
         if ($kodeStruktur) {
             $query->where('users.kode_struktur', $kodeStruktur);
         }

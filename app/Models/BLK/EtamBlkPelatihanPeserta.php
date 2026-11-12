@@ -96,4 +96,30 @@ class EtamBlkPelatihanPeserta extends Model
     {
         return $this->belongsTo(UserPencari::class, 'pencari_id', 'id');
     }
+
+    public function bisaUnduhBerkasTte(): bool
+    {
+        return (int) $this->status_pendaftaran === self::STATUS_LULUS
+            && (int) $this->status_ttd === self::TTD_TTD_DINAS;
+    }
+
+    public function tombolUnduhBerkas(string $routeName, array $routeParams = [], string $class = 'btn btn-success btn-sm'): string
+    {
+        if (! $this->bisaUnduhBerkasTte()) {
+            return '';
+        }
+
+        $berkas = [
+            [
+                'url' => route($routeName, array_merge($routeParams, ['halaman' => self::TTE_DOK_SERTIFIKAT])),
+                'nama' => '1-sertifikat-kelulusan.pdf',
+            ],
+            [
+                'url' => route($routeName, array_merge($routeParams, ['halaman' => self::TTE_DOK_KOMPETENSI])),
+                'nama' => '2-daftar-unit-kompetensi.pdf',
+            ],
+        ];
+
+        return '<a href="'.e($berkas[0]['url']).'" class="'.$class.'" data-unduh-tte="'.e(json_encode($berkas, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)).'">Unduh</a>';
+    }
 }

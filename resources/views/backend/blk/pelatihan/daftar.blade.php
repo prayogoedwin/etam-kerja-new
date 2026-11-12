@@ -106,6 +106,11 @@
                                         <a href="{{ route('blk.pelatihan.cbt', $pelatihan->id) }}"
                                             class="btn btn-dark">{{ ! empty($cbtSubmitted) ? 'Lihat CBT' : 'Ikuti CBT' }}</a>
                                     @endif
+                                    @if ($already instanceof \App\Models\BLK\EtamBlkPelatihanPeserta && $already->bisaUnduhBerkasTte())
+                                        {!! $already->tombolUnduhBerkas('historypelatihan.pencari.sertifikat', [
+                                            'pesertaId' => $already->id,
+                                        ], 'btn btn-success') !!}
+                                    @endif
                                     <a href="{{ route('blk.pelatihan.index') }}" class="btn btn-secondary">Kembali</a>
                                 @elseif ($pelatihan->isOpenForRegistration())
                                     <form action="{{ route('blk.pelatihan.daftar.store', $pelatihan->id) }}" method="POST">

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class EtamStruktur extends Model
 {
+    public const KODE_DINAS = '99';
+
     protected $table = 'etam_struktur';
 
     protected $fillable = [

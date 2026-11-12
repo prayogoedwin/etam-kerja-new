@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\BLK\EtamBlk;
 use App\Models\BLK\EtamBlkPelatihan;
 use App\Models\BLK\EtamBlkPelatihanPeserta;
+use App\Models\EtamStruktur;
 use App\Models\EtamTte;
 use App\Models\EtamTteLog;
 use App\Models\User;
@@ -15,7 +16,6 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
-use ZipArchive;
 
 class TteModuleTest extends TestCase
 {
@@ -33,6 +33,39 @@ class TteModuleTest extends TestCase
                 'guard_name' => 'web',
             ]);
         }
+    }
+
+    public function test_eksekutif_bukan_dinas_tidak_akses_tte(): void
+    {
+        $kadis = $this->makeUser('eksekutif-provinsi');
+        $eksekutifBiasa = $this->makeUser('eksekutif-provinsi', [
+            'kode_struktur' => '1',
+            'lokasi_kerja' => '64',
+        ]);
+
+        $this->actingAs($kadis)
+            ->get(route('dashboard.eksekutif'))
+            ->assertOk()
+            ->assertSee('TTE')
+            ->assertSee(route('tte.menunggu'), false)
+            ->assertDontSee(route('pengawasan.k3.kadis.index'), false);
+
+        $this->actingAs($kadis)
+            ->get(route('tte.menunggu'))
+            ->assertOk()
+            ->assertSee('TTE')
+            ->assertDontSee('K3 Pengawas')
+            ->assertDontSee('Pengawasan K3');
+
+        $this->actingAs($eksekutifBiasa)
+            ->get(route('tte.menunggu'))
+            ->assertForbidden();
+
+        $this->actingAs($eksekutifBiasa)
+            ->get(route('dashboard.eksekutif'))
+            ->assertOk()
+            ->assertSee('Pengawasan K3')
+            ->assertDontSee(route('tte.menunggu'), false);
     }
 
     public function test_enqueue_blk_muncul_di_kepala_balai_bukan_kadis(): void
@@ -179,14 +212,14 @@ class TteModuleTest extends TestCase
         ]);
 
         $this->actingAs($pencariUser)
-            ->get(route('historypelatihan.pencari.sertifikat', $peserta->id))
+            ->get(route('historypelatihan.pencari.sertifikat', [$peserta->id, 'sertifikat']))
             ->assertForbidden();
 
         $options = collect($this->actingAs($pencariUser)
             ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
             ->get(route('historypelatihan.pencari.index'))
             ->json('data'))->pluck('options')->implode(' ');
-        $this->assertStringNotContainsString('Unduh Sertifikat', $options);
+        $this->assertStringNotContainsString('>Unduh</a>', $options);
 
         $tteSertifikat = EtamTte::query()
             ->where('id_refrensi', $peserta->id)
@@ -211,23 +244,62 @@ class TteModuleTest extends TestCase
             ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
             ->get(route('historypelatihan.pencari.index'))
             ->json('data'))->pluck('options')->implode(' ');
-        $this->assertStringContainsString('Unduh Sertifikat', $options);
+        $this->assertStringContainsString('>Unduh</a>', $options);
+        $this->assertStringContainsString('data-unduh-tte=', $options);
+        $this->assertStringContainsString('1-sertifikat-kelulusan.pdf', $options);
+        $this->assertStringContainsString('2-daftar-unit-kompetensi.pdf', $options);
 
-        $unduh = $this->actingAs($pencariUser)
-            ->get(route('historypelatihan.pencari.sertifikat', $peserta->id));
-        $unduh->assertOk();
-        $unduh->assertDownload('sertifikat-blk-'.$peserta->id.'.zip');
+        $this->actingAs($pencariUser)
+            ->get(route('blk.pelatihan.daftar', $peserta->blk_pelatihan_id))
+            ->assertOk()
+            ->assertSee('>Unduh</a>', false)
+            ->assertSee(route('historypelatihan.pencari.sertifikat', [$peserta->id, 'sertifikat']), false);
 
-        $zip = new ZipArchive;
-        $this->assertTrue($zip->open($unduh->getFile()->getPathname()) === true);
-        $this->assertNotFalse($zip->locateName('1-sertifikat-kelulusan.pdf'));
-        $this->assertNotFalse($zip->locateName('2-daftar-unit-kompetensi.pdf'));
-        $isiSertifikat = $zip->getFromName('1-sertifikat-kelulusan.pdf');
-        $isiKompetensi = $zip->getFromName('2-daftar-unit-kompetensi.pdf');
-        $zip->close();
+        $signedSertifikat = (string) Storage::disk('local')->get($tteSertifikat->path_file_after);
+        $signedKompetensi = (string) Storage::disk('local')->get($tteKompetensi->path_file_after);
 
-        $this->assertStringStartsWith('%PDF', $isiSertifikat);
-        $this->assertStringStartsWith('%PDF', $isiKompetensi);
+        $unduhSertifikat = $this->actingAs($pencariUser)
+            ->get(route('historypelatihan.pencari.sertifikat', [$peserta->id, 'sertifikat']));
+        $unduhSertifikat->assertOk();
+        $unduhSertifikat->assertDownload('1-sertifikat-kelulusan.pdf');
+        $this->assertSame($signedSertifikat, $unduhSertifikat->streamedContent());
+
+        $unduhKompetensi = $this->actingAs($pencariUser)
+            ->get(route('historypelatihan.pencari.sertifikat', [$peserta->id, 'kompetensi']));
+        $unduhKompetensi->assertOk();
+        $unduhKompetensi->assertDownload('2-daftar-unit-kompetensi.pdf');
+        $this->assertSame($signedKompetensi, $unduhKompetensi->streamedContent());
+
+        $admin = $this->makeUser('admin-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+        $adminRows = collect($this->actingAs($admin)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('blk.pelatihan.peserta', $peserta->blk_pelatihan_id))
+            ->json('data'));
+        $adminOptions = $adminRows->pluck('options')->implode(' ');
+        $adminTtd = $adminRows->pluck('status_ttd_label')->implode(' ');
+        $this->assertStringNotContainsString('>Unduh</a>', $adminOptions);
+        $this->assertStringContainsString('>Unduh</a>', $adminTtd);
+        $this->assertStringContainsString('data-unduh-tte=', $adminTtd);
+        $this->assertStringContainsString('1-sertifikat-kelulusan.pdf', $adminTtd);
+        $this->assertStringContainsString('2-daftar-unit-kompetensi.pdf', $adminTtd);
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.show', [$peserta->blk_pelatihan_id, $peserta->id]))
+            ->assertOk()
+            ->assertSee('>Unduh</a>', false)
+            ->assertSee(route('blk.pelatihan.peserta.unduh', [$peserta->blk_pelatihan_id, $peserta->id, 'sertifikat']), false);
+
+        $unduhAdminSertifikat = $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.unduh', [$peserta->blk_pelatihan_id, $peserta->id, 'sertifikat']));
+        $unduhAdminSertifikat->assertOk();
+        $unduhAdminSertifikat->assertDownload('1-sertifikat-kelulusan.pdf');
+        $this->assertSame($signedSertifikat, $unduhAdminSertifikat->streamedContent());
+
+        $unduhAdminKompetensi = $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.unduh', [$peserta->blk_pelatihan_id, $peserta->id, 'kompetensi']));
+        $unduhAdminKompetensi->assertOk();
+        $unduhAdminKompetensi->assertDownload('2-daftar-unit-kompetensi.pdf');
+        $this->assertSame($signedKompetensi, $unduhAdminKompetensi->streamedContent());
     }
 
     public function test_modul_tak_terdaftar_tidak_merusak_tabel_sumber(): void
@@ -528,6 +600,10 @@ class TteModuleTest extends TestCase
         if (in_array($role, ['kepala-balai', 'eksekutif-provinsi', 'super-admin'], true)
             && ! array_key_exists('nik', $overrides)) {
             $defaults['nik'] = fake()->unique()->numerify('################');
+        }
+        if ($role === 'eksekutif-provinsi' && ! array_key_exists('kode_struktur', $overrides)) {
+            $defaults['kode_struktur'] = EtamStruktur::KODE_DINAS;
+            $defaults['lokasi_kerja'] = $overrides['lokasi_kerja'] ?? '64';
         }
 
         $user = User::factory()->create(array_merge($defaults, $overrides));

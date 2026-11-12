@@ -5,6 +5,7 @@ namespace App\Services\Tte;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class DsClient
@@ -60,7 +61,7 @@ class DsClient
             return $siap;
         }
 
-        $hasil = $this->postMultipart(rtrim((string) config('tte.ds.url'), '/').'/ttdds', [
+        $hasil = $this->postMultipart($this->dsUrl('ttdds'), [
             'nik' => $nik,
             'template' => (string) config('tte.ds.template'),
             'keterangan' => (string) $keterangan,
@@ -68,12 +69,26 @@ class DsClient
 
         $kodeDokumen = $this->kodeDariJson($hasil['json'] ?? null);
         $hasil['kode_dokumen'] = $kodeDokumen;
-        if ($hasil['ok'] && $kodeDokumen === null) {
-            return $this->gagal(self::GAGAL, 'DS tidak mengembalikan kode dokumen', [
+        if ($kodeDokumen === null) {
+            Log::warning('DS ttdds tanpa kode dokumen', [
                 'http' => $hasil['http'],
-                'body' => $hasil['body'],
-                'json' => $hasil['json'] ?? null,
+                'pesan' => $hasil['pesan'],
+                'body' => mb_substr((string) ($hasil['body'] ?? ''), 0, 400),
             ]);
+
+            $pesan = (! $hasil['ok'] && trim((string) $hasil['pesan']) !== '')
+                ? $hasil['pesan']
+                : $this->pesanResponDs($hasil, 'DS tidak mengembalikan kode dokumen');
+
+            return $this->gagal(
+                $hasil['kode'] === self::KONEKSI_PUTUS ? self::KONEKSI_PUTUS : self::GAGAL,
+                $pesan,
+                [
+                    'http' => $hasil['http'],
+                    'body' => $hasil['body'],
+                    'json' => $hasil['json'] ?? null,
+                ]
+            );
         }
         if ($kodeDokumen && $hasil['ok']) {
             $hasil['pesan'] = $hasil['pesan'] !== '' ? $hasil['pesan'] : 'Dokumen terkirim';
@@ -92,7 +107,7 @@ class DsClient
             return $siap;
         }
 
-        $hasil = $this->postForm(rtrim((string) config('tte.ds.url'), '/').'/sign', [
+        $hasil = $this->postForm($this->dsUrl('sign'), [
             'kode' => $kodeDokumen,
             'passphrase' => $passphrase,
         ], 'sign');
@@ -111,7 +126,7 @@ class DsClient
             return $siap;
         }
 
-        $hasil = $this->postForm(rtrim((string) config('tte.ds.url'), '/').'/dokumen', [
+        $hasil = $this->postForm($this->dsUrl('dokumen'), [
             'kode' => $kodeDokumen,
         ]);
         $hasil['kode_dokumen'] = $kodeDokumen;
@@ -129,29 +144,6 @@ class DsClient
     }
 
     /**
-     * @return array{kirim: array, sign: array|null, unduh: array|null}
-     */
-    public function ujiTigaLangkah(string $pdf, string $nik, string $passphrase, ?string $keterangan = null): array
-    {
-        $kirim = $this->kirimDokumen($pdf, $nik, $keterangan);
-        $sign = null;
-        $unduh = null;
-
-        if ($kirim['ok'] && $kirim['kode_dokumen']) {
-            $sign = $this->tandatanganiKode($kirim['kode_dokumen'], $passphrase);
-            if ($sign['ok']) {
-                $unduh = $this->unduhDokumen($kirim['kode_dokumen']);
-            }
-        }
-
-        return [
-            'kirim' => $kirim,
-            'sign' => $sign,
-            'unduh' => $unduh,
-        ];
-    }
-
-    /**
      * @return array{ok: bool, kode: string, pesan: string, pdf: string|null, kode_dokumen: string|null, http: int|null, body: string|null, json: mixed}
      */
     private function lanjutkanDenganKode(string $kodeDokumen, string $passphrase): array
@@ -165,7 +157,7 @@ class DsClient
             return $tte;
         }
 
-        return $this->unduhDokumen($kodeDokumen);
+        return $this->ambilPdfSetelahTtd($kodeDokumen);
     }
 
     /**
@@ -215,7 +207,29 @@ class DsClient
             return $tte;
         }
 
-        return $this->unduhDokumen($kodeDokumen);
+        return $this->ambilPdfSetelahTtd($kodeDokumen);
+    }
+
+    /**
+     * @return array{ok: bool, kode: string, pesan: string, pdf: string|null, kode_dokumen: string|null, http: int|null, body: string|null, json: mixed}
+     */
+    private function ambilPdfSetelahTtd(string $kodeDokumen): array
+    {
+        $unduh = $this->unduhDokumen($kodeDokumen);
+        if ($unduh['ok']) {
+            return $unduh;
+        }
+
+        return $this->gagal(
+            self::GAGAL,
+            'TTD di DS berhasil, tetapi PDF belum bisa diunduh. Callback DS mengarah ke server, bukan ke lokal. '.$unduh['pesan'],
+            [
+                'kode_dokumen' => $kodeDokumen,
+                'http' => $unduh['http'],
+                'body' => $unduh['body'],
+                'json' => $unduh['json'] ?? null,
+            ]
+        );
     }
 
     /**
@@ -223,7 +237,7 @@ class DsClient
      */
     private function siapKirim(): ?array
     {
-        $base = rtrim((string) config('tte.ds.url'), '/');
+        $base = $this->dsBaseUrl();
         $token = (string) config('tte.ds.token');
         $template = (string) config('tte.ds.template');
 
@@ -257,7 +271,7 @@ class DsClient
             return $this->gagal(self::KONEKSI_PUTUS, 'Koneksi ke server DS terputus: '.$e->getMessage());
         }
 
-        return $this->hasilHttp($response->status(), $response->body(), $response->json());
+        return $this->hasilHttp($response->status(), $response->body(), $response->json(), 'ttdds');
     }
 
     /**
@@ -282,6 +296,7 @@ class DsClient
         $token = (string) config('tte.ds.token');
 
         return Http::timeout((int) config('tte.ds.timeout', 30))
+            ->withoutRedirecting()
             ->withQueryParameters(['token' => $token]);
     }
 
@@ -290,6 +305,7 @@ class DsClient
      */
     private function hasilHttp(int $status, string $body, mixed $json, string $langkah = 'umum'): array
     {
+        $json = $this->jsonDariBody($body, $json);
         $pesan = $this->pesanDariJson($json);
         $extra = [
             'http' => $status,
@@ -297,6 +313,25 @@ class DsClient
             'json' => $json,
             'kode_dokumen' => $this->kodeDariJson($json),
         ];
+
+        if ($langkah === 'sign' && $this->ttdBerhasilCallbackGagal($pesan)) {
+            return $this->ok(
+                'TTD berhasil. Pengiriman balik ke callback aplikasi gagal (wajar di lokal).',
+                $extra
+            );
+        }
+
+        if ($extra['kode_dokumen']) {
+            return $this->ok($pesan !== '' ? $pesan : 'Dokumen terkirim', $extra);
+        }
+
+        if ($this->halamanLoginDs($body) || in_array($status, [301, 302, 303, 307, 308], true)) {
+            return $this->gagal(
+                self::GAGAL,
+                'Token DS tidak diterima (HTTP '.$status.'). Server mengembalikan halaman login. Isi TTE_DS_TOKEN dengan token yang sama seperti di Postman, bukan token Firebase.',
+                $extra
+            );
+        }
 
         if ($status === 401 || $status === 403) {
             if ($langkah === 'sign') {
@@ -362,18 +397,119 @@ class DsClient
         return str_contains($lower, 'passphrase') || str_contains($lower, 'sandi');
     }
 
+    private function ttdBerhasilCallbackGagal(string $pesan): bool
+    {
+        $lower = mb_strtolower($pesan);
+
+        return str_contains($lower, 'berhasil menanda')
+            || (str_contains($lower, 'berhasil') && str_contains($lower, 'gagal mengirim'));
+    }
+
+    private function dsUrl(string $path): string
+    {
+        return $this->dsBaseUrl().'/'.ltrim($path, '/');
+    }
+
+    private function dsBaseUrl(): string
+    {
+        $base = rtrim((string) config('tte.ds.url'), '/');
+        if ($base !== '' && ! str_ends_with($base, '/v2') && preg_match('#/api$#', $base) === 1) {
+            $base .= '/v2';
+        }
+
+        return $base;
+    }
+
     /**
      * @param  array<string, mixed>|null  $json
      */
     private function kodeDariJson(mixed $json): ?string
     {
+        if (is_string($json) && $json !== '') {
+            $decoded = json_decode($json, true);
+            $json = is_array($decoded) ? $decoded : null;
+        }
         if (! is_array($json)) {
             return null;
         }
 
-        $kode = $json['data']['kode'] ?? $json['kode'] ?? null;
+        foreach ([
+            $json['data']['kode'] ?? null,
+            $json['data']['kode_dokumen'] ?? null,
+            $json['kode'] ?? null,
+            $json['kode_dokumen'] ?? null,
+        ] as $kode) {
+            if (is_string($kode) && $kode !== '') {
+                return $kode;
+            }
+            if (is_int($kode) || is_float($kode)) {
+                return (string) $kode;
+            }
+        }
 
-        return is_string($kode) && $kode !== '' ? $kode : null;
+        return null;
+    }
+
+    private function jsonDariBody(string $body, mixed $json): mixed
+    {
+        if (is_array($json)) {
+            return $json;
+        }
+
+        if (is_string($json) && $json !== '') {
+            $decoded = json_decode($json, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+        }
+
+        $trim = ltrim($body);
+        if ($trim !== '' && ($trim[0] === '{' || $trim[0] === '[')) {
+            $decoded = json_decode($body, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+        }
+
+        return $json;
+    }
+
+    private function halamanLoginDs(string $body): bool
+    {
+        $lower = mb_strtolower($body);
+
+        return str_contains($lower, 'masuk - digital signature')
+            || (str_contains($lower, '<title>masuk') && str_contains($lower, 'digital signature'));
+    }
+
+    /**
+     * @param  array<string, mixed>  $hasil
+     */
+    private function pesanResponDs(array $hasil, string $awal): string
+    {
+        $body = (string) ($hasil['body'] ?? '');
+        if ($this->halamanLoginDs($body)) {
+            return 'Token DS tidak diterima (HTTP '.($hasil['http'] ?? '?').'). Server mengembalikan halaman login. Isi TTE_DS_TOKEN dengan token yang sama seperti di Postman, bukan token Firebase.';
+        }
+
+        $http = $hasil['http'] ?? null;
+        $pesan = trim((string) ($hasil['pesan'] ?? ''));
+        if ($pesan === '' && is_array($hasil['json'] ?? null)) {
+            $pesan = (string) json_encode($hasil['json'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+        if ($pesan === '' && $body !== '') {
+            $pesan = mb_substr(trim((string) preg_replace('/\s+/', ' ', strip_tags($body))), 0, 280);
+        }
+
+        $out = $awal;
+        if ($http) {
+            $out .= ' (HTTP '.$http.')';
+        }
+        if ($pesan !== '') {
+            $out .= ': '.$pesan;
+        }
+
+        return $out;
     }
 
     private function pdfDariBody(string $body): ?string

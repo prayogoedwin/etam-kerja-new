@@ -19,14 +19,12 @@ class TteService
 
     public function canAccess(?User $user): bool
     {
-        $role = $this->roleName($user);
-
-        return in_array($role, ['super-admin', 'eksekutif-provinsi', 'kepala-balai'], true);
+        return (bool) $user?->bisaAksesTte();
     }
 
     public function isKepalaDinas(?User $user = null): bool
     {
-        return $this->roleName($user ?? Auth::user()) === 'eksekutif-provinsi';
+        return (bool) ($user ?? Auth::user())?->adalahKepalaDinas();
     }
 
     /**
@@ -53,7 +51,7 @@ class TteService
             return $query;
         }
 
-        if ($role === 'eksekutif-provinsi') {
+        if ($user?->adalahKepalaDinas()) {
             return $query->whereNull('id_struktur');
         }
 

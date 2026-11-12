@@ -109,4 +109,17 @@ class User extends Authenticatable
 
         return $nik !== null && strlen($nik) === 16 ? $nik : null;
     }
+
+    public function adalahKepalaDinas(): bool
+    {
+        return $this->hasRole('eksekutif-provinsi')
+            && (string) $this->kode_struktur === EtamStruktur::KODE_DINAS;
+    }
+
+    public function bisaAksesTte(): bool
+    {
+        return $this->hasRole('super-admin')
+            || $this->hasRole('kepala-balai')
+            || $this->adalahKepalaDinas();
+    }
 }

@@ -25,7 +25,7 @@ trait ManagesBlkAccess
 
     protected function isKepalaDinas(): bool
     {
-        return $this->currentRoleName() === 'eksekutif-provinsi';
+        return (bool) Auth::user()?->adalahKepalaDinas();
     }
 
     protected function isKepalaUptd(): bool

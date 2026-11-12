@@ -57,7 +57,7 @@
             gap: 16px;
         }
 
-        /* ✅ Styling khusus link "Pengawasan K3" */
+        /* tautan navigasi di header dashboard */
         .header-nav-link {
             display: inline-flex;
             align-items: center;
@@ -532,9 +532,15 @@
             <h1 class="header-title">📊 Dashboard Eksekutif Ketenagakerjaan</h1>
 
             <div class="header-actions">
-                <a class="header-nav-link" href="{{ route('pengawasan.k3.kadis.index') }}">
-                    <i class="feather icon-shield"></i> Pengawasan K3
-                </a>
+                @if (Auth::user()?->adalahKepalaDinas())
+                    <a class="header-nav-link" href="{{ route('tte.menunggu') }}">
+                        <i class="feather icon-edit-3"></i> TTE
+                    </a>
+                @else
+                    <a class="header-nav-link" href="{{ route('pengawasan.k3.kadis.index') }}">
+                        <i class="feather icon-shield"></i> Pengawasan K3
+                    </a>
+                @endif
 
                 <div class="timestamp">
                     <span>Diperbarui:</span>

@@ -67,6 +67,7 @@
 <body>
     @yield('content')
     @include('backend.template.footer')
+    @include('backend.blk.pelatihan._unduh-tte-js')
     @stack('js')
 </body>
 

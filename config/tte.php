@@ -11,7 +11,7 @@ return [
     ],
 
     'ds' => [
-        'url' => rtrim((string) env('TTE_DS_URL', 'https://ds.kaltimprov.go.id/api'), '/'),
+        'url' => rtrim((string) env('TTE_DS_URL', 'https://ds.kaltimprov.go.id/api/v2'), '/'),
         'token' => env('TTE_DS_TOKEN'),
         'template' => env('TTE_DS_TEMPLATE'),
         'demo' => (bool) env('TTE_DS_DEMO', true),

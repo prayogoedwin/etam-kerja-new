@@ -5,20 +5,19 @@ namespace Tests\Feature;
 use App\Models\BLK\EtamBlk;
 use App\Models\BLK\EtamBlkPelatihan;
 use App\Models\BLK\EtamBlkPelatihanPeserta;
+use App\Models\EtamStruktur;
 use App\Models\EtamTte;
-use App\Models\EtamTteDsUji;
 use App\Models\User;
 use App\Models\UserPencari;
 use App\Services\Tte\DsClient;
 use App\Services\Tte\TteQueue;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
-class TteUjiDsTest extends TestCase
+class TteDsClientTest extends TestCase
 {
     use DatabaseTransactions;
 
@@ -41,76 +40,6 @@ class TteUjiDsTest extends TestCase
             'tte.ds.token' => 'token-uji',
             'tte.ds.template' => 'tmpl-uji',
         ]);
-    }
-
-    public function test_super_admin_bisa_buka_form_uji_ds(): void
-    {
-        $admin = $this->makeUser('super-admin');
-
-        $this->actingAs($admin)
-            ->get(route('tte.uji-ds'))
-            ->assertOk()
-            ->assertSee('Jalankan 3 langkah')
-            ->assertSee('name="passphrase"', false)
-            ->assertDontSee('Tidak boleh disalin tempel');
-    }
-
-    public function test_kepala_balai_tidak_bisa_buka_uji_ds(): void
-    {
-        $kepala = $this->makeUser('kepala-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
-
-        $this->actingAs($kepala)
-            ->get(route('tte.uji-ds'))
-            ->assertStatus(403);
-    }
-
-    public function test_uji_ds_tetap_simpan_kode_meski_passphrase_salah(): void
-    {
-        Http::fake(function ($request) {
-            if (str_contains($request->url(), '/ttdds')) {
-                return Http::response([
-                    'success' => true,
-                    'data' => ['kode' => 'KODEUJI99'],
-                    'message' => 'Berhasil Mengirim Dokumen',
-                ], 200);
-            }
-            if (str_contains($request->url(), '/sign')) {
-                return Http::response([
-                    'success' => false,
-                    'message' => 'Passphrase salah',
-                ], 401);
-            }
-
-            return Http::response(['success' => false, 'message' => 'Tidak boleh unduh'], 400);
-        });
-
-        $admin = $this->makeUser('super-admin');
-        $pdf = UploadedFile::fake()->createWithContent(
-            'sertifikat.pdf',
-            "%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n"
-        );
-
-        $this->actingAs($admin)
-            ->post(route('tte.uji-ds.kirim'), [
-                'pdf' => $pdf,
-                'nik' => '6401010101010001',
-                'passphrase' => 'bukan-passphrase',
-                'keterangan' => 'Uji simpan kode',
-            ])
-            ->assertRedirect(route('tte.uji-ds'));
-
-        $row = EtamTteDsUji::query()->latest('id')->first();
-        $this->assertNotNull($row);
-        $this->assertSame('KODEUJI99', $row->kode_ds, (string) $row->kirim_pesan);
-        $this->assertTrue((bool) $row->kirim_ok, (string) $row->kirim_pesan);
-        $this->assertFalse((bool) $row->sign_ok);
-        $this->assertSame('6401010101010001', $row->nik);
-        $this->assertStringContainsString('KODEUJI99', (string) $row->kirim_body);
-        $this->assertStringContainsString('Passphrase salah', (string) $row->sign_body);
-
-        Http::assertSent(fn ($request) => str_contains($request->url(), '/ttdds'));
-        Http::assertSent(fn ($request) => str_contains($request->url(), '/sign'));
-        Http::assertNotSent(fn ($request) => str_contains($request->url(), '/dokumen'));
     }
 
     public function test_tte_antrean_simpan_kode_ds_sebelum_sign_gagal(): void
@@ -142,6 +71,74 @@ class TteUjiDsTest extends TestCase
             'status' => EtamTte::STATUS_MENUNGGU,
             'kode_ds' => 'KODEANTREAN1',
         ]);
+    }
+
+    public function test_halaman_login_ds_dianggap_token_ditolak(): void
+    {
+        Http::fake([
+            '*' => Http::response(
+                '<!DOCTYPE html><html><title>Masuk - Digital Signature Prov. Kaltim</title></html>',
+                200
+            ),
+        ]);
+
+        $hasil = app(DsClient::class)->kirimDokumen("%PDF-1.4\n%%EOF\n", '6401010101010001', 'uji');
+
+        $this->assertFalse($hasil['ok']);
+        $this->assertSame(DsClient::GAGAL, $hasil['kode']);
+        $this->assertStringContainsString('halaman login', mb_strtolower($hasil['pesan']));
+        $this->assertStringContainsString('TTE_DS_TOKEN', $hasil['pesan']);
+    }
+
+    public function test_ds_memakai_path_v2(): void
+    {
+        Http::fake([
+            '*' => Http::response([
+                'success' => true,
+                'data' => ['kode' => 'KODEV2'],
+                'message' => 'Berhasil Mengirim Dokumen',
+            ], 200),
+        ]);
+
+        app(DsClient::class)->kirimDokumen("%PDF-1.4\n%%EOF\n", '6401010101010001', 'uji');
+
+        Http::assertSent(fn ($request) => str_contains($request->url(), '/api/v2/ttdds'));
+    }
+
+    public function test_sign_berhasil_meski_callback_ds_gagal_lalu_unduh_pdf(): void
+    {
+        Http::fake(function ($request) {
+            if (str_contains($request->url(), '/ttdds')) {
+                return Http::response([
+                    'success' => true,
+                    'data' => ['kode' => 'KODECB1'],
+                    'message' => 'Berhasil Mengirim Dokumen',
+                ], 200);
+            }
+            if (str_contains($request->url(), '/sign')) {
+                return Http::response([
+                    'success' => false,
+                    'message' => 'gagal',
+                    'data' => ['catatan' => 'Berhasil Menanda-tangani Dokumen, Gagal Mengirim Dokumen'],
+                ], 404);
+            }
+
+            return Http::response("%PDF-1.4\nsigned\n%%EOF\n", 200);
+        });
+
+        Storage::disk('local')->put('tte/before/uji.pdf', "%PDF-1.4\nuji\n%%EOF\n");
+
+        $hasil = app(DsClient::class)->tandatangani(
+            'tte/before/uji.pdf',
+            'Bsre2026!@',
+            '6401010101010001',
+            'uji'
+        );
+
+        $this->assertTrue($hasil['ok'], (string) $hasil['pesan']);
+        $this->assertSame('KODECB1', $hasil['kode_dokumen']);
+        $this->assertNotNull($hasil['pdf']);
+        Http::assertSent(fn ($request) => str_contains($request->url(), '/dokumen'));
     }
 
     private function buatPesertaBlk(string $kodeStruktur, string $nama, int $statusTtd = EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD): EtamBlkPelatihanPeserta
@@ -211,6 +208,10 @@ class TteUjiDsTest extends TestCase
         if (in_array($role, ['kepala-balai', 'eksekutif-provinsi', 'super-admin'], true)
             && ! array_key_exists('nik', $overrides)) {
             $defaults['nik'] = fake()->unique()->numerify('################');
+        }
+        if ($role === 'eksekutif-provinsi' && ! array_key_exists('kode_struktur', $overrides)) {
+            $defaults['kode_struktur'] = EtamStruktur::KODE_DINAS;
+            $defaults['lokasi_kerja'] = $overrides['lokasi_kerja'] ?? '64';
         }
 
         $user = User::factory()->create(array_merge($defaults, $overrides));

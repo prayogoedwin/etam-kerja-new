@@ -58,7 +58,6 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StrukturController;
 use App\Http\Controllers\TestMailController;
 use App\Http\Controllers\Tte\TteController;
-use App\Http\Controllers\Tte\TteUjiDsController;
 use App\Http\Controllers\UserBkkController;
 use App\Http\Controllers\UserIntegrasiController;
 use App\Http\Controllers\UserPencariController;
@@ -450,12 +449,6 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::post('/suket/{id}/tte-kadis', [AdminSuketController::class, 'tteKadis'])->name('pengawasan.suket.admin.tte-kadis');
     });
 
-    Route::prefix('tte')->middleware(CheckUserRole::class.':super-admin')->group(function () {
-        Route::get('/uji-ds', [TteUjiDsController::class, 'index'])->name('tte.uji-ds');
-        Route::post('/uji-ds', [TteUjiDsController::class, 'kirim'])->name('tte.uji-ds.kirim');
-        Route::get('/uji-ds/{uji}/berkas', [TteUjiDsController::class, 'berkas'])->name('tte.uji-ds.berkas');
-    });
-
     Route::prefix('tte')->middleware(CheckUserRole::class.':super-admin,eksekutif-provinsi,kepala-balai')->group(function () {
         Route::get('/menunggu', [TteController::class, 'menunggu'])->name('tte.menunggu');
         Route::get('/sudah', [TteController::class, 'sudah'])->name('tte.sudah');
@@ -522,6 +515,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::get('/pelatihan/{id}/peserta/{pesertaId}/sertifikat/{halaman?}', [PesertaController::class, 'sertifikat'])
                 ->whereIn('halaman', ['sertifikat', 'kompetensi'])
                 ->name('blk.pelatihan.peserta.sertifikat');
+            Route::get('/pelatihan/{id}/peserta/{pesertaId}/unduh/{halaman}', [PesertaController::class, 'unduhBerkasTte'])
+                ->whereIn('halaman', ['sertifikat', 'kompetensi'])
+                ->name('blk.pelatihan.peserta.unduh');
         });
 
         Route::middleware(CheckUserRole::class.':super-admin')->group(function () {
@@ -584,7 +580,9 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
 
         Route::get('/history_lamaran', [HistoryLamaranPencariController::class, 'index'])->name('historylamaran.pencari.index');
         Route::get('/history_pelatihan', [HistoryPelatihanPencariController::class, 'index'])->name('historypelatihan.pencari.index');
-        Route::get('/history_pelatihan/{pesertaId}/sertifikat', [HistoryPelatihanPencariController::class, 'unduhSertifikat'])->name('historypelatihan.pencari.sertifikat');
+        Route::get('/history_pelatihan/{pesertaId}/sertifikat/{halaman}', [HistoryPelatihanPencariController::class, 'unduhSertifikat'])
+            ->whereIn('halaman', ['sertifikat', 'kompetensi'])
+            ->name('historypelatihan.pencari.sertifikat');
 
         Route::get('/lowongan_bkk', [LowonganPencariController::class, 'indexbkk'])->name('lowonganbkk.pencari.index');
     });

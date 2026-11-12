@@ -338,14 +338,19 @@
             margin: 8mm;
             border: 2px solid #000;
             position: relative;
+            overflow: hidden;
         }
 
         body.mode-pdf .sheet-main {
-            padding: 8mm 10mm 8mm;
+            padding: 8mm 10mm 28mm;
         }
 
         body.mode-pdf .sheet-foot {
-            display: none;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            padding: 2mm 12mm 6mm;
         }
 
         body.mode-pdf .ttd {
@@ -353,7 +358,17 @@
         }
 
         body.mode-pdf .ttd .space {
-            height: 18mm;
+            height: auto;
+            min-height: 22mm;
+            flex-direction: column;
+            gap: 2mm;
+        }
+
+        .ttd .space .ttd-bsre {
+            width: 32mm;
+            height: auto;
+            display: block;
+            margin: 0 auto;
         }
 
         body.mode-pdf .bsre-footer {
@@ -392,8 +407,8 @@
         $signedKompetensi = (bool) ($sertifikat['signed']['kompetensi'] ?? false);
         $lihatSertifikatResmi = ! $untukDs && ($tampilanAdmin || $signedSertifikat);
         $lihatKompetensiResmi = ! $untukDs && ($tampilanAdmin || $signedKompetensi);
-        $tampilFooterSertifikat = $lihatSertifikatResmi;
-        $tampilFooterKompetensi = $lihatKompetensiResmi;
+        $tampilFooterSertifikat = $untukDs || $lihatSertifikatResmi;
+        $tampilFooterKompetensi = $untukDs || $lihatKompetensiResmi;
         $tampilWatermarkSertifikat = ! $untukDs && ! $lihatSertifikatResmi;
         $tampilWatermarkKompetensi = ! $untukDs && ! $lihatKompetensiResmi;
         $tampilSertifikat = $halaman === 'sertifikat';
@@ -424,6 +439,12 @@
         </div>
         <div>
             @unless ($modeUnduh)
+                @if ($peserta->bisaUnduhBerkasTte())
+                    {!! $peserta->tombolUnduhBerkas('blk.pelatihan.peserta.unduh', [
+                        'id' => $pelatihan->id,
+                        'pesertaId' => $peserta->id,
+                    ], 'btn') !!}
+                @endif
                 @if ($halaman === 'sertifikat')
                     <a href="{{ route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id, 'kompetensi']) }}">Unit Kompetensi</a>
                 @else
@@ -492,9 +513,9 @@
                     @if ($lihatSertifikatResmi)
                         <span class="tte-ok">Telah ditandatangani secara elektronik</span>
                     @endif
-                    @unless ($untukDs)
-                        @include('backend.blk.pelatihan._qr-berkas')
-                    @endunless
+                    @if ($untukDs && ! empty($sertifikat['logo_bsre']))
+                        <img src="{{ $sertifikat['logo_bsre'] }}" alt="Logo BSrE" class="ttd-bsre">
+                    @endif
                 </div>
                 <div class="nama">{{ $sertifikat['penandatangan']['dinas']['nama'] ?: '................................' }}</div>
             </div>
@@ -579,9 +600,9 @@
                     @if ($lihatKompetensiResmi)
                         <span class="tte-ok">Telah ditandatangani secara elektronik</span>
                     @endif
-                    @unless ($untukDs)
-                        @include('backend.blk.pelatihan._qr-berkas')
-                    @endunless
+                    @if ($untukDs && ! empty($sertifikat['logo_bsre']))
+                        <img src="{{ $sertifikat['logo_bsre'] }}" alt="Logo BSrE" class="ttd-bsre">
+                    @endif
                 </div>
                 <div class="nama">{{ $sertifikat['penandatangan']['balai']['nama'] ?: '................................' }}</div>
             </div>
@@ -595,5 +616,6 @@
         </div>
     </div>
     @endif
+    @include('backend.blk.pelatihan._unduh-tte-js')
 </body>
 </html>

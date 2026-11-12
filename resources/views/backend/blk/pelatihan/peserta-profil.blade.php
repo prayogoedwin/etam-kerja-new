@@ -51,6 +51,14 @@
                                 @if ($peserta->alasan_status)
                                     <p class="mt-2 mb-0"><small>Catatan: {{ $peserta->alasan_status }}</small></p>
                                 @endif
+                                @if (! $isPerusahaan && $peserta->bisaUnduhBerkasTte())
+                                    <div class="mt-3">
+                                        {!! $peserta->tombolUnduhBerkas('blk.pelatihan.peserta.unduh', [
+                                            'id' => $pelatihan->id,
+                                            'pesertaId' => $peserta->id,
+                                        ]) !!}
+                                    </div>
+                                @endif
                                 @if (! $isPerusahaan && $status === \App\Models\BLK\EtamBlkPelatihanPeserta::STATUS_LULUS)
                                     <div class="mt-3 d-flex flex-wrap gap-1">
                                         <a href="{{ route('blk.pelatihan.peserta.sertifikat', [$pelatihan->id, $peserta->id, 'sertifikat']) }}"

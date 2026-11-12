@@ -14,6 +14,7 @@ class StrukturSeeder extends Seeder
         $kodeLokasi = '64';
 
         $items = [
+            ['kode_bidang' => EtamStruktur::KODE_DINAS, 'nama' => 'Dinas'],
             ['kode_bidang' => '1', 'nama' => 'Sekretariat'],
             ['kode_bidang' => '11', 'nama' => 'Sub Bagian Umum'],
             ['kode_bidang' => '12', 'nama' => 'Sub Bagian Keuangan'],

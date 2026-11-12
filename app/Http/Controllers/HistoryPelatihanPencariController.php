@@ -89,10 +89,9 @@ class HistoryPelatihanPencariController extends Controller
                     if ($pelatihan->pretest_form_id) {
                         $html .= ' <a href="'.route('blk.pelatihan.pretest', $pelatihan->id).'" class="btn btn-primary btn-sm">Pretest</a>';
                     }
-                    if ((int) $history->status_pendaftaran === EtamBlkPelatihanPeserta::STATUS_LULUS
-                        && (int) $history->status_ttd === EtamBlkPelatihanPeserta::TTD_TTD_DINAS) {
-                        $html .= ' <a href="'.route('historypelatihan.pencari.sertifikat', $history->id).'" class="btn btn-success btn-sm">Unduh Sertifikat</a>';
-                    }
+                    $html .= ' '.$history->tombolUnduhBerkas('historypelatihan.pencari.sertifikat', [
+                        'pesertaId' => $history->id,
+                    ]);
 
                     return $html;
                 })
@@ -103,7 +102,7 @@ class HistoryPelatihanPencariController extends Controller
         return view('backend.historypelatihanpencari.index');
     }
 
-    public function unduhSertifikat(string $pesertaId, BlkSertifikatKelulusanService $sertifikat)
+    public function unduhSertifikat(string $pesertaId, string $halaman, BlkSertifikatKelulusanService $sertifikat)
     {
         if ((Auth::user()->roles[0]['name'] ?? null) !== 'pencari-kerja') {
             abort(403);
@@ -114,11 +113,10 @@ class HistoryPelatihanPencariController extends Controller
             ->where('pencari_id', $pencari?->id ?? 0)
             ->findOrFail($pesertaId);
 
-        if ((int) $peserta->status_pendaftaran !== EtamBlkPelatihanPeserta::STATUS_LULUS
-            || (int) $peserta->status_ttd !== EtamBlkPelatihanPeserta::TTD_TTD_DINAS) {
+        if (! $peserta->bisaUnduhBerkasTte()) {
             abort(403);
         }
 
-        return $sertifikat->unduhZip($peserta);
+        return $sertifikat->unduhPdf($peserta, $halaman);
     }
 }

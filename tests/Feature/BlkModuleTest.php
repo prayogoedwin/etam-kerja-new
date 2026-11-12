@@ -9,6 +9,7 @@ use App\Models\BLK\EtamBlkPelatihan;
 use App\Models\BLK\EtamBlkPelatihanJawaban;
 use App\Models\BLK\EtamBlkPelatihanKompetensi;
 use App\Models\BLK\EtamBlkPelatihanPeserta;
+use App\Models\BLK\UserBlk;
 use App\Models\EtamStruktur;
 use App\Models\EtamTte;
 use App\Models\Lamaran;
@@ -1422,8 +1423,10 @@ class BlkModuleTest extends TestCase
         $this->assertStringNotContainsString('Telah ditandatangani secara elektronik', $html);
         $this->assertStringNotContainsString('DRAFT', $html);
         $this->assertStringContainsString('mode-pdf', $html);
-        $this->assertStringNotContainsString('Balai Sertifikasi Elektronik (BSrE)', $html);
-        $this->assertStringNotContainsString('logo_bsre', $html);
+        $this->assertStringContainsString('position: absolute', $html);
+        $this->assertStringContainsString('Balai Sertifikasi Elektronik (BSrE)', $html);
+        $this->assertStringContainsString('logo_bsre', $html);
+        $this->assertStringContainsString('ttd-bsre', $html);
 
         $this->assertDatabaseMissing('etam_tte', [
             'nama_modul' => 'blk',
@@ -1459,6 +1462,76 @@ class BlkModuleTest extends TestCase
         $this->actingAs($admin)
             ->get(route('blk.pelatihan.peserta.preview-ds', [$pelatihan->id, $peserta->id, 'sertifikat']))
             ->assertStatus(403);
+    }
+
+    public function test_tombol_unduh_hanya_setelah_ttd_kepala_dinas(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK Unduh TTD',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        $admin = $this->makeUser('admin-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+        $belum = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_TTD_UPTD, [
+            'name' => 'Peserta Belum TTD Dinas',
+        ]);
+        $sudah = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_TTD_DINAS, [
+            'name' => 'Peserta Sudah TTD Dinas',
+        ]);
+
+        $rows = collect($this->actingAs($admin)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('blk.pelatihan.peserta', $pelatihan->id))
+            ->json('data'));
+
+        $opsiBelum = $rows->firstWhere('name', 'Peserta Belum TTD Dinas')['options'] ?? '';
+        $opsiSudah = $rows->firstWhere('name', 'Peserta Sudah TTD Dinas')['options'] ?? '';
+        $ttdBelum = $rows->firstWhere('name', 'Peserta Belum TTD Dinas')['status_ttd_label'] ?? '';
+        $ttdSudah = $rows->firstWhere('name', 'Peserta Sudah TTD Dinas')['status_ttd_label'] ?? '';
+
+        $this->assertStringNotContainsString('>Unduh</a>', $opsiBelum);
+        $this->assertStringNotContainsString('>Unduh</a>', $opsiSudah);
+        $this->assertStringNotContainsString('>Unduh</a>', $ttdBelum);
+        $this->assertStringContainsString('Sudah ditandatangani Kepala Dinas', $ttdSudah);
+        $this->assertStringContainsString('>Unduh</a>', $ttdSudah);
+        $this->assertStringContainsString('data-unduh-tte=', $ttdSudah);
+        $this->assertStringContainsString('1-sertifikat-kelulusan.pdf', $ttdSudah);
+        $this->assertStringContainsString('2-daftar-unit-kompetensi.pdf', $ttdSudah);
+
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.unduh', [$pelatihan->id, $belum->id, 'sertifikat']))
+            ->assertNotFound();
+        $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.unduh', [$pelatihan->id, $sudah->id, 'sertifikat']))
+            ->assertNotFound();
+
+        foreach (['super-admin', 'admin-provinsi', 'admin-blk'] as $role) {
+            $pengelola = $this->makeUser($role);
+            if ($role === 'admin-blk') {
+                UserBlk::create([
+                    'user_id' => $pengelola->id,
+                    'tipe_akun' => UserBlk::TIPE_ADMIN_BLK,
+                    'blk_id' => $blk->id,
+                    'created_by' => $pengelola->id,
+                    'updated_by' => $pengelola->id,
+                ]);
+            }
+            $row = collect($this->actingAs($pengelola)
+                ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+                ->get(route('blk.pelatihan.peserta', $pelatihan->id))
+                ->json('data'))
+                ->firstWhere('name', 'Peserta Sudah TTD Dinas');
+            $opsi = $row['options'] ?? '';
+            $ttd = $row['status_ttd_label'] ?? '';
+
+            $this->assertStringNotContainsString('>Unduh</a>', $opsi, $role.' tidak menaruh Unduh di aksi');
+            $this->assertStringContainsString('>Unduh</a>', $ttd, $role.' harus melihat tombol Unduh di status TTD');
+            $this->assertStringContainsString('data-unduh-tte=', $ttd, $role.' harus punya tautan unduh dua berkas');
+            $this->assertStringContainsString('1-sertifikat-kelulusan.pdf', $ttd);
+            $this->assertStringContainsString('2-daftar-unit-kompetensi.pdf', $ttd);
+        }
     }
 
     public function test_bulk_ajukan_ttd_terpilih_dan_semua(): void
@@ -1566,6 +1639,10 @@ class BlkModuleTest extends TestCase
         if (in_array($role, ['kepala-balai', 'eksekutif-provinsi', 'super-admin'], true)
             && ! array_key_exists('nik', $overrides)) {
             $defaults['nik'] = fake()->unique()->numerify('################');
+        }
+        if ($role === 'eksekutif-provinsi' && ! array_key_exists('kode_struktur', $overrides)) {
+            $defaults['kode_struktur'] = EtamStruktur::KODE_DINAS;
+            $defaults['lokasi_kerja'] = $overrides['lokasi_kerja'] ?? '64';
         }
 
         $user = User::factory()->create(array_merge($defaults, $overrides));

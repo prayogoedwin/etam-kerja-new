@@ -79,8 +79,17 @@ class PesertaController extends Controller
                 ->addColumn('status_label', function (EtamBlkPelatihanPeserta $data) {
                     return $this->statusBadge((int) $data->status_pendaftaran);
                 })
-                ->addColumn('status_ttd_label', function (EtamBlkPelatihanPeserta $data) {
-                    return EtamBlkPelatihanPeserta::statusTtdBadge((int) $data->status_ttd);
+                ->addColumn('status_ttd_label', function (EtamBlkPelatihanPeserta $data) use ($pelatihan) {
+                    $html = EtamBlkPelatihanPeserta::statusTtdBadge((int) $data->status_ttd);
+                    $tombolUnduh = $data->tombolUnduhBerkas('blk.pelatihan.peserta.unduh', [
+                        'id' => $pelatihan->id,
+                        'pesertaId' => $data->id,
+                    ]);
+                    if ($tombolUnduh !== '') {
+                        $html .= '<div class="mt-1">'.$tombolUnduh.'</div>';
+                    }
+
+                    return $html;
                 })
                 ->addColumn('options', function (EtamBlkPelatihanPeserta $data) use ($pelatihan) {
                     return $this->pesertaOptionButtons($pelatihan, $data);
@@ -350,6 +359,21 @@ class PesertaController extends Controller
         $sertifikat = $sertifikatService->build($pelatihan, $peserta);
 
         return view('backend.blk.pelatihan.sertifikat', compact('pelatihan', 'peserta', 'sertifikat', 'halaman'));
+    }
+
+    public function unduhBerkasTte(string $pelatihanId, string $pesertaId, string $halaman, BlkSertifikatKelulusanService $sertifikatService)
+    {
+        $pelatihan = EtamBlkPelatihan::findOrFail($pelatihanId);
+        if (! $this->canAccessBlk((int) $pelatihan->blk_id)) {
+            abort(403);
+        }
+
+        $peserta = EtamBlkPelatihanPeserta::where('blk_pelatihan_id', $pelatihan->id)->findOrFail($pesertaId);
+        if (! $peserta->bisaUnduhBerkasTte()) {
+            abort(404);
+        }
+
+        return $sertifikatService->unduhPdf($peserta, $halaman);
     }
 
     public function previewDs(string $pelatihanId, string $pesertaId, string $halaman, BlkSertifikatKelulusanService $sertifikatService)
