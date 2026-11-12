@@ -356,7 +356,8 @@ class AdmBidangPpController extends Controller
                 'id_refrensi' => $ajuan->id,
                 'kolom_status_refrensi' => 'status_ttd',
                 'kode_dokumen' => 'suket_hi_pp',
-                'id_struktur' => '41',
+                // 'id_struktur' => '41',
+                'id_struktur' => NULL,
                 'judul' => 'Surat Pengesahan Peraturan Perusahaan - '.($ajuan->perusahaan?->penyedia?->name ?? '-'),
                 'path_file_before' => $tteSourcePath,
             ]);
