@@ -44,6 +44,7 @@ use App\Http\Controllers\Pengawasan\K3\AdminBidangK3Controller;
 use App\Http\Controllers\Pengawasan\K3\KabidK3Controller;
 use App\Http\Controllers\Pengawasan\K3\KadisK3Controller;
 use App\Http\Controllers\Pengawasan\K3\KasiK3Controller;
+use App\Http\Controllers\Pengawasan\K3\MasterK3Controller;
 use App\Http\Controllers\Pengawasan\K3\PenyediaK3Controller;
 use App\Http\Controllers\Pengawasan\Pjk3\AdminPjk3Controller;
 use App\Http\Controllers\Pengawasan\Pjk3\AdminSuketController;
@@ -359,8 +360,14 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
             Route::get('/', [PenyediaSuketController::class, 'pengajuanIndex'])->name('index');
             Route::get('/create', [PenyediaSuketController::class, 'create'])->name('create');
             Route::post('/', [PenyediaSuketController::class, 'store'])->name('store');
+            Route::post('/cari', [PenyediaSuketController::class, 'cariPerusahaan'])->name('cari');
             Route::get('/jenis/{kategoriId}', [PenyediaSuketController::class, 'jenisByKategori'])->name('jenis');
             Route::get('/{id}', [PenyediaSuketController::class, 'showPengajuan'])->name('show');
+        });
+
+        Route::prefix('kode-suket-k3')->name('pengawasan.suket.penyedia.kode.')->group(function () {
+            Route::get('/', [PenyediaSuketController::class, 'kodeIndex'])->name('index');
+            Route::post('/', [PenyediaSuketController::class, 'kodeStore'])->name('store');
         });
 
         Route::prefix('suket-layak-k3')->name('pengawasan.suket.penyedia.terbit.')->group(function () {
@@ -445,15 +452,27 @@ Route::prefix('dapur')->middleware('auth')->group(function () {
         Route::get('/suket/{id}', [AdminSuketController::class, 'show'])->name('pengawasan.suket.admin.show');
         Route::post('/suket/{id}/disposisi', [AdminSuketController::class, 'disposisi'])->name('pengawasan.suket.admin.disposisi');
         Route::post('/suket/{id}/analisis', [AdminSuketController::class, 'analisis'])->name('pengawasan.suket.admin.analisis');
-        Route::post('/suket/{id}/tte-pengawas', [AdminSuketController::class, 'ttePengawas'])->name('pengawasan.suket.admin.tte-pengawas');
-        Route::post('/suket/{id}/tte-kadis', [AdminSuketController::class, 'tteKadis'])->name('pengawasan.suket.admin.tte-kadis');
     });
 
-    Route::prefix('tte')->middleware(CheckUserRole::class.':super-admin,eksekutif-provinsi,kepala-balai')->group(function () {
+    Route::prefix('layanan-k3/master')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,admin-bidang')->group(function () {
+        Route::get('/kategori', [MasterK3Controller::class, 'kategoriIndex'])->name('pengawasan.k3.master.kategori.index');
+        Route::post('/kategori', [MasterK3Controller::class, 'kategoriStore'])->name('pengawasan.k3.master.kategori.store');
+        Route::get('/kategori/{id}', [MasterK3Controller::class, 'kategoriShow'])->name('pengawasan.k3.master.kategori.show');
+        Route::put('/kategori/{id}', [MasterK3Controller::class, 'kategoriUpdate'])->name('pengawasan.k3.master.kategori.update');
+        Route::delete('/kategori/{id}', [MasterK3Controller::class, 'kategoriDestroy'])->name('pengawasan.k3.master.kategori.destroy');
+        Route::get('/jenis', [MasterK3Controller::class, 'jenisIndex'])->name('pengawasan.k3.master.jenis.index');
+        Route::post('/jenis', [MasterK3Controller::class, 'jenisStore'])->name('pengawasan.k3.master.jenis.store');
+        Route::get('/jenis/{id}', [MasterK3Controller::class, 'jenisShow'])->name('pengawasan.k3.master.jenis.show');
+        Route::put('/jenis/{id}', [MasterK3Controller::class, 'jenisUpdate'])->name('pengawasan.k3.master.jenis.update');
+        Route::delete('/jenis/{id}', [MasterK3Controller::class, 'jenisDestroy'])->name('pengawasan.k3.master.jenis.destroy');
+    });
+
+    Route::prefix('tte')->middleware(CheckUserRole::class.':super-admin,admin-provinsi,eksekutif-provinsi,kepala-balai,petugas-bidang')->group(function () {
         Route::get('/menunggu', [TteController::class, 'menunggu'])->name('tte.menunggu');
         Route::get('/sudah', [TteController::class, 'sudah'])->name('tte.sudah');
         Route::get('/log', [TteController::class, 'log'])->name('tte.log');
         Route::post('/tandatangani', [TteController::class, 'tandatangani'])->name('tte.tandatangani');
+        Route::post('/{id}/tarik', [TteController::class, 'tarik'])->name('tte.tarik')->whereNumber('id');
     });
 
     Route::prefix('blk')->group(function () {

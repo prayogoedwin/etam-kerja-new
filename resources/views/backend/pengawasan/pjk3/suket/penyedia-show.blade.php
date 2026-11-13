@@ -23,6 +23,7 @@
                     <div class="alert alert-warning">Dokumen masih berstatus draft sampai ditandatangani Kepala Dinas.</div>
                 @endif
 
+                @include('backend.pengawasan.pjk3.suket._timeline-style')
                 @include('backend.pengawasan.pjk3.suket._info', [
                     'fileRouteName' => 'pengawasan.suket.penyedia.file',
                 ])

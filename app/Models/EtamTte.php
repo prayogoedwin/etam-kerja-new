@@ -17,6 +17,7 @@ class EtamTte extends Model
     protected $casts = [
         'id_refrensi' => 'integer',
         'user_id_tte' => 'integer',
+        'user_id_tujuan' => 'integer',
         'status' => 'integer',
     ];
 

@@ -83,17 +83,30 @@ class TteController extends Controller
         return response()->json($hasil, $http);
     }
 
+    public function tarik(string $id)
+    {
+        abort_unless($this->tte->isSuperAdmin(), 403);
+
+        $hasil = $this->tte->tarikBerkas((int) $id);
+
+        return response()->json($hasil, $hasil['ok'] ? 200 : 422);
+    }
+
     public function berkas(string $token)
     {
         $tte = EtamTte::query()->where('token_verifikasi', $token)->firstOrFail();
-        $path = $tte->path_file_after ?: $tte->path_file_before;
+        $path = ((int) $tte->status === EtamTte::STATUS_BERHASIL && $tte->path_file_after)
+            ? $tte->path_file_after
+            : $tte->path_file_before;
         $adaBerkas = $path && Storage::disk('local')->exists($path);
 
-        if ($tte->status === EtamTte::STATUS_BERHASIL && $adaBerkas && request()->boolean('unduh')) {
-            return response()->streamDownload(function () use ($path) {
-                echo Storage::disk('local')->get($path);
-            }, 'berkas-tte-'.$tte->id.'.pdf', [
+        if ((int) $tte->status === EtamTte::STATUS_BERHASIL && $adaBerkas) {
+            $nama = 'berkas-tte-'.$tte->id.'.pdf';
+            $disposition = request()->boolean('unduh') ? 'attachment' : 'inline';
+
+            return response(Storage::disk('local')->get($path), 200, [
                 'Content-Type' => 'application/pdf',
+                'Content-Disposition' => $disposition.'; filename="'.$nama.'"',
             ]);
         }
 
@@ -115,6 +128,7 @@ class TteController extends Controller
 
         $filterModul = trim((string) $request->input('filter_modul', ''));
         $modulList = $this->tte->daftarModul();
+        $bisaTarik = $this->tte->isSuperAdmin();
 
         if ($request->ajax()) {
             $query = $this->tte->visibleQuery(Auth::user());
@@ -143,13 +157,20 @@ class TteController extends Controller
                 ->addColumn('status_label', function (EtamTte $row) {
                     return EtamTte::statusBadge((int) $row->status);
                 })
-                ->addColumn('options', function (EtamTte $row) use ($waiting) {
+                ->addColumn('options', function (EtamTte $row) use ($waiting, $bisaTarik) {
                     $html = '';
                     if ($waiting) {
                         $html .= '<button type="button" class="btn btn-primary btn-sm btn-ttd-satu" data-id="'.$row->id.'" data-judul="'.e($this->tte->judulUntuk($row)).'">TTD</button>';
                     }
                     if ($row->token_verifikasi) {
                         $html .= ' <a class="btn btn-outline-secondary btn-sm" target="_blank" href="'.route('tte.berkas', $row->token_verifikasi).'">Berkas</a>';
+                    }
+                    $sudahAdaAfter = (int) $row->status === EtamTte::STATUS_BERHASIL && $row->path_file_after;
+                    if ($bisaTarik && $row->kode_ds && ! $sudahAdaAfter) {
+                        $html .= ' <button type="button" class="btn btn-warning btn-sm btn-tarik" data-id="'.$row->id.'" data-kode="'.e($row->kode_ds).'" title="Kode DS: '.e($row->kode_ds).'">Tarik</button>';
+                    }
+                    if ($bisaTarik && $row->kode_ds) {
+                        $html .= '<div class="small text-muted mt-1">'.e($row->kode_ds).'</div>';
                     }
 
                     return $html;
@@ -162,6 +183,6 @@ class TteController extends Controller
             ? ($this->tte->isKepalaDinas() ? 'Menunggu TTD Kepala Dinas' : 'Menunggu TTD')
             : 'Sudah ditandatangani';
 
-        return view('backend.tte.index', compact('waiting', 'judul', 'modulList', 'filterModul'));
+        return view('backend.tte.index', compact('waiting', 'judul', 'modulList', 'filterModul', 'bisaTarik'));
     }
 }

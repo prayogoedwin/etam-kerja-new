@@ -3,7 +3,9 @@
 namespace App\Services\Tte\Handlers;
 
 use App\Models\BLK\EtamBlkPelatihanPeserta;
+use App\Models\EtamStruktur;
 use App\Models\EtamTte;
+use App\Models\User;
 use App\Services\Blk\BlkSertifikatKelulusanService;
 use App\Services\Tte\TteModuleHandler;
 use App\Services\Tte\TteQueue;
@@ -85,7 +87,8 @@ class BlkPesertaHandler implements TteModuleHandler
             'nama_table' => $peserta->getTable(),
             'id_refrensi' => $peserta->id,
             'kolom_status_refrensi' => 'status_ttd',
-            'id_struktur' => null,
+            'id_struktur' => EtamStruktur::KODE_DINAS,
+            'user_id_tujuan' => User::idKepalaDinas(),
             'kode_dokumen' => EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT,
             'path_file_before' => $pathSertifikat,
             'token_verifikasi' => $tokenSertifikat,
@@ -98,14 +101,21 @@ class BlkPesertaHandler implements TteModuleHandler
         //
     }
 
+    public function siapkanBerkasDs(EtamTte $tte): void
+    {
+        //
+    }
+
     private function kodeDokumen(EtamTte $tte): string
     {
         if ($tte->kode_dokumen) {
             return $tte->kode_dokumen;
         }
 
-        return $tte->id_struktur
-            ? EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI
-            : EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT;
+        if ($tte->id_struktur && $tte->id_struktur !== EtamStruktur::KODE_DINAS) {
+            return EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI;
+        }
+
+        return EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT;
     }
 }

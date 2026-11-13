@@ -28,7 +28,7 @@ class TteModuleTest extends TestCase
 
         Storage::fake('local');
 
-        foreach (['super-admin', 'admin-provinsi', 'pencari-kerja', 'penyedia-kerja', 'kepala-balai', 'admin-balai', 'eksekutif-provinsi'] as $name) {
+        foreach (['super-admin', 'admin-provinsi', 'pencari-kerja', 'penyedia-kerja', 'kepala-balai', 'admin-balai', 'eksekutif-provinsi', 'petugas-bidang'] as $name) {
             Role::firstOrCreate([
                 'name' => $name,
                 'guard_name' => 'web',
@@ -65,7 +65,8 @@ class TteModuleTest extends TestCase
         $this->actingAs($eksekutifBiasa)
             ->get(route('dashboard.eksekutif'))
             ->assertOk()
-            ->assertSee('Pengawasan K3')
+            ->assertDontSee('Pengawasan K3')
+            ->assertDontSee(route('pengawasan.k3.kadis.index'), false)
             ->assertDontSee(route('tte.menunggu'), false);
     }
 
@@ -128,7 +129,8 @@ class TteModuleTest extends TestCase
         $this->assertTrue(EtamTte::query()
             ->where('nama_modul', 'blk')
             ->where('id_refrensi', $peserta->id)
-            ->whereNull('id_struktur')
+            ->where('id_struktur', EtamStruktur::KODE_DINAS)
+            ->where('kode_dokumen', EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT)
             ->where('status', EtamTte::STATUS_MENUNGGU)
             ->exists());
 
@@ -207,6 +209,7 @@ class TteModuleTest extends TestCase
             'nama_modul' => 'blk',
             'id_refrensi' => $peserta->id,
             'kode_dokumen' => EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT,
+            'id_struktur' => EtamStruktur::KODE_DINAS,
             'status' => EtamTte::STATUS_MENUNGGU,
         ]);
         $this->assertDatabaseHas('etam_tte', [
@@ -357,6 +360,83 @@ class TteModuleTest extends TestCase
             ->json('data'))->pluck('judul');
 
         $this->assertTrue($judul->contains(fn ($item) => str_contains((string) $item, 'Terlihat Super Admin')));
+    }
+
+    public function test_admin_provinsi_melihat_menu_tte_tapi_hanya_antrean_untuk_dirinya(): void
+    {
+        $peserta = $this->buatPesertaBlk('34', 'Bukan Untuk Admin Provinsi');
+        app(TteQueue::class)->ajukanBlkUptd($peserta);
+        $admin = $this->makeUser('admin-provinsi', ['kode_struktur' => '21']);
+        $khusus = $this->makeUser('admin-provinsi', ['kode_struktur' => '21']);
+        app(TteQueue::class)->ajukan([
+            'nama_modul' => 'suket_k3',
+            'nama_table' => 'etam_pjk3_suket',
+            'id_refrensi' => 91001,
+            'kolom_status_refrensi' => 'status',
+            'id_struktur' => '21',
+            'user_id_tujuan' => $khusus->id,
+            'kode_dokumen' => 'lhpp',
+            'judul' => 'LHPP khusus admin provinsi',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('tte.menunggu'))
+            ->assertOk()
+            ->assertSee('TTE')
+            ->assertSee(route('tte.menunggu'), false);
+
+        $judulAdmin = collect($this->actingAs($admin)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('tte.menunggu'))
+            ->json('data'))->pluck('judul');
+        $this->assertFalse($judulAdmin->contains(fn ($item) => str_contains((string) $item, 'Bukan Untuk Admin Provinsi')));
+        $this->assertFalse($judulAdmin->contains(fn ($item) => str_contains((string) $item, 'LHPP khusus admin provinsi')));
+
+        $judulKhusus = collect($this->actingAs($khusus)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('tte.menunggu'))
+            ->json('data'))->pluck('judul');
+        $this->assertTrue($judulKhusus->contains(fn ($item) => str_contains((string) $item, 'LHPP khusus admin provinsi')));
+        $this->assertFalse($judulKhusus->contains(fn ($item) => str_contains((string) $item, 'Bukan Untuk Admin Provinsi')));
+    }
+
+    public function test_pengawas_hanya_melihat_tte_yang_ditujukan_kepadanya(): void
+    {
+        $pengawas = $this->makeUser('petugas-bidang', [
+            'kode_struktur' => '21',
+            'nik' => fake()->unique()->numerify('################'),
+        ]);
+        $pengawasLain = $this->makeUser('petugas-bidang', [
+            'kode_struktur' => '21',
+            'nik' => fake()->unique()->numerify('################'),
+        ]);
+        app(TteQueue::class)->ajukan([
+            'nama_modul' => 'suket_k3',
+            'nama_table' => 'etam_pjk3_suket',
+            'id_refrensi' => 91002,
+            'kolom_status_refrensi' => 'status',
+            'id_struktur' => '21',
+            'user_id_tujuan' => $pengawas->id,
+            'kode_dokumen' => 'lhpp',
+            'judul' => 'LHPP milik pengawas A',
+        ]);
+
+        $this->actingAs($pengawas)
+            ->get(route('tte.menunggu'))
+            ->assertOk()
+            ->assertSee('TTE');
+
+        $judul = collect($this->actingAs($pengawas)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('tte.menunggu'))
+            ->json('data'))->pluck('judul');
+        $this->assertTrue($judul->contains(fn ($item) => str_contains((string) $item, 'LHPP milik pengawas A')));
+
+        $judulLain = collect($this->actingAs($pengawasLain)
+            ->withHeaders(['X-Requested-With' => 'XMLHttpRequest'])
+            ->get(route('tte.menunggu'))
+            ->json('data'))->pluck('judul');
+        $this->assertFalse($judulLain->contains(fn ($item) => str_contains((string) $item, 'LHPP milik pengawas A')));
     }
 
     public function test_filter_modul_dari_distinct_etam_tte(): void

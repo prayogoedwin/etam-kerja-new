@@ -8,13 +8,13 @@ use App\Models\BLK\EtamBlkPelatihanPeserta;
 use App\Models\BLK\EtamBlkPelatihanPesertaPerusahaan;
 use App\Models\BLK\UserBlk;
 use App\Models\EtamAk1;
+use App\Models\HI\PP\EtamHiPpAjuan;
 use App\Models\Kecamatan;
 use App\Models\Lamaran;
 use App\Models\Lowongan;
 use App\Models\UserBkk;
 use App\Models\UserPencari;
 use App\Models\UserPenyedia;
-use App\Models\HI\PP\EtamHiPpAjuan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -105,16 +105,16 @@ class BackController extends Controller
             return view('backend.dashboard.index_blk', compact('jumlahPelatihan', 'jumlahPeserta', 'jumlahPesertaPerusahaan'));
         }
 
-        //admin bidang HI (Seksi Syarat Kerja PP & PKB)
+        // admin bidang HI (Seksi Syarat Kerja PP & PKB)
         if (Auth::user()->roles[0]['name'] == 'admin-bidang' && Auth::user()->kode_struktur == '41') {
             $stats = [
-                'total'       => EtamHiPpAjuan::count(),
-                'menunggu'    => EtamHiPpAjuan::where('verifikasi_admin', 0)->count(),
-                'acc'         => EtamHiPpAjuan::where('verifikasi_admin', 1)->count(),
-                'revisi'      => EtamHiPpAjuan::where('verifikasi_admin', 2)->count(),
-                'bulan_ini'   => EtamHiPpAjuan::whereMonth('created_at', now()->month)
-                                            ->whereYear('created_at', now()->year)
-                                            ->count(),
+                'total' => EtamHiPpAjuan::count(),
+                'menunggu' => EtamHiPpAjuan::where('verifikasi_admin', 0)->count(),
+                'acc' => EtamHiPpAjuan::where('verifikasi_admin', 1)->count(),
+                'revisi' => EtamHiPpAjuan::where('verifikasi_admin', 2)->count(),
+                'bulan_ini' => EtamHiPpAjuan::whereMonth('created_at', now()->month)
+                    ->whereYear('created_at', now()->year)
+                    ->count(),
             ];
 
             $terbaru = EtamHiPpAjuan::with(['jenisAjuan:id,nama'])
@@ -125,19 +125,19 @@ class BackController extends Controller
             return view('backend.dashboard.index_bidanghi', compact('stats', 'terbaru'));
         }
 
-        //kasi bidang HI (Seksi Syarat Kerja PP & PKB)
+        // kasi bidang HI (Seksi Syarat Kerja PP & PKB)
         if (Auth::user()->roles[0]['name'] == 'kepala-seksi' && Auth::user()->kode_struktur == '41') {
 
             $stats = [
-                'total'       => EtamHiPpAjuan::where('verifikasi_admin', 1)->count(),
-                'menunggu'    => EtamHiPpAjuan::where('verifikasi_admin', 1)
-                                            ->where('verifikasi_kasi', 0)->count(),
-                'acc'         => EtamHiPpAjuan::where('verifikasi_kasi', 1)->count(),
-                'revisi'      => EtamHiPpAjuan::where('verifikasi_kasi', 2)->count(),
-                'bulan_ini'   => EtamHiPpAjuan::where('verifikasi_admin', 1)
-                                            ->whereMonth('created_at', now()->month)
-                                            ->whereYear('created_at', now()->year)
-                                            ->count(),
+                'total' => EtamHiPpAjuan::where('verifikasi_admin', 1)->count(),
+                'menunggu' => EtamHiPpAjuan::where('verifikasi_admin', 1)
+                    ->where('verifikasi_kasi', 0)->count(),
+                'acc' => EtamHiPpAjuan::where('verifikasi_kasi', 1)->count(),
+                'revisi' => EtamHiPpAjuan::where('verifikasi_kasi', 2)->count(),
+                'bulan_ini' => EtamHiPpAjuan::where('verifikasi_admin', 1)
+                    ->whereMonth('created_at', now()->month)
+                    ->whereYear('created_at', now()->year)
+                    ->count(),
             ];
 
             $terbaru = EtamHiPpAjuan::with(['jenisAjuan:id,nama'])
@@ -149,25 +149,30 @@ class BackController extends Controller
             return view('backend.dashboard.index_bidanghikasi', compact('stats', 'terbaru'));
         }
 
-        //admin bidang K3 (Seksi K3)
-        if (Auth::user()->roles[0]['name'] == 'admin-bidang' && Auth::user()->kode_struktur == '21') {
+        // admin bidang K3 / Norma Kerja
+        if (Auth::user()->roles[0]['name'] == 'admin-bidang'
+            && in_array((string) Auth::user()->kode_struktur, ['21', '22'], true)) {
             return view('backend.dashboard.index_bidangk3');
         }
 
-        //petugas (pengawas) bidang K3 (Seksi K3)
+        // petugas (pengawas) bidang K3 (Seksi K3)
         if (Auth::user()->roles[0]['name'] == 'petugas-bidang' && Auth::user()->kode_struktur == '21') {
             return view('backend.dashboard.index_bidangk3pengawas');
         }
 
-        // Kepala Bidang Pembinaan dan Pengawasan (Kepala Bidang K3)
-        if (Auth::user()->roles[0]['name'] == 'kepala-bidang' && Auth::user()->kode_struktur == '2') {
+        // Admin / Kepala Bidang Pembinaan dan Pengawasan
+        if (in_array(Auth::user()->roles[0]['name'], ['admin-bidang', 'kepala-bidang'], true)
+            && (string) Auth::user()->kode_struktur === '2') {
             return view('backend.dashboard.index_kepalabidangk3');
         }
 
-        // Kasi bidang K3 (Seksi K3)
-        if (Auth::user()->roles[0]['name'] == 'kepala-seksi' && Auth::user()->kode_struktur == '21') {
+        // Kasi K3 / Norma Kerja
+        if (Auth::user()->roles[0]['name'] == 'kepala-seksi'
+            && in_array((string) Auth::user()->kode_struktur, ['21', '22'], true)) {
             return view('backend.dashboard.index_bidangk3kasi');
         }
+
+        return view('backend.dashboard.index_bidangk3');
     }
 
     public function sample()

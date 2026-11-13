@@ -24,12 +24,6 @@
                 @if (Auth::user()?->adalahKepalaDinas())
                     @include('backend.tte._menu')
                 @else
-                    <li class="nav-item">
-                        <a href="{{ route('pengawasan.k3.kadis.index') }}" class="nav-link ">
-                            <span class="pcoded-micon"><i class="feather icon-book"></i></span>
-                            <span class="pcoded-mtext">K3 Pengawas</span>
-                        </a>
-                    </li>
                     @include('backend.pengawasan.pjk3._menu-layanan-k3')
                 @endif
             </ul>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DashboardEksekutifController;
+use App\Http\Controllers\Api\DsCallbackController;
 use App\Http\Controllers\Api\Integrasi\Ak1Controller as IntegrasiAk1Controller;
 use App\Http\Controllers\Api\Integrasi\AuthController as IntegrasiAuthController;
 use App\Http\Controllers\Api\Integrasi\LowonganController as IntegrasiLowonganController;
@@ -16,6 +17,9 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/ping', fn () => ['pong' => true]);
+
+Route::post('/ds/terima', [DsCallbackController::class, 'terima']);
+Route::post('/ds/tolak', [DsCallbackController::class, 'tolak']);
 Route::get('/lowongan', [LowonganController::class, 'index']);
 
 Route::prefix('v1')->group(function () {

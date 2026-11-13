@@ -21,6 +21,7 @@
                     <div class="col-xl-12">
                         <div class="card">
                             <div class="card-body">
+                                @include('backend.pengawasan.pjk3.suket._timeline-style')
                                 <div class="table-responsive">
                                     <table id="simpletable" class="table table-bordered table-striped mb-0">
                                         <thead>
@@ -59,7 +60,7 @@
                     { data: 'pjk3' },
                     { data: 'perusahaan' },
                     { data: 'hasil' },
-                    { data: 'status_label' },
+                    { data: 'status_label', orderable: false, searchable: false, width: '280px' },
                     { data: 'options', orderable: false, searchable: false },
                 ]
             });

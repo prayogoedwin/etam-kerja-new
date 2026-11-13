@@ -12,6 +12,8 @@ use App\Models\UserPencari;
 use App\Services\Tte\DsClient;
 use App\Services\Tte\TteQueue;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
@@ -39,6 +41,7 @@ class TteDsClientTest extends TestCase
             'tte.ds.url' => 'https://ds.kaltimprov.go.id/api',
             'tte.ds.token' => 'token-uji',
             'tte.ds.template' => 'tmpl-uji',
+            'tte.ds.callback_wait' => 0,
         ]);
     }
 
@@ -139,6 +142,184 @@ class TteDsClientTest extends TestCase
         $this->assertSame('KODECB1', $hasil['kode_dokumen']);
         $this->assertNotNull($hasil['pdf']);
         Http::assertSent(fn ($request) => str_contains($request->url(), '/dokumen'));
+    }
+
+    public function test_sign_berhasil_kirim_berhasil_tidak_unduh_dokumen(): void
+    {
+        Http::fake(function ($request) {
+            if (str_contains($request->url(), '/ttdds')) {
+                return Http::response([
+                    'success' => true,
+                    'data' => ['kode' => 'KODESEND1'],
+                    'message' => 'Berhasil Mengirim Dokumen',
+                ], 200);
+            }
+            if (str_contains($request->url(), '/sign')) {
+                return Http::response([
+                    'success' => true,
+                    'message' => 'Berhasil Menanda-tangani Dokumen',
+                ], 200);
+            }
+
+            return Http::response('should-not-unduh', 500);
+        });
+
+        Storage::disk('local')->put('tte/before/uji.pdf', "%PDF-1.4\nuji\n%%EOF\n");
+
+        $hasil = app(DsClient::class)->tandatangani(
+            'tte/before/uji.pdf',
+            'Bsre2026!@',
+            '6401010101010001',
+            'uji'
+        );
+
+        $this->assertTrue($hasil['ok'], (string) $hasil['pesan']);
+        $this->assertSame('KODESEND1', $hasil['kode_dokumen']);
+        $this->assertNull($hasil['pdf']);
+        $this->assertTrue($hasil['via_callback'] ?? false);
+        Http::assertNotSent(fn ($request) => str_contains($request->url(), '/dokumen'));
+    }
+
+    public function test_callback_terima_menyimpan_pdf_dan_selesai(): void
+    {
+        $peserta = $this->buatPesertaBlk('34', 'Callback Terima');
+        $tte = app(TteQueue::class)->ajukanBlkUptd($peserta);
+        $tte->kode_ds = 'KODETERIMA1';
+        $tte->save();
+
+        $pdf = "%PDF-1.4\nsigned-callback\n%%EOF\n";
+        $file = UploadedFile::fake()->createWithContent('sign.pdf', $pdf);
+
+        $this->post('/api/ds/terima', [
+            'kode' => 'KODETERIMA1',
+            'signpdf' => $file,
+        ])->assertOk()->assertJsonPath('status', 'Berhasil');
+
+        $tte->refresh();
+        $this->assertSame(EtamTte::STATUS_BERHASIL, (int) $tte->status);
+        $this->assertNotNull($tte->path_file_after);
+        $this->assertStringContainsString('signed-callback', Storage::disk('local')->get($tte->path_file_after));
+        $this->assertSame(EtamBlkPelatihanPeserta::TTD_TTD_UPTD, (int) $peserta->fresh()->status_ttd);
+    }
+
+    public function test_callback_terima_idempotent_jika_sudah_berhasil(): void
+    {
+        $peserta = $this->buatPesertaBlk('34', 'Callback Idempotent');
+        $tte = app(TteQueue::class)->ajukanBlkUptd($peserta);
+        $tte->kode_ds = 'KODEIDEM1';
+        $tte->save();
+
+        $file1 = UploadedFile::fake()->createWithContent('sign.pdf', "%PDF-1.4\npertama\n%%EOF\n");
+        $this->post('/api/ds/terima', ['kode' => 'KODEIDEM1', 'signpdf' => $file1])->assertOk();
+
+        $file2 = UploadedFile::fake()->createWithContent('sign.pdf', "%PDF-1.4\nkedua\n%%EOF\n");
+        $this->post('/api/ds/terima', ['kode' => 'KODEIDEM1', 'signpdf' => $file2])
+            ->assertOk()
+            ->assertJsonPath('status', 'Berhasil');
+
+        $tte->refresh();
+        $this->assertSame(EtamTte::STATUS_BERHASIL, (int) $tte->status);
+        $this->assertStringContainsString('kedua', Storage::disk('local')->get($tte->path_file_after));
+        $this->assertSame(EtamBlkPelatihanPeserta::TTD_TTD_UPTD, (int) $peserta->fresh()->status_ttd);
+    }
+
+    public function test_sign_berhasil_unduh_timeout_tetap_menunggu_dan_simpan_kode_ds(): void
+    {
+        Http::fake(function ($request) {
+            if (str_contains($request->url(), '/ttdds')) {
+                return Http::response([
+                    'success' => true,
+                    'data' => ['kode' => 'KODETIMEOUT1'],
+                    'message' => 'Berhasil Mengirim Dokumen',
+                ], 200);
+            }
+            if (str_contains($request->url(), '/sign')) {
+                return Http::response([
+                    'success' => false,
+                    'message' => 'gagal',
+                    'data' => ['catatan' => 'Berhasil Menanda-tangani Dokumen, Gagal Mengirim Dokumen'],
+                ], 404);
+            }
+
+            throw new ConnectionException('cURL error 28: Operation timed out');
+        });
+
+        $peserta = $this->buatPesertaBlk('34', 'Timeout Unduh DS');
+        $tte = app(TteQueue::class)->ajukanBlkUptd($peserta);
+        Storage::disk('local')->put($tte->path_file_before, "%PDF-1.4\nuji\n%%EOF\n");
+        $kepala = $this->makeUser('kepala-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+
+        $this->actingAs($kepala)
+            ->post(route('tte.tandatangani'), ['tte_ids' => [$tte->id], 'passphrase' => 'Bsre2026!@'])
+            ->assertOk()
+            ->assertJsonPath('berhasil', 1);
+
+        $this->assertDatabaseHas('etam_tte', [
+            'id' => $tte->id,
+            'status' => EtamTte::STATUS_MENUNGGU,
+            'kode_ds' => 'KODETIMEOUT1',
+        ]);
+        $this->assertNull($tte->fresh()->path_file_after);
+    }
+
+    public function test_super_admin_tarik_berkas_dari_ds(): void
+    {
+        Http::fake(function ($request) {
+            if (str_contains($request->url(), '/dokumen')) {
+                return Http::response("%PDF-1.4\nsigned-tarik\n%%EOF\n", 200);
+            }
+
+            return Http::response(['success' => false, 'message' => 'tidak dipakai'], 500);
+        });
+
+        $peserta = $this->buatPesertaBlk('34', 'Tarik Berkas DS');
+        $tte = app(TteQueue::class)->ajukanBlkUptd($peserta);
+        $tte->kode_ds = 'KODETARIK1';
+        $tte->status = EtamTte::STATUS_GAGAL;
+        $tte->save();
+
+        $admin = $this->makeUser('super-admin');
+
+        $this->actingAs($admin)
+            ->post(route('tte.tarik', $tte->id))
+            ->assertOk()
+            ->assertJsonPath('ok', true);
+
+        $tte->refresh();
+        $this->assertSame(EtamTte::STATUS_BERHASIL, (int) $tte->status);
+        $this->assertNotNull($tte->path_file_after);
+        $this->assertStringContainsString('signed-tarik', Storage::disk('local')->get($tte->path_file_after));
+        $this->assertSame(EtamBlkPelatihanPeserta::TTD_TTD_UPTD, (int) $peserta->fresh()->status_ttd);
+        Http::assertSent(fn ($request) => str_contains($request->url(), '/dokumen')
+            && $request['kode'] === 'KODETARIK1');
+    }
+
+    public function test_bukan_super_admin_tidak_boleh_tarik(): void
+    {
+        $peserta = $this->buatPesertaBlk('34', 'Tarik Ditolak');
+        $tte = app(TteQueue::class)->ajukanBlkUptd($peserta);
+        $tte->kode_ds = 'KODE403';
+        $tte->save();
+        $kepala = $this->makeUser('kepala-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
+
+        $this->actingAs($kepala)
+            ->post(route('tte.tarik', $tte->id))
+            ->assertForbidden();
+    }
+
+    public function test_callback_tolak_menandai_gagal(): void
+    {
+        $peserta = $this->buatPesertaBlk('34', 'Callback Tolak');
+        $tte = app(TteQueue::class)->ajukanBlkUptd($peserta);
+        $tte->kode_ds = 'KODETOLAK1';
+        $tte->save();
+
+        $this->post('/api/ds/tolak', [
+            'kode' => 'KODETOLAK1',
+            'keterangan' => 'Ditolak operator DS',
+        ])->assertOk()->assertJsonPath('status', 'Berhasil');
+
+        $this->assertSame(EtamTte::STATUS_GAGAL, (int) $tte->fresh()->status);
     }
 
     private function buatPesertaBlk(string $kodeStruktur, string $nama, int $statusTtd = EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD): EtamBlkPelatihanPeserta

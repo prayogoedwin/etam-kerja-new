@@ -17,14 +17,14 @@
                         ({{ $suket->kategori->kode }})
                     @endif
                 </p>
-                <p><strong>Jenis alat:</strong> {{ $suket->jenis->nama ?? '-' }}</p>
+                <p><strong>Jenis alat:</strong> {{ $suket->jenis->nama ?? ($suket->perangkat->first()?->jenis->nama ?? '-') }}</p>
+                <p><strong>Jumlah objek:</strong> {{ $suket->perangkat->isNotEmpty() ? $suket->perangkat->count() : 1 }} alat
+                    ({{ $suket->jumlah_unit }} unit)</p>
             </div>
             <div class="col-md-6">
                 <p><strong>Nama alat:</strong> {{ $suket->nama_alat }}</p>
                 <p><strong>Lokasi:</strong> {{ $suket->lokasi_alat }}</p>
-                <p><strong>Kapasitas / unit:</strong> {{ $suket->kapasitas_alat ?: '-' }}
-                    ({{ $suket->jumlah_unit }} unit)</p>
-                <p><strong>Status:</strong> {{ $suket->statusLabel() }}</p>
+                <p><strong>Status:</strong> {{ $suket->statusLabel((bool) ($timelineAdmin ?? false)) }}</p>
                 <p><strong>Nomor suket:</strong> {{ $suket->nomor_suket ?? '-' }}</p>
                 <p><strong>Hasil:</strong>
                     @if ($suket->is_layak === null)
@@ -37,7 +37,42 @@
                 </p>
             </div>
         </div>
+        <div class="mt-3 pt-3 border-top">
+            @include('backend.pengawasan.pjk3.suket._timeline', [
+                'suket' => $suket,
+                'admin' => $timelineAdmin ?? false,
+                'compact' => false,
+            ])
+        </div>
     </div>
+    @if ($suket->perangkat->isNotEmpty())
+        <div class="table-responsive px-3 pb-3">
+            <table class="table table-bordered table-sm mb-0">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Jenis</th>
+                        <th>Nama objek</th>
+                        <th>Merk</th>
+                        <th>Jumlah</th>
+                        <th>Lokasi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($suket->perangkat as $i => $alat)
+                        <tr>
+                            <td>{{ $i + 1 }}</td>
+                            <td>{{ $alat->jenis->nama ?? '-' }}</td>
+                            <td>{{ $alat->nama }}</td>
+                            <td>{{ $alat->merk ?: '-' }}</td>
+                            <td>{{ $alat->jumlah ?: '-' }}</td>
+                            <td>{{ $alat->lokasi ?: '-' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
 </div>
 
 <div class="card mb-3">
@@ -74,6 +109,9 @@
             <p><strong>Catatan disposisi:</strong> {{ $suket->catatan_disposisi ?: '-' }}</p>
             <p><strong>Tanggal pemeriksaan:</strong>
                 {{ optional($suket->tanggal_pemeriksaan)->format('d-m-Y') ?? '-' }}</p>
+            <p><strong>Bidang Ahli K3:</strong> {{ $suket->namaBidangAhliK3() }}</p>
+            <p><strong>Nama pengurus:</strong> {{ $suket->nilaiLhpp('nama_pengurus') ?: '-' }}</p>
+            <p><strong>Nomor LHPP PJK3:</strong> {{ $suket->nilaiLhpp('nomor_lhpp_pjk3') ?: '-' }}</p>
             <p><strong>Hasil analisis:</strong><br>{!! nl2br(e($suket->hasil_analisis ?: '-')) !!}</p>
             <p><strong>Rekomendasi:</strong><br>{!! nl2br(e($suket->rekomendasi ?: '-')) !!}</p>
             <p><strong>TTD pengawas:</strong>

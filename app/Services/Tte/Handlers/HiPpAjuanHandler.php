@@ -37,4 +37,9 @@ class HiPpAjuanHandler implements TteModuleHandler
     {
         // Status pengajuan tetap menunggu sampai dokumen berhasil ditandatangani.
     }
+
+    public function siapkanBerkasDs(EtamTte $tte): void
+    {
+        //
+    }
 }

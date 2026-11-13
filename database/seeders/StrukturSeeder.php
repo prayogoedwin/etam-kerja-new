@@ -20,6 +20,8 @@ class StrukturSeeder extends Seeder
             ['kode_bidang' => '12', 'nama' => 'Sub Bagian Keuangan'],
 
             ['kode_bidang' => '2', 'nama' => 'Bidang Pembinaan dan Pengawasan'],
+            ['kode_bidang' => '21', 'nama' => 'Seksi Keselamatan dan Kesehatan Kerja'],
+            ['kode_bidang' => '22', 'nama' => 'Seksi Norma Kerja'],
 
             ['kode_bidang' => '3', 'nama' => 'Bidang Pengembangan Tenaga Kerja'],
             ['kode_bidang' => '31', 'nama' => 'Seksi Bina Tenaga Kerja dan Perluasan Tenaga Kerja'],

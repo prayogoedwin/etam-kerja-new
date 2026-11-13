@@ -128,7 +128,7 @@ class DsClient
 
         $hasil = $this->postForm($this->dsUrl('dokumen'), [
             'kode' => $kodeDokumen,
-        ]);
+        ], 'dokumen', (int) config('tte.ds.timeout_unduh', 90));
         $hasil['kode_dokumen'] = $kodeDokumen;
         $hasil['pdf'] = $hasil['pdf'] ?? $this->pdfDariBody((string) ($hasil['body'] ?? ''));
         if ($hasil['ok'] && $hasil['pdf'] === null) {
@@ -157,7 +157,7 @@ class DsClient
             return $tte;
         }
 
-        return $this->ambilPdfSetelahTtd($kodeDokumen);
+        return $this->setelahSignBerhasil($kodeDokumen, $tte);
     }
 
     /**
@@ -207,7 +207,26 @@ class DsClient
             return $tte;
         }
 
-        return $this->ambilPdfSetelahTtd($kodeDokumen);
+        return $this->setelahSignBerhasil($kodeDokumen, $tte);
+    }
+
+    /**
+     * @param  array{ok: bool, kode: string, pesan: string, pdf: string|null, kode_dokumen: string|null, http: int|null, body: string|null, json: mixed}  $tte
+     * @return array{ok: bool, kode: string, pesan: string, pdf: string|null, kode_dokumen: string|null, http: int|null, body: string|null, json: mixed, via_callback?: bool}
+     */
+    private function setelahSignBerhasil(string $kodeDokumen, array $tte): array
+    {
+        if (! empty($tte['callback_gagal']) || $this->ttdBerhasilCallbackGagal((string) ($tte['pesan'] ?? ''))) {
+            return $this->ambilPdfSetelahTtd($kodeDokumen);
+        }
+
+        return $this->ok('TTD berhasil. Berkas dikirim ke callback aplikasi.', [
+            'kode_dokumen' => $kodeDokumen,
+            'via_callback' => true,
+            'http' => $tte['http'] ?? null,
+            'json' => $tte['json'] ?? null,
+            'body' => $tte['body'] ?? null,
+        ]);
     }
 
     /**
@@ -220,13 +239,13 @@ class DsClient
             return $unduh;
         }
 
-        return $this->gagal(
-            self::GAGAL,
-            'TTD di DS berhasil, tetapi PDF belum bisa diunduh. Callback DS mengarah ke server, bukan ke lokal. '.$unduh['pesan'],
+        return $this->ok(
+            'TTD di DS berhasil, tetapi PDF belum bisa diunduh. Super admin dapat tarik berkas memakai kode dokumen.',
             [
                 'kode_dokumen' => $kodeDokumen,
-                'http' => $unduh['http'],
-                'body' => $unduh['body'],
+                'perlu_tarik' => true,
+                'http' => $unduh['http'] ?? null,
+                'body' => $unduh['body'] ?? null,
                 'json' => $unduh['json'] ?? null,
             ]
         );
@@ -278,10 +297,10 @@ class DsClient
      * @param  array<string, string>  $fields
      * @return array{ok: bool, kode: string, pesan: string, pdf: string|null, kode_dokumen: string|null, http: int|null, body: string|null, json: mixed}
      */
-    private function postForm(string $url, array $fields, string $langkah = 'umum'): array
+    private function postForm(string $url, array $fields, string $langkah = 'umum', ?int $timeout = null): array
     {
         try {
-            $response = $this->http()->asForm()->post($url, $fields);
+            $response = $this->http($timeout)->asForm()->post($url, $fields);
         } catch (ConnectionException $e) {
             return $this->gagal(self::KONEKSI_PUTUS, 'Koneksi ke server DS terputus: '.$e->getMessage());
         } catch (\Throwable $e) {
@@ -291,11 +310,11 @@ class DsClient
         return $this->hasilHttp($response->status(), $response->body(), $response->json(), $langkah);
     }
 
-    private function http(): PendingRequest
+    private function http(?int $timeout = null): PendingRequest
     {
         $token = (string) config('tte.ds.token');
 
-        return Http::timeout((int) config('tte.ds.timeout', 30))
+        return Http::timeout($timeout ?? (int) config('tte.ds.timeout', 30))
             ->withoutRedirecting()
             ->withQueryParameters(['token' => $token]);
     }
@@ -317,7 +336,7 @@ class DsClient
         if ($langkah === 'sign' && $this->ttdBerhasilCallbackGagal($pesan)) {
             return $this->ok(
                 'TTD berhasil. Pengiriman balik ke callback aplikasi gagal (wajar di lokal).',
-                $extra
+                $extra + ['callback_gagal' => true]
             );
         }
 
@@ -401,8 +420,8 @@ class DsClient
     {
         $lower = mb_strtolower($pesan);
 
-        return str_contains($lower, 'berhasil menanda')
-            || (str_contains($lower, 'berhasil') && str_contains($lower, 'gagal mengirim'));
+        return str_contains($lower, 'gagal mengirim')
+            && (str_contains($lower, 'berhasil menanda') || str_contains($lower, 'berhasil'));
     }
 
     private function dsUrl(string $path): string

@@ -128,7 +128,9 @@
     <script>
         $(document).ready(function() {
             var waiting = {{ $waiting ? 'true' : 'false' }};
+            var bisaTarik = {{ !empty($bisaTarik) ? 'true' : 'false' }};
             var tteUrl = '{{ route('tte.tandatangani') }}';
+            var tarikUrlTpl = '{{ url('tte') }}/__ID__/tarik';
             var csrf = '{{ csrf_token() }}';
             var pendingIds = [];
             var pendingSemua = false;
@@ -203,6 +205,30 @@
 
             $(document).on('click', '.btn-ttd-satu', function() {
                 bukaPassphrase([$(this).data('id')], false);
+            });
+
+            $(document).on('click', '.btn-tarik', function() {
+                if (!bisaTarik) {
+                    return;
+                }
+                var id = $(this).data('id');
+                var kode = $(this).data('kode') || '-';
+                if (!confirm('Tarik berkas bertanda tangan dari DS?\nKode: ' + kode)) {
+                    return;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: tarikUrlTpl.replace('__ID__', id),
+                    data: { _token: csrf },
+                    success: function(res) {
+                        tampilkanAlert(res.message || 'Berkas berhasil ditarik', 'success');
+                        table.ajax.reload(null, false);
+                    },
+                    error: function(xhr) {
+                        var res = xhr.responseJSON || {};
+                        tampilkanAlert(res.message || 'Gagal tarik berkas dari DS', 'danger');
+                    }
+                });
             });
 
             var $pass = $('#tte_passphrase');

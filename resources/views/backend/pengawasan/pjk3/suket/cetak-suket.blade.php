@@ -1,6 +1,10 @@
 @php
     $perusahaan = $suket->profilPerusahaan;
-    $isDraft = $suket->isDraft();
+    $untukDs = $untukDs ?? false;
+    $tampilDraft = $untukDs ? false : (bool) ($tampilDraft ?? $suket->isDraft());
+    $tampilFooter = $untukDs || ! $tampilDraft;
+    $logoBsre = $logoBsre ?? null;
+    $bsreTeks = $bsreTeks ?? '';
     $layak = (int) $suket->is_layak === 1;
     $judul = $layak ? 'SURAT KETERANGAN LAYAK K3' : 'SURAT KETERANGAN TIDAK LAYAK K3';
 @endphp
@@ -9,29 +13,15 @@
 <head>
     <meta charset="utf-8">
     <title>Suket {{ $suket->nomor_suket }}</title>
-    <style>
-        body { font-family: "Times New Roman", serif; font-size: 12pt; color: #000; margin: 28px; }
-        .kop { text-align: center; border-bottom: 3px double #000; padding-bottom: 8px; margin-bottom: 18px; }
-        .kop h3, .kop h4, .kop p { margin: 0; }
-        h2 { text-align: center; text-decoration: underline; font-size: 14pt; margin: 18px 0 4px; }
-        .nomor { text-align: center; margin-bottom: 18px; }
-        p { text-align: justify; line-height: 1.5; }
-        table.data { width: 100%; border-collapse: collapse; margin: 12px 0; }
-        table.data td { vertical-align: top; padding: 3px 0; }
-        .hasil { text-align: center; font-size: 18pt; font-weight: bold; margin: 20px 0; letter-spacing: 1px; }
-        .ttd { width: 48%; float: right; text-align: center; margin-top: 28px; }
-        .watermark {
-            position: fixed; top: 38%; left: 12%; font-size: 72pt; color: rgba(200,0,0,.18);
-            transform: rotate(-24deg); z-index: 0; pointer-events: none; font-weight: bold;
-        }
-        @media print { .no-print { display: none; } }
-    </style>
+    @include('backend.pengawasan.pjk3.suket._cetak-k3-style')
 </head>
 <body>
-    @if ($isDraft)
+    @if ($tampilDraft)
         <div class="watermark">DRAFT</div>
     @endif
-    <p class="no-print"><button onclick="window.print()">Cetak</button></p>
+    @unless ($untukDs)
+        <p class="no-print"><button onclick="window.print()">Cetak</button></p>
+    @endunless
     <div class="kop">
         <h3>PEMERINTAH PROVINSI KALIMANTAN TIMUR</h3>
         <h4>DINAS TENAGA KERJA DAN TRANSMIGRASI</h4>
@@ -44,45 +34,65 @@
     <p>Yang bertanda tangan di bawah ini, Kepala Dinas Tenaga Kerja dan Transmigrasi Provinsi Kalimantan Timur,
         menerangkan bahwa objek K3 berikut:</p>
 
+    <p><strong>A. Identitas</strong></p>
     <table class="data">
         <tr>
-            <td width="32%">Nama perusahaan</td>
+            <td width="32%">1. Jenis objek</td>
+            <td>: {{ $suket->jenis->nama ?? ($suket->kategori->nama ?? '-') }}</td>
+        </tr>
+        <tr>
+            <td>2. Nama perusahaan</td>
             <td>: {{ $perusahaan->name ?? '-' }}</td>
         </tr>
         <tr>
-            <td>Alamat</td>
+            <td>3. Alamat</td>
             <td>: {{ $perusahaan->alamat ?? '-' }}</td>
         </tr>
         <tr>
             <td>NIB</td>
             <td>: {{ $perusahaan->nib ?? '-' }}</td>
         </tr>
-        <tr>
-            <td>Objek / alat</td>
-            <td>: {{ $suket->nama_alat }}</td>
-        </tr>
-        <tr>
-            <td>Jenis / kategori</td>
-            <td>: {{ $suket->jenis->nama ?? '-' }} / {{ $suket->kategori->nama ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td>Lokasi</td>
-            <td>: {{ $suket->lokasi_alat }}</td>
-        </tr>
-        <tr>
-            <td>Tanggal pemeriksaan</td>
-            <td>: {{ optional($suket->tanggal_pemeriksaan)->translatedFormat('d F Y') ?? '-' }}</td>
-        </tr>
-        <tr>
-            <td>PJK3 pemeriksa</td>
-            <td>: {{ $suket->profilPjk3->name ?? '-' }}</td>
-        </tr>
     </table>
 
-    <p>Berdasarkan hasil pemeriksaan dan pengujian yang dituangkan dalam LHPP nomor
-        <strong>{{ $suket->nomor_suket ?? '-' }}</strong>, objek dimaksud dinyatakan:</p>
+    <p><strong>B. Data teknis</strong></p>
+    @php
+        $perangkat = $suket->perangkat;
+        $teknis = $suket->nilaiLhpp('data_teknis', []);
+    @endphp
+    @if ($perangkat->isNotEmpty())
+        @foreach ($perangkat as $i => $row)
+            <p>{{ $i + 1 }}. {{ $row->nama ?: ($row->jenis->nama ?? '-') }}
+                — merk {{ $row->merk ?: '-' }},
+                jumlah {{ $row->jumlah ?: '-' }},
+                lokasi {{ $row->lokasi ?: '-' }}</p>
+        @endforeach
+    @elseif (is_array($teknis) && count($teknis))
+        @foreach ($teknis as $i => $row)
+            <p>{{ $i + 1 }}. {{ $row['nama'] ?? '-' }}
+                — merk {{ $row['merk'] ?? '-' }},
+                jumlah {{ $row['jumlah'] ?? '-' }},
+                lokasi {{ $row['lokasi'] ?? '-' }}</p>
+        @endforeach
+    @else
+        <table class="data">
+            <tr>
+                <td width="32%">Objek / alat</td>
+                <td>: {{ $suket->nama_alat }}</td>
+            </tr>
+            <tr>
+                <td>Kapasitas / jumlah</td>
+                <td>: {{ $suket->kapasitas_alat ?: '-' }} / {{ $suket->jumlah_unit }} unit</td>
+            </tr>
+        </table>
+    @endif
 
-    <div class="hasil">{{ $layak ? 'LAYAK' : 'TIDAK LAYAK' }}</div>
+    <p><strong>C. Hasil pengujian</strong></p>
+    <p>Berdasarkan LHPP PJK3 nomor <strong>{{ $suket->nilaiLhpp('nomor_lhpp_pjk3') ?: ($suket->nomor_suket ?? '-') }}</strong>
+        tanggal {{ optional($suket->tanggal_pemeriksaan)->translatedFormat('d F Y') ?? '-' }},
+        PJK3 {{ $suket->profilPjk3->name ?? '-' }}.</p>
+
+    <p><strong>D. Hasil evaluasi</strong></p>
+    <div class="hasil">{{ $layak ? 'MEMENUHI' : 'TIDAK MEMENUHI' }}</div>
 
     <p>{{ $layak
         ? 'dengan demikian objek tersebut dapat dioperasikan sesuai ketentuan peraturan perundang-undangan di bidang keselamatan dan kesehatan kerja.'
@@ -91,12 +101,20 @@
 
     <div class="ttd">
         <p>Kepala Dinas</p>
-        @if ($suket->ttd_kadis_at)
-            <p><em>Telah ditandatangani secara elektronik</em><br>
-                {{ optional($suket->ttd_kadis_at)->format('d-m-Y H:i') }}</p>
-        @else
-            <br><br><br>
-        @endif
+        <div class="space">
+            @if (! $untukDs && $suket->ttd_kadis_at)
+                <p><em>Telah ditandatangani secara elektronik</em><br>
+                    {{ optional($suket->ttd_kadis_at)->format('d-m-Y H:i') }}</p>
+            @elseif ($untukDs && $logoBsre)
+                <table class="ttd-bsre-wrap">
+                    <tr>
+                        <td><img src="{{ $logoBsre }}" alt="Logo BSrE" class="ttd-bsre"></td>
+                    </tr>
+                </table>
+            @else
+                <br><br><br>
+            @endif
+        </div>
         <p><strong><u>Kepala Dinas Tenaga Kerja dan Transmigrasi</u></strong></p>
         <p>Pengawas: {{ $suket->pengawas->name ?? '-' }}
             @if ($suket->ttd_pengawas_at)
@@ -104,5 +122,16 @@
             @endif
         </p>
     </div>
+    <div style="clear:both"></div>
+    <p>Tembusan: Direktur Jenderal Pembinaan Pengawasan Ketenagakerjaan.</p>
+
+    @if ($tampilFooter && $logoBsre)
+        <div class="bsre-footer-wrap">
+            @include('backend.blk.pelatihan._bsre-footer', ['sertifikat' => [
+                'logo_bsre' => $logoBsre,
+                'bsre_teks' => $bsreTeks,
+            ]])
+        </div>
+    @endif
 </body>
 </html>

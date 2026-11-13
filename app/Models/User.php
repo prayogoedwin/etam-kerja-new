@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Validation\Rule;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -95,12 +94,7 @@ class User extends Authenticatable
      */
     public static function aturanNik(?int $ignoreUserId = null): array
     {
-        $unique = Rule::unique('users', 'nik')->whereNull('deleted_at');
-        if ($ignoreUserId) {
-            $unique->ignore($ignoreUserId);
-        }
-
-        return ['nullable', 'digits:16', $unique];
+        return ['nullable', 'digits:16'];
     }
 
     public function nikSiapTte(): ?string
@@ -119,7 +113,19 @@ class User extends Authenticatable
     public function bisaAksesTte(): bool
     {
         return $this->hasRole('super-admin')
+            || $this->hasRole('admin-provinsi')
             || $this->hasRole('kepala-balai')
+            || $this->hasRole('petugas-bidang')
             || $this->adalahKepalaDinas();
+    }
+
+    public static function idKepalaDinas(): ?int
+    {
+        $ids = static::query()
+            ->where('kode_struktur', EtamStruktur::KODE_DINAS)
+            ->whereHas('roles', fn ($q) => $q->where('name', 'eksekutif-provinsi'))
+            ->pluck('id');
+
+        return $ids->count() === 1 ? (int) $ids->first() : null;
     }
 }

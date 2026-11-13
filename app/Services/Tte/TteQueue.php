@@ -20,6 +20,7 @@ class TteQueue
      *     id_refrensi: int,
      *     kolom_status_refrensi: string,
      *     id_struktur?: string|null,
+     *     user_id_tujuan?: int|null,
      *     kode_dokumen?: string|null,
      *     path_file_before?: string|null,
      *     token_verifikasi?: string|null,
@@ -42,6 +43,10 @@ class TteQueue
         if ($kodeDokumen === '') {
             $kodeDokumen = null;
         }
+        $userTujuan = isset($data['user_id_tujuan']) ? (int) $data['user_id_tujuan'] : null;
+        if (! $userTujuan) {
+            $userTujuan = null;
+        }
 
         $existing = EtamTte::query()
             ->where('nama_modul', $data['nama_modul'])
@@ -61,6 +66,23 @@ class TteQueue
             ->first();
 
         if ($existing) {
+            $dirty = false;
+            if (! empty($data['path_file_before']) && $existing->path_file_before !== $data['path_file_before']) {
+                $existing->path_file_before = $data['path_file_before'];
+                $dirty = true;
+            }
+            if ($existing->user_id_tujuan !== $userTujuan) {
+                $existing->user_id_tujuan = $userTujuan;
+                $dirty = true;
+            }
+            if (! empty($data['judul']) && $existing->judul !== $data['judul']) {
+                $existing->judul = $data['judul'];
+                $dirty = true;
+            }
+            if ($dirty) {
+                $existing->save();
+            }
+
             return $existing;
         }
 
@@ -70,6 +92,7 @@ class TteQueue
             'id_refrensi' => (int) $data['id_refrensi'],
             'kolom_status_refrensi' => $data['kolom_status_refrensi'],
             'id_struktur' => $idStruktur,
+            'user_id_tujuan' => $userTujuan,
             'kode_dokumen' => $kodeDokumen,
             'judul' => $data['judul'] ?? null,
             'path_file_before' => $data['path_file_before'] ?? null,

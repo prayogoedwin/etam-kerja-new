@@ -28,4 +28,6 @@ interface TteModuleHandler
     public function setelahBerhasil(EtamTte $tte): void;
 
     public function setelahGagal(EtamTte $tte): void;
+
+    public function siapkanBerkasDs(EtamTte $tte): void;
 }

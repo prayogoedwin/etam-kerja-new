@@ -536,10 +536,6 @@
                     <a class="header-nav-link" href="{{ route('tte.menunggu') }}">
                         <i class="feather icon-edit-3"></i> TTE
                     </a>
-                @else
-                    <a class="header-nav-link" href="{{ route('pengawasan.k3.kadis.index') }}">
-                        <i class="feather icon-shield"></i> Pengawasan K3
-                    </a>
                 @endif
 
                 <div class="timestamp">

@@ -39,8 +39,8 @@
     @include('backend.template.sidebar-hi-kasi')
 @endif
 
-{{-- admin bidang K3 (Seksi K3) --}}
-@if (Auth::user()->roles[0]['name'] == 'admin-bidang' && Auth::user()->kode_struktur == '21')
+{{-- admin bidang K3 / Norma Kerja --}}
+@if (Auth::user()->roles[0]['name'] == 'admin-bidang' && in_array((string) Auth::user()->kode_struktur, ['21', '22'], true))
     @include('backend.template.sidebar-k3')
 @endif
 
@@ -54,13 +54,13 @@
     @include('backend.template.sidebar-eksekutif-provinsi')
 @endif
 
-{{-- kepala bidang Pembinaan dan Pengawasan --}}
-@if (Auth::user()->roles[0]['name'] == 'kepala-bidang' && Auth::user()->kode_struktur == '2')
+{{-- admin / kepala bidang Pembinaan dan Pengawasan --}}
+@if (in_array(Auth::user()->roles[0]['name'] ?? '', ['kepala-bidang', 'admin-bidang'], true) && Auth::user()->kode_struktur == '2')
     @include('backend.template.sidebar-kepala-bidang-pp')
 @endif
 
-{{-- kasi bidang K3 (Seksi K3) --}}
-@if (Auth::user()->roles[0]['name'] == 'kepala-seksi' && Auth::user()->kode_struktur == '21')
+{{-- kasi K3 / Norma Kerja --}}
+@if (Auth::user()->roles[0]['name'] == 'kepala-seksi' && in_array((string) Auth::user()->kode_struktur, ['21', '22'], true))
     @include('backend.template.sidebar-k3-kasi')
 @endif
 

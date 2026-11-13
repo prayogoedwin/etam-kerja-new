@@ -28,6 +28,7 @@
                     </a>
                 </li>
                 @include('backend.pengawasan.pjk3._menu-layanan-k3')
+                @include('backend.tte._menu')
             </ul>
         </div>
     </div>

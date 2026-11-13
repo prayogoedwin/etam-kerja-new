@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Pengawasan\Pjk3;
 use App\Models\Pengawasan\Pjk3\EtamPjk3Ajuan;
 use App\Models\Pengawasan\Pjk3\EtamPjk3Suket;
 use App\Models\User;
-use App\Models\UserPenyedia;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -75,33 +74,47 @@ trait ManagesPjk3Access
             && in_array($this->currentRoleName(), ['kepala-bidang', 'kepala-seksi', 'admin-bidang', 'petugas-bidang'], true);
     }
 
+    protected function canKelolaMasterK3(): bool
+    {
+        if (in_array($this->currentRoleName(), ['super-admin', 'admin-provinsi'], true)) {
+            return true;
+        }
+
+        return $this->currentRoleName() === 'admin-bidang'
+            && $this->kodeStrukturDiBidangDua((string) Auth::user()?->kode_struktur);
+    }
+
     protected function isPerusahaanPjk3(?int $userId = null): bool
     {
         return EtamPjk3Ajuan::isPjk3Aktif($userId ?? (int) Auth::id());
     }
 
     /**
-     * Perusahaan yang diperiksa: semua yang sudah punya akun, kecuali PJK3 yang sedang mengajukan.
-     * Akun yang sama bisa berperan PJK3 (jika ACC) dan/atau perusahaan yang diuji.
-     *
-     * @return \Illuminate\Database\Eloquent\Collection<int, UserPenyedia>
+     * @return array<int, string>
      */
-    protected function daftarPerusahaanYangDiperiksa(): \Illuminate\Database\Eloquent\Collection
+    protected function kodeStrukturDisposisiSuket(): array
     {
-        return UserPenyedia::query()
-            ->where('user_id', '!=', Auth::id())
-            ->whereNotNull('user_id')
-            ->orderBy('name')
-            ->get(['id', 'user_id', 'name', 'nib']);
+        return ['2', '21', '22'];
+    }
+
+    protected function canDisposisiSuket(): bool
+    {
+        if (in_array($this->currentRoleName(), ['super-admin', 'admin-provinsi'], true)) {
+            return true;
+        }
+
+        $kode = (string) (Auth::user()?->kode_struktur ?? '');
+        if ($this->currentRoleName() === 'admin-bidang') {
+            return in_array($kode, $this->kodeStrukturDisposisiSuket(), true);
+        }
+
+        return $this->currentRoleName() === 'kepala-seksi'
+            && in_array($kode, ['21', '22'], true);
     }
 
     protected function isKasiK3(): bool
     {
-        if ($this->currentRoleName() === 'kepala-seksi') {
-            return $this->kodeStrukturDiBidangDua((string) Auth::user()?->kode_struktur);
-        }
-
-        return in_array($this->currentRoleName(), ['super-admin', 'admin-provinsi'], true);
+        return $this->canDisposisiSuket();
     }
 
     protected function isPengawasK3(): bool

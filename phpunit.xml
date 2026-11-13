@@ -30,5 +30,6 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="TTE_DS_DEMO" value="true"/>
+        <env name="TTE_DS_CALLBACK_WAIT" value="0"/>
     </php>
 </phpunit>

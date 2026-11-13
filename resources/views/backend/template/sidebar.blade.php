@@ -205,7 +205,7 @@
                     </ul>
                 </li>
 
-                @if ((Auth::user()->roles[0]['name'] ?? null) === 'super-admin')
+                @if (in_array(Auth::user()->roles[0]['name'] ?? null, ['super-admin', 'admin-provinsi'], true))
                     @include('backend.tte._menu')
                 @endif
 

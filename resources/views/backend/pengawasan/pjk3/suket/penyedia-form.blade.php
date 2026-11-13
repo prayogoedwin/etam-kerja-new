@@ -22,28 +22,25 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="alert alert-info">
-                                    Akun perusahaan punya dua peran.
-                                    <b>PJK3</b> (setelah pendaftaran ACC) mengajukan Suket Layak K3.
-                                    <b>Perusahaan yang diperiksa</b> cukup punya akun; mereka menerima draft LHPP dan Suket.
+                                    Minta <b>kode Suket K3</b> dari perusahaan yang diperiksa (menu Kode Suket K3, berlaku 30 hari).
+                                    Cari kode itu di sini; nama perusahaan baru muncul setelah kode cocok.
                                 </div>
                                 <form id="formSuket" enctype="multipart/form-data">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-12 mb-3">
-                                            <label class="form-label fw-bold">Perusahaan yang diperiksa <span
+                                            <label class="form-label fw-bold">Kode perusahaan yang diperiksa <span
                                                     class="text-danger">*</span></label>
-                                            <select name="perusahaan_id" class="form-control" required>
-                                                <option value="">Pilih perusahaan yang sudah punya akun</option>
-                                                @foreach ($perusahaanList as $p)
-                                                    <option value="{{ $p->user_id }}">{{ $p->name }}
-                                                        @if ($p->nib)
-                                                            (NIB {{ $p->nib }})
-                                                        @endif
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <small class="text-muted">Daftar ini semua perusahaan berakun, bukan hanya PJK3.
-                                                Mereka yang akan menerima draft Suket Layak K3.</small>
+                                            <div class="input-group">
+                                                <input type="text" name="kode" id="kode_suket"
+                                                    class="form-control text-uppercase" maxlength="20"
+                                                    placeholder="Contoh: SK3-AB12CD" autocomplete="off" required>
+                                                <button type="button" class="btn btn-outline-primary"
+                                                    id="btnCariPerusahaan">Cari</button>
+                                            </div>
+                                            <small class="text-muted">Kode tidak menampilkan daftar perusahaan. Hanya yang
+                                                punya kode aktif yang bisa dipilih.</small>
+                                            <div id="hasilPerusahaan" class="mt-2" style="display:none"></div>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label fw-bold">Kategori K3 <span
@@ -59,32 +56,58 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label fw-bold">Jenis alat</label>
-                                            <select name="jenis_id" id="jenis_id" class="form-control">
-                                                <option value="">Pilih kategori terlebih dahulu</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label fw-bold">Nama alat / objek <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" name="nama_alat" class="form-control" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label fw-bold">Lokasi alat <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="text" name="lokasi_alat" class="form-control" required>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">Kapasitas alat</label>
-                                            <input type="text" name="kapasitas_alat" class="form-control">
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <label class="form-label">Jumlah unit</label>
-                                            <input type="number" name="jumlah_unit" class="form-control" value="1"
-                                                min="1">
-                                        </div>
                                     </div>
+                                    <h6 class="mt-2">Alat / objek yang diuji</h6>
+                                    <p class="small text-muted">Satu baris per alat. Bisa ditambah sesuai LHPP. Pengawas
+                                        akan melihat daftar ini dan tetap bisa ubah, tambah, atau kurangi.</p>
+                                    <div class="table-responsive mb-2">
+                                        <table class="table table-bordered table-sm" id="tabelTeknis">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:3%">No</th>
+                                                    <th>Jenis</th>
+                                                    <th>Nama objek</th>
+                                                    <th>Merk</th>
+                                                    <th>Jumlah</th>
+                                                    <th>Lokasi</th>
+                                                    <th style="width:4%"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="daftarPerangkat">
+                                                <tr class="js-perangkat" data-index="0">
+                                                    <td class="js-nomor align-middle">1</td>
+                                                    <td>
+                                                        <select name="perangkat[0][jenis_id]"
+                                                            class="form-control form-control-sm js-jenis-perangkat">
+                                                            <option value="">Pilih jenis</option>
+                                                            @foreach ($jenisList as $jenis)
+                                                                <option value="{{ $jenis->id }}"
+                                                                    data-kategori="{{ $jenis->kategori_id }}"
+                                                                    data-nama="{{ $jenis->nama }}">
+                                                                    {{ $jenis->nama }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </td>
+                                                    <td><input type="text" name="perangkat[0][nama]"
+                                                            class="form-control form-control-sm js-nama-perangkat"
+                                                            placeholder="Contoh: Panel Control"></td>
+                                                    <td><input type="text" name="perangkat[0][merk]"
+                                                            class="form-control form-control-sm" placeholder="Merk"></td>
+                                                    <td><input type="text" name="perangkat[0][jumlah]"
+                                                            class="form-control form-control-sm"
+                                                            placeholder="1 Unit"></td>
+                                                    <td><input type="text" name="perangkat[0][lokasi]"
+                                                            class="form-control form-control-sm"
+                                                            placeholder="Control Room"></td>
+                                                    <td class="text-center"><button type="button"
+                                                            class="btn btn-outline-danger btn-sm js-hapus-perangkat">&times;</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-primary btn-sm mb-3"
+                                        id="btnTambahPerangkat">Tambah baris alat</button>
 
                                     @foreach ($dokumenKeys as $key => $label)
                                         <div class="border rounded p-3 mb-3">
@@ -134,6 +157,44 @@
 @push('js')
     <script>
         $(document).ready(function() {
+            function tampilPerusahaan(data) {
+                var nib = data.nib ? ' (NIB ' + data.nib + ')' : '';
+                $('#hasilPerusahaan').html(
+                    '<div class="alert alert-success mb-0">Perusahaan ditemukan: <strong>' +
+                    $('<div>').text(data.name).html() + nib + '</strong></div>'
+                ).show();
+            }
+
+            $('#btnCariPerusahaan').on('click', function() {
+                var kode = $.trim($('#kode_suket').val());
+                if (!kode) {
+                    Swal.fire('Kode kosong', 'Masukkan kode dari perusahaan yang diperiksa.', 'warning');
+                    return;
+                }
+                $.ajax({
+                    url: '{{ route('pengawasan.suket.penyedia.pengajuan.cari') }}',
+                    type: 'POST',
+                    data: { _token: '{{ csrf_token() }}', kode: kode },
+                    success: function(response) {
+                        if (response.success) {
+                            tampilPerusahaan(response.perusahaan);
+                        } else {
+                            $('#hasilPerusahaan').hide().empty();
+                            Swal.fire('Tidak ditemukan', response.message || 'Kode tidak valid.', 'warning');
+                        }
+                    },
+                    error: function(xhr) {
+                        $('#hasilPerusahaan').hide().empty();
+                        Swal.fire('Gagal', (xhr.responseJSON && xhr.responseJSON.message) ||
+                            'Gagal mencari perusahaan', 'error');
+                    }
+                });
+            });
+
+            $('#kode_suket').on('input', function() {
+                $('#hasilPerusahaan').hide().empty();
+            });
+
             $('.js-tipe').on('change', function() {
                 var key = $(this).data('key');
                 var tipe = $(this).val();
@@ -141,22 +202,86 @@
                 $('.js-link-wrap[data-key="' + key + '"]').toggle(tipe === 'link');
             });
 
-            $('#kategori_id').on('change', function() {
-                var id = $(this).val();
-                var $jenis = $('#jenis_id');
-                $jenis.html('<option value="">Memuat...</option>');
-                if (!id) {
-                    $jenis.html('<option value="">Pilih kategori terlebih dahulu</option>');
-                    return;
-                }
-                var url = '{{ route('pengawasan.suket.penyedia.pengajuan.jenis', ['kategoriId' => '__ID__']) }}';
-                $.get(url.replace('__ID__', id), function(data) {
-                    var html = '<option value="">Pilih jenis</option>';
-                    $.each(data, function(_, item) {
-                        html += '<option value="' + item.id + '">' + item.nama + '</option>';
+            var jenisOptionsHtml = $('#daftarPerangkat .js-jenis-perangkat').first().html() ||
+                '<option value="">Pilih jenis</option>';
+
+            function filterJenisByKategori() {
+                var kategoriId = String($('#kategori_id').val() || '');
+                $('.js-jenis-perangkat').each(function() {
+                    var $select = $(this);
+                    $select.find('option').each(function() {
+                        var $opt = $(this);
+                        if (!$opt.val()) {
+                            return;
+                        }
+                        var match = !kategoriId || String($opt.data('kategori')) === kategoriId;
+                        $opt.toggle(match);
                     });
-                    $jenis.html(html);
+                    var $selected = $select.find('option:selected');
+                    if ($selected.val() && $selected.css('display') === 'none') {
+                        $select.val('');
+                        $select.closest('.js-perangkat').find('.js-nama-perangkat').val('');
+                    }
                 });
+            }
+
+            function nextIndex($items) {
+                var max = -1;
+                $items.each(function() {
+                    max = Math.max(max, parseInt($(this).attr('data-index'), 10) || 0);
+                });
+                return max + 1;
+            }
+
+            function nomorUlang() {
+                $('#daftarPerangkat .js-perangkat').each(function(i) {
+                    $(this).find('.js-nomor').text(i + 1);
+                });
+            }
+
+            function perangkatHtml(pIndex) {
+                return '<tr class="js-perangkat" data-index="' + pIndex +
+                    '"><td class="js-nomor align-middle"></td><td><select name="perangkat[' + pIndex +
+                    '][jenis_id]" class="form-control form-control-sm js-jenis-perangkat">' + jenisOptionsHtml +
+                    '</select></td><td><input type="text" name="perangkat[' + pIndex +
+                    '][nama]" class="form-control form-control-sm js-nama-perangkat" placeholder="Contoh: Panel Control"></td><td><input type="text" name="perangkat[' +
+                    pIndex +
+                    '][merk]" class="form-control form-control-sm" placeholder="Merk"></td><td><input type="text" name="perangkat[' +
+                    pIndex +
+                    '][jumlah]" class="form-control form-control-sm" placeholder="1 Unit"></td><td><input type="text" name="perangkat[' +
+                    pIndex +
+                    '][lokasi]" class="form-control form-control-sm" placeholder="Control Room"></td><td class="text-center"><button type="button" class="btn btn-outline-danger btn-sm js-hapus-perangkat">&times;</button></td></tr>';
+            }
+
+            filterJenisByKategori();
+            $('#kategori_id').on('change', filterJenisByKategori);
+
+            $(document).on('change', '.js-jenis-perangkat', function() {
+                var nama = $(this).find('option:selected').data('nama') || '';
+                var $nama = $(this).closest('.js-perangkat').find('.js-nama-perangkat');
+                if (!$nama.val() || $nama.data('auto') === $nama.val()) {
+                    $nama.val(nama);
+                    $nama.data('auto', nama);
+                }
+            });
+
+            $(document).on('click', '.js-hapus-perangkat', function() {
+                if ($('#daftarPerangkat .js-perangkat').length > 1) {
+                    $(this).closest('.js-perangkat').remove();
+                    nomorUlang();
+                } else {
+                    $(this).closest('.js-perangkat').find('input, select').val('');
+                }
+            });
+
+            $('#btnTambahPerangkat').on('click', function() {
+                var pIndex = nextIndex($('#daftarPerangkat .js-perangkat'));
+                $('#daftarPerangkat').append(perangkatHtml(pIndex));
+                var $baru = $('#daftarPerangkat .js-perangkat').last();
+                $baru.find('.js-jenis-perangkat').val('');
+                $baru.find('.js-nama-perangkat').val('');
+                filterJenisByKategori();
+                nomorUlang();
             });
 
             $('#formSuket').on('submit', function(e) {

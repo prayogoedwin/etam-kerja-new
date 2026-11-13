@@ -98,8 +98,8 @@
                     <a href="#" class="nav-link "><span class="pcoded-micon"><i
                                 class="feather icon-layers"></i></span><span class="pcoded-mtext">Layanan K3</span></a>
                     <ul class="pcoded-submenu">
-                        <li><a href="{{ route('pengawasan.k3.penyedia.index') }}">K3 Pengawas</a></li>
                         <li><a href="{{ route('pengawasan.pjk3.penyedia.index') }}">Pendaftaran PJK3</a></li>
+                        <li><a href="{{ route('pengawasan.suket.penyedia.kode.index') }}">Kode Suket K3</a></li>
                         @if (\App\Models\Pengawasan\Pjk3\EtamPjk3Ajuan::isPjk3Aktif((int) Auth::id()))
                             <li><a href="{{ route('pengawasan.suket.penyedia.pengajuan.index') }}">Pengajuan Suket Layak K3 oleh PJK3</a></li>
                         @endif

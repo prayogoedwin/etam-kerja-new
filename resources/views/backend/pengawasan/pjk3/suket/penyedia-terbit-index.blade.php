@@ -26,6 +26,7 @@
                                     Semua perusahaan berakun melihat LHPP dan Suket di sini, termasuk yang bukan PJK3.
                                 </div>
                                 <h5 class="mb-3">Dokumen hasil pemeriksaan perusahaan Anda</h5>
+                                @include('backend.pengawasan.pjk3.suket._timeline-style')
                                 <div class="table-responsive">
                                     <table id="simpletable" class="table table-bordered table-striped mb-0">
                                         <thead>
@@ -62,7 +63,7 @@
                     { data: 'nomor' },
                     { data: 'pjk3' },
                     { data: 'hasil' },
-                    { data: 'status_label' },
+                    { data: 'status_label', orderable: false, searchable: false, width: '220px' },
                     { data: 'options', orderable: false, searchable: false },
                 ]
             });

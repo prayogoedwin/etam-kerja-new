@@ -32,6 +32,7 @@
                                         </a>
                                     </div>
                                 </div>
+                                @include('backend.pengawasan.pjk3.suket._timeline-style')
                                 <div class="table-responsive mt-3">
                                     <table id="simpletable" class="table table-bordered table-striped mb-0">
                                         <thead>
@@ -66,7 +67,7 @@
                     { data: 'DT_RowIndex', orderable: false, searchable: false },
                     { data: 'perusahaan' },
                     { data: 'kategori_nama' },
-                    { data: 'status_label' },
+                    { data: 'status_label', orderable: false, searchable: false, width: '220px' },
                     { data: 'options', orderable: false, searchable: false },
                 ]
             });
