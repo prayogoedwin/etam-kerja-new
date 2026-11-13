@@ -680,7 +680,11 @@ class PesertaController extends Controller
         $html = '<div class="d-flex flex-wrap gap-1" style="white-space:normal">';
         $html .= '<a href="'.route('blk.pelatihan.peserta.show', [$pelatihan->id, $data->id]).'" class="btn btn-secondary btn-sm">Profil</a>';
         $nomor = $data instanceof EtamBlkPelatihanPeserta ? (string) ($data->nomor_sertifikat ?? '') : '';
-        $html .= '<button class="btn btn-warning btn-sm" onclick="showStatusModal('.$data->id.', '.$data->status_pendaftaran.', '.json_encode((string) ($data->alasan_status ?? '')).', '.json_encode($nomor).')">Status</button>';
+        $html .= '<button type="button" class="btn btn-warning btn-sm btn-status-peserta"'
+            .' data-id="'.$data->id.'"'
+            .' data-status="'.(int) $data->status_pendaftaran.'"'
+            .' data-alasan="'.e((string) ($data->alasan_status ?? '')).'"'
+            .' data-nomor="'.e($nomor).'">Status</button>';
 
         if ($pelatihan->wawancara_form_id) {
             $html .= '<a href="'.route('blk.pelatihan.peserta.wawancara', [$pelatihan->id, $data->id]).'" class="btn btn-success btn-sm">Isi Wawancara</a>';

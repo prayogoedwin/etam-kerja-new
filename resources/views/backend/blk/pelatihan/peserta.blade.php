@@ -224,6 +224,15 @@
                 table.ajax.reload();
             });
 
+            $(document).on('click', '.btn-status-peserta', function() {
+                showStatusModal(
+                    $(this).attr('data-id'),
+                    $(this).attr('data-status'),
+                    $(this).attr('data-alasan'),
+                    $(this).attr('data-nomor')
+                );
+            });
+
             $('#check-all').on('change', function() {
                 $('.peserta-check').prop('checked', this.checked);
             });
