@@ -5,6 +5,8 @@
     $tampilFooter = $untukDs || ! $tampilDraft;
     $logoBsre = $logoBsre ?? null;
     $bsreTeks = $bsreTeks ?? '';
+    $urlVerifikasi = $urlVerifikasi ?? null;
+    $qrVerifikasi = $qrVerifikasi ?? null;
     $layak = (int) $suket->is_layak === 1;
     $judul = $layak ? 'SURAT KETERANGAN LAYAK K3' : 'SURAT KETERANGAN TIDAK LAYAK K3';
 @endphp
@@ -16,6 +18,14 @@
     @include('backend.pengawasan.pjk3.suket._cetak-k3-style')
 </head>
 <body>
+    @if ($tampilFooter && $logoBsre)
+        <div class="bsre-footer-wrap">
+            @include('backend.blk.pelatihan._bsre-footer', ['sertifikat' => [
+                'logo_bsre' => $logoBsre,
+                'bsre_teks' => $bsreTeks,
+            ]])
+        </div>
+    @endif
     @if ($tampilDraft)
         <div class="watermark">DRAFT</div>
     @endif
@@ -105,12 +115,8 @@
             @if (! $untukDs && $suket->ttd_kadis_at)
                 <p><em>Telah ditandatangani secara elektronik</em><br>
                     {{ optional($suket->ttd_kadis_at)->format('d-m-Y H:i') }}</p>
-            @elseif ($untukDs && $logoBsre)
-                <table class="ttd-bsre-wrap">
-                    <tr>
-                        <td><img src="{{ $logoBsre }}" alt="Logo BSrE" class="ttd-bsre"></td>
-                    </tr>
-                </table>
+            @elseif ($untukDs)
+                @include('backend.tte._qr-ttd')
             @else
                 <br><br><br>
             @endif
@@ -124,14 +130,5 @@
     </div>
     <div style="clear:both"></div>
     <p>Tembusan: Direktur Jenderal Pembinaan Pengawasan Ketenagakerjaan.</p>
-
-    @if ($tampilFooter && $logoBsre)
-        <div class="bsre-footer-wrap">
-            @include('backend.blk.pelatihan._bsre-footer', ['sertifikat' => [
-                'logo_bsre' => $logoBsre,
-                'bsre_teks' => $bsreTeks,
-            ]])
-        </div>
-    @endif
 </body>
 </html>

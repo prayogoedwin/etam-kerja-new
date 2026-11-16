@@ -1420,15 +1420,15 @@ class BlkModuleTest extends TestCase
             'qrVerifikasi' => null,
         ])->render();
         $this->assertStringNotContainsString('QR berkas asli', $html);
+        $this->assertStringNotContainsString('QR verifikasi TTE', $html);
         $this->assertStringNotContainsString('Berkas asli', $html);
         $this->assertStringNotContainsString('Telah ditandatangani secara elektronik', $html);
         $this->assertStringNotContainsString('DRAFT', $html);
         $this->assertStringContainsString('mode-pdf', $html);
-        $this->assertStringContainsString('position: absolute', $html);
+        $this->assertStringContainsString('page-frame', $html);
+        $this->assertStringContainsString('position: fixed', $html);
         $this->assertStringContainsString('Balai Sertifikasi Elektronik (BSrE)', $html);
         $this->assertStringContainsString('logo_bsre', $html);
-        $this->assertStringContainsString('ttd-bsre', $html);
-        $this->assertStringContainsString('ttd-bsre-wrap', $html);
 
         $this->assertDatabaseMissing('etam_tte', [
             'nama_modul' => 'blk',
@@ -1499,8 +1499,8 @@ class BlkModuleTest extends TestCase
         $this->assertStringContainsString('Sudah ditandatangani Kepala Dinas', $ttdSudah);
         $this->assertStringContainsString('>Unduh</a>', $ttdSudah);
         $this->assertStringContainsString('data-unduh-tte=', $ttdSudah);
-        $this->assertStringContainsString('1-sertifikat-kelulusan.pdf', $ttdSudah);
-        $this->assertStringContainsString('2-daftar-unit-kompetensi.pdf', $ttdSudah);
+        $this->assertStringContainsString('sertifikat_tte_'.$sudah->id.'.pdf', $ttdSudah);
+        $this->assertStringContainsString('uji_kompetensi_tte_'.$sudah->id.'.pdf', $ttdSudah);
 
         $this->actingAs($admin)
             ->get(route('blk.pelatihan.peserta.unduh', [$pelatihan->id, $belum->id, 'sertifikat']))
@@ -1531,8 +1531,8 @@ class BlkModuleTest extends TestCase
             $this->assertStringNotContainsString('>Unduh</a>', $opsi, $role.' tidak menaruh Unduh di aksi');
             $this->assertStringContainsString('>Unduh</a>', $ttd, $role.' harus melihat tombol Unduh di status TTD');
             $this->assertStringContainsString('data-unduh-tte=', $ttd, $role.' harus punya tautan unduh dua berkas');
-            $this->assertStringContainsString('1-sertifikat-kelulusan.pdf', $ttd);
-            $this->assertStringContainsString('2-daftar-unit-kompetensi.pdf', $ttd);
+            $this->assertStringContainsString('sertifikat_tte_'.$sudah->id.'.pdf', $ttd);
+            $this->assertStringContainsString('uji_kompetensi_tte_'.$sudah->id.'.pdf', $ttd);
         }
     }
 
@@ -1713,6 +1713,39 @@ class BlkModuleTest extends TestCase
         ]);
     }
 
+    public function test_footer_bsre_pdf_kompetensi_muncul_di_setiap_halaman(): void
+    {
+        $blk = EtamBlk::create([
+            'nama_lembaga' => 'BLK Footer Halaman',
+            'tipe_lembaga' => 1,
+            'provinsi_id' => 64,
+            'kode_struktur' => '34',
+        ]);
+        $pelatihan = $this->makePelatihan($blk->id, EtamBlkPelatihan::UNTUK_PENCARI);
+        for ($i = 1; $i <= 40; $i++) {
+            EtamBlkPelatihanKompetensi::create([
+                'blk_pelatihan_id' => $pelatihan->id,
+                'tipe' => EtamBlkPelatihanKompetensi::TIPE_INTI,
+                'nama' => 'Unit Kompetensi Panjang Nomor '.$i,
+                'kode' => 'U.'.$i,
+                'urutan' => $i,
+            ]);
+        }
+        $admin = $this->makeUser('super-admin');
+        $peserta = $this->makePesertaTtd($pelatihan->id, EtamBlkPelatihanPeserta::TTD_MENUNGGU, [
+            'name' => 'Peserta Footer Halaman',
+        ]);
+
+        $pdf = $this->actingAs($admin)
+            ->get(route('blk.pelatihan.peserta.preview-ds', [$pelatihan->id, $peserta->id, 'kompetensi']))
+            ->assertOk()
+            ->getContent();
+
+        $halaman = $this->jumlahHalamanPdf($pdf);
+        $this->assertGreaterThanOrEqual(2, $halaman);
+        $this->assertSame($halaman, $this->jumlahFooterBsreDiPdf($pdf));
+    }
+
     private function jumlahHalamanPdf(string $pdf): int
     {
         if (preg_match('/\/Type\s*\/Pages\b.*?\/Count\s+(\d+)/s', $pdf, $match)) {
@@ -1720,5 +1753,25 @@ class BlkModuleTest extends TestCase
         }
 
         return max(1, preg_match_all('/\/Type\s*\/Page\b/', $pdf) - preg_match_all('/\/Type\s*\/Pages\b/', $pdf));
+    }
+
+    private function jumlahFooterBsreDiPdf(string $pdf): int
+    {
+        $jumlah = 0;
+        if (! preg_match_all('/stream\r?\n(.*?)\r?\nendstream/s', $pdf, $matches)) {
+            return 0;
+        }
+
+        foreach ($matches[1] as $raw) {
+            $decoded = @zlib_decode($raw);
+            if ($decoded === false) {
+                continue;
+            }
+            if (str_contains($decoded, 'BSSN') || str_contains($decoded, 'Balai Sertifikasi')) {
+                $jumlah++;
+            }
+        }
+
+        return $jumlah;
     }
 }

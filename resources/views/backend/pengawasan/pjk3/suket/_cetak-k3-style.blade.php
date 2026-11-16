@@ -24,9 +24,9 @@
     .hasil { font-size: 16pt; font-weight: bold; text-align: center; margin: 18px 0; letter-spacing: 1px; }
     .ttd { width: 48%; float: right; text-align: center; margin-top: 22px; page-break-inside: avoid; }
     .ttd .space { min-height: 22mm; }
-    .ttd-bsre-wrap { width: 100%; border-collapse: collapse; margin: 2mm 0 1mm; }
-    .ttd-bsre-wrap td { text-align: center; vertical-align: middle; }
-    .ttd-bsre { width: 32mm; height: auto; }
+    .ttd-bsre-wrap, .ttd-qr-wrap { width: 100%; border-collapse: collapse; margin: 2mm 0 1mm; }
+    .ttd-bsre-wrap td, .ttd-qr-wrap td { text-align: center; vertical-align: middle; }
+    .ttd-bsre, .ttd-qr { width: 28mm; height: auto; }
     .watermark {
         position: fixed;
         top: 38%;
@@ -44,6 +44,7 @@
         right: 0;
         bottom: -24mm;
         width: 100%;
+        z-index: 10;
     }
     .bsre-footer {
         width: 100%;

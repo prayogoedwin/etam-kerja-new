@@ -147,12 +147,11 @@ class SuketK3Handler implements TteModuleHandler
         $nama = $suket->profilPerusahaan->name ?? $suket->nama_alat;
 
         foreach ([EtamPjk3Suket::TTE_DOK_LHPP, EtamPjk3Suket::TTE_DOK_SUKET] as $kode) {
-            $path = $this->dokumen->simpanDokumenTte($suket, $kode, false);
             $judul = $kode === EtamPjk3Suket::TTE_DOK_SUKET
                 ? 'Suket Layak K3 — '.$nama
                 : 'LHPP K3 — '.$nama;
 
-            $this->queue->ajukan([
+            $tte = $this->queue->ajukan([
                 'nama_modul' => $this->modul(),
                 'nama_table' => $suket->getTable(),
                 'id_refrensi' => $suket->id,
@@ -160,10 +159,14 @@ class SuketK3Handler implements TteModuleHandler
                 'id_struktur' => $kodeStruktur,
                 'user_id_tujuan' => $idPengawas,
                 'kode_dokumen' => $kode,
-                'path_file_before' => $path,
                 'token_verifikasi' => Str::lower(Str::random(40)),
                 'judul' => $judul,
             ]);
+            $path = $this->dokumen->simpanDokumenTte($suket, $kode, false);
+            if ($tte->path_file_before !== $path) {
+                $tte->path_file_before = $path;
+                $tte->save();
+            }
         }
     }
 

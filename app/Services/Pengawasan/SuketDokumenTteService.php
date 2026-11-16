@@ -4,6 +4,7 @@ namespace App\Services\Pengawasan;
 
 use App\Models\EtamTte;
 use App\Models\Pengawasan\Pjk3\EtamPjk3Suket;
+use App\Services\Tte\TteVerifikasi;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -46,12 +47,16 @@ class SuketDokumenTteService
             ? 'backend.pengawasan.pjk3.suket.cetak-suket'
             : 'backend.pengawasan.pjk3.suket.cetak-lhpp';
 
+        $qr = app(TteVerifikasi::class)->untukDokumen('suket_k3', (int) $suket->id, $kodeDokumen);
+
         $html = view($view, [
             'suket' => $suket,
             'untukDs' => true,
             'tampilDraft' => false,
             'logoBsre' => $this->dataUriLogoBsre(),
             'bsreTeks' => self::BSRE_TEKS,
+            'urlVerifikasi' => $qr['url'],
+            'qrVerifikasi' => $qr['qr'],
         ])->render();
 
         return Pdf::loadHTML($html)

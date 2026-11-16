@@ -9,6 +9,7 @@ use App\Models\EtamStruktur;
 use App\Models\EtamTte;
 use App\Models\Kabkota;
 use App\Models\User;
+use App\Services\Tte\TteVerifikasi;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -163,6 +164,8 @@ class BlkSertifikatKelulusanService
         $sertifikat['signed']['kompetensi'] = false;
         $sertifikat['is_draft'] = false;
 
+        $qr = app(TteVerifikasi::class)->untukDokumen('blk', (int) $peserta->id, $kodeDokumen);
+
         $html = view('backend.blk.pelatihan.sertifikat', [
             'pelatihan' => $pelatihan,
             'peserta' => $peserta,
@@ -171,8 +174,8 @@ class BlkSertifikatKelulusanService
             'modeUnduh' => true,
             'untukDs' => true,
             'tampilanAdmin' => false,
-            'urlVerifikasi' => null,
-            'qrVerifikasi' => null,
+            'urlVerifikasi' => $qr['url'],
+            'qrVerifikasi' => $qr['qr'],
         ])->render();
 
         return $this->htmlKePdf($html);
@@ -192,13 +195,21 @@ class BlkSertifikatKelulusanService
             abort(404, 'Berkas TTE belum tersedia');
         }
 
-        $nama = $kode === EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT
-            ? '1-sertifikat-kelulusan.pdf'
-            : '2-daftar-unit-kompetensi.pdf';
-
-        return Storage::disk('local')->download($path, $nama, [
+        return Storage::disk('local')->download($path, $this->namaBerkasUnduh($peserta, $kode, $path), [
             'Content-Type' => 'application/pdf',
         ]);
+    }
+
+    public function namaBerkasUnduh(EtamBlkPelatihanPeserta $peserta, string $kode, ?string $path = null): string
+    {
+        $path ??= $this->pathBerkasTte($peserta, $kode);
+        if (is_string($path) && $path !== '') {
+            return basename($path);
+        }
+
+        return $kode === EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT
+            ? 'sertifikat_tte_'.$peserta->id.'.pdf'
+            : 'uji_kompetensi_tte_'.$peserta->id.'.pdf';
     }
 
     private function pathBerkasTte(EtamBlkPelatihanPeserta $peserta, string $kode): ?string

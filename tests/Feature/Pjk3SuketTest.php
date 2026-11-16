@@ -202,7 +202,7 @@ class Pjk3SuketTest extends TestCase
             'bsreTeks' => SuketDokumenTteService::BSRE_TEKS,
         ])->render();
         $this->assertStringNotContainsString('DRAFT', $htmlDs);
-        $this->assertStringContainsString('ttd-bsre', $htmlDs);
+        $this->assertStringNotContainsString('QR verifikasi TTE', $htmlDs);
         $this->assertStringContainsString('Balai Sertifikasi Elektronik (BSrE)', $htmlDs);
         $this->assertStringContainsString('size: A4', $htmlDs);
 
@@ -214,7 +214,7 @@ class Pjk3SuketTest extends TestCase
             'bsreTeks' => SuketDokumenTteService::BSRE_TEKS,
         ])->render();
         $this->assertStringNotContainsString('DRAFT', $htmlSuketDs);
-        $this->assertStringContainsString('ttd-bsre', $htmlSuketDs);
+        $this->assertStringNotContainsString('QR verifikasi TTE', $htmlSuketDs);
         $this->assertStringContainsString('Balai Sertifikasi Elektronik (BSrE)', $htmlSuketDs);
 
         $this->assertDatabaseHas('etam_tte', [

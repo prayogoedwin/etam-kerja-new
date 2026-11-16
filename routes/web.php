@@ -665,6 +665,12 @@ Route::get('/get-kecamatan', [BackController::class, 'getKecamatan']);
 //   });
 
 Route::get('ak1/cek/{unik_kode}', [Ak1Controller::class, 'viewAk1'])->name('ak1.view');
+Route::get('verifikasi/tte/{modul}/{kode}', [TteController::class, 'verifikasi'])
+    ->name('tte.verifikasi')
+    ->where(['modul' => '[A-Za-z0-9_-]+', 'kode' => '[A-Za-z0-9]+']);
+Route::get('verifikasi/tte/{modul}/{kode}/berkas', [TteController::class, 'berkasAsli'])
+    ->name('tte.verifikasi.berkas')
+    ->where(['modul' => '[A-Za-z0-9_-]+', 'kode' => '[A-Za-z0-9]+']);
 Route::get('verifikasi/tte/{token}', [TteController::class, 'berkas'])->name('tte.berkas');
 
 Route::get('/docs', [Dokumentasi::class, 'index'])->name('docs.index');

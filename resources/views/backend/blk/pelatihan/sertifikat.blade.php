@@ -222,13 +222,15 @@
             font-weight: 400;
         }
 
-        .ttd-bsre-wrap {
+        .ttd-bsre-wrap,
+        .ttd-qr-wrap {
             width: 100%;
             border-collapse: collapse;
             margin: 2mm 0 1mm;
         }
 
-        .ttd-bsre-wrap td {
+        .ttd-bsre-wrap td,
+        .ttd-qr-wrap td {
             text-align: center;
             vertical-align: middle;
         }
@@ -341,25 +343,38 @@
             box-shadow: none;
         }
 
-        body.mode-pdf .sheet {
-            width: 194mm;
-            height: 277mm;
-            margin: 8mm;
+        body.mode-pdf .page-frame {
+            position: fixed;
+            top: 8mm;
+            left: 8mm;
+            right: 8mm;
+            bottom: 8mm;
             border: 2px solid #000;
+            z-index: 0;
+        }
+
+        body.mode-pdf .sheet {
+            width: auto;
+            height: auto;
+            min-height: 0;
+            margin: 8mm;
+            border: 0;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
 
         body.mode-pdf .sheet-main {
-            padding: 8mm 10mm 28mm;
+            padding: 8mm 10mm 32mm;
         }
 
         body.mode-pdf .sheet-foot {
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            padding: 2mm 12mm 6mm;
+            position: fixed;
+            left: 14mm;
+            right: 14mm;
+            bottom: 12mm;
+            width: auto;
+            padding: 0;
+            z-index: 1;
         }
 
         body.mode-pdf .ttd {
@@ -372,8 +387,9 @@
             text-align: center;
         }
 
-        .ttd .space .ttd-bsre {
-            width: 32mm;
+        .ttd .space .ttd-bsre,
+        .ttd .space .ttd-qr {
+            width: 28mm;
             height: auto;
             display: inline-block;
             margin: 0 auto;
@@ -422,6 +438,14 @@
         $tampilSertifikat = $halaman === 'sertifikat';
         $tampilKompetensi = $halaman === 'kompetensi';
     @endphp
+    @if ($modeUnduh)
+        <div class="page-frame"></div>
+        @if ($tampilFooterSertifikat || $tampilFooterKompetensi)
+            <div class="sheet-foot">
+                @include('backend.blk.pelatihan._bsre-footer')
+            </div>
+        @endif
+    @endif
     @unless ($modeUnduh)
     <div class="toolbar">
         <div>
@@ -521,19 +545,15 @@
                     @if ($lihatSertifikatResmi)
                         <span class="tte-ok">Telah ditandatangani secara elektronik</span>
                     @endif
-                    @if ($untukDs && ! empty($sertifikat['logo_bsre']))
-                        <table class="ttd-bsre-wrap">
-                            <tr>
-                                <td><img src="{{ $sertifikat['logo_bsre'] }}" alt="Logo BSrE" class="ttd-bsre"></td>
-                            </tr>
-                        </table>
+                    @if ($untukDs)
+                        @include('backend.tte._qr-ttd')
                     @endif
                 </div>
                 <div class="nama">{{ $sertifikat['penandatangan']['dinas']['nama'] ?: '................................' }}</div>
             </div>
         </div>
         </div>
-        @if ($tampilFooterSertifikat)
+        @if ($tampilFooterSertifikat && ! $modeUnduh)
         <div class="sheet-foot">
             @include('backend.blk.pelatihan._bsre-footer')
         </div>
@@ -612,19 +632,15 @@
                     @if ($lihatKompetensiResmi)
                         <span class="tte-ok">Telah ditandatangani secara elektronik</span>
                     @endif
-                    @if ($untukDs && ! empty($sertifikat['logo_bsre']))
-                        <table class="ttd-bsre-wrap">
-                            <tr>
-                                <td><img src="{{ $sertifikat['logo_bsre'] }}" alt="Logo BSrE" class="ttd-bsre"></td>
-                            </tr>
-                        </table>
+                    @if ($untukDs)
+                        @include('backend.tte._qr-ttd')
                     @endif
                 </div>
                 <div class="nama">{{ $sertifikat['penandatangan']['balai']['nama'] ?: '................................' }}</div>
             </div>
         </div>
         </div>
-        @if ($tampilFooterKompetensi)
+        @if ($tampilFooterKompetensi && ! $modeUnduh)
         <div class="sheet-foot">
             @include('backend.blk.pelatihan._bsre-footer')
         </div>

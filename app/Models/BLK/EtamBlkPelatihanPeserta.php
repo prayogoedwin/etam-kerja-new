@@ -3,6 +3,7 @@
 namespace App\Models\BLK;
 
 use App\Models\UserPencari;
+use App\Services\Blk\BlkSertifikatKelulusanService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -109,14 +110,16 @@ class EtamBlkPelatihanPeserta extends Model
             return '';
         }
 
+        $nama = app(BlkSertifikatKelulusanService::class);
+
         $berkas = [
             [
                 'url' => route($routeName, array_merge($routeParams, ['halaman' => self::TTE_DOK_SERTIFIKAT])),
-                'nama' => '1-sertifikat-kelulusan.pdf',
+                'nama' => $nama->namaBerkasUnduh($this, self::TTE_DOK_SERTIFIKAT),
             ],
             [
                 'url' => route($routeName, array_merge($routeParams, ['halaman' => self::TTE_DOK_KOMPETENSI])),
-                'nama' => '2-daftar-unit-kompetensi.pdf',
+                'nama' => $nama->namaBerkasUnduh($this, self::TTE_DOK_KOMPETENSI),
             ],
         ];
 

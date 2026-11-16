@@ -75,14 +75,7 @@ class BlkPesertaHandler implements TteModuleHandler
         $peserta->updated_by = $tte->user_id_tte;
         $peserta->save();
 
-        $tokenSertifikat = Str::lower(Str::random(40));
-        $pathSertifikat = $this->sertifikat->simpanDokumenTte(
-            $peserta,
-            EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT,
-            false
-        );
-
-        $this->queue->ajukan([
+        $tteSertifikat = $this->queue->ajukan([
             'nama_modul' => $this->modul(),
             'nama_table' => $peserta->getTable(),
             'id_refrensi' => $peserta->id,
@@ -90,10 +83,18 @@ class BlkPesertaHandler implements TteModuleHandler
             'id_struktur' => EtamStruktur::KODE_DINAS,
             'user_id_tujuan' => User::idKepalaDinas(),
             'kode_dokumen' => EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT,
-            'path_file_before' => $pathSertifikat,
-            'token_verifikasi' => $tokenSertifikat,
+            'token_verifikasi' => Str::lower(Str::random(40)),
             'judul' => 'Sertifikat Kelulusan — '.$peserta->name,
         ]);
+        $pathSertifikat = $this->sertifikat->simpanDokumenTte(
+            $peserta,
+            EtamBlkPelatihanPeserta::TTE_DOK_SERTIFIKAT,
+            false
+        );
+        if ($tteSertifikat->path_file_before !== $pathSertifikat) {
+            $tteSertifikat->path_file_before = $pathSertifikat;
+            $tteSertifikat->save();
+        }
     }
 
     public function setelahGagal(EtamTte $tte): void
@@ -103,7 +104,12 @@ class BlkPesertaHandler implements TteModuleHandler
 
     public function siapkanBerkasDs(EtamTte $tte): void
     {
-        //
+        $peserta = EtamBlkPelatihanPeserta::query()->with('pelatihan.blk')->find($tte->id_refrensi);
+        if (! $peserta) {
+            return;
+        }
+
+        $this->sertifikat->pdfUntukDs($peserta, $this->kodeDokumen($tte));
     }
 
     private function kodeDokumen(EtamTte $tte): string

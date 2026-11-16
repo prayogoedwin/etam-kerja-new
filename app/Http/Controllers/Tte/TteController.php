@@ -6,14 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\EtamTte;
 use App\Models\EtamTteLog;
 use App\Services\Tte\TteService;
+use App\Services\Tte\TteVerifikasi;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class TteController extends Controller
 {
-    public function __construct(private TteService $tte) {}
+    public function __construct(
+        private TteService $tte,
+        private TteVerifikasi $verifikasi,
+    ) {}
 
     public function menunggu(Request $request)
     {
@@ -92,31 +97,47 @@ class TteController extends Controller
         return response()->json($hasil, $hasil['ok'] ? 200 : 422);
     }
 
+    public function verifikasi(string $modul, string $kode)
+    {
+        $tte = $this->verifikasi->cari($modul, $kode);
+        $adaBerkas = $tte ? (bool) $this->verifikasi->pathBerkasAsli($tte) : false;
+        $statusHttp = $tte ? 200 : 404;
+
+        return response()->view('backend.tte.verifikasi', [
+            'tte' => $tte,
+            'judul' => $tte ? $this->tte->judulUntuk($tte) : null,
+            'labelModul' => $this->verifikasi->labelModul($tte->nama_modul ?? $modul),
+            'tanggal' => $tte?->updated_at?->translatedFormat('d F Y H:i') ?: '-',
+            'status' => $this->verifikasi->statusPublik($tte),
+            'pesanKosong' => $this->verifikasi->pesanBerkasKosong($tte),
+            'urlBerkas' => $adaBerkas
+                ? route('tte.verifikasi.berkas', ['modul' => $modul, 'kode' => $kode])
+                : null,
+            'urlUnduh' => $adaBerkas
+                ? route('tte.verifikasi.berkas', ['modul' => $modul, 'kode' => $kode, 'unduh' => 1])
+                : null,
+        ], $statusHttp);
+    }
+
+    public function berkasAsli(string $modul, string $kode)
+    {
+        $tte = $this->verifikasi->cari($modul, $kode);
+        abort_unless($tte, 404);
+
+        return $this->streamBerkasAsli($tte, request()->boolean('unduh'));
+    }
+
     public function berkas(string $token)
     {
         $tte = EtamTte::query()->where('token_verifikasi', $token)->firstOrFail();
-        $path = ((int) $tte->status === EtamTte::STATUS_BERHASIL && $tte->path_file_after)
-            ? $tte->path_file_after
-            : $tte->path_file_before;
-        $adaBerkas = $path && Storage::disk('local')->exists($path);
 
-        if ((int) $tte->status === EtamTte::STATUS_BERHASIL && $adaBerkas) {
-            $nama = 'berkas-tte-'.$tte->id.'.pdf';
-            $disposition = request()->boolean('unduh') ? 'attachment' : 'inline';
-
-            return response(Storage::disk('local')->get($path), 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => $disposition.'; filename="'.$nama.'"',
-            ]);
+        if (request()->boolean('unduh')) {
+            return $this->streamBerkasAsli($tte, true);
         }
 
-        return view('backend.tte.berkas', [
-            'tte' => $tte,
-            'judul' => $this->tte->judulUntuk($tte),
-            'adaBerkas' => $adaBerkas,
-            'urlUnduh' => $adaBerkas && $tte->status === EtamTte::STATUS_BERHASIL
-                ? route('tte.berkas', ['token' => $token, 'unduh' => 1])
-                : null,
+        return redirect()->route('tte.verifikasi', [
+            'modul' => $tte->nama_modul,
+            'kode' => $tte->token_verifikasi,
         ]);
     }
 
@@ -162,8 +183,8 @@ class TteController extends Controller
                     if ($waiting) {
                         $html .= '<button type="button" class="btn btn-primary btn-sm btn-ttd-satu" data-id="'.$row->id.'" data-judul="'.e($this->tte->judulUntuk($row)).'">TTD</button>';
                     }
-                    if ($row->token_verifikasi) {
-                        $html .= ' <a class="btn btn-outline-secondary btn-sm" target="_blank" href="'.route('tte.berkas', $row->token_verifikasi).'">Berkas</a>';
+                    if ($row->token_verifikasi && $row->nama_modul) {
+                        $html .= ' <a class="btn btn-outline-secondary btn-sm" target="_blank" href="'.e($this->verifikasi->urlUntuk($row)).'">Berkas</a>';
                     }
                     $sudahAdaAfter = (int) $row->status === EtamTte::STATUS_BERHASIL && $row->path_file_after;
                     if ($bisaTarik && $row->kode_ds && ! $sudahAdaAfter) {
@@ -184,5 +205,19 @@ class TteController extends Controller
             : 'Sudah ditandatangani';
 
         return view('backend.tte.index', compact('waiting', 'judul', 'modulList', 'filterModul', 'bisaTarik'));
+    }
+
+    private function streamBerkasAsli(EtamTte $tte, bool $unduh): Response
+    {
+        $path = $this->verifikasi->pathBerkasAsli($tte);
+        abort_unless($path, 404);
+
+        $nama = basename($path);
+        $disposition = $unduh ? 'attachment' : 'inline';
+
+        return response(Storage::disk('local')->get($path), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => $disposition.'; filename="'.$nama.'"',
+        ]);
     }
 }

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alur BLK — ETAM Kerja</title>
+  <style>
+    :root {
+      --green: #2e7d32;
+      --green-dark: #1b5e20;
+      --green-soft: #e8f5e9;
+      --ink: #1c2430;
+      --muted: #5b6775;
+      --line: #c5d0c8;
+      --paper: #f4f7f4;
+      --pencari: #1565c0;
+      --perusahaan: #00897b;
+      --admin: #2e7d32;
+      --balai: #ef6c00;
+      --kadis: #c62828;
+      --warn: #f9a825;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.45;
+    }
+    .top {
+      background: linear-gradient(120deg, var(--green-dark), var(--green));
+      color: #fff;
+      padding: 22px 28px 18px;
+    }
+    .top h1 { margin: 0 0 4px; font-size: 22px; font-weight: 700; }
+    .top p { margin: 0; opacity: .9; font-size: 14px; }
+    .files {
+      display: flex;
+      gap: 8px;
+      padding: 10px 28px 0;
+      background: var(--paper);
+    }
+    .files a {
+      font-size: 13px;
+      color: var(--green-dark);
+      text-decoration: none;
+      font-weight: 650;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+    .files a.here { background: var(--green-soft); border-color: var(--green); }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 10px 28px 0;
+      background: var(--paper);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .tab {
+      border: 0;
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 18px;
+      border-radius: 10px 10px 0 0;
+      font-weight: 650;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      border-bottom: 0;
+      opacity: .7;
+    }
+    .tab.active { opacity: 1; box-shadow: 0 -2px 0 var(--green) inset; }
+    .panel { display: none; padding: 0 20px 48px; }
+    .panel.active { display: block; }
+    .note {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--green);
+      padding: 12px 16px;
+      margin: 16px 0 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .note strong { color: var(--ink); }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin: 0 0 16px;
+      font-size: 12px;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+    .board {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: auto;
+    }
+    .scroll-hint { font-size: 12px; color: var(--muted); margin: 0 0 8px; }
+    .swim { display: grid; }
+    .pencari-grid { grid-template-columns: 260px 270px 270px 250px; min-width: 1050px; }
+    .perusahaan-grid { grid-template-columns: 1fr 1fr; min-width: 860px; }
+    .head { display: contents; }
+    .head > div {
+      position: sticky; top: 0; z-index: 2;
+      padding: 12px 10px; text-align: center;
+      font-weight: 750; font-size: 13px; color: #fff;
+    }
+    .lane-pencari { background: var(--pencari); }
+    .lane-perusahaan { background: var(--perusahaan); }
+    .lane-admin { background: var(--admin); }
+    .lane-balai { background: var(--balai); }
+    .lane-kadis { background: var(--kadis); }
+    .cell {
+      border-right: 1px solid var(--line);
+      border-bottom: 1px dashed #e4ebe4;
+      padding: 14px 10px;
+      min-height: 84px;
+    }
+    .pencari-grid .cell:nth-child(4n+1) { background: #f7fbff; }
+    .pencari-grid .cell:nth-child(4n+2) { background: #f3fbf3; }
+    .pencari-grid .cell:nth-child(4n+3) { background: #fffaf3; }
+    .pencari-grid .cell:nth-child(4n+4) { background: #fff7f7; }
+    .perusahaan-grid .cell:nth-child(odd) { background: #f3fbfa; }
+    .perusahaan-grid .cell:nth-child(even) { background: #f3fbf3; }
+    .box {
+      background: #fff;
+      border: 1.5px solid #90a4ae;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 12.5px;
+    }
+    .box b { display: block; font-size: 12px; margin-bottom: 2px; }
+    .start, .end {
+      border-radius: 999px; text-align: center; font-weight: 700;
+      border-color: var(--green-dark); background: var(--green-soft);
+    }
+    .decision {
+      background: #fffde7; border-color: var(--warn);
+    }
+    .decision::before {
+      content: "◇ Keputusan";
+      display: block; font-size: 10px; font-weight: 700;
+      color: #9e6a00; text-transform: uppercase; margin-bottom: 2px;
+    }
+    .wait {
+      color: var(--muted); font-size: 12px; font-style: italic;
+      text-align: center; padding-top: 18px;
+    }
+    .arrow { text-align: center; color: #78909c; font-size: 16px; margin-top: 6px; }
+    .docs {
+      margin-top: 6px; padding: 6px 8px; background: #fafafa;
+      border-radius: 6px; font-size: 11px; color: var(--muted);
+    }
+    .tag {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      padding: 1px 6px; border-radius: 999px; margin-right: 4px;
+    }
+    .t-ok { background: #c8e6c9; color: #1b5e20; }
+    .t-tol { background: #ffcdd2; color: #b71c1c; }
+    .t-info { background: #bbdefb; color: #0d47a1; }
+    .t-tte { background: #e1bee7; color: #4a148c; }
+    .phase {
+      grid-column: 1 / -1;
+      background: #eef5ee; color: var(--green-dark);
+      font-size: 11px; font-weight: 800; letter-spacing: .08em;
+      text-transform: uppercase; padding: 6px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .foot { margin-top: 14px; font-size: 12px; color: var(--muted); }
+    @media print {
+      .tabs, .files { display: none; }
+      .panel { display: block !important; page-break-after: always; padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1>ETAM Kerja — Diagram Aktivitas BLK</h1>
+    <p>Pelatihan pencari kerja (ada TTE sertifikat) dan pelatihan perusahaan dipisah per aktor. Super Admin &amp; Admin Provinsi dapat mengelola semua BLK.</p>
+  </header>
+
+  <nav class="files">
+    <a href="index.html">K3 · PJK3 &amp; Suket</a>
+    <a class="here" href="blk.html">BLK</a>
+  </nav>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="pencari">1. Pelatihan Pencari Kerja</button>
+    <button class="tab" data-tab="perusahaan">2. Pelatihan Perusahaan</button>
+  </nav>
+
+  <section id="pencari" class="panel active">
+    <p class="note">
+      <strong>Pelatihan untuk pencari kerja</strong> — Admin Balai membuat pelatihan, pencari mendaftar, admin menyeleksi sampai <em>Lulus</em>.
+      Saat status jadi Lulus (plus nomor sertifikat), sistem mengantri <strong>Daftar Unit Kompetensi</strong> ke Kepala Balai.
+      Setelah Kepala Balai TTE, antrean <strong>Sertifikat Kelulusan</strong> masuk ke Kepala Dinas.
+      Pencari hanya boleh unduh kedua PDF setelah TTD Kadis.
+    </p>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--pencari)"></i> Pencari kerja</span>
+      <span><i class="swatch" style="background:var(--admin)"></i> Admin / Petugas Balai</span>
+      <span><i class="swatch" style="background:var(--balai)"></i> Kepala Balai (UPTD)</span>
+      <span><i class="swatch" style="background:var(--kadis)"></i> Kepala Dinas</span>
+    </div>
+    <p class="scroll-hint">Empat kolom aktor. Geser ke kanan jika Kadis terpotong.</p>
+
+    <div class="board">
+      <div class="swim pencari-grid">
+        <div class="head">
+          <div class="lane-pencari">Pencari kerja<br><small style="font-weight:500;opacity:.9">Peserta pelatihan</small></div>
+          <div class="lane-admin">Admin / Petugas Balai<br><small style="font-weight:500;opacity:.9">UPTD · kode struktur BLK</small></div>
+          <div class="lane-balai">Kepala Balai<br><small style="font-weight:500;opacity:.9">TTD unit kompetensi</small></div>
+          <div class="lane-kadis">Kepala Dinas<br><small style="font-weight:500;opacity:.9">TTD sertifikat kelulusan</small></div>
+        </div>
+
+        <div class="phase">Buat pelatihan</div>
+        <div class="cell"><div class="wait">Belum ada pelatihan</div></div>
+        <div class="cell">
+          <div class="box">
+            <b>1. Buat pelatihan (untuk pencari)</b>
+            Draft → <strong>Aktif</strong>, isi periode daftar &amp; pelaksanaan
+            <div class="docs">Hanya pelatihan Aktif yang bisa didaftar. Super Admin / Admin Prov / staf balai.</div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell"><div class="wait">—</div></div>
+        <div class="cell"><div class="wait">—</div></div>
+
+        <div class="phase">Pendaftaran</div>
+        <div class="cell">
+          <div class="box start">Mulai — login pencari kerja</div>
+          <div class="arrow">↓</div>
+          <div class="box">
+            <b>2. Daftar ke pelatihan</b>
+            Status <strong>Menunggu</strong>. Tidak boleh daftar dua kali ke pelatihan yang sama.
+          </div>
+        </div>
+        <div class="cell">
+          <div class="box">
+            <b>3. Terima antrean peserta</b>
+            Lihat profil &amp; riwayat
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell"><div class="wait">—</div></div>
+        <div class="cell"><div class="wait">—</div></div>
+
+        <div class="phase">Seleksi</div>
+        <div class="cell">
+          <div class="box">
+            <b>Pantau status</b>
+            Menunggu → Proses Seleksi → Diterima / Ditolak / Cadangan
+          </div>
+        </div>
+        <div class="cell">
+          <div class="box decision">
+            Ubah status peserta
+            <div style="margin-top:6px">
+              <span class="tag t-info">Seleksi</span>
+              <span class="tag t-ok">Diterima</span>
+              <span class="tag t-tol">Ditolak</span>
+              Cadangan
+            </div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell"><div class="wait">—</div></div>
+        <div class="cell"><div class="wait">—</div></div>
+
+        <div class="phase">Pelaksanaan &amp; kelulusan</div>
+        <div class="cell"><div class="wait">Ikut pelatihan (jika diterima)</div></div>
+        <div class="cell">
+          <div class="box">
+            <b>4. Set Lulus + nomor sertifikat</b>
+            Status TTD jadi <strong>Diajukan ke Kepala UPTD</strong>
+            <div class="docs">Sistem mengantri PDF Daftar Unit Kompetensi ke Kepala Balai (kode struktur BLK). Jika status ditarik dari Lulus sebelum TTD UPTD, antrean TTE dibatalkan.</div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell">
+          <div class="box">
+            <b>5. Terima antrean TTE</b>
+            Dokumen: Daftar Unit Kompetensi
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell"><div class="wait">Belum masuk antrean</div></div>
+
+        <div class="phase">Tanda tangan elektronik</div>
+        <div class="cell">
+          <div class="box">
+            <b>Belum bisa unduh</b>
+            Tombol unduh muncul hanya setelah TTD Kadis
+          </div>
+        </div>
+        <div class="cell"><div class="wait">Menunggu TTD berjenjang</div></div>
+        <div class="cell">
+          <div class="box">
+            <b>6. TTE Daftar Unit Kompetensi</b>
+            Passphrase · NIK wajib
+            <div class="docs"><span class="tag t-tte">TTD UPTD</span> Setelah berhasil, sistem membuat antrean Sertifikat Kelulusan ke Kepala Dinas. Tidak TTD sertifikat di tahap ini.</div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell">
+          <div class="box">
+            <b>7. TTE Sertifikat Kelulusan</b>
+            Berkas after Kepala Balai
+            <div class="docs">Jika DS timeout: TTD di DS tetap dihitung; Super Admin dapat <strong>Tarik</strong> PDF memakai kode DS.</div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+
+        <div class="phase">Terbit</div>
+        <div class="cell">
+          <div class="box" style="border-color:#2e7d32">
+            <b>8. Unduh berkas</b>
+            sertifikat_tte_{id}.pdf<br>
+            uji_kompetensi_tte_{id}.pdf
+            <div class="docs">Nama &amp; isi sama seperti berkas TTE yang disimpan; tidak diganti saat unduh.</div>
+          </div>
+        </div>
+        <div class="cell">
+          <div class="box" style="border-color:#2e7d32">
+            <b>Admin juga bisa unduh</b>
+            Setelah status <strong>Sudah ditandatangani Kepala Dinas</strong>
+          </div>
+        </div>
+        <div class="cell"><div class="wait">Selesai tugas</div></div>
+        <div class="cell">
+          <div class="box" style="border-color:#2e7d32">
+            <b>Sertifikat terbit</b>
+            Status TTD = TTD Dinas
+          </div>
+        </div>
+
+        <div class="cell"><div class="box end">Selesai</div></div>
+        <div class="cell"><div class="box end">Selesai</div></div>
+        <div class="cell"><div class="box end">Selesai</div></div>
+        <div class="cell"><div class="box end">Selesai</div></div>
+      </div>
+    </div>
+    <p class="foot">Kepala Balai hanya melihat antrean BLK dengan kode struktur yang sama. Kepala Dinas melihat antrean sertifikat. Super Admin melihat semua.</p>
+  </section>
+
+  <section id="perusahaan" class="panel">
+    <p class="note">
+      <strong>Pelatihan untuk pemberi kerja / perusahaan</strong> — alur daftar &amp; seleksi sama, tetapi <em>tidak ada TTE sertifikat</em>.
+      Data peserta masuk tabel perusahaan, bukan peserta pencari. Tombol ajukan TTD tidak tersedia.
+    </p>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--perusahaan)"></i> Perusahaan (pemberi kerja)</span>
+      <span><i class="swatch" style="background:var(--admin)"></i> Admin / Petugas Balai</span>
+    </div>
+
+    <div class="board">
+      <div class="swim perusahaan-grid">
+        <div class="head">
+          <div class="lane-perusahaan">Perusahaan<br><small style="font-weight:500;opacity:.9">Pemberi kerja · akun penyedia</small></div>
+          <div class="lane-admin">Admin / Petugas Balai<br><small style="font-weight:500;opacity:.9">UPTD · Super Admin · Admin Prov</small></div>
+        </div>
+
+        <div class="phase">Buat pelatihan</div>
+        <div class="cell"><div class="wait">Belum ada pelatihan</div></div>
+        <div class="cell">
+          <div class="box">
+            <b>1. Buat pelatihan (untuk pemberi kerja)</b>
+            Draft → Aktif
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+
+        <div class="phase">Pendaftaran</div>
+        <div class="cell">
+          <div class="box start">Mulai — login penyedia</div>
+          <div class="arrow">↓</div>
+          <div class="box">
+            <b>2. Daftar ke pelatihan perusahaan</b>
+            Status <strong>Menunggu</strong>. Tidak boleh daftar dua kali.
+          </div>
+        </div>
+        <div class="cell">
+          <div class="box">
+            <b>3. Terima antrean perusahaan</b>
+            Nama, NIB, kontak
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+
+        <div class="phase">Seleksi</div>
+        <div class="cell">
+          <div class="box">
+            <b>Pantau status</b>
+            Menunggu → Proses Seleksi → Diterima / Ditolak / Cadangan / Lulus
+          </div>
+        </div>
+        <div class="cell">
+          <div class="box decision">
+            Ubah status perusahaan peserta
+            <div style="margin-top:6px">
+              <span class="tag t-ok">Diterima</span>
+              <span class="tag t-tol">Ditolak</span>
+              Seleksi · Cadangan · Lulus
+            </div>
+            <div class="docs">Status Lulus di sini <strong>tidak</strong> membuat antrean TTE / sertifikat.</div>
+          </div>
+        </div>
+
+        <div class="phase">Selesai</div>
+        <div class="cell"><div class="box end">Selesai — ikut pelatihan sesuai status</div></div>
+        <div class="cell"><div class="box end">Selesai — tanpa TTD dinas</div></div>
+      </div>
+    </div>
+    <p class="foot">Pencari kerja tidak bisa daftar ke pelatihan perusahaan, dan sebaliknya. Sertifikat elektronik hanya untuk alur pencari kerja.</p>
+  </section>
+
+  <script>
+    document.querySelectorAll('.tab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+        document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

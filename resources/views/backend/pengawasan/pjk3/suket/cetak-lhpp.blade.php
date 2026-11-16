@@ -6,6 +6,8 @@
     $tampilFooter = $untukDs || ! $tampilDraft;
     $logoBsre = $logoBsre ?? null;
     $bsreTeks = $bsreTeks ?? '';
+    $urlVerifikasi = $urlVerifikasi ?? null;
+    $qrVerifikasi = $qrVerifikasi ?? null;
     $hasil = (int) $suket->is_layak === 1 ? 'LAYAK' : 'TIDAK LAYAK';
     $perangkat = $suket->perangkat;
     $teknis = $perangkat->isNotEmpty() ? $perangkat : $suket->nilaiLhpp('data_teknis', []);
@@ -19,6 +21,14 @@
     @include('backend.pengawasan.pjk3.suket._cetak-k3-style')
 </head>
 <body>
+    @if ($tampilFooter && $logoBsre)
+        <div class="bsre-footer-wrap">
+            @include('backend.blk.pelatihan._bsre-footer', ['sertifikat' => [
+                'logo_bsre' => $logoBsre,
+                'bsre_teks' => $bsreTeks,
+            ]])
+        </div>
+    @endif
     @if ($tampilDraft)
         <div class="watermark">DRAFT</div>
     @endif
@@ -175,12 +185,8 @@
             @if (! $untukDs && $suket->ttd_pengawas_at)
                 <p><em>Telah ditandatangani secara elektronik</em><br>
                     {{ optional($suket->ttd_pengawas_at)->format('d-m-Y H:i') }}</p>
-            @elseif ($untukDs && $logoBsre)
-                <table class="ttd-bsre-wrap">
-                    <tr>
-                        <td><img src="{{ $logoBsre }}" alt="Logo BSrE" class="ttd-bsre"></td>
-                    </tr>
-                </table>
+            @elseif ($untukDs)
+                @include('backend.tte._qr-ttd')
             @else
                 <br><br><br>
             @endif
@@ -188,14 +194,5 @@
         <p><strong><u>{{ $suket->pengawas->name ?? '................................' }}</u></strong></p>
     </div>
     <div style="clear:both"></div>
-
-    @if ($tampilFooter && $logoBsre)
-        <div class="bsre-footer-wrap">
-            @include('backend.blk.pelatihan._bsre-footer', ['sertifikat' => [
-                'logo_bsre' => $logoBsre,
-                'bsre_teks' => $bsreTeks,
-            ]])
-        </div>
-    @endif
 </body>
 </html>

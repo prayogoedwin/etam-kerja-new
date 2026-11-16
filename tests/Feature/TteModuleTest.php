@@ -11,8 +11,10 @@ use App\Models\EtamTteLog;
 use App\Models\HI\PP\EtamHiPpAjuan;
 use App\Models\User;
 use App\Models\UserPencari;
+use App\Services\Blk\BlkSertifikatKelulusanService;
 use App\Services\Tte\DsClient;
 use App\Services\Tte\TteQueue;
+use App\Services\Tte\TteVerifikasi;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
@@ -255,8 +257,8 @@ class TteModuleTest extends TestCase
             ->json('data'))->pluck('options')->implode(' ');
         $this->assertStringContainsString('>Unduh</a>', $options);
         $this->assertStringContainsString('data-unduh-tte=', $options);
-        $this->assertStringContainsString('1-sertifikat-kelulusan.pdf', $options);
-        $this->assertStringContainsString('2-daftar-unit-kompetensi.pdf', $options);
+        $this->assertStringContainsString('sertifikat_tte_'.$peserta->id.'.pdf', $options);
+        $this->assertStringContainsString('uji_kompetensi_tte_'.$peserta->id.'.pdf', $options);
 
         $this->actingAs($pencariUser)
             ->get(route('blk.pelatihan.daftar', $peserta->blk_pelatihan_id))
@@ -270,13 +272,13 @@ class TteModuleTest extends TestCase
         $unduhSertifikat = $this->actingAs($pencariUser)
             ->get(route('historypelatihan.pencari.sertifikat', [$peserta->id, 'sertifikat']));
         $unduhSertifikat->assertOk();
-        $unduhSertifikat->assertDownload('1-sertifikat-kelulusan.pdf');
+        $unduhSertifikat->assertDownload('sertifikat_tte_'.$peserta->id.'.pdf');
         $this->assertSame($signedSertifikat, $unduhSertifikat->streamedContent());
 
         $unduhKompetensi = $this->actingAs($pencariUser)
             ->get(route('historypelatihan.pencari.sertifikat', [$peserta->id, 'kompetensi']));
         $unduhKompetensi->assertOk();
-        $unduhKompetensi->assertDownload('2-daftar-unit-kompetensi.pdf');
+        $unduhKompetensi->assertDownload('uji_kompetensi_tte_'.$peserta->id.'.pdf');
         $this->assertSame($signedKompetensi, $unduhKompetensi->streamedContent());
 
         $admin = $this->makeUser('admin-balai', ['kode_struktur' => '34', 'lokasi_kerja' => '64']);
@@ -289,8 +291,8 @@ class TteModuleTest extends TestCase
         $this->assertStringNotContainsString('>Unduh</a>', $adminOptions);
         $this->assertStringContainsString('>Unduh</a>', $adminTtd);
         $this->assertStringContainsString('data-unduh-tte=', $adminTtd);
-        $this->assertStringContainsString('1-sertifikat-kelulusan.pdf', $adminTtd);
-        $this->assertStringContainsString('2-daftar-unit-kompetensi.pdf', $adminTtd);
+        $this->assertStringContainsString('sertifikat_tte_'.$peserta->id.'.pdf', $adminTtd);
+        $this->assertStringContainsString('uji_kompetensi_tte_'.$peserta->id.'.pdf', $adminTtd);
 
         $this->actingAs($admin)
             ->get(route('blk.pelatihan.peserta.show', [$peserta->blk_pelatihan_id, $peserta->id]))
@@ -301,13 +303,13 @@ class TteModuleTest extends TestCase
         $unduhAdminSertifikat = $this->actingAs($admin)
             ->get(route('blk.pelatihan.peserta.unduh', [$peserta->blk_pelatihan_id, $peserta->id, 'sertifikat']));
         $unduhAdminSertifikat->assertOk();
-        $unduhAdminSertifikat->assertDownload('1-sertifikat-kelulusan.pdf');
+        $unduhAdminSertifikat->assertDownload('sertifikat_tte_'.$peserta->id.'.pdf');
         $this->assertSame($signedSertifikat, $unduhAdminSertifikat->streamedContent());
 
         $unduhAdminKompetensi = $this->actingAs($admin)
             ->get(route('blk.pelatihan.peserta.unduh', [$peserta->blk_pelatihan_id, $peserta->id, 'kompetensi']));
         $unduhAdminKompetensi->assertOk();
-        $unduhAdminKompetensi->assertDownload('2-daftar-unit-kompetensi.pdf');
+        $unduhAdminKompetensi->assertDownload('uji_kompetensi_tte_'.$peserta->id.'.pdf');
         $this->assertSame($signedKompetensi, $unduhAdminKompetensi->streamedContent());
     }
 
@@ -647,12 +649,107 @@ class TteModuleTest extends TestCase
     {
         $peserta = $this->buatPesertaBlk('34', 'QR Berkas');
         $tte = app(TteQueue::class)->ajukanBlkUptd($peserta);
+        $tte->refresh();
 
         $this->assertNotEmpty($tte->token_verifikasi);
+        $url = url('verifikasi/tte/blk/'.$tte->token_verifikasi);
+        $this->assertSame($url, app(TteVerifikasi::class)->urlUntuk($tte));
+
         $this->get(route('tte.berkas', $tte->token_verifikasi))
+            ->assertRedirect(route('tte.verifikasi', [
+                'modul' => 'blk',
+                'kode' => $tte->token_verifikasi,
+            ]));
+
+        $this->get($url)
             ->assertOk()
-            ->assertSee('Verifikasi berkas TTE')
-            ->assertSee('QR Berkas');
+            ->assertSee('Verifikasi TTE')
+            ->assertSee('QR Berkas')
+            ->assertSee('Berkas asli belum tersedia')
+            ->assertSee('Menunggu tanda tangan elektronik')
+            ->assertDontSee('Lihat File');
+
+        $pelatihan = $peserta->pelatihan()->with(['blk', 'kompetensiInti', 'kompetensiPenunjang'])->first();
+        $qr = app(TteVerifikasi::class)->untukDokumen('blk', $peserta->id, EtamBlkPelatihanPeserta::TTE_DOK_KOMPETENSI);
+        $html = view('backend.blk.pelatihan.sertifikat', [
+            'pelatihan' => $pelatihan,
+            'peserta' => $peserta,
+            'sertifikat' => app(BlkSertifikatKelulusanService::class)->build($pelatihan, $peserta),
+            'halaman' => 'kompetensi',
+            'modeUnduh' => true,
+            'untukDs' => true,
+            'tampilanAdmin' => false,
+            'urlVerifikasi' => $qr['url'],
+            'qrVerifikasi' => $qr['qr'],
+        ])->render();
+        $this->assertStringContainsString('verifikasi/tte/blk/'.$tte->token_verifikasi, $html);
+        $this->assertStringContainsString('QR verifikasi TTE', $html);
+        $this->assertStringContainsString('ttd-qr', $html);
+        $this->assertNotEmpty($qr['qr']);
+        $this->assertStringStartsWith('data:image/png;base64,', (string) $qr['qr']);
+        $png = base64_decode(substr((string) $qr['qr'], strlen('data:image/png;base64,')), true);
+        $this->assertIsString($png);
+        $this->assertStringStartsWith("\x89PNG", $png);
+    }
+
+    public function test_halaman_verifikasi_menampilkan_berkas_asli(): void
+    {
+        $peserta = $this->buatPesertaBlk('34', 'QR Asli');
+        $tte = app(TteQueue::class)->ajukanBlkUptd($peserta);
+        $path = 'tte/after/blk/2026/11/uji_kompetensi_tte_'.$peserta->id.'.pdf';
+        Storage::disk('local')->put($path, '%PDF-1.4 signed-kompetensi');
+        $tte->update([
+            'status' => EtamTte::STATUS_BERHASIL,
+            'path_file_after' => $path,
+        ]);
+
+        $halaman = $this->get(route('tte.verifikasi', [
+            'modul' => 'blk',
+            'kode' => $tte->token_verifikasi,
+        ]));
+        $halaman->assertOk()
+            ->assertSee('Telah ditandatangani secara elektronik')
+            ->assertSee('Lihat File')
+            ->assertSee('Unduh PDF')
+            ->assertSee(route('tte.verifikasi.berkas', [
+                'modul' => 'blk',
+                'kode' => $tte->token_verifikasi,
+            ]), false)
+            ->assertDontSee('Berkas asli belum tersedia');
+
+        $this->get(route('tte.verifikasi.berkas', [
+            'modul' => 'blk',
+            'kode' => $tte->token_verifikasi,
+        ]))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf')
+            ->assertHeader('content-disposition', 'inline; filename="uji_kompetensi_tte_'.$peserta->id.'.pdf"');
+
+        $this->get(route('tte.verifikasi.berkas', [
+            'modul' => 'blk',
+            'kode' => $tte->token_verifikasi,
+            'unduh' => 1,
+        ]))
+            ->assertOk()
+            ->assertHeader('content-disposition', 'attachment; filename="uji_kompetensi_tte_'.$peserta->id.'.pdf"');
+        $this->assertSame('%PDF-1.4 signed-kompetensi', $this->get(route('tte.verifikasi.berkas', [
+            'modul' => 'blk',
+            'kode' => $tte->token_verifikasi,
+            'unduh' => 1,
+        ]))->getContent());
+    }
+
+    public function test_verifikasi_modul_salah_tidak_ketemu(): void
+    {
+        $peserta = $this->buatPesertaBlk('34', 'QR Salah Modul');
+        $tte = app(TteQueue::class)->ajukanBlkUptd($peserta);
+
+        $this->get(route('tte.verifikasi', [
+            'modul' => 'suket_k3',
+            'kode' => $tte->token_verifikasi,
+        ]))
+            ->assertNotFound()
+            ->assertSee('Kode verifikasi tidak ditemukan');
     }
 
     private function buatPesertaBlk(string $kodeStruktur, string $nama, int $statusTtd = EtamBlkPelatihanPeserta::TTD_DIAJUKAN_UPTD): EtamBlkPelatihanPeserta

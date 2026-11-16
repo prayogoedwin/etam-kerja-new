@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alur PJK3 &amp; Suket K3 — ETAM Kerja</title>
+  <style>
+    :root {
+      --green: #2e7d32;
+      --green-dark: #1b5e20;
+      --green-soft: #e8f5e9;
+      --ink: #1c2430;
+      --muted: #5b6775;
+      --line: #c5d0c8;
+      --paper: #f4f7f4;
+      --white: #fff;
+      --biasa: #1565c0;
+      --biasa-soft: #e3f2fd;
+      --pjk3: #00897b;
+      --pjk3-soft: #e0f2f1;
+      --kasi: #ef6c00;
+      --kasi-soft: #fff3e0;
+      --pengawas: #6a1b9a;
+      --pengawas-soft: #f3e5f5;
+      --kadis: #c62828;
+      --kadis-soft: #ffebee;
+      --admin: #2e7d32;
+      --admin-soft: #e8f5e9;
+      --warn: #f9a825;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.45;
+    }
+    .top {
+      background: linear-gradient(120deg, var(--green-dark), var(--green));
+      color: #fff;
+      padding: 22px 28px 18px;
+    }
+    .top h1 { margin: 0 0 4px; font-size: 22px; font-weight: 700; }
+    .top p { margin: 0; opacity: .9; font-size: 14px; }
+    .files {
+      display: flex;
+      gap: 8px;
+      padding: 10px 28px 0;
+      background: var(--paper);
+    }
+    .files a {
+      font-size: 13px;
+      color: var(--green-dark);
+      text-decoration: none;
+      font-weight: 650;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+    .files a.here { background: var(--green-soft); border-color: var(--green); }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      padding: 10px 28px 0;
+      background: var(--paper);
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+    .tab {
+      border: 0;
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 18px;
+      border-radius: 10px 10px 0 0;
+      font-weight: 650;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      border-bottom: 0;
+      opacity: .7;
+    }
+    .tab.active { opacity: 1; background: #fff; box-shadow: 0 -2px 0 var(--green) inset; }
+    .panel { display: none; padding: 0 20px 48px; }
+    .panel.active { display: block; }
+    .note {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--green);
+      padding: 12px 16px;
+      margin: 16px 0 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .note strong { color: var(--ink); }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin: 0 0 16px;
+      font-size: 12px;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .swatch {
+      width: 12px; height: 12px; border-radius: 3px; display: inline-block;
+    }
+    .board {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: auto;
+      max-height: none;
+    }
+    .scroll-hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+    .swim {
+      display: grid;
+    }
+    .pjk3-grid { grid-template-columns: 1fr 1fr; min-width: 860px; }
+    .suket-grid { grid-template-columns: 260px 280px 250px 280px 240px; min-width: 1310px; }
+    .head {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: contents;
+    }
+    .head > div {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 12px 10px;
+      text-align: center;
+      font-weight: 750;
+      font-size: 13px;
+      color: #fff;
+      letter-spacing: .02em;
+    }
+    .lane-biasa { background: var(--biasa); }
+    .lane-pjk3 { background: var(--pjk3); }
+    .lane-kasi { background: var(--kasi); }
+    .lane-pengawas { background: var(--pengawas); }
+    .lane-kadis { background: var(--kadis); }
+    .lane-admin { background: var(--admin); }
+    .row { display: contents; }
+    .cell {
+      border-right: 1px solid var(--line);
+      border-bottom: 1px dashed #e4ebe4;
+      padding: 14px 10px;
+      min-height: 84px;
+      background: #fbfdfb;
+      vertical-align: top;
+    }
+    .pjk3-grid .cell:nth-child(odd),
+    .suket-grid .cell:nth-child(5n+1) { background: #f7fbff; }
+    .suket-grid .cell:nth-child(5n+2) { background: #f3fbfa; }
+    .suket-grid .cell:nth-child(5n+3) { background: #fffaf3; }
+    .suket-grid .cell:nth-child(5n+4) { background: #fbf6fd; }
+    .suket-grid .cell:nth-child(5n+5) { background: #fff7f7; }
+    .box {
+      background: #fff;
+      border: 1.5px solid #90a4ae;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 12.5px;
+      box-shadow: 0 1px 0 rgba(0,0,0,.04);
+    }
+    .box b { display: block; font-size: 12px; margin-bottom: 2px; }
+    .start, .end {
+      border-radius: 999px;
+      text-align: center;
+      font-weight: 700;
+      border-color: var(--green-dark);
+      background: var(--green-soft);
+    }
+    .decision {
+      background: #fffde7;
+      border-color: var(--warn);
+      border-radius: 4px;
+      transform: none;
+      text-align: left;
+    }
+    .decision::before {
+      content: "◇ Keputusan";
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      color: #9e6a00;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 2px;
+    }
+    .wait {
+      color: var(--muted);
+      font-size: 12px;
+      font-style: italic;
+      text-align: center;
+      padding-top: 18px;
+    }
+    .arrow {
+      text-align: center;
+      color: #78909c;
+      font-size: 16px;
+      line-height: 1;
+      margin-top: 6px;
+    }
+    .docs {
+      margin-top: 6px;
+      padding: 6px 8px;
+      background: #fafafa;
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 999px;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+    .t-acc { background: #c8e6c9; color: #1b5e20; }
+    .t-rev { background: #bbdefb; color: #0d47a1; }
+    .t-tol { background: #ffcdd2; color: #b71c1c; }
+    .t-dispo { background: #ffe0b2; color: #e65100; }
+    .t-tte { background: #e1bee7; color: #4a148c; }
+    .t-ok { background: #c8e6c9; color: #1b5e20; }
+    .phase {
+      grid-column: 1 / -1;
+      background: #eef5ee;
+      color: var(--green-dark);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .foot {
+      margin-top: 14px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    @media print {
+      .tabs, .files { display: none; }
+      .panel { display: block !important; page-break-after: always; padding: 0; }
+      .top { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1>ETAM Kerja — Diagram Aktivitas Layanan K3</h1>
+    <p>Alur dibagi per aktor. Perusahaan biasa dan perusahaan PJK3 dipisah. Super Admin &amp; Admin Provinsi dapat melakukan seluruh aksi admin.</p>
+  </header>
+
+  <nav class="files">
+    <a class="here" href="index.html">K3 · PJK3 &amp; Suket</a>
+    <a href="blk.html">BLK</a>
+  </nav>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="pjk3">1. Pendaftaran PJK3</button>
+    <button class="tab" data-tab="suket">2. Ajuan Suket Layak K3</button>
+  </nav>
+
+  <section id="pjk3" class="panel active">
+    <p class="note">
+      <strong>Pendaftaran PJK3</strong> — perusahaan (penyedia) mengajukan diri sebagai Perusahaan Jasa K3.
+      Verifikasi oleh Admin Bidang Pengawasan (kode struktur 2 / 21), Super Admin, atau Admin Provinsi.
+      Kepala Dinas dapat melihat, tidak memverifikasi.
+      Ajuan baru hanya jika belum ada yang menunggu/revisi, atau ajuan terakhir ditolak / masa berlaku ACC habis.
+    </p>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--biasa)"></i> Perusahaan (calon PJK3)</span>
+      <span><i class="swatch" style="background:var(--admin)"></i> Admin PJK3 / Bidang Pengawasan</span>
+      <span><i class="swatch" style="background:var(--warn)"></i> Cabang keputusan</span>
+    </div>
+
+    <p class="scroll-hint">Kolom kiri–kanan = aktor. Alur dibaca dari atas ke bawah.</p>
+    <div class="board">
+      <div class="swim pjk3-grid">
+        <div class="head">
+          <div class="lane-biasa">Perusahaan<br><small style="font-weight:500;opacity:.9">Penyedia — belum / akan jadi PJK3</small></div>
+          <div class="lane-admin">Admin PJK3<br><small style="font-weight:500;opacity:.9">Bidang Pengawasan · Super Admin · Admin Prov</small></div>
+        </div>
+        <div class="phase">Awal</div>
+
+        <div class="cell"><div class="box start">Mulai — login sebagai penyedia</div></div>
+        <div class="cell"><div class="wait">Siaga antrean verifikasi</div></div>
+
+        <div class="phase">Pengajuan</div>
+
+        <div class="cell">
+          <div class="box">
+            <b>1. Buka Pendaftaran PJK3</b>
+            Menu Layanan K3 → Pendaftaran PJK3
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell"><div class="wait">—</div></div>
+
+        <div class="cell">
+          <div class="box decision">
+            Apakah ada ajuan menunggu, revisi, atau ACC yang masih berlaku?
+            <div style="margin-top:6px"><span class="tag t-tol">Ya</span> berhenti, tidak boleh ajukan baru<br>
+            <span class="tag t-ok">Tidak</span> lanjut unggah dokumen</div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell"><div class="wait">—</div></div>
+
+        <div class="cell">
+          <div class="box">
+            <b>2. Unggah dokumen &amp; kirim</b>
+            Status menjadi <strong>Menunggu</strong>
+            <div class="docs">
+              SK PJK3 Kemnaker (aktif) · SK Ahli K3 sesuai objek (aktif) · Bukti WLKP · Bukti setor BPJS bulan terakhir
+            </div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell">
+          <div class="box">
+            <b>3. Terima antrean</b>
+            Lihat data perusahaan &amp; unduh berkas
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+
+        <div class="phase">Verifikasi</div>
+
+        <div class="cell"><div class="wait">Menunggu hasil verifikasi</div></div>
+        <div class="cell">
+          <div class="box decision">
+            Periksa kelengkapan &amp; keabsahan
+            <div style="margin-top:6px">
+              <span class="tag t-acc">ACC</span> isi masa berlaku<br>
+              <span class="tag t-rev">Revisi</span> isi alasan, kembalikan<br>
+              <span class="tag t-tol">Tolak</span> isi alasan
+            </div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+
+        <div class="phase">Cabang hasil</div>
+
+        <div class="cell">
+          <div class="box" style="border-color:#2e7d32">
+            <b><span class="tag t-acc">ACC</span> Jadi PJK3 aktif</b>
+            Boleh mengajukan Suket K3 untuk perusahaan lain sampai masa berlaku habis
+          </div>
+        </div>
+        <div class="cell">
+          <div class="box" style="border-color:#2e7d32">
+            <b>Catat masa berlaku</b>
+            Perusahaan tercatat sebagai PJK3
+          </div>
+        </div>
+
+        <div class="cell">
+          <div class="box" style="border-color:#1565c0">
+            <b><span class="tag t-rev">Revisi</span> Perbaiki dokumen</b>
+            Kirim ajuan ulang → status kembali Menunggu
+          </div>
+          <div class="arrow">↓ kembali ke langkah 3</div>
+        </div>
+        <div class="cell">
+          <div class="box" style="border-color:#1565c0">
+            <b>Minta perbaikan</b>
+            Alasan tampil di detail perusahaan
+          </div>
+        </div>
+
+        <div class="cell">
+          <div class="box" style="border-color:#c62828">
+            <b><span class="tag t-tol">Tolak</span> / masa berlaku habis</b>
+            Boleh mengajukan pendaftaran baru dari awal
+          </div>
+        </div>
+        <div class="cell">
+          <div class="box" style="border-color:#c62828">
+            <b>Tutup ajuan</b>
+            Tidak menjadi PJK3
+          </div>
+        </div>
+
+        <div class="cell"><div class="box end">Selesai — status PJK3 diketahui</div></div>
+        <div class="cell"><div class="box end">Selesai verifikasi</div></div>
+      </div>
+    </div>
+    <p class="foot">Perusahaan biasa yang belum ACC PJK3 tidak bisa mengajukan Suket. Setelah ACC, akun yang sama berperan sebagai <strong>Perusahaan PJK3</strong> di alur berikutnya.</p>
+  </section>
+
+  <section id="suket" class="panel">
+    <p class="note">
+      <strong>Ajuan Suket Layak K3</strong> — PJK3 mengajukan suket atas nama perusahaan yang diperiksa, memakai kode akses perusahaan (berlaku 30 hari).
+      Perusahaan biasa tidak mengajukan sendiri. Status publik: Diajukan → Diproses → Selesai.
+      Admin melihat 5 tahap: Diajukan → Disposisi Kasi → Pemeriksaan → TTD Pengawas → TTD Kadis.
+      Suket terbit ke perusahaan hanya setelah TTD Kepala Dinas.
+    </p>
+    <div class="legend">
+      <span><i class="swatch" style="background:var(--biasa)"></i> Perusahaan biasa (objek pemeriksaan)</span>
+      <span><i class="swatch" style="background:var(--pjk3)"></i> Perusahaan PJK3</span>
+      <span><i class="swatch" style="background:var(--kasi)"></i> Admin Bidang / Kepala Seksi</span>
+      <span><i class="swatch" style="background:var(--pengawas)"></i> Pengawas K3</span>
+      <span><i class="swatch" style="background:var(--kadis)"></i> Kepala Dinas</span>
+    </div>
+
+    <p class="scroll-hint">Lima kolom aktor. Geser ke kanan jika Pengawas / Kadis terpotong.</p>
+    <div class="board">
+      <div class="swim suket-grid">
+        <div class="head">
+          <div class="lane-biasa">Perusahaan biasa<br><small style="font-weight:500;opacity:.9">Yang diperiksa · bukan PJK3</small></div>
+          <div class="lane-pjk3">Perusahaan PJK3<br><small style="font-weight:500;opacity:.9">Harus ACC pendaftaran PJK3</small></div>
+          <div class="lane-kasi">Admin Bidang / Kasi<br><small style="font-weight:500;opacity:.9">Disposisi · kode 2 / 21 / 22</small></div>
+          <div class="lane-pengawas">Pengawas K3<br><small style="font-weight:500;opacity:.9">Petugas bidang 2x</small></div>
+          <div class="lane-kadis">Kepala Dinas<br><small style="font-weight:500;opacity:.9">TTD akhir Suket</small></div>
+        </div>
+        <div class="phase">Awal — kode akses</div>
+
+        <div class="cell"><div class="box start">Mulai — login penyedia</div></div>
+        <div class="cell"><div class="box start">Mulai — login PJK3 aktif</div></div>
+        <div class="cell"><div class="wait">Siaga antrean</div></div>
+        <div class="cell"><div class="wait">Siaga antrean</div></div>
+        <div class="cell"><div class="wait">Siaga antrean TTE</div></div>
+
+        <div class="cell">
+          <div class="box">
+            <b>1. Buat kode Suket K3</b>
+            Menu Kode Suket K3 → buat kode baru
+            <div class="docs">Kode berlaku <strong>30 hari</strong>. Contoh: SK3-XXXXXX. Serahkan ke PJK3 di luar sistem.</div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell">
+          <div class="box">
+            <b>2. Terima kode dari perusahaan</b>
+            Tidak boleh memakai kode milik akun sendiri
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell"><div class="wait">—</div></div>
+        <div class="cell"><div class="wait">—</div></div>
+        <div class="cell"><div class="wait">—</div></div>
+
+        <div class="phase">Pengajuan oleh PJK3</div>
+
+        <div class="cell"><div class="wait">Kode sudah diserahkan, menunggu pengajuan</div></div>
+        <div class="cell">
+          <div class="box">
+            <b>3. Cari perusahaan dengan kode</b>
+            Jika kode salah / kadaluarsa / milik sendiri → ditolak
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell"><div class="wait">—</div></div>
+        <div class="cell"><div class="wait">—</div></div>
+        <div class="cell"><div class="wait">—</div></div>
+
+        <div class="cell"><div class="wait">—</div></div>
+        <div class="cell">
+          <div class="box">
+            <b>4. Isi alat &amp; unggah, kirim ajuan</b>
+            Status <strong>Diajukan</strong>
+            <div class="docs">
+              Surat permohonan · LHPP PJK3 · SKP PJK3 · SKP Ahli K3<br>
+              Minimal satu perangkat (jenis, nama, merk, jumlah, lokasi)
+            </div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell">
+          <div class="box">
+            <b>5. Terima pengajuan baru</b>
+            Lihat PJK3, perusahaan, dokumen
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell"><div class="wait">Belum ditugaskan</div></div>
+        <div class="cell"><div class="wait">—</div></div>
+
+        <div class="phase">Disposisi &amp; pemeriksaan</div>
+
+        <div class="cell">
+          <div class="box">
+            <b>Pantau status publik</b>
+            Diajukan → Diproses → Selesai<br>
+            <span class="docs">Tidak melihat detail disposisi / TTD</span>
+          </div>
+        </div>
+        <div class="cell">
+          <div class="box">
+            <b>Pantau pengajuan sendiri</b>
+            Timeline sama (publik)
+          </div>
+        </div>
+        <div class="cell">
+          <div class="box">
+            <b>6. Disposisi ke pengawas</b>
+            Pilih pengawas Bidang Pengawasan, catatan opsional
+            <div class="docs"><span class="tag t-dispo">Status Disposisi Kasi</span> Actor: admin-bidang 2/21/22, kasi 21/22, Super Admin, Admin Prov. Pengawas tidak boleh disposisi.</div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell">
+          <div class="box">
+            <b>7. Terima disposisi</b>
+            Hanya melihat ajuan yang ditugaskan kepadanya
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell"><div class="wait">—</div></div>
+
+        <div class="cell"><div class="wait">Masih Diproses</div></div>
+        <div class="cell"><div class="wait">Masih Diproses</div></div>
+        <div class="cell"><div class="wait">Menunggu hasil pemeriksaan</div></div>
+        <div class="cell">
+          <div class="box">
+            <b>8. Isi LHPP &amp; kelayakan</b>
+            Tanggal periksa, layak/tidak, hasil, ahli K3, perangkat &amp; uji
+            <div class="docs">Simpan → nomor Suket terbit internal · status <strong>Pemeriksaan (draft)</strong> · LHPP + Suket masuk antrean TTE pengawas</div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell"><div class="wait">Belum masuk antrean</div></div>
+
+        <div class="phase">Tanda tangan elektronik</div>
+
+        <div class="cell">
+          <div class="box">
+            <b>Lihat draf (bukan berkas TTE)</b>
+            File asli TTE belum ke perusahaan
+          </div>
+        </div>
+        <div class="cell"><div class="wait">Menunggu TTD dinas</div></div>
+        <div class="cell"><div class="wait">—</div></div>
+        <div class="cell">
+          <div class="box">
+            <b>9. TTE LHPP lalu TTE Suket</b>
+            Passphrase tiap proses. Kedua berkas harus berhasil.
+            <div class="docs"><span class="tag t-tte">TTD Pengawas</span> Baru setelah LHPP + Suket berhasil, antrean Kadis dibuat. LHPP selesai di pengawas (tidak ke Kadis).</div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+        <div class="cell">
+          <div class="box">
+            <b>10. TTE Suket Kepala Dinas</b>
+            Berkas Suket yang sudah TTD pengawas
+            <div class="docs">Jika DS timeout: TTD di DS tetap dihitung; Super Admin dapat <strong>Tarik</strong> PDF memakai kode DS.</div>
+          </div>
+          <div class="arrow">↓</div>
+        </div>
+
+        <div class="phase">Terbit</div>
+
+        <div class="cell">
+          <div class="box" style="border-color:#2e7d32">
+            <b>11. Suket terbit</b>
+            Status publik <strong>Selesai</strong> · unduh berkas bertanda tangan
+          </div>
+        </div>
+        <div class="cell">
+          <div class="box" style="border-color:#2e7d32">
+            <b>Pengajuan selesai</b>
+            Suket atas nama perusahaan yang diperiksa
+          </div>
+        </div>
+        <div class="cell"><div class="wait">Arsip admin</div></div>
+        <div class="cell"><div class="wait">Selesai tugas</div></div>
+        <div class="cell">
+          <div class="box" style="border-color:#2e7d32">
+            <b><span class="tag t-ok">TTD Kadis</span> Terbitkan Suket</b>
+            Perusahaan menerima PDF asli
+          </div>
+        </div>
+
+        <div class="cell"><div class="box end">Selesai</div></div>
+        <div class="cell"><div class="box end">Selesai</div></div>
+        <div class="cell"><div class="box end">Selesai</div></div>
+        <div class="cell"><div class="box end">Selesai</div></div>
+        <div class="cell"><div class="box end">Selesai</div></div>
+      </div>
+    </div>
+    <p class="foot">
+      PJK3 tidak boleh mengajukan Suket untuk dirinya sendiri.
+      Perusahaan biasa hanya membuat kode + memantau/unduh hasil.
+      Pengajuan Suket hanya dari akun PJK3 yang ACC-nya masih berlaku.
+    </p>
+  </section>
+
+  <script>
+    document.querySelectorAll('.tab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.tab').forEach(function (t) { t.classList.remove('active'); });
+        document.querySelectorAll('.panel').forEach(function (p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

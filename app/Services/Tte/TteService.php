@@ -560,11 +560,7 @@ class TteService
 
     public function urlBerkas(EtamTte $tte): ?string
     {
-        if (! $tte->token_verifikasi) {
-            return null;
-        }
-
-        return route('tte.berkas', $tte->token_verifikasi);
+        return app(TteVerifikasi::class)->urlUntuk($tte);
     }
 
     private function pathFileAfter(EtamTte $tte): string
