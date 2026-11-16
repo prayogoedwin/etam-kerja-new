@@ -99,7 +99,7 @@ class EtamPjk3Suket extends Model
                     ['label' => 'Diajukan', 'label_full' => 'Diajukan', 'hint' => 'Menunggu disposisi'],
                     ['label' => 'Disposisi', 'label_full' => 'Disposisi Kasi', 'hint' => 'Diteruskan ke pengawas'],
                     ['label' => 'Periksa', 'label_full' => 'Pemeriksaan', 'hint' => 'Pengawas mengisi LHPP'],
-                    ['label' => 'TTD Pws', 'label_full' => 'TTD Pengawas', 'hint' => 'LHPP dan Suket ditandatangani pengawas'],
+                    ['label' => 'TTD Pws', 'label_full' => 'TTD Pengawas', 'hint' => 'LHPP ditandatangani pengawas'],
                     ['label' => 'TTD Kadis', 'label_full' => 'TTD Kadis', 'hint' => 'Suket terbit'],
                 ],
             ];

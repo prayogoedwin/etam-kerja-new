@@ -137,7 +137,8 @@ class Pjk3SuketTest extends TestCase
             ->assertSee('Pemeriksaan')
             ->assertSee('TTD Pengawas')
             ->assertSee('TTD Kadis')
-            ->assertSee('Diteruskan ke pengawas');
+            ->assertSee('Diteruskan ke pengawas')
+            ->assertSee('LHPP ditandatangani pengawas');
 
         $this->actingAs($kasi)
             ->get(route('pengawasan.suket.admin.pengajuan'), ['X-Requested-With' => 'XMLHttpRequest'])
@@ -216,6 +217,10 @@ class Pjk3SuketTest extends TestCase
         $this->assertStringNotContainsString('DRAFT', $htmlSuketDs);
         $this->assertStringNotContainsString('QR verifikasi TTE', $htmlSuketDs);
         $this->assertStringContainsString('Balai Sertifikasi Elektronik (BSrE)', $htmlSuketDs);
+        $this->assertStringContainsString('LHPP-PJK3-001', $htmlSuketDs);
+        $this->assertStringContainsString('Pengawas Ketenagakerjaan', $htmlSuketDs);
+        $this->assertStringContainsString($pengawas->name, $htmlSuketDs);
+        $this->assertStringNotContainsString('Pengawas:', $htmlSuketDs);
 
         $this->assertDatabaseHas('etam_tte', [
             'nama_modul' => 'suket_k3',
@@ -224,7 +229,7 @@ class Pjk3SuketTest extends TestCase
             'user_id_tujuan' => $pengawas->id,
             'status' => EtamTte::STATUS_MENUNGGU,
         ]);
-        $this->assertDatabaseHas('etam_tte', [
+        $this->assertDatabaseMissing('etam_tte', [
             'nama_modul' => 'suket_k3',
             'id_refrensi' => $suket->id,
             'kode_dokumen' => EtamPjk3Suket::TTE_DOK_SUKET,
@@ -242,7 +247,7 @@ class Pjk3SuketTest extends TestCase
             ->get(route('tte.menunggu'))
             ->json('data'))->pluck('judul');
         $this->assertTrue($judulPengawas->contains(fn ($judul) => str_contains((string) $judul, 'LHPP K3')));
-        $this->assertTrue($judulPengawas->contains(fn ($judul) => str_contains((string) $judul, 'Suket Layak K3')));
+        $this->assertFalse($judulPengawas->contains(fn ($judul) => str_contains((string) $judul, 'Suket Layak K3')));
 
         $adminProv = $this->makeUser('admin-provinsi', ['kode_struktur' => '21']);
         $judulAdmin = collect($this->actingAs($adminProv)
@@ -258,12 +263,12 @@ class Pjk3SuketTest extends TestCase
             ->where('status', EtamTte::STATUS_MENUNGGU)
             ->pluck('id')
             ->all();
-        $this->assertCount(2, $idsPengawas);
+        $this->assertCount(1, $idsPengawas);
 
         $this->actingAs($pengawas)
             ->post(route('tte.tandatangani'), ['tte_ids' => $idsPengawas, 'passphrase' => 'rahasia-tte'])
             ->assertOk()
-            ->assertJsonPath('berhasil', 2);
+            ->assertJsonPath('berhasil', 1);
 
         $suket->refresh();
         $this->assertSame(EtamPjk3Suket::STATUS_TTD_PENGAWAS, (int) $suket->status);

@@ -51,11 +51,7 @@ class SuketK3Handler implements TteModuleHandler
             return EtamPjk3Suket::STATUS_TTD_KADIS;
         }
 
-        if ($this->kodeDokumen($tte) === EtamPjk3Suket::TTE_DOK_SUKET) {
-            return max($current, EtamPjk3Suket::STATUS_TTD_PENGAWAS);
-        }
-
-        return max($current, EtamPjk3Suket::STATUS_DRAFT);
+        return max($current, EtamPjk3Suket::STATUS_TTD_PENGAWAS);
     }
 
     public function setelahBerhasil(EtamTte $tte): void
@@ -73,46 +69,19 @@ class SuketK3Handler implements TteModuleHandler
             return;
         }
 
-        if ($this->kodeDokumen($tte) === EtamPjk3Suket::TTE_DOK_SUKET) {
-            $suket->ttd_pengawas_at = now();
-            $suket->updated_by = $tte->user_id_tte;
-            $suket->save();
-        }
-
-        if (! $this->pengawasSelesai($suket->id)) {
+        if ($this->kodeDokumen($tte) !== EtamPjk3Suket::TTE_DOK_LHPP) {
             return;
         }
 
-        $pathSuket = $tte->kode_dokumen === EtamPjk3Suket::TTE_DOK_SUKET
-            ? $tte->path_file_after
-            : EtamTte::query()
-                ->where('nama_modul', $this->modul())
-                ->where('id_refrensi', $suket->id)
-                ->where('kode_dokumen', EtamPjk3Suket::TTE_DOK_SUKET)
-                ->where('status', EtamTte::STATUS_BERHASIL)
-                ->where(function ($q) {
-                    $q->whereNull('id_struktur')
-                        ->orWhere('id_struktur', '!=', EtamStruktur::KODE_DINAS);
-                })
-                ->orderByDesc('id')
-                ->value('path_file_after');
+        $suket->ttd_pengawas_at = now();
+        $suket->updated_by = $tte->user_id_tte;
+        $suket->save();
 
-        if (! is_string($pathSuket) || $pathSuket === '') {
-            $pathSuket = $this->dokumen->simpanDokumenTte($suket, EtamPjk3Suket::TTE_DOK_SUKET, false);
+        if (! $this->lhppPengawasSelesai($suket->id)) {
+            return;
         }
 
-        $this->queue->ajukan([
-            'nama_modul' => $this->modul(),
-            'nama_table' => $suket->getTable(),
-            'id_refrensi' => $suket->id,
-            'kolom_status_refrensi' => 'status',
-            'id_struktur' => EtamStruktur::KODE_DINAS,
-            'user_id_tujuan' => User::idKepalaDinas(),
-            'kode_dokumen' => EtamPjk3Suket::TTE_DOK_SUKET,
-            'path_file_before' => $pathSuket,
-            'token_verifikasi' => Str::lower(Str::random(40)),
-            'judul' => 'Suket Layak K3 — '.($suket->profilPerusahaan->name ?? $suket->nama_alat),
-        ]);
+        $this->ajukanKadisSuket($suket);
     }
 
     public function setelahGagal(EtamTte $tte): void
@@ -122,10 +91,6 @@ class SuketK3Handler implements TteModuleHandler
 
     public function siapkanBerkasDs(EtamTte $tte): void
     {
-        if ($this->adalahTteKadis($tte)) {
-            return;
-        }
-
         $suket = EtamPjk3Suket::query()->find($tte->id_refrensi);
         if (! $suket) {
             return;
@@ -146,44 +111,57 @@ class SuketK3Handler implements TteModuleHandler
         $kodeStruktur = $pengawas?->kode_struktur ? (string) $pengawas->kode_struktur : null;
         $nama = $suket->profilPerusahaan->name ?? $suket->nama_alat;
 
-        foreach ([EtamPjk3Suket::TTE_DOK_LHPP, EtamPjk3Suket::TTE_DOK_SUKET] as $kode) {
-            $judul = $kode === EtamPjk3Suket::TTE_DOK_SUKET
-                ? 'Suket Layak K3 — '.$nama
-                : 'LHPP K3 — '.$nama;
-
-            $tte = $this->queue->ajukan([
-                'nama_modul' => $this->modul(),
-                'nama_table' => $suket->getTable(),
-                'id_refrensi' => $suket->id,
-                'kolom_status_refrensi' => 'status',
-                'id_struktur' => $kodeStruktur,
-                'user_id_tujuan' => $idPengawas,
-                'kode_dokumen' => $kode,
-                'token_verifikasi' => Str::lower(Str::random(40)),
-                'judul' => $judul,
-            ]);
-            $path = $this->dokumen->simpanDokumenTte($suket, $kode, false);
-            if ($tte->path_file_before !== $path) {
-                $tte->path_file_before = $path;
-                $tte->save();
-            }
+        $tte = $this->queue->ajukan([
+            'nama_modul' => $this->modul(),
+            'nama_table' => $suket->getTable(),
+            'id_refrensi' => $suket->id,
+            'kolom_status_refrensi' => 'status',
+            'id_struktur' => $kodeStruktur,
+            'user_id_tujuan' => $idPengawas,
+            'kode_dokumen' => EtamPjk3Suket::TTE_DOK_LHPP,
+            'token_verifikasi' => Str::lower(Str::random(40)),
+            'judul' => 'LHPP K3 — '.$nama,
+        ]);
+        $path = $this->dokumen->simpanDokumenTte($suket, EtamPjk3Suket::TTE_DOK_LHPP, false);
+        if ($tte->path_file_before !== $path) {
+            $tte->path_file_before = $path;
+            $tte->save();
         }
     }
 
-    private function pengawasSelesai(int $suketId): bool
+    private function ajukanKadisSuket(EtamPjk3Suket $suket): void
     {
-        $berhasil = EtamTte::query()
+        $nama = $suket->profilPerusahaan->name ?? $suket->nama_alat;
+        $tte = $this->queue->ajukan([
+            'nama_modul' => $this->modul(),
+            'nama_table' => $suket->getTable(),
+            'id_refrensi' => $suket->id,
+            'kolom_status_refrensi' => 'status',
+            'id_struktur' => EtamStruktur::KODE_DINAS,
+            'user_id_tujuan' => User::idKepalaDinas(),
+            'kode_dokumen' => EtamPjk3Suket::TTE_DOK_SUKET,
+            'token_verifikasi' => Str::lower(Str::random(40)),
+            'judul' => 'Suket Layak K3 — '.$nama,
+        ]);
+        $path = $this->dokumen->simpanDokumenTte($suket, EtamPjk3Suket::TTE_DOK_SUKET, false);
+        if ($tte->path_file_before !== $path) {
+            $tte->path_file_before = $path;
+            $tte->save();
+        }
+    }
+
+    private function lhppPengawasSelesai(int $suketId): bool
+    {
+        return EtamTte::query()
             ->where('nama_modul', $this->modul())
             ->where('id_refrensi', $suketId)
+            ->where('kode_dokumen', EtamPjk3Suket::TTE_DOK_LHPP)
             ->where('status', EtamTte::STATUS_BERHASIL)
             ->where(function ($q) {
                 $q->whereNull('id_struktur')
                     ->orWhere('id_struktur', '!=', EtamStruktur::KODE_DINAS);
             })
-            ->pluck('kode_dokumen');
-
-        return $berhasil->contains(EtamPjk3Suket::TTE_DOK_LHPP)
-            && $berhasil->contains(EtamPjk3Suket::TTE_DOK_SUKET);
+            ->exists();
     }
 
     private function adalahTteKadis(EtamTte $tte): bool

@@ -228,7 +228,7 @@ class AdminSuketController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Hasil analisis disimpan. LHPP dan Suket masuk antrean TTE Anda.',
+            'message' => 'Hasil analisis disimpan. LHPP masuk antrean TTE Anda.',
         ]);
     }
 

@@ -99,6 +99,7 @@
     <p><strong>C. Hasil pengujian</strong></p>
     <p>Berdasarkan LHPP PJK3 nomor <strong>{{ $suket->nilaiLhpp('nomor_lhpp_pjk3') ?: ($suket->nomor_suket ?? '-') }}</strong>
         tanggal {{ optional($suket->tanggal_pemeriksaan)->translatedFormat('d F Y') ?? '-' }},
+        yang diperiksa oleh Pengawas Ketenagakerjaan <strong>{{ $suket->pengawas->name ?? '-' }}</strong>,
         PJK3 {{ $suket->profilPjk3->name ?? '-' }}.</p>
 
     <p><strong>D. Hasil evaluasi</strong></p>
@@ -122,11 +123,6 @@
             @endif
         </div>
         <p><strong><u>Kepala Dinas Tenaga Kerja dan Transmigrasi</u></strong></p>
-        <p>Pengawas: {{ $suket->pengawas->name ?? '-' }}
-            @if ($suket->ttd_pengawas_at)
-                (TTE {{ optional($suket->ttd_pengawas_at)->format('d-m-Y') }})
-            @endif
-        </p>
     </div>
     <div style="clear:both"></div>
     <p>Tembusan: Direktur Jenderal Pembinaan Pengawasan Ketenagakerjaan.</p>
