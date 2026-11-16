@@ -582,8 +582,8 @@
           @endif
         </div>
         <div class="nama">H. Rozani Erawadi, S.H, M.Si</div>
-        <div class="pangkat">Pembina Utama Madya</div>
-        <div class="nip">NIP. 19710124 199703 1 007</div>
+        {{-- <div class="pangkat">Pembina Utama Madya</div> --}}
+        {{-- <div class="nip">NIP. 19710124 199703 1 007</div> --}}
       </div>
     </div>
 

@@ -138,6 +138,9 @@
 
             <button type="submit" class="btn btn-primary w-100">Submit</button>
         </form>
+        <div class="text-center mt-4">
+            <img src="{{ asset('assets/etam_be/images/logo/logo_bsre.png') }}" alt="Logo BSrE" style="width: 160px; max-width: 100%; height: auto;">
+        </div>
     </div>
 
 
