@@ -13,7 +13,11 @@ use App\Models\HI\PP\EtamHiPpSyaratdokumen;
 use App\Services\HI\PP\PpLogService;
 use App\Models\HI\PP\EtamHiPpLog;
 use App\Models\HI\PP\EtamHiPpJenisajuan;
+use App\Models\EtamTte;
+use App\Models\EtamStruktur;
+use App\Models\User;
 use App\Services\Tte\TteQueue;
+use App\Services\Tte\TteVerifikasi;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 
@@ -315,6 +319,7 @@ class AdmBidangPpController extends Controller
         try {
             $ajuan = EtamHiPpAjuan::where('verifikasi_admin', 1)
                 ->where('verifikasi_kasi', 1)
+                ->lockForUpdate()
                 ->findOrFail($id);
 
             $ajuan->update([
@@ -323,7 +328,21 @@ class AdmBidangPpController extends Controller
             ]);
 
             $ajuan->load(['jenisAjuan:id,nama', 'perusahaan.penyedia']);
-            $viewData = $this->dataCetakSk($ajuan);
+            $tte = app(TteQueue::class)->ajukan([
+                'nama_modul' => 'hi_pp',
+                'nama_table' => 'etam_hi_pp_ajuan',
+                'id_refrensi' => $ajuan->id,
+                'kolom_status_refrensi' => 'status_ttd',
+                'kode_dokumen' => 'suket_hi_pp',
+                'id_struktur' => NULL,
+                'judul' => 'Surat Pengesahan Peraturan Perusahaan - '.($ajuan->perusahaan?->penyedia?->name ?? '-'),
+            ]);
+            if (! filled($tte->token_verifikasi)) {
+                $tte->token_verifikasi = Str::lower(Str::random(40));
+                $tte->save();
+            }
+
+            $viewData = $this->dataCetakSk($ajuan, $tte);
             $pdfBytes = Pdf::loadView('backend.hi.pp.admbidang.cetak_sk', $viewData)
                 ->setPaper('a4', 'portrait')
                 ->setOption('defaultMediaType', 'print')
@@ -350,16 +369,6 @@ class AdmBidangPpController extends Controller
             //     'status_ttd' => 0,
             // ]);
 
-            $tte = app(TteQueue::class)->ajukan([
-                'nama_modul' => 'hi_pp',
-                'nama_table' => 'etam_hi_pp_ajuan',
-                'id_refrensi' => $ajuan->id,
-                'kolom_status_refrensi' => 'status_ttd',
-                'kode_dokumen' => 'suket_hi_pp',
-                'id_struktur' => NULL,
-                'judul' => 'Surat Pengesahan Peraturan Perusahaan - '.($ajuan->perusahaan?->penyedia?->name ?? '-'),
-                'path_file_before' => $tteSourcePath,
-            ]);
             if ($tte->path_file_before !== $tteSourcePath) {
                 $tte->path_file_before = $tteSourcePath;
                 $tte->save();
@@ -416,7 +425,7 @@ class AdmBidangPpController extends Controller
     }
 
     /** Data bersama untuk preview HTML dan pembuatan PDF SK. */
-    private function dataCetakSk(EtamHiPpAjuan $ajuan): array
+    private function dataCetakSk(EtamHiPpAjuan $ajuan, ?EtamTte $tte = null): array
     {
         // ====== Hitung tanggal berakhir (asumsi 2 tahun dari tanggal_berlaku_pp_baru) ======
         $tanggalMulai = $ajuan->tanggal_berlaku_pp_baru
@@ -432,6 +441,19 @@ class AdmBidangPpController extends Controller
             ? $tanggalMulai->format('Y') . '-' . $tanggalBerakhir->format('Y')
             : now()->format('Y');
 
+        $tte ??= EtamTte::query()
+            ->where('nama_modul', 'hi_pp')
+            ->where('nama_table', 'etam_hi_pp_ajuan')
+            ->where('id_refrensi', $ajuan->id)
+            ->where('kode_dokumen', 'suket_hi_pp')
+            ->whereNotNull('token_verifikasi')
+            ->where('token_verifikasi', '!=', '')
+            ->orderByRaw('CASE WHEN status = ? THEN 0 ELSE 1 END', [EtamTte::STATUS_MENUNGGU])
+            ->orderByDesc('id')
+            ->first();
+        $verifikasi = app(TteVerifikasi::class);
+        $urlVerifikasi = $tte ? $verifikasi->urlUntuk($tte) : null;
+
         return compact(
             'ajuan',
             'tanggalMulai',
@@ -440,6 +462,13 @@ class AdmBidangPpController extends Controller
         ) + [
             'logoDataUri' => $this->logoDataUri(),
             'bsreLogoDataUri' => $this->bsreLogoDataUri(),
+            'urlVerifikasi' => $urlVerifikasi,
+            'qrVerifikasi' => $urlVerifikasi ? $verifikasi->qrDataUri($urlVerifikasi) : null,
+            'namaKepalaDinas' => User::query()
+                ->where('lokasi_kerja', '64')
+                ->where('kode_struktur', EtamStruktur::KODE_DINAS)
+                ->orderByDesc('id')
+                ->value('name'),
             'bsreFooterText' => "Dokumen ini telah ditandatangani secara elektronik menggunakan sertifikat elektronik\nyang diterbitkan oleh Balai Sertifikasi Elektronik (BSrE), Badan Siber dan Sandi Negara (BSSN).",
         ];
     }

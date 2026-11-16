@@ -274,20 +274,28 @@
       font-weight: bold;
       text-transform: uppercase;
       margin-top: 3px;
-      margin-bottom: 0;
+      margin-bottom: 4mm;
       font-size: 10.5pt;
     }
 
     .ttd-kanan .space-ttd {
-      height: 22mm;
+      height: 27mm;
       text-align: center;
     }
 
-    .ttd-kanan .space-ttd img {
-      width: 32mm;
-      height: auto;
-      max-height: 20mm;
-      display: inline-block;
+    .ttd-kanan .ttd-qr-wrap {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .ttd-kanan .ttd-qr-wrap td {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .ttd-kanan .ttd-qr {
+      width: 25mm;
+      height: 25mm;
     }
 
     .ttd-kanan .nama {
@@ -615,11 +623,9 @@
         <div class="tempat">Pada tanggal {{tgl_indo($tanggalMulai)}}</div>
         <div class="jabatan">Kepala Dinas</div>
         <div class="space-ttd">
-          @if (!empty($bsreLogoDataUri))
-            <img src="{{ $bsreLogoDataUri }}" alt="Logo BSrE">
-          @endif
+          @include('backend.tte._qr-ttd')
         </div>
-        <div class="nama">H. Rozani Erawadi, S.H, M.Si</div>
+        <div class="nama">{{ $namaKepalaDinas ?? '..........................' }}</div>
         {{-- <div class="pangkat">Pembina Utama Madya</div> --}}
         {{-- <div class="nip">NIP. 19710124 199703 1 007</div> --}}
       </div>
