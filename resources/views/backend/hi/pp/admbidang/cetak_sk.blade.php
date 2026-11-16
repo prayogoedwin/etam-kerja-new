@@ -10,7 +10,7 @@
       margin: 12mm 15mm;
     }
 
-    * {
+    body, body * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -32,12 +32,12 @@
       padding: 12mm 15mm 24mm;
       box-shadow: 0 2px 12px rgba(0,0,0,0.15);
       position: relative;
-      page-break-after: always;
+      page-break-after: auto;
       overflow: hidden;
     }
 
-    .page:last-child {
-      page-break-after: auto;
+    .page-first {
+      page-break-after: always;
     }
 
     /* ===== HEADER ===== */
@@ -368,6 +368,27 @@
       text-align: left;
     }
 
+    /* Preview HTML tanpa latar dan bingkai kertas. */
+    @media screen {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        width: auto;
+        height: auto;
+        margin: 0;
+        padding: 12mm 15mm;
+        box-shadow: none;
+        overflow: visible;
+      }
+
+      .hi-pp-bsre-footer {
+        position: static;
+        margin-top: 12mm;
+      }
+    }
+
     /* ===== PRINT ===== */
     @media print {
       body {
@@ -378,15 +399,32 @@
       .page {
         width: auto;
         height: auto;
-        min-height: 273mm;
+        min-height: 270mm;
         margin: 0;
         padding: 0;
         box-shadow: none;
-        page-break-after: always;
+        page-break-after: auto;
         overflow: visible;
       }
-      .page:last-child {
-        page-break-after: auto;
+      .page-first {
+        page-break-after: always;
+      }
+      .diktum .nomor-diktum {
+        width: 27mm;
+      }
+      .page-first .bagian .label,
+      .page-first .bagian .titik,
+      .page-first .bagian .isi,
+      .page-first .diktum .nomor-diktum,
+      .page-first .diktum .titik,
+      .page-first .diktum .isi-diktum,
+      .page-first .diktum td {
+        font-size: 9.7pt;
+        line-height: 1.23;
+      }
+      .page-first .bagian .isi li {
+        line-height: 1.23;
+        margin-bottom: 2px;
       }
       .header .logo-space {
         border: none;
@@ -408,7 +446,7 @@
 <body>
 
   <!-- ==================== HALAMAN 1 ==================== -->
-  <div class="page">
+  <div class="page page-first">
     <div class="header">
       {{-- <div class="logo-space">Logo<br>Dinas</div> --}}
       <div class="logo-space" style="margin-left: 50px;">
